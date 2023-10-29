@@ -63,14 +63,14 @@ public abstract class AbstractMotor {
      * 
      * @param brake If the motor is in brake mode or not. Coast mode if false.
      */
-    public abstract void setMotorBrake(boolean brake);
+    public abstract void configureMotorBrake(boolean brake);
 
     /**
      * Configure whether or not the motor output is inverted or not.
      * 
      * @param inverted If the motor is inverted or not. True is inverted.
      */
-    public abstract void setInverted(boolean inverted);
+    public abstract void configureInverted(boolean inverted);
 
     /**
      * Set current limits for the motor.
@@ -81,19 +81,28 @@ public abstract class AbstractMotor {
      * @param primaryAmpLimit   Primary current limit. If the motor's current draw
      *                          amperage goes above this number, motor speeds will
      *                          be adjusted to keep current draw below the number.
+     *                          Can cause issues with conflicting compensations
+     *                          making the motor stutter if set too low.
      * @param secondaryAmpLimit Secondary current limit. If the motor's current draw
      *                          amperage goes above this number, the motor will be
      *                          temporarily shut down completely. Keep this number
      *                          above primary amp limit.
      */
-    public abstract void setCurrentLimits(double nominalVoltage, int primaryAmpLimit, int secondaryAmpLimit);
+    public abstract void configureCurrentLimits(double nominalVoltage, int primaryAmpLimit, int secondaryAmpLimit);
 
     /**
      * Set the absolute encoder to be used by the motor.
      * 
      * @param absoluteEncoder The encoder to be used.
      */
-    public abstract void setAbsoluteEncoder(AbstractAbsoluteEncoder absoluteEncoder);
+    public abstract void configureAbsoluteEncoder(AbstractAbsoluteEncoder absoluteEncoder, double offset);
+
+    /**
+     * Set how long the motor can take to go from 0 to max power.
+     * 
+     * @param rampRate Time, in seconds, that it takes to accelerate.
+     */
+    public abstract void configureRampRate(double rampRate);
 
     /**
      * Set desired motor speed.
@@ -119,11 +128,11 @@ public abstract class AbstractMotor {
     public abstract void setTurnReference(Rotation2d setPoint);
 
     /**
-     * Set how long the motor can take to go from 0 to max power.
+     * Sets the motor encoder's position.
      * 
-     * @param rampRate Time, in seconds, that it takes to accelerate.
+     * @param position The new position.
      */
-    public abstract void setLoopRampRate(double rampRate);
+    public abstract void setPosition(double position);
 
     /**
      * Get the motor object.

@@ -1,5 +1,6 @@
 package frc.robot.abstraction.encoders;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 
 public class AnalogAbsoluteEncoder extends AbstractAbsoluteEncoder {
@@ -30,8 +31,8 @@ public class AnalogAbsoluteEncoder extends AbstractAbsoluteEncoder {
     }
 
     @Override
-    public double getAbsolutePosition() {
-        return (inverted ? -1 : 1) * (encoder.getAbsolutePosition() * 360 - 180);
+    public Rotation2d getAbsolutePosition() {
+        return Rotation2d.fromDegrees((inverted ? -1 : 1) * (encoder.getAbsolutePosition() * 360 - 180));
     }
 
     @Override

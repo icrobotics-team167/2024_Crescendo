@@ -71,7 +71,7 @@ public class RevNEO500 extends AbstractMotor {
             configureCANStatusFrames(10, 20, 20, 500, 500);
         } else {
             configureSparkMax(() -> absoluteEncoder.setPositionConversionFactor(positionConversionFactor));
-            configureSparkMax(() -> absoluteEncoder.setVelocityConversionFactor(positionConversionFactor / 60));
+            configureSparkMax(() -> absoluteEncoder.setVelocityConversionFactor(positionConversionFactor));
         }
     }
 
@@ -90,24 +90,24 @@ public class RevNEO500 extends AbstractMotor {
     }
 
     @Override
-    public void setMotorBrake(boolean brake) {
+    public void configureMotorBrake(boolean brake) {
         configureSparkMax(() -> motor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast));
     }
 
     @Override
-    public void setInverted(boolean inverted) {
+    public void configureInverted(boolean inverted) {
         motor.setInverted(inverted);
     }
 
     @Override
-    public void setCurrentLimits(double nominalVoltage, int primaryAmpLimit, int secondaryAmpLimit) {
+    public void configureCurrentLimits(double nominalVoltage, int primaryAmpLimit, int secondaryAmpLimit) {
         configureSparkMax(() -> motor.enableVoltageCompensation(nominalVoltage));
         configureSparkMax(() -> motor.setSmartCurrentLimit(primaryAmpLimit));
         configureSparkMax(() -> motor.setSecondaryCurrentLimit(secondaryAmpLimit));
     }
 
     @Override
-    public void setAbsoluteEncoder(AbstractAbsoluteEncoder encoder) {
+    public void configureAbsoluteEncoder(AbstractAbsoluteEncoder encoder, double offset) {
         if (encoder.getAbsoluteEncoder() instanceof AbsoluteEncoder) {
             absoluteEncoder = (AbsoluteEncoder) encoder.getAbsoluteEncoder();
             configureSparkMax(() -> pid.setFeedbackDevice(absoluteEncoder));
@@ -115,7 +115,7 @@ public class RevNEO500 extends AbstractMotor {
     }
 
     @Override
-    public void setLoopRampRate(double rampRate) {
+    public void configureRampRate(double rampRate) {
         configureSparkMax(() -> motor.setClosedLoopRampRate(rampRate));
     }
 
@@ -135,6 +135,15 @@ public class RevNEO500 extends AbstractMotor {
     }
 
     @Override
+    public void setPosition(double position) {
+        if (absoluteEncoder != null) {
+            absoluteEncoder.setZeroOffset(absoluteEncoder.getPosition() - position);
+        } else {
+            configureSparkMax(() -> encoder.setPosition(position));
+        }
+    }
+
+    @Override
     public Object getMotor() {
         return motor;
     }
@@ -144,26 +153,34 @@ public class RevNEO500 extends AbstractMotor {
         return absoluteEncoder != null;
     }
 
-    /**
-     * Gets the velocity measured by the encoder.
-     * 
-     * @return Velocity. Is in rotations per second by default but can be changed by
-     *         using configureIntegratedEncoder().
-     */
     @Override
     public double getVelocity() {
         return encoder.getVelocity();
     }
 
-    /**
-     * Gets the position of the integrated encoder.
-     * 
-     * @return Position. Is in rotations by default but can be changed by using
-     *         configureIntegratedEncoder().
-     */
     @Override
     public double getPosition() {
         return encoder.getPosition();
+    }
+
+    @Override
+    public double getNominalVoltage() {
+        return Neo500.CurrentLimits.NOMINAL_VOLTAGE;
+    }
+
+    @Override
+    public int getPrimaryCurrentLimit() {
+        return Neo500.CurrentLimits.PRIMARY_CURRENT_LIMIT;
+    }
+
+    @Override
+    public int getSecondaryCurrentLimit() {
+        return Neo500.CurrentLimits.SECONDARY_CURRENT_LIMIT;
+    }
+
+    @Override
+    public double getMaxRPM() {
+        return Neo500.MAX_RPM;
     }
 
     /**
@@ -188,6 +205,20 @@ public class RevNEO500 extends AbstractMotor {
         // https://docs.revrobotics.com/sparkmax/operating-modes/control-interfaces
     }
 
+    /**
+     * <p>
+     * Function to configure the Spark Max motor controller. Attempts to configure
+     * it a couple times, but if it fails on all attempts, throws an error.
+     * 
+     * <p>
+     * Usage example:
+     * 
+     * <pre>
+     * configureSparkMax(() -> motor.enableVoltageCompensation(nominalVoltage));
+     * </pre>
+     * 
+     * @param config The configuration command.
+     */
     private void configureSparkMax(Supplier<REVLibError> config) {
         for (int i = 0; i < maximumRetries; i++) {
             if (config.get() == REVLibError.kOk) {
@@ -195,25 +226,5 @@ public class RevNEO500 extends AbstractMotor {
             }
         }
         DriverStation.reportWarning("Failure configuring motor " + motor.getDeviceId(), true);
-    }
-
-    @Override
-    public double getNominalVoltage() {
-        return Neo500.CurrentLimits.NOMINAL_VOLTAGE;
-    }
-
-    @Override
-    public int getPrimaryCurrentLimit() {
-        return Neo500.CurrentLimits.PRIMARY_CURRENT_LIMIT;
-    }
-
-    @Override
-    public int getSecondaryCurrentLimit() {
-        return Neo500.CurrentLimits.SECONDARY_CURRENT_LIMIT;
-    }
-
-    @Override
-    public double getMaxRPM() {
-        return Neo500.MAX_RPM;
     }
 }

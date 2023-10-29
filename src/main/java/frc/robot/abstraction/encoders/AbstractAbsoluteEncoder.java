@@ -1,5 +1,7 @@
 package frc.robot.abstraction.encoders;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 /**
  * An abstraction class for encoders.
  */
@@ -37,9 +39,9 @@ public abstract class AbstractAbsoluteEncoder {
     /**
      * Get the absolute position of the encoder.
      *
-     * @return Absolute position in degrees from [-180, 180).
+     * @return Absolute position as a Rotation2d object.
      */
-    public abstract double getAbsolutePosition();
+    public abstract Rotation2d getAbsolutePosition();
 
     /**
      * Get the instantiated absolute encoder Object.
