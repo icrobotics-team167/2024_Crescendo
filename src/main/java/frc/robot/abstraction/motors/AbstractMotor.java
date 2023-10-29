@@ -1,11 +1,12 @@
 package frc.robot.abstraction.motors;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.abstraction.encoders.AbstractAbsoluteEncoder;
 
 /**
  * An abstraction class for motors.
  */
-public abstract class Motor {
+public abstract class AbstractMotor {
     /**
      * The maximum number of times that the motor will attempt to apply
      * configurations,
@@ -15,7 +16,7 @@ public abstract class Motor {
     public final int maximumRetries = 5;
 
     /**
-     * Reset motor configuration back to factory defaults.
+     * Reset motor configuration back to factory defaults. Can only be run once.
      */
     public abstract void factoryDefaults();
 
@@ -58,10 +59,18 @@ public abstract class Motor {
     public abstract void configurePIDWrapping(double minValue, double maxValue);
 
     /**
-     * Configure whether the motor is in 
-     * @param brake
+     * Configure whether the motor is in brake mode or coast mode.
+     * 
+     * @param brake If the motor is in brake mode or not. Coast mode if false.
      */
     public abstract void setMotorBrake(boolean brake);
+
+    /**
+     * Configure whether or not the motor output is inverted or not.
+     * 
+     * @param inverted If the motor is inverted or not. True is inverted.
+     */
+    public abstract void setInverted(boolean inverted);
 
     /**
      * Set current limits for the motor.
@@ -79,7 +88,12 @@ public abstract class Motor {
      */
     public abstract void setCurrentLimits(double nominalVoltage, int primaryAmpLimit, int secondaryAmpLimit);
 
-    public abstract void setAbsoluteEncoder();
+    /**
+     * Set the absolute encoder to be used by the motor.
+     * 
+     * @param absoluteEncoder The encoder to be used.
+     */
+    public abstract void setAbsoluteEncoder(AbstractAbsoluteEncoder absoluteEncoder);
 
     /**
      * Set desired motor speed.
@@ -101,8 +115,43 @@ public abstract class Motor {
      * If the motor is being used as a swerve turn motor, set the target angle.
      * 
      * @param setPoint Target angle, as a Rotation2d object.
-     * @param position Current angle, as a Rotation2d object.
      */
-    public abstract void setTurnReference(Rotation2d setPoint, Rotation2d position);
+    public abstract void setTurnReference(Rotation2d setPoint);
 
+    /**
+     * Set how long the motor can take to go from 0 to max power.
+     * 
+     * @param rampRate Time, in seconds, that it takes to accelerate.
+     */
+    public abstract void setLoopRampRate(double rampRate);
+
+    /**
+     * Get the motor object.
+     * 
+     * @return The motor object.
+     */
+    public abstract Object getMotor();
+
+    /**
+     * Gets whether or not an absolute encoder is connected to the motor.
+     * 
+     * @return If an absolute encoder is connected or not.
+     */
+    public abstract boolean isAttachedAbsoluteEncoder();
+
+    /**
+     * Gets the velocity measured by the encoder.
+     * 
+     * @return Velocity. Is in rotations per second by default but can be changed by
+     *         using configureIntegratedEncoder().
+     */
+    public abstract double getVelocity();
+
+    /**
+     * Gets the position of the integrated encoder.
+     * 
+     * @return Position. Is in rotations by default but can be changed by using
+     *         configureIntegratedEncoder().
+     */
+    public abstract double getPosition();
 }
