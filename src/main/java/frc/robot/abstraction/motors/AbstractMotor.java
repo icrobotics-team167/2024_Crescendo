@@ -154,4 +154,34 @@ public abstract class AbstractMotor {
      *         configureIntegratedEncoder().
      */
     public abstract double getPosition();
+
+    /**
+     * Gets the nominal voltage of the motor. Configured in Constants.Robot.Motors.
+     * 
+     * @return Nominal voltage, in volts.
+     */
+    public abstract double getNominalVoltage();
+
+    /**
+     * Gets the primary current limit of the motor. Configured in
+     * Constants.Robot.Motors.
+     * 
+     * @return Primary current limit, in amps.
+     */
+    public abstract int getPrimaryCurrentLimit();
+
+    /**
+     * Gets the secondary current limit of the motor. Configured in
+     * Constants.Robot.Motors.
+     * 
+     * @return Secondary current limit, in amps.
+     */
+    public abstract int getSecondaryCurrentLimit();
+
+    /**
+     * Gets the max velocity of the motor. Constants.Robot.Motors.
+     * 
+     * @return Max velocity, in RPM.
+     */
+    public abstract double getMaxRPM();
 }

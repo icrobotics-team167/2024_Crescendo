@@ -15,8 +15,9 @@ import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.abstraction.encoders.AbstractAbsoluteEncoder;
+import frc.robot.Constants.Robot.Motors.Neo500;
 
-public class RevNEO extends AbstractMotor {
+public class RevNEO500 extends AbstractMotor {
 
     CANSparkMax motor;
 
@@ -28,11 +29,11 @@ public class RevNEO extends AbstractMotor {
 
     boolean hasFactoryReset;
 
-    public RevNEO(int CanID) {
+    public RevNEO500(int CanID) {
         this(new CANSparkMax(CanID, MotorType.kBrushless));
     }
 
-    public RevNEO(CANSparkMax motor) {
+    public RevNEO500(CANSparkMax motor) {
         this.motor = motor;
 
         factoryDefaults();
@@ -194,5 +195,25 @@ public class RevNEO extends AbstractMotor {
             }
         }
         DriverStation.reportWarning("Failure configuring motor " + motor.getDeviceId(), true);
+    }
+
+    @Override
+    public double getNominalVoltage() {
+        return Neo500.CurrentLimits.NOMINAL_VOLTAGE;
+    }
+
+    @Override
+    public int getPrimaryCurrentLimit() {
+        return Neo500.CurrentLimits.PRIMARY_CURRENT_LIMIT;
+    }
+
+    @Override
+    public int getSecondaryCurrentLimit() {
+        return Neo500.CurrentLimits.SECONDARY_CURRENT_LIMIT;
+    }
+
+    @Override
+    public double getMaxRPM() {
+        return Neo500.MAX_RPM;
     }
 }
