@@ -236,4 +236,47 @@ public final class Constants {
       }
     }
   }
+
+  /**
+   * Driver controller configurations.
+   */
+  public static final class Controllers {
+    public static final class IDs {
+      /**
+       * Primary driver's left stick ID.
+       */
+      public static final int PRIMARY_LEFT = 0;
+      /**
+       * Primary driver's right stick ID.
+       */
+      public static final int PRIMARY_RIGHT = 1;
+      /**
+       * Secondary driver's left stick ID.
+       */
+      public static final int SECONDARY_LEFT = 2;
+      /**
+       * Secondary driver's left stick ID.
+       */
+      public static final int SECONDARY_RIGHT = 3;
+    }
+
+    public static final class Deadbands {
+      /**
+       * Primary driver's left stick deadband.
+       */
+      public static final double PRIMARY_LEFT = 0.1;
+      /**
+       * Primary driver's right stick deadband.
+       */
+      public static final double PRIMARY_RIGHT = 0.1;
+      /**
+       * Secondary driver's left stick deadband.
+       */
+      public static final double SECONDARY_LEFT = 0.09;
+      /**
+       * Secondary driver's right stick deadband.
+       */
+      public static final double SECONDARY_RIGHT = 0.09;
+    }
+  }
 }
