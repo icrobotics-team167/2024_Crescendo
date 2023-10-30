@@ -73,7 +73,7 @@ public class SwerveDrive {
     /**
      * A representation of the field
      */
-    private Field2d field;
+    private Field2d field = new Field2d();
 
     public SwerveDrive() {
         imu = new Pigeon2IMU(10);
@@ -242,6 +242,7 @@ public class SwerveDrive {
         odometryLock.lock();
         try {
             poseEstimator.update(getYaw(), modulePositions);
+            field.setRobotPose(poseEstimator.getEstimatedPosition());
         } catch (Exception e) {
             odometryLock.unlock();
             throw e;
@@ -252,7 +253,12 @@ public class SwerveDrive {
     public void addVisionMeasurement(Pose2d robotPose, double timestamp) {
         odometryLock.lock();
         poseEstimator.addVisionMeasurement(robotPose, timestamp);
-        
+        odometryLock.unlock();
+        imu.setOffset(
+                new Rotation3d(
+                        getRoll().getRadians(),
+                        getPitch().getRadians(),
+                        robotPose.getRotation().getRadians()));
     }
 
     /**
