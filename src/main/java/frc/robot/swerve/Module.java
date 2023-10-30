@@ -121,6 +121,11 @@ public class Module {
     return turnEncoder.getAbsolutePosition();
   }
 
+  /**
+   * Gets the absolute max velocity of the module.
+   * 
+   * @return Max velocity, in meters per second.
+   */
   public double getMaxVel() {
     return getMetersPerRotation() * driveMotor.getMaxRPM() / 60;
   }

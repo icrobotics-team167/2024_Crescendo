@@ -29,5 +29,7 @@ public abstract class AbstractIMU {
 
     public abstract Rotation3d getRotation3d();
 
+    public abstract Rotation3d getOffset();
+
     public abstract Optional<Translation3d> getAccel();
 }

@@ -29,6 +29,19 @@ public final class Constants {
      */
     public static final class SwerveDrive {
       /**
+       * The max translational velocity of the drivebase, in meters/s.
+       */
+      public static final double MAX_TRANSLATIONAL_VEL = 3.5;
+      /**
+       * The max rotational velocity of the drivebase, in radians/s.
+       */
+      public static final double MAX_ROTATIONAL_VEL = 1.5 * Math.PI;
+      /**
+       * The multiplier for slow mode.
+       */
+      public static final double SLOWMODE_MULT = 0.4;
+
+      /**
        * Swerve module configuration and characteristics.
        */
       public static final class Modules {

@@ -55,6 +55,11 @@ public class Pigeon2IMU extends AbstractIMU {
     }
 
     @Override
+    public Rotation3d getOffset() {
+        return offset;
+    }
+
+    @Override
     public Optional<Translation3d> getAccel() {
         short[] initial = new short[3];
         imu.getBiasedAccelerometer(initial);

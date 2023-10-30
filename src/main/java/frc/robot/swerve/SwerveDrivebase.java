@@ -2,6 +2,7 @@ package frc.robot.swerve;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -20,11 +21,12 @@ import frc.robot.abstraction.encoders.AnalogAbsoluteEncoder;
 import frc.robot.abstraction.imus.AbstractIMU;
 import frc.robot.abstraction.imus.Pigeon2IMU;
 import frc.robot.abstraction.motors.RevNEO500;
+import frc.robot.Constants.Robot.SwerveDrive;
 import frc.robot.Constants.Robot.SwerveDrive.Modules;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class SwerveDrive {
+public class SwerveDrivebase {
     // Driving math
     /**
      * The module kinematics.
@@ -38,6 +40,10 @@ public class SwerveDrive {
      * The module positions.
      */
     private final SwerveModulePosition[] modulePositions;
+    /**
+     * Whether or not slow mode is enabled.
+     */
+    private boolean slowMode = false;
 
     // Odometry
     /**
@@ -75,7 +81,7 @@ public class SwerveDrive {
      */
     private Field2d field = new Field2d();
 
-    public SwerveDrive() {
+    public SwerveDrivebase() {
         imu = new Pigeon2IMU(10);
         this.imu.factoryDefault();
         this.imu.clearStickyFaults();
@@ -130,11 +136,9 @@ public class SwerveDrive {
      * 
      * @param velocityCommand The commanded linear velocity of the robot, in meters
      *                        per second. Positive x is forward, positive y is left.
-     * @param rotation        The commanded robot angular velocity, in radians per
-     *                        second. Positive is counterclockwise.
      */
-    public void robotRelativeDrive(Translation2d velocityCommand, double rotation) {
-        drive(velocityCommand, rotation, false);
+    public void robotRelativeDrive(ChassisSpeeds velocityCommand) {
+        drive(velocityCommand, false);
     }
 
     /**
@@ -144,11 +148,9 @@ public class SwerveDrive {
      *                        per second. Positive x is away from the driver
      *                        station, positive y is to the left relative to the
      *                        driver station.
-     * @param rotation        The commanded robot angular velocity in radians per
-     *                        second. Positive is counterclockwise.
      */
-    public void fieldOrientedDrive(Translation2d velocityCommand, double rotation) {
-        drive(velocityCommand, rotation, true);
+    public void fieldOrientedDrive(ChassisSpeeds velocityCommand) {
+        drive(velocityCommand, true);
     }
 
     /**
@@ -158,16 +160,20 @@ public class SwerveDrive {
      *                        per second. Positive x is forwards, (either from the
      *                        robot or from the driver station) positve y is left
      *                        (either from the robot or from the driver station)
-     * @param rotation        The commanded robot angular velocity, in radians per
-     *                        second. Positive is counterclockwise.
      * @param fieldRelative   Driving mode. True for field relative, false for robot
      *                        relative.
      */
-    public void drive(Translation2d velocityCommand, double rotation, boolean fieldRelative) {
-        ChassisSpeeds velocity = fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                        velocityCommand.getX(), velocityCommand.getY(), rotation, getYaw())
-                : new ChassisSpeeds(velocityCommand.getX(), velocityCommand.getY(), rotation);
+    public void drive(ChassisSpeeds velocityCommand, boolean fieldRelative) {
+        if (fieldRelative) {
+            velocityCommand = ChassisSpeeds.fromFieldRelativeSpeeds(velocityCommand, getYaw());
+        }
+
+        if (slowMode) {
+            velocityCommand = new ChassisSpeeds(
+                    velocityCommand.vxMetersPerSecond * SwerveDrive.SLOWMODE_MULT,
+                    velocityCommand.vyMetersPerSecond * SwerveDrive.SLOWMODE_MULT,
+                    velocityCommand.omegaRadiansPerSecond * SwerveDrive.SLOWMODE_MULT);
+        }
 
         // When driving and turning at the same time, the robot slightly drifts. This
         // compensates for that.
@@ -175,14 +181,23 @@ public class SwerveDrive {
         // Stolen code from 254
         // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
         double dtConstant = 0.009;
-        Pose2d robotPoseVel = new Pose2d(velocity.vxMetersPerSecond * dtConstant,
-                velocity.vyMetersPerSecond * dtConstant,
-                Rotation2d.fromRadians(velocity.omegaRadiansPerSecond * dtConstant));
+        Pose2d robotPoseVel = new Pose2d(velocityCommand.vxMetersPerSecond * dtConstant,
+                velocityCommand.vyMetersPerSecond * dtConstant,
+                Rotation2d.fromRadians(velocityCommand.omegaRadiansPerSecond * dtConstant));
         Twist2d twistVel = poseLog(robotPoseVel);
 
-        velocity = new ChassisSpeeds(twistVel.dx / dtConstant, twistVel.dy / dtConstant,
+        velocityCommand = new ChassisSpeeds(twistVel.dx / dtConstant, twistVel.dy / dtConstant,
                 twistVel.dtheta / dtConstant);
-        SwerveModuleState[] moduleDesiredStates = kinematics.toSwerveModuleStates(velocity);
+
+        // Drive modules
+        SwerveModuleState[] moduleDesiredStates = kinematics.toSwerveModuleStates(velocityCommand);
+        // If the commanded module speeds is too fast, slow down
+        SwerveDriveKinematics.desaturateWheelSpeeds(
+                moduleDesiredStates,
+                getRobotVelocity(),
+                getAbsoluteMaxVel(),
+                getMaxTranslationalVel(),
+                getMaxRotVel());
         // SwerveDriveKinematics.desaturateWheelSpeeds(moduleDesiredStates,
         // getRobotVelocity(), dtConstant, rotation, rotation);
         for (Module module : modules) {
@@ -230,6 +245,14 @@ public class SwerveDrive {
         return kinematics.toChassisSpeeds(getStates());
     }
 
+    public SwerveModulePosition[] getModulePositions() {
+        SwerveModulePosition[] positions = new SwerveModulePosition[4];
+        for (Module module : modules) {
+            positions[module.moduleNumber] = module.getPosition();
+        }
+        return positions;
+    }
+
     public SwerveModuleState[] getStates() {
         SwerveModuleState[] states = new SwerveModuleState[4];
         for (Module module : modules) {
@@ -259,6 +282,54 @@ public class SwerveDrive {
                         getRoll().getRadians(),
                         getPitch().getRadians(),
                         robotPose.getRotation().getRadians()));
+    }
+
+    public void setOdometry(Pose2d pose) {
+        odometryLock.lock();
+        poseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
+        odometryLock.unlock();
+        kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, pose.getRotation()));
+    }
+
+    public void toggleSlowMode() {
+        if (slowMode) {
+            slowMode = false;
+        } else {
+            slowMode = true;
+        }
+    }
+
+    public void resetYaw() {
+        imu.setOffset(
+            new Rotation3d()
+        );
+    }
+
+    /**
+     * Gets the absolute max velocity of a module.
+     * 
+     * @return The max velocity, in m/s
+     */
+    public double getAbsoluteMaxVel() {
+        return modules[0].getMaxVel();
+    }
+
+    /**
+     * Gets the max translational velocity of the drivebase.
+     * 
+     * @return The max velocity, in m/s
+     */
+    public double getMaxTranslationalVel() {
+        return SwerveDrive.MAX_TRANSLATIONAL_VEL;
+    }
+
+    /**
+     * Gets the max rotational velocity of the drivebase.
+     * 
+     * @return The max velocity, in radians/s.
+     */
+    public double getMaxRotVel() {
+        return SwerveDrive.MAX_ROTATIONAL_VEL;
     }
 
     /**
