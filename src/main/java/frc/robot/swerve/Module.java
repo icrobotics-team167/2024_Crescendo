@@ -9,7 +9,7 @@ import frc.robot.abstraction.motors.AbstractMotor;
 import frc.robot.Constants.Robot.SwerveDrive.Modules;
 
 public class Module {
-  private int moduleNumber;
+  public int moduleNumber;
   private AbstractMotor driveMotor;
   private AbstractMotor turnMotor;
   private AbstractAbsoluteEncoder turnEncoder;
@@ -119,6 +119,14 @@ public class Module {
    */
   public Rotation2d getRotation() {
     return turnEncoder.getAbsolutePosition();
+  }
+
+  public double getMaxVel() {
+    return getMetersPerRotation() * driveMotor.getMaxRPM() / 60;
+  }
+
+  public double getMetersPerRotation() {
+    return Modules.WHEEL_CIRCUMFERENCE / Modules.GEAR_RATIO;
   }
 
   /**

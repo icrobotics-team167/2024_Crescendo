@@ -106,6 +106,85 @@ public final class Constants {
           public static final Translation2d BACK_RIGHT_POS = new Translation2d(moduleForwardDistanceFromCenter,
               moduleSideDistanceFromCenter);
         }
+
+        /**
+         * CAN IDs/RoboRIO port numbers for various parts of the modules.
+         */
+        public static final class IDs {
+          // Drivebase CAN bus Addresses
+          /**
+           * The drive motor CAN ID for the front left module.
+           */
+          public static final int FRONT_LEFT_DRIVE = 2;
+          /**
+           * The turn motor CAN ID for the front left module.
+           */
+          public static final int FRONT_LEFT_TURN = 3;
+          /**
+           * The drive motor CAN ID for the front right module.
+           */
+          public static final int FRONT_RIGHT_DRIVE = 4;
+          /**
+           * The turn motor CAN ID for the front right module.
+           */
+          public static final int FRONT_RIGHT_TURN = 5;
+          /**
+           * The drive motor CAN ID for the back left module.
+           */
+          public static final int BACK_LEFT_DRIVE = 9;
+          /**
+           * The turn motor CAN ID for the back left module.
+           */
+          public static final int BACK_LEFT_TURN = 8;
+          /**
+           * The drive motor CAN ID for the back right module.
+           */
+          public static final int BACK_RIGHT_DRIVE = 6;
+          /**
+           * The turn motor CAN ID for the back right module.
+           */
+          public static final int BACK_RIGHT_TURN = 7;
+
+          // Drivebase Analog Encoder Ports
+          /**
+           * The turn encoder analog port number of the front left module.
+           */
+          public static final int FRONT_LEFT_ENCODER = 0;
+          /**
+           * The turn encoder analog port number of the front right module.
+           */
+          public static final int FRONT_RIGHT_ENCODER = 1;
+          /**
+           * The turn encoder analog port number of the back left module.
+           */
+          public static final int BACK_LEFT_ENCODER = 2;
+          /**
+           * The turn encoder analog port number of the back right module.
+           */
+          public static final int BACK_RIGHT_ENCODER = 3;
+        }
+
+        /**
+         * The angles at which the encoders should be offset by, in degrees.
+         */
+        public static final class EncoderOffsets {
+          /**
+           * The angle offset for the front left turn encoder.
+           */
+          public static final double FRONT_LEFT_OFFSET = -95;
+          /**
+           * The angle offset for the front right turn encoder.
+           */
+          public static final double FRONT_RIGHT_OFFSET = -53;
+          /**
+           * The angle offset for the back left turn encoder.
+           */
+          public static final double BACK_LEFT_OFFSET = -42;
+          /**
+           * The angle offset for the back right turn encoder.
+           */
+          public static final double BACK_RIGHT_OFFSET = 32;
+        }
       }
     }
 

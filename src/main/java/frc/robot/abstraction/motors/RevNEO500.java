@@ -29,8 +29,8 @@ public class RevNEO500 extends AbstractMotor {
 
     boolean hasFactoryReset;
 
-    public RevNEO500(int CanID) {
-        this(new CANSparkMax(CanID, MotorType.kBrushless));
+    public RevNEO500(int CANID) {
+        this(new CANSparkMax(CANID, MotorType.kBrushless));
     }
 
     public RevNEO500(CANSparkMax motor) {
@@ -225,6 +225,6 @@ public class RevNEO500 extends AbstractMotor {
                 return;
             }
         }
-        DriverStation.reportWarning("Failure configuring motor " + motor.getDeviceId(), true);
+        DriverStation.reportWarning("Failure configuring NEO 500 on CAN ID " + motor.getDeviceId(), true);
     }
 }
