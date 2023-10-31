@@ -64,7 +64,7 @@ public final class Constants {
         /**
          * Coefficient of friction of the wheel.
          */
-        public static final double WHEEL_COF = 1.19;
+        public static final double WHEEL_COF = 0.77;
 
         /**
          * Positions of the modules, relative to the center of the robot, measured in
