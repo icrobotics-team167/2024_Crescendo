@@ -131,6 +131,18 @@ public class Module {
     return getMetersPerRotation() * driveMotor.getMaxRPM() / 60;
   }
 
+  /**
+   * Resets the drive motor's positon.
+   */
+  public void resetPosition() {
+    driveMotor.setPosition(0);
+  }
+
+  /**
+   * Gets the meters driven by the module per rotation of the drive motor.
+   * 
+   * @return Meters per rotation.
+   */
   public double getMetersPerRotation() {
     return Modules.WHEEL_CIRCUMFERENCE / Modules.GEAR_RATIO;
   }

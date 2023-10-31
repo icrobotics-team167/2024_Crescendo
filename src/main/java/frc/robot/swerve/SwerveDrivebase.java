@@ -2,7 +2,6 @@ package frc.robot.swerve;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -16,20 +15,23 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import frc.robot.abstraction.encoders.AnalogAbsoluteEncoder;
 import frc.robot.abstraction.imus.AbstractIMU;
 import frc.robot.abstraction.imus.Pigeon2IMU;
 import frc.robot.abstraction.motors.RevNEO500;
-import frc.robot.Constants;
+import frc.robot.LimelightHelpers;
+import frc.robot.Constants.Driving;
+import frc.robot.Constants.Vision;
 import frc.robot.Constants.Robot.SwerveDrive;
 import frc.robot.Constants.Robot.SwerveDrive.Modules;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-
+/**
+ * A class for running ths swerve drivebase.
+ */
 public class SwerveDrivebase {
     // Driving math
     /**
@@ -60,23 +62,28 @@ public class SwerveDrivebase {
      */
     private final SwerveDrivePoseEstimator poseEstimator;
     /**
-     * Trustworthiness of the internal model of how motors should be moving Measured
+     * Trustworthiness of the internal model of how motors should be moving.
+     * Measured
      * in expected standard deviation
      * (meters of position and degrees of rotation)
      */
     public Matrix<N3, N1> stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
     /**
-     * Trustworthiness of the vision system Measured in expected standard deviation
+     * Trustworthiness of the vision system. Measured in expected standard deviation
      * (meters of position and degrees of
      * rotation)
      */
-    public Matrix<N3, N1> visionMeasurementStdDevs = VecBuilder.fill(0.9, 0.9, 0.9);
+    public Matrix<N3, N1> visionMeasurementStdDevs = VecBuilder.fill(0.3, 0.3, 0.3);
     /**
      * The Notifier thread to keep odometry up to date.
      */
     private final Notifier odometryThread;
     /**
-     * Thread lock for odometryThread to ensure thread safety.
+     * The Notifier thread to keep vision based pose estimation up to date.
+     */
+    private final Notifier visionThread;
+    /**
+     * Thread lock to ensure thread safety.
      */
     private final Lock odometryLock = new ReentrantLock();
 
@@ -85,16 +92,25 @@ public class SwerveDrivebase {
      */
     private Field2d field = new Field2d();
 
+    /**
+     * Constructs a new swerve drivebase. THIS IS NOT A SUBSYSTEM OBJECT.
+     */
     public SwerveDrivebase() {
+        // Initialize the intertial measurement unit.
+        // Uses an abstraction layer so it's easy to swap out IMUs.
         imu = new Pigeon2IMU(10);
         this.imu.factoryDefault();
         this.imu.clearStickyFaults();
 
+        // Initialize kinematics.
         kinematics = new SwerveDriveKinematics(
                 Modules.Positions.FRONT_LEFT_POS,
                 Modules.Positions.FRONT_RIGHT_POS,
                 Modules.Positions.BACK_LEFT_POS,
                 Modules.Positions.BACK_RIGHT_POS);
+
+        // Initialize modules.
+        // Motors and encoders use an abstraction layer so it's easy to swap them out.
         modules = new Module[] {
                 new Module(0,
                         new RevNEO500(Modules.IDs.FRONT_LEFT_DRIVE),
@@ -117,13 +133,14 @@ public class SwerveDrivebase {
                         new AnalogAbsoluteEncoder(Modules.IDs.BACK_RIGHT_ENCODER),
                         Modules.EncoderOffsets.BACK_RIGHT_OFFSET),
         };
+
+        // Initialize odometry.
         modulePositions = new SwerveModulePosition[] {
                 modules[0].getPosition(),
                 modules[1].getPosition(),
                 modules[2].getPosition(),
                 modules[3].getPosition(),
         };
-
         poseEstimator = new SwerveDrivePoseEstimator(
                 kinematics,
                 getYaw(),
@@ -133,6 +150,8 @@ public class SwerveDrivebase {
                 visionMeasurementStdDevs);
         odometryThread = new Notifier(this::updateOdometry);
         odometryThread.startPeriodic(0.02);
+        visionThread = new Notifier(this::addLLVisionMeasurement);
+        visionThread.startPeriodic(0.04);
     }
 
     /**
@@ -174,9 +193,9 @@ public class SwerveDrivebase {
 
         if (slowMode) {
             velocityCommand = new ChassisSpeeds(
-                    velocityCommand.vxMetersPerSecond * SwerveDrive.SLOWMODE_MULT,
-                    velocityCommand.vyMetersPerSecond * SwerveDrive.SLOWMODE_MULT,
-                    velocityCommand.omegaRadiansPerSecond * SwerveDrive.SLOWMODE_MULT);
+                    velocityCommand.vxMetersPerSecond * Driving.SLOWMODE_MULT,
+                    velocityCommand.vyMetersPerSecond * Driving.SLOWMODE_MULT,
+                    velocityCommand.omegaRadiansPerSecond * Driving.SLOWMODE_MULT);
         }
 
         // When driving and turning at the same time, the robot slightly drifts. This
@@ -269,6 +288,12 @@ public class SwerveDrivebase {
         return states;
     }
 
+    public void resetStates() {
+        for (Module module : modules) {
+            module.resetPosition();
+        }
+    }
+
     public void updateOdometry() {
         odometryLock.lock();
         try {
@@ -279,6 +304,14 @@ public class SwerveDrivebase {
             throw e;
         }
         odometryLock.unlock();
+    }
+
+    public void addLLVisionMeasurement() {
+        Pose2d robotPose = LimelightHelpers.getBotPose2d(Vision.LimeLight.APRILTAG_DETECTOR);
+        double limeLightLatency = (LimelightHelpers.getLatency_Capture(Vision.LimeLight.APRILTAG_DETECTOR)
+                + LimelightHelpers.getLatency_Pipeline(Vision.LimeLight.APRILTAG_DETECTOR)) / 1000.0;
+        double captureTimeStamp = Timer.getFPGATimestamp() - limeLightLatency;
+        addVisionMeasurement(robotPose, captureTimeStamp);
     }
 
     public void addVisionMeasurement(Pose2d robotPose, double timestamp) {
