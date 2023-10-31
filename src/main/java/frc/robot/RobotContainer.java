@@ -32,10 +32,10 @@ public class RobotContainer {
 
   private final SwerveSubsystem driveBase = new SwerveSubsystem();
 
-  CommandJoystick primaryLeftStick = new CommandJoystick(Constants.Controllers.IDs.PRIMARY_LEFT);
-  CommandJoystick primaryRightStick = new CommandJoystick(Constants.Controllers.IDs.PRIMARY_RIGHT);
-  CommandJoystick secondaryLeftStick = new CommandJoystick(Constants.Controllers.IDs.SECONDARY_LEFT);
-  CommandJoystick secondaryRightStick = new CommandJoystick(Constants.Controllers.IDs.SECONDARY_RIGHT);
+  CommandJoystick primaryLeftStick = new CommandJoystick(Constants.Driving.Controllers.IDs.PRIMARY_LEFT);
+  CommandJoystick primaryRightStick = new CommandJoystick(Constants.Driving.Controllers.IDs.PRIMARY_RIGHT);
+  CommandJoystick secondaryLeftStick = new CommandJoystick(Constants.Driving.Controllers.IDs.SECONDARY_LEFT);
+  CommandJoystick secondaryRightStick = new CommandJoystick(Constants.Driving.Controllers.IDs.SECONDARY_RIGHT);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -46,9 +46,9 @@ public class RobotContainer {
 
     AbsoluteFieldDrive driveController = new AbsoluteFieldDrive(
         driveBase,
-        () -> MathUtil.applyDeadband(primaryLeftStick.getY(), Constants.Controllers.Deadbands.PRIMARY_LEFT),
-        () -> MathUtil.applyDeadband(primaryLeftStick.getX(), Constants.Controllers.Deadbands.PRIMARY_LEFT),
-        () -> MathUtil.applyDeadband(primaryRightStick.getX(), Constants.Controllers.Deadbands.PRIMARY_RIGHT));
+        () -> MathUtil.applyDeadband(primaryLeftStick.getY(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
+        () -> MathUtil.applyDeadband(primaryLeftStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
+        () -> MathUtil.applyDeadband(primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
     driveBase.setDefaultCommand(driveController);
   }
 

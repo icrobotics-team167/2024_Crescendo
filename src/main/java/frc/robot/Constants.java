@@ -40,10 +40,6 @@ public final class Constants {
        * The max rotational velocity of the drivebase, in radians/s.
        */
       public static final double MAX_ROTATIONAL_VEL = 1.5 * Math.PI;
-      /**
-       * The multiplier for slow mode.
-       */
-      public static final double SLOWMODE_MULT = 0.4;
 
       /**
        * Swerve module configuration and characteristics.
@@ -252,46 +248,74 @@ public final class Constants {
     }
   }
 
+  public static final class Vision {
+    public static final class LimeLight {
+      /**
+       * NetworkTable camera name for the Limelight vision processor that's assigned
+       * to detecting field AprilTags.
+       */
+      public static final String APRILTAG_DETECTOR = "LimeLight";
+    }
+  }
+
   /**
-   * Driver controller configurations.
+   * Driver configurations.
    */
-  public static final class Controllers {
-    public static final class IDs {
+  public static final class Driving {
+    /**
+     * Move speed multipliers for slow mode.
+     */
+    public static final double SLOWMODE_MULT = 0.4;
+
+    /**
+     * Controller configurations.
+     */
+    public static final class Controllers {
       /**
-       * Primary driver's left stick ID.
+       * Controller IDs.
        */
-      public static final int PRIMARY_LEFT = 0;
+      public static final class IDs {
+        /**
+         * Primary driver's left stick ID.
+         */
+        public static final int PRIMARY_LEFT = 0;
+        /**
+         * Primary driver's right stick ID.
+         */
+        public static final int PRIMARY_RIGHT = 1;
+        /**
+         * Secondary driver's left stick ID.
+         */
+        public static final int SECONDARY_LEFT = 2;
+        /**
+         * Secondary driver's left stick ID.
+         */
+        public static final int SECONDARY_RIGHT = 3;
+      }
+
       /**
-       * Primary driver's right stick ID.
+       * Controller deadbands.
+       * TODO: Figure out if deadbands or deadzones feel better to use
        */
-      public static final int PRIMARY_RIGHT = 1;
-      /**
-       * Secondary driver's left stick ID.
-       */
-      public static final int SECONDARY_LEFT = 2;
-      /**
-       * Secondary driver's left stick ID.
-       */
-      public static final int SECONDARY_RIGHT = 3;
+      public static final class Deadbands {
+        /**
+         * Primary driver's left stick deadband.
+         */
+        public static final double PRIMARY_LEFT = 0.1;
+        /**
+         * Primary driver's right stick deadband.
+         */
+        public static final double PRIMARY_RIGHT = 0.1;
+        /**
+         * Secondary driver's left stick deadband.
+         */
+        public static final double SECONDARY_LEFT = 0.09;
+        /**
+         * Secondary driver's right stick deadband.
+         */
+        public static final double SECONDARY_RIGHT = 0.09;
+      }
     }
 
-    public static final class Deadbands {
-      /**
-       * Primary driver's left stick deadband.
-       */
-      public static final double PRIMARY_LEFT = 0.1;
-      /**
-       * Primary driver's right stick deadband.
-       */
-      public static final double PRIMARY_RIGHT = 0.1;
-      /**
-       * Secondary driver's left stick deadband.
-       */
-      public static final double SECONDARY_LEFT = 0.09;
-      /**
-       * Secondary driver's right stick deadband.
-       */
-      public static final double SECONDARY_RIGHT = 0.09;
-    }
   }
 }
