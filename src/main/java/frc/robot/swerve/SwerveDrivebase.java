@@ -203,7 +203,7 @@ public class SwerveDrivebase {
         // TODO: See if this is actually neccesary.
         // Stolen code from 254
         // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
-        double dtConstant = 0.009;
+        double dtConstant = 0.02;
         Pose2d robotPoseVel = new Pose2d(velocityCommand.vxMetersPerSecond * dtConstant,
                 velocityCommand.vyMetersPerSecond * dtConstant,
                 Rotation2d.fromRadians(velocityCommand.omegaRadiansPerSecond * dtConstant));
