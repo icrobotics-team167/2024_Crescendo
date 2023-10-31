@@ -318,11 +318,7 @@ public class SwerveDrivebase {
         odometryLock.lock();
         poseEstimator.addVisionMeasurement(robotPose, timestamp);
         odometryLock.unlock();
-        imu.setOffset(
-                new Rotation3d(
-                        getRoll().getRadians(),
-                        getPitch().getRadians(),
-                        robotPose.getRotation().getRadians()));
+        resetPose(robotPose);
     }
 
     public void resetPose(Pose2d pose) {
