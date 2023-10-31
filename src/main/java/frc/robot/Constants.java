@@ -41,6 +41,8 @@ public final class Constants {
        */
       public static final double MAX_ROTATIONAL_VEL = 1.5 * Math.PI;
 
+      public static final double MAX_ACCELERATION = Modules.WHEEL_COF * 9.81;
+
       /**
        * Swerve module configuration and characteristics.
        */

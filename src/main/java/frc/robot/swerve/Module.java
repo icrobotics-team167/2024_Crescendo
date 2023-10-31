@@ -6,6 +6,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.abstraction.encoders.AbstractAbsoluteEncoder;
 import frc.robot.abstraction.motors.AbstractMotor;
+import frc.robot.Constants.Robot.SwerveDrive;
 import frc.robot.Constants.Robot.SwerveDrive.Modules;
 
 public class Module {
@@ -142,7 +143,7 @@ public class Module {
   private SimpleMotorFeedforward createDriveFeedforward() {
     double kv = driveMotor.getNominalVoltage() / MAX_MOVE_SPEED;
     /// ^ Volt-seconds per meter (max voltage divided by max acceleration)
-    double ka = driveMotor.getNominalVoltage() / (Modules.WHEEL_COF * 9.81);
+    double ka = driveMotor.getNominalVoltage() / (SwerveDrive.MAX_ACCELERATION);
     /// ^ Volt-seconds^2 per meter (max voltage divided by max accel)
     return new SimpleMotorFeedforward(0, kv, ka);
   }
