@@ -42,6 +42,7 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     autoSelector = m_robotContainer.autoSelector;
     autoSelector.setDefaultOption("Nothing", null);
+    SmartDashboard.putData(autoSelector);
   }
 
   /**
