@@ -1,8 +1,12 @@
 package frc.robot.subsystems.swervedrive;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.swerve.SwerveDrivebase;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -10,6 +14,14 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public SwerveSubsystem() {
         swerveDrive = new SwerveDrivebase();
+        AutoBuilder.configureHolonomic(
+                this::getPose, // Robot pose supplier
+                this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+                this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                this::robotRelativeDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                Constants.Robot.Auto.PATH_FOLLOWER_CONFIG,
+                this // Reference to this subsystem to set requirements
+        );
     }
 
     /**
@@ -50,6 +62,18 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void resetYaw() {
         swerveDrive.resetYaw();
+    }
+
+    public Pose2d getPose() {
+        return swerveDrive.getPose();
+    }
+
+    public void resetPose(Pose2d pose) {
+        swerveDrive.resetPose(pose);
+    }
+
+    public ChassisSpeeds getRobotVelocity() {
+        return swerveDrive.getRobotVelocity();
     }
 
     @Override

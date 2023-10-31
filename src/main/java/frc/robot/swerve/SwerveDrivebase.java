@@ -21,10 +21,14 @@ import frc.robot.abstraction.encoders.AnalogAbsoluteEncoder;
 import frc.robot.abstraction.imus.AbstractIMU;
 import frc.robot.abstraction.imus.Pigeon2IMU;
 import frc.robot.abstraction.motors.RevNEO500;
+import frc.robot.Constants;
 import frc.robot.Constants.Robot.SwerveDrive;
 import frc.robot.Constants.Robot.SwerveDrive.Modules;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 
 public class SwerveDrivebase {
     // Driving math
@@ -241,6 +245,10 @@ public class SwerveDrivebase {
         return new Rotation2d(getRotation().getY());
     }
 
+    public Pose2d getPose() {
+        return poseEstimator.getEstimatedPosition();
+    }
+
     public ChassisSpeeds getRobotVelocity() {
         return kinematics.toChassisSpeeds(getStates());
     }
@@ -284,11 +292,15 @@ public class SwerveDrivebase {
                         robotPose.getRotation().getRadians()));
     }
 
-    public void setOdometry(Pose2d pose) {
+    public void resetPose(Pose2d pose) {
         odometryLock.lock();
         poseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
         odometryLock.unlock();
         kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, pose.getRotation()));
+        Rotation3d currentOffset = imu.getOffset();
+        imu.setOffset(
+                new Rotation3d(currentOffset.getX(), currentOffset.getY(),
+                        imu.getRawRotation3d().getZ() - pose.getRotation().getRadians()));
     }
 
     public void toggleSlowMode() {
@@ -301,8 +313,7 @@ public class SwerveDrivebase {
 
     public void resetYaw() {
         imu.setOffset(
-            new Rotation3d()
-        );
+                new Rotation3d());
     }
 
     /**
