@@ -42,6 +42,7 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     autoSelector = m_robotContainer.autoSelector;
     autoSelector.setDefaultOption("Nothing", null);
+    autoSelector.addOption("Test Auto", new PathPlannerAuto("New Auto"));
     SmartDashboard.putData(autoSelector);
   }
 
