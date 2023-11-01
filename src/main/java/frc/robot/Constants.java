@@ -281,6 +281,10 @@ public final class Constants {
        */
       // TODO: Configure
       public static final String APRILTAG_DETECTOR = "LimeLight";
+      /**
+       * The framerate of the Limelight that's assigned to AprilTag dectetion.
+       */
+      public static final double APRILTAG_FRAMERATE = 40;
     }
   }
 
