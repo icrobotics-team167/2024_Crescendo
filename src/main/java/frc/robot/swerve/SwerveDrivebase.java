@@ -340,9 +340,6 @@ public class SwerveDrivebase {
         }
     }
 
-    public void resetYaw() {
-        imu.setOffset(
-                new Rotation3d());
     }
 
     /**

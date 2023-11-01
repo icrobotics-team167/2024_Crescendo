@@ -59,10 +59,6 @@ public class SwerveSubsystem extends SubsystemBase {
         swerveDrive.toggleSlowMode();
     }
 
-    public void resetYaw() {
-        swerveDrive.resetYaw();
-    }
-
     public Pose2d getPose() {
         return swerveDrive.getPose();
     }

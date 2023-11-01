@@ -68,7 +68,6 @@ public class RobotContainer {
    */
   private void configureBindings() {
     primaryLeftStick.button(1).toggleOnTrue(new InstantCommand(driveBase::toggleSlowMode));
-    primaryRightStick.button(3).onTrue(new InstantCommand(driveBase::resetYaw));
   }
 
   /**
