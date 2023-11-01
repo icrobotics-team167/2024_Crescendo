@@ -37,8 +37,7 @@ public class Module {
     this.turnMotor = turnMotor;
     this.turnEncoder = turnEncoder;
 
-    double distanceDrivenPerMotorRotation = Modules.WHEEL_CIRCUMFERENCE / (Modules.GEAR_RATIO);
-    MAX_MOVE_SPEED = distanceDrivenPerMotorRotation * driveMotor.getMaxRPM() / 60.0;
+    MAX_MOVE_SPEED = getMetersPerRotation() * driveMotor.getMaxRPM() / 60.0;
 
     driveMotorFF = createDriveFeedforward();
 
@@ -47,9 +46,9 @@ public class Module {
         driveMotor.getNominalVoltage(),
         driveMotor.getPrimaryCurrentLimit(),
         driveMotor.getSecondaryCurrentLimit());
-    driveMotor.configureIntegratedEncoder(distanceDrivenPerMotorRotation);
+    driveMotor.configureIntegratedEncoder(getMetersPerRotation());
     driveMotor.configrePID(0.25, 0, 0);
-    driveMotor.configureRampRate(0.1);
+    driveMotor.configureRampRate(SwerveDrive.ZERO_TO_FULL_TIME);
 
     turnMotor.configureMotorBrake(false);
     turnMotor.configureCurrentLimits(
@@ -128,7 +127,7 @@ public class Module {
    * @return Max velocity, in meters per second.
    */
   public double getMaxVel() {
-    return getMetersPerRotation() * driveMotor.getMaxRPM() / 60;
+    return MAX_MOVE_SPEED;
   }
 
   /**

@@ -42,6 +42,11 @@ public final class Constants {
       public static final double MAX_ROTATIONAL_VEL = 1.5 * Math.PI;
 
       public static final double MAX_ACCELERATION = Modules.WHEEL_COF * 9.81;
+      /**
+       * The time, in seconds, that the robot will take to go from 0 to full speed. Is
+       * defined as (MAX_TRANSLATIONAL_VEL / MAX_ACCELERATION)
+       */
+      public static final double ZERO_TO_FULL_TIME = (MAX_TRANSLATIONAL_VEL / MAX_ACCELERATION);
 
       /**
        * Swerve module configuration and characteristics.
