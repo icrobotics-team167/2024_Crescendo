@@ -40,7 +40,10 @@ public final class Constants {
        * The max rotational velocity of the drivebase, in radians/s.
        */
       public static final double MAX_ROTATIONAL_VEL = 1.5 * Math.PI;
-
+      /**
+       * The max acceleration that the modules can handle before they slip, in
+       * meters/s^2.
+       */
       public static final double MAX_ACCELERATION = Modules.WHEEL_COF * 9.81;
       /**
        * The time, in seconds, that the robot will take to go from 0 to full speed. Is
@@ -208,7 +211,13 @@ public final class Constants {
       }
     }
 
+    /**
+     * Autonomous period configurations.
+     */
     public static final class Auto {
+      /**
+       * The path follower configuration for PathPlanner.
+       */
       public static final HolonomicPathFollowerConfig PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(
           new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
           new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
@@ -223,6 +232,9 @@ public final class Constants {
      * Motor configuration and characteristics.
      */
     public static final class Motors {
+      /**
+       * Configuration and characteristics for the REV NEO 500.
+       */
       public static final class Neo500 {
         /**
          * Motor power draw limits in order to prevent motor burnouts/other components
@@ -235,14 +247,14 @@ public final class Constants {
            */
           public static final double NOMINAL_VOLTAGE = 12;
           /**
-           * Primary current limit of the Rev NEO 500s. If the amperage exceeds this
-           * amount, motor power will be reduced to compensate.
+           * Primary current limit of the Rev NEO 500s, in amps. If the amperage exceeds
+           * this amount, motor power will be reduced to compensate.
            */
           public static final int PRIMARY_CURRENT_LIMIT = 80;
           /**
-           * Secondary current limit of the Rev NEO 500s. If the primary current limit
-           * doesn't lower current draw enough and the amperage hits this value, the motor
-           * will be temporarily shut down completely.
+           * Secondary current limit of the Rev NEO 500s, in amps. If the primary current
+           * limit doesn't lower current draw enough and the amperage hits this value, the
+           * motor will be temporarily shut down.
            */
           public static final int SECONDARY_CURRENT_LIMIT = 100;
         }
@@ -255,12 +267,19 @@ public final class Constants {
     }
   }
 
+  /**
+   * Vision processing configurations.
+   */
   public static final class Vision {
+    /**
+     * LimeLight configurations.
+     */
     public static final class LimeLight {
       /**
        * NetworkTable camera name for the Limelight vision processor that's assigned
        * to detecting field AprilTags.
        */
+      // TODO: Configure
       public static final String APRILTAG_DETECTOR = "LimeLight";
     }
   }

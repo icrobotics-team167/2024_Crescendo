@@ -26,6 +26,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * A class to make getting values from and sending values to a LimeLight much
+ * easier.
+ * Code taken from https://github.com/LimelightVision/limelightlib-wpijava
+ */
 public class LimelightHelpers {
 
     public static class LimelightTarget_Retro {

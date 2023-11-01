@@ -11,12 +11,25 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 
+/**
+ * A CTRE Pigeon 2 Inertial Measurement Unit.
+ */
 public class Pigeon2IMU extends AbstractIMU {
-
+    /**
+     * The Pigeon 2 object.
+     */
     WPI_Pigeon2 imu;
 
+    /**
+     * The output offset.
+     */
     Rotation3d offset;
 
+    /**
+     * Configures a new Pigeon 2 IMU.
+     * 
+     * @param CANID The CAN ID of the Pigeon 2.
+     */
     public Pigeon2IMU(int CANID) {
         imu = new WPI_Pigeon2(CANID);
     }
@@ -28,7 +41,7 @@ public class Pigeon2IMU extends AbstractIMU {
     }
 
     @Override
-    public void configureMountPose(double pitch, double roll, double yaw) {
+    public void configureMountPose(double yaw, double pitch, double roll) {
         configurePigeon(() -> imu.configMountPose(yaw, pitch, roll));
     }
 

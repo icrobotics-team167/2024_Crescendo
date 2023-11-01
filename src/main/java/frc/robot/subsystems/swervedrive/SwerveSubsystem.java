@@ -8,9 +8,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.swerve.SwerveDrivebase;
 
+/**
+ * A SubsystemBase class to implement the swerve drive.
+ */
 public class SwerveSubsystem extends SubsystemBase {
     private final SwerveDrivebase swerveDrive;
 
+    /**
+     * Constructs a new SwerveSubsystem.
+     */
     public SwerveSubsystem() {
         swerveDrive = new SwerveDrivebase();
         AutoBuilder.configureHolonomic(
@@ -55,30 +61,49 @@ public class SwerveSubsystem extends SubsystemBase {
         swerveDrive.drive(velocityCommand, fieldRelative);
     }
 
+    /**
+     * Toggles slow mode.
+     */
     public void toggleSlowMode() {
         swerveDrive.toggleSlowMode();
     }
 
+    /**
+     * Gets the current pose of the robot. (0,0) is the back right corner of
+     * the blue driver station/the bottom left corner of the PathPlanner app,
+     * depending on your perspective. 0 degrees rotation is facing away from the
+     * blue driver station, 180 degrees is facing away from the red driver station.
+     * 
+     * @return The robot pose.
+     */
     public Pose2d getPose() {
         return swerveDrive.getPose();
     }
 
+    /**
+     * Resets the robot pose to a specified position.
+     * 
+     * @param pose The specified position.
+     */
     public void resetPose(Pose2d pose) {
         swerveDrive.resetPose(pose);
     }
 
+    /**
+     * Gets the current robot velocity as a ChassisSpeeds object. Is robot relative.
+     * 
+     * @return The current robot velocity.
+     */
     public ChassisSpeeds getRobotVelocity() {
         return swerveDrive.getRobotVelocity();
     }
 
-    @Override
-    public void periodic() {
-    }
-
-    @Override
-    public void simulationPeriodic() {
-    }
-
+    /**
+     * Gets the absolute max velocity of the drivebase. Not neccesarily the max
+     * configured speed.
+     * 
+     * @return The max velocity, in m/s
+     */
     public double getMaxVel() {
         return swerveDrive.getAbsoluteMaxVel();
     }

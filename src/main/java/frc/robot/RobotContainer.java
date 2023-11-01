@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import frc.robot.subsystems.swervedrive.AbsoluteFieldDrive;
+import frc.robot.commands.AbsoluteFieldDrive;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -44,6 +44,7 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
+    // Configure field oriented driving
     AbsoluteFieldDrive driveController = new AbsoluteFieldDrive(
         driveBase,
         () -> MathUtil.applyDeadband(primaryLeftStick.getY(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),

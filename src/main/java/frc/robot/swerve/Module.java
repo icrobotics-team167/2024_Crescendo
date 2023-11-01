@@ -37,10 +37,13 @@ public class Module {
     this.turnMotor = turnMotor;
     this.turnEncoder = turnEncoder;
 
+    // Create max move speed constant for math
     MAX_MOVE_SPEED = getMetersPerRotation() * driveMotor.getMaxRPM() / 60.0;
 
+    // Create feedforward for driving calculations
     driveMotorFF = createDriveFeedforward();
 
+    // Configure drive motor.
     driveMotor.configureMotorBrake(true);
     driveMotor.configureCurrentLimits(
         driveMotor.getNominalVoltage(),
@@ -50,6 +53,7 @@ public class Module {
     driveMotor.configrePID(0.25, 0, 0);
     driveMotor.configureRampRate(SwerveDrive.ZERO_TO_FULL_TIME);
 
+    // Configure turn motor.
     turnMotor.configureMotorBrake(false);
     turnMotor.configureCurrentLimits(
         turnMotor.getNominalVoltage(),
@@ -76,11 +80,14 @@ public class Module {
           driveMotorFF.calculate(desiredState.speedMetersPerSecond));
     }
 
+    // If the desired turn angle is the same as the previous desired turn angle, no
+    // need to do anything.
     if (desiredState.angle != previousState.angle) {
       turnMotor.setPosition(turnEncoder.getAbsolutePosition().getDegrees());
       turnMotor.setTurnReference(desiredState.angle);
     }
 
+    // Set previous desired angle for the next time this is run.
     previousState = desiredState;
   }
 

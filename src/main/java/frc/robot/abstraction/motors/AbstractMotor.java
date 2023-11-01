@@ -94,6 +94,7 @@ public abstract class AbstractMotor {
      * Set the absolute encoder to be used by the motor.
      * 
      * @param absoluteEncoder The encoder to be used.
+     * @param offset          The offset of the encoder.
      */
     public abstract void configureAbsoluteEncoder(AbstractAbsoluteEncoder absoluteEncoder, double offset);
 
@@ -188,7 +189,7 @@ public abstract class AbstractMotor {
     public abstract int getSecondaryCurrentLimit();
 
     /**
-     * Gets the max velocity of the motor. Constants.Robot.Motors.
+     * Gets the max velocity of the motor. Configured in Constants.Robot.Motors.
      * 
      * @return Max velocity, in RPM.
      */

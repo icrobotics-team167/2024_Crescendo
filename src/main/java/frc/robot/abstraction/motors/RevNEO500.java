@@ -17,34 +17,62 @@ import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.abstraction.encoders.AbstractAbsoluteEncoder;
 import frc.robot.Constants.Robot.Motors.Neo500;
 
+/**
+ * Class to represent a REV NEO 500 motor.
+ */
 public class RevNEO500 extends AbstractMotor {
 
+    /**
+     * The motor itself.
+     */
     CANSparkMax motor;
-
+    /**
+     * The PID controller for the motor.
+     */
     SparkMaxPIDController pid;
-
+    /**
+     * The motor's internal encoder.
+     */
     RelativeEncoder encoder;
-
+    /**
+     * The motor's absolute encoder, if there is one.
+     */
     AbsoluteEncoder absoluteEncoder;
-
+    /**
+     * If the motor controller has already reset to factory refaults. If true,
+     * factoryDefaults() does nothing.
+     */
     boolean hasFactoryReset;
 
+    /**
+     * Constructs a new REV NEO 500 motor.
+     * 
+     * @param CANID The CAN ID of the Spark Max controlling the motor.
+     */
     public RevNEO500(int CANID) {
         this(new CANSparkMax(CANID, MotorType.kBrushless));
     }
 
+    /**
+     * Constructs a new REV NEO 500 motor.
+     * 
+     * @param motor The CANSparkMax motor object.
+     */
     public RevNEO500(CANSparkMax motor) {
+        // Load motor.
         this.motor = motor;
-
-        factoryDefaults();
-        clearStickyFaults();
-
-        this.pid = motor.getPIDController();
-        this.encoder = motor.getEncoder();
-        this.pid.setFeedbackDevice(encoder);
 
         // Spin off configurations in a different thread.
         configureSparkMax(() -> motor.setCANTimeout(0));
+
+        // Clear existing motor configurations and faults.
+        factoryDefaults();
+        clearStickyFaults();
+
+        // Configure PIDs and encoders.
+        this.pid = motor.getPIDController();
+        this.encoder = motor.getEncoder();
+        this.pid.setFeedbackDevice(encoder);
     }
 
     @Override
@@ -61,17 +89,19 @@ public class RevNEO500 extends AbstractMotor {
     }
 
     @Override
-    public void configureIntegratedEncoder(double positionConversionFactor) {
+    public void configureIntegratedEncoder(double encoderConversionFactor) {
         if (absoluteEncoder == null) {
-            configureSparkMax(() -> encoder.setPositionConversionFactor(positionConversionFactor));
-            configureSparkMax(() -> encoder.setVelocityConversionFactor(positionConversionFactor / 60));
+            configureSparkMax(() -> encoder.setPositionConversionFactor(encoderConversionFactor));
+            configureSparkMax(() -> encoder.setVelocityConversionFactor(encoderConversionFactor / 60));
 
             // Taken from
             // https://github.com/frc3512/SwerveBot-2022/blob/9d31afd05df6c630d5acb4ec2cf5d734c9093bf8/src/main/java/frc/lib/util/CANSparkMaxUtil.java#L67
+            // As we're not using the CAN status frames for alternate encoders, slow down
+            // data send rates for alternate encoder values.
             configureCANStatusFrames(10, 20, 20, 500, 500);
         } else {
-            configureSparkMax(() -> absoluteEncoder.setPositionConversionFactor(positionConversionFactor));
-            configureSparkMax(() -> absoluteEncoder.setVelocityConversionFactor(positionConversionFactor));
+            configureSparkMax(() -> absoluteEncoder.setPositionConversionFactor(encoderConversionFactor));
+            configureSparkMax(() -> absoluteEncoder.setVelocityConversionFactor(encoderConversionFactor));
         }
     }
 
@@ -184,7 +214,8 @@ public class RevNEO500 extends AbstractMotor {
     }
 
     /**
-     * Set the CAN status frames.
+     * Set the CAN status frames, or the clock rate in milliseconds in which certain
+     * types of data will be sent down CAN wires.
      *
      * @param CANStatus0 Applied Output, Faults, Sticky Faults, Is Follower
      * @param CANStatus1 Motor Velocity, Motor Temperature, Motor Voltage, Motor

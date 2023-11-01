@@ -133,6 +133,7 @@ public class SwerveDrivebase {
                         new AnalogAbsoluteEncoder(Modules.IDs.BACK_RIGHT_ENCODER),
                         Modules.EncoderOffsets.BACK_RIGHT_OFFSET),
         };
+        resetStates();
 
         // Initialize odometry.
         modulePositions = new SwerveModulePosition[] {
@@ -148,6 +149,8 @@ public class SwerveDrivebase {
                 new Pose2d(),
                 stateStdDevs,
                 visionMeasurementStdDevs);
+
+        // Spin up threads to update odometry.
         odometryThread = new Notifier(this::updateOdometry);
         odometryThread.startPeriodic(0.02);
         visionThread = new Notifier(this::addLLVisionMeasurement);
@@ -264,14 +267,33 @@ public class SwerveDrivebase {
         return new Rotation2d(getRotation().getY());
     }
 
+    /**
+     * Gets the current pose of the robot. (0,0) is the back right corner of
+     * the blue driver station/the bottom left corner of the PathPlanner app,
+     * depending on your perspective. 0 degrees rotation is facing away from the
+     * blue driver station, 180 degrees is facing away from the red driver station.
+     * 
+     * @return The robot pose.
+     */
     public Pose2d getPose() {
         return poseEstimator.getEstimatedPosition();
     }
 
+    /**
+     * Gets the current robot velocity as a ChassisSpeeds object. Is robot relative.
+     * TODO: Figure out if this is actually robot relative.
+     * 
+     * @return The current robot velocity.
+     */
     public ChassisSpeeds getRobotVelocity() {
         return kinematics.toChassisSpeeds(getStates());
     }
 
+    /**
+     * Gets the current module positions, as an array of SwerveModulePositions.
+     * 
+     * @return The module positions.
+     */
     public SwerveModulePosition[] getModulePositions() {
         SwerveModulePosition[] positions = new SwerveModulePosition[4];
         for (Module module : modules) {
@@ -280,6 +302,11 @@ public class SwerveDrivebase {
         return positions;
     }
 
+    /**
+     * Gets the current module states, as an array of SwerveModuleStates.
+     * 
+     * @return The current states.
+     */
     public SwerveModuleState[] getStates() {
         SwerveModuleState[] states = new SwerveModuleState[4];
         for (Module module : modules) {
@@ -288,12 +315,19 @@ public class SwerveDrivebase {
         return states;
     }
 
+    /**
+     * Resets the current module states.
+     */
     public void resetStates() {
         for (Module module : modules) {
             module.resetPosition();
         }
     }
 
+    /**
+     * A method that gets called 50 times a second to update the robot's estimated
+     * position using wheel odometry.
+     */
     public void updateOdometry() {
         odometryLock.lock();
         try {
@@ -306,14 +340,30 @@ public class SwerveDrivebase {
         odometryLock.unlock();
     }
 
+    /**
+     * A method that gets called 25 times a second to update the robot's estimated
+     * position using a LimeLight that's detecting AprilTags.
+     */
     public void addLLVisionMeasurement() {
+        // Get pose
         Pose2d robotPose = LimelightHelpers.getBotPose2d(Vision.LimeLight.APRILTAG_DETECTOR);
+        // Calculate latency in seconds
         double limeLightLatency = (LimelightHelpers.getLatency_Capture(Vision.LimeLight.APRILTAG_DETECTOR)
                 + LimelightHelpers.getLatency_Pipeline(Vision.LimeLight.APRILTAG_DETECTOR)) / 1000.0;
+        // Calculate timestamp using the current robot FPGA time and the latency.
         double captureTimeStamp = Timer.getFPGATimestamp() - limeLightLatency;
+        // Call addVisionMeasurement to update the position
         addVisionMeasurement(robotPose, captureTimeStamp);
     }
 
+    /**
+     * A method that takes an estimated robot pose taken from a vision processor and
+     * the timestamp in which that robot pose was taken to update estimated
+     * position.
+     * 
+     * @param robotPose The estimated pose.
+     * @param timestamp The timestamp in which the pose was measured.
+     */
     public void addVisionMeasurement(Pose2d robotPose, double timestamp) {
         odometryLock.lock();
         poseEstimator.addVisionMeasurement(robotPose, timestamp);
@@ -321,17 +371,26 @@ public class SwerveDrivebase {
         resetPose(robotPose);
     }
 
+    /**
+     * Resets the robot pose to a specified position.
+     * 
+     * @param pose The specified position.
+     */
     public void resetPose(Pose2d pose) {
         odometryLock.lock();
         poseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
         odometryLock.unlock();
         kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, pose.getRotation()));
         Rotation3d currentOffset = imu.getOffset();
-        imu.setOffset(
-                new Rotation3d(currentOffset.getX(), currentOffset.getY(),
-                        imu.getRawRotation3d().getZ() - pose.getRotation().getRadians()));
+        imu.setOffset(new Rotation3d(
+                currentOffset.getX(),
+                currentOffset.getY(),
+                imu.getRawRotation3d().getZ() - pose.getRotation().getRadians()));
     }
 
+    /**
+     * Toggles slow mode when driving.
+     */
     public void toggleSlowMode() {
         if (slowMode) {
             slowMode = false;
@@ -340,10 +399,18 @@ public class SwerveDrivebase {
         }
     }
 
+    /**
+     * Gets whether slow mode is on or not.
+     * 
+     * @return If slow mode is on or not. True if it is.
+     */
+    public boolean getSlowMode() {
+        return slowMode;
     }
 
     /**
-     * Gets the absolute max velocity of a module.
+     * Gets the absolute max velocity of the drivebase. Not neccesarily the max
+     * configured speed.
      * 
      * @return The max velocity, in m/s
      */
@@ -376,7 +443,6 @@ public class SwerveDrivebase {
      * @return {@link Twist2d} of the transformed pose.
      */
     private Twist2d poseLog(final Pose2d transform) {
-
         final double kEps = 1E-9;
         final double dtheta = transform.getRotation().getRadians();
         final double half_dtheta = 0.5 * dtheta;

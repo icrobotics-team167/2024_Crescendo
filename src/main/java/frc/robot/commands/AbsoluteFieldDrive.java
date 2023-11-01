@@ -1,11 +1,15 @@
-package frc.robot.subsystems.swervedrive;
+package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.Robot.SwerveDrive;
+import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
+/**
+ * A command to drive the swerve drivebase.
+ */
 public class AbsoluteFieldDrive extends CommandBase {
     private final SwerveSubsystem swerve;
     private final DoubleSupplier vX, vY, vRot;

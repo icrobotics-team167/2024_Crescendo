@@ -9,6 +9,12 @@ public class AnalogAbsoluteEncoder extends AbstractAbsoluteEncoder {
     AnalogEncoder encoder;
     boolean inverted;
 
+    /**
+     * Constructs a new analog absolute encoder.
+     * 
+     * @param port The port number on the RoboRIO in which the encoder is connected
+     *             to.
+     */
     public AnalogAbsoluteEncoder(int port) {
         this.port = port;
         encoder = new AnalogEncoder(port);
