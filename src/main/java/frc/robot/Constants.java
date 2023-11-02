@@ -10,6 +10,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.helpers.Telemetry.Verbosity;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -24,6 +25,12 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  /**
+   * The telemetry verbosity level. Set to NONE during competitions to reduce data
+   * being sent over the FMS and thus increasing connection stability.
+   */
+  public static final Verbosity TELEMETRY_VERBOSITY = Verbosity.HIGH;
+
   /**
    * Robot configuration and characteristics.
    */
@@ -281,10 +288,6 @@ public final class Constants {
        */
       // TODO: Configure
       public static final String APRILTAG_DETECTOR = "LimeLight";
-      /**
-       * The framerate of the Limelight that's assigned to AprilTag dectetion.
-       */
-      public static final double APRILTAG_FRAMERATE = 40;
     }
   }
 

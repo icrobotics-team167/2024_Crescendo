@@ -4,8 +4,11 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.abstraction.encoders.AbstractAbsoluteEncoder;
 import frc.robot.abstraction.motors.AbstractMotor;
+import frc.robot.helpers.Telemetry;
+import frc.robot.helpers.Telemetry.Verbosity;
 import frc.robot.Constants.Robot.SwerveDrive;
 import frc.robot.Constants.Robot.SwerveDrive.Modules;
 
@@ -76,8 +79,11 @@ public class Module {
     // If the desired drive speed is the same as the previous desired drive speed,
     // no need to do anything.
     if (desiredState.speedMetersPerSecond != previousState.speedMetersPerSecond) {
-      driveMotor.setDriveReference(desiredState.speedMetersPerSecond,
-          driveMotorFF.calculate(desiredState.speedMetersPerSecond));
+      double feedForward = driveMotorFF.calculate(desiredState.speedMetersPerSecond);
+      driveMotor.setDriveReference(desiredState.speedMetersPerSecond, feedForward);
+      Telemetry.sendNumber(moduleName() + " desired drive speed", desiredState.speedMetersPerSecond, Verbosity.HIGH);
+      Telemetry.sendNumber(moduleName() + " drive feedforward", feedForward, Verbosity.HIGH);
+      Telemetry.sendNumber(moduleName() + " actual drive speed", driveMotor.getVelocity(), Verbosity.HIGH);
     }
 
     // If the desired turn angle is the same as the previous desired turn angle, no
@@ -164,5 +170,21 @@ public class Module {
     double ka = driveMotor.getNominalVoltage() / (SwerveDrive.MAX_ACCELERATION);
     /// ^ Volt-seconds^2 per meter (max voltage divided by max accel)
     return new SimpleMotorFeedforward(0, kv, ka);
+  }
+
+  private String moduleName() {
+    switch (moduleNumber) {
+      case 0:
+        return "Front Left";
+      case 1:
+        return "Front Right";
+      case 2:
+        return "Back Left";
+      case 3:
+        return "Back Right";
+      default:
+        DriverStation.reportError("ERROR: Expected 4 swerve modules, but got 5.", false);
+        return String.valueOf(moduleNumber);
+    }
   }
 }

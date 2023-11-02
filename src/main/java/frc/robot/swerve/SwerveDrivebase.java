@@ -16,18 +16,17 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import frc.robot.abstraction.encoders.AnalogAbsoluteEncoder;
 import frc.robot.abstraction.imus.AbstractIMU;
 import frc.robot.abstraction.imus.Pigeon2IMU;
 import frc.robot.abstraction.motors.RevNEO500;
-import frc.robot.LimelightHelpers;
+import frc.robot.helpers.LimelightHelpers;
+import frc.robot.helpers.Telemetry;
+import frc.robot.helpers.Telemetry.Verbosity;
 import frc.robot.Constants.Driving;
 import frc.robot.Constants.Vision;
 import frc.robot.Constants.Robot.SwerveDrive;
 import frc.robot.Constants.Robot.SwerveDrive.Modules;
-import frc.robot.Constants.Vision.LimeLight;
-
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -88,11 +87,6 @@ public class SwerveDrivebase {
      * Thread lock to ensure thread safety.
      */
     private final Lock odometryLock = new ReentrantLock();
-
-    /**
-     * A representation of the field
-     */
-    private Field2d field = new Field2d();
 
     /**
      * Constructs a new swerve drivebase. THIS IS NOT A SUBSYSTEM OBJECT.
@@ -156,7 +150,7 @@ public class SwerveDrivebase {
         odometryThread = new Notifier(this::updateOdometry);
         odometryThread.startPeriodic(0.02);
         visionThread = new Notifier(this::addLLVisionMeasurement);
-        visionThread.startPeriodic(1.0 / LimeLight.APRILTAG_FRAMERATE);
+        visionThread.startPeriodic(0.04);
     }
 
     /**
@@ -213,7 +207,7 @@ public class SwerveDrivebase {
                 velocityCommand.vyMetersPerSecond * dtConstant,
                 Rotation2d.fromRadians(velocityCommand.omegaRadiansPerSecond * dtConstant));
         Twist2d twistVel = poseLog(robotPoseVel);
-
+        Telemetry.sendString("SwerveDrivebase.driftCompensation", twistVel.toString(), Verbosity.HIGH);
         velocityCommand = new ChassisSpeeds(twistVel.dx / dtConstant, twistVel.dy / dtConstant,
                 twistVel.dtheta / dtConstant);
 
@@ -226,8 +220,7 @@ public class SwerveDrivebase {
                 getAbsoluteMaxVel(),
                 getMaxTranslationalVel(),
                 getMaxRotVel());
-        // SwerveDriveKinematics.desaturateWheelSpeeds(moduleDesiredStates,
-        // getRobotVelocity(), dtConstant, rotation, rotation);
+
         for (Module module : modules) {
             module.setDesiredState(moduleDesiredStates[module.moduleNumber]);
         }
@@ -288,7 +281,11 @@ public class SwerveDrivebase {
      * @return The current robot velocity.
      */
     public ChassisSpeeds getRobotVelocity() {
-        return kinematics.toChassisSpeeds(getStates());
+        ChassisSpeeds robotVelocity = kinematics.toChassisSpeeds(getStates());
+        Telemetry.sendNumber("SwerveDrivebase.robotVelX", robotVelocity.vxMetersPerSecond, Verbosity.MEDIUM);
+        Telemetry.sendNumber("SwerveDrivebase.robotVelY", robotVelocity.vyMetersPerSecond, Verbosity.MEDIUM);
+        Telemetry.sendNumber("SwerveDrivebase.robotVelRot", robotVelocity.omegaRadiansPerSecond, Verbosity.MEDIUM);
+        return robotVelocity;
     }
 
     /**
@@ -334,12 +331,14 @@ public class SwerveDrivebase {
         odometryLock.lock();
         try {
             poseEstimator.update(getYaw(), modulePositions);
-            field.setRobotPose(poseEstimator.getEstimatedPosition());
+            Telemetry.setRobotPose(getPose());
         } catch (Exception e) {
             odometryLock.unlock();
             throw e;
         }
         odometryLock.unlock();
+        Telemetry.setRobotPose(getPose());
+        Telemetry.sendField();
     }
 
     /**
@@ -388,6 +387,8 @@ public class SwerveDrivebase {
                 currentOffset.getX(),
                 currentOffset.getY(),
                 imu.getRawRotation3d().getZ() - pose.getRotation().getRadians()));
+        Telemetry.setRobotPose(getPose());
+        Telemetry.sendField();
     }
 
     /**
@@ -399,6 +400,7 @@ public class SwerveDrivebase {
         } else {
             slowMode = true;
         }
+        Telemetry.sendBoolean("SwerveDrivebase.slowMode", slowMode, Verbosity.LOW);
     }
 
     /**

@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.commands.AbsoluteFieldDrive;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.MathUtil;
@@ -41,6 +42,9 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    // Command register template
+    // NamedCommands.registerCommand("Command", command());
+    
     // Configure the trigger bindings
     configureBindings();
 
