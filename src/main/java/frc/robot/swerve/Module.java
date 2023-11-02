@@ -64,6 +64,7 @@ public class Module {
         turnMotor.getSecondaryCurrentLimit());
     turnMotor.configrePID(0.25, 0, 0.1);
     turnMotor.configurePIDWrapping(-180, 180);
+    turnMotor.configureAbsoluteEncoder(turnEncoder, encoderOffset);
   }
 
   /**
@@ -89,7 +90,6 @@ public class Module {
     // If the desired turn angle is the same as the previous desired turn angle, no
     // need to do anything.
     if (desiredState.angle != previousState.angle) {
-      turnMotor.setPosition(turnEncoder.getAbsolutePosition().getDegrees());
       turnMotor.setTurnReference(desiredState.angle);
     }
 
