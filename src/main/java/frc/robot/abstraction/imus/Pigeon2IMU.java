@@ -64,7 +64,7 @@ public class Pigeon2IMU extends AbstractIMU {
 
     @Override
     public Rotation3d getRotation3d() {
-        return getRawRotation3d().minus(getRawRotation3d());
+        return getRawRotation3d().minus(getOffset());
     }
 
     @Override
