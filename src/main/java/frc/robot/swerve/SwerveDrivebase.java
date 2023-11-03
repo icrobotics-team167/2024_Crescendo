@@ -150,7 +150,7 @@ public class SwerveDrivebase {
         odometryThread = new Notifier(this::updateOdometry);
         odometryThread.startPeriodic(0.02);
         visionThread = new Notifier(this::addLLVisionMeasurement);
-        visionThread.startPeriodic(0.04);
+        // visionThread.startPeriodic(0.04);
     }
 
     /**

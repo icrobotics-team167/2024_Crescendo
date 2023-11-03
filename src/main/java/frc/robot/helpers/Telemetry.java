@@ -12,7 +12,7 @@ import frc.robot.Constants;
  * A helper class for telemetry.
  */
 public class Telemetry {
-    public static Field2d field;
+    public static Field2d field = new Field2d();
 
     /**
      * Verbosity level enum.

@@ -23,7 +23,7 @@ public class Pigeon2IMU extends AbstractIMU {
     /**
      * The output offset.
      */
-    Rotation3d offset;
+    Rotation3d offset = new Rotation3d();
 
     /**
      * Configures a new Pigeon 2 IMU.

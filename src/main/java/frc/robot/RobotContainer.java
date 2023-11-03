@@ -29,7 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
 
-  public SendableChooser<PathPlannerAuto> autoSelector;
+  public SendableChooser<PathPlannerAuto> autoSelector = new SendableChooser<PathPlannerAuto>();
 
   private final SwerveSubsystem driveBase = new SwerveSubsystem();
 
