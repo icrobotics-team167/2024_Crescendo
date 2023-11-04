@@ -7,10 +7,10 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.abstraction.encoders.AbstractAbsoluteEncoder;
 import frc.robot.abstraction.motors.AbstractMotor;
-import frc.robot.helpers.Telemetry;
-import frc.robot.helpers.Telemetry.Verbosity;
 import frc.robot.Constants.Robot.SwerveDrive;
 import frc.robot.Constants.Robot.SwerveDrive.Modules;
+import frc.robot.helpers.Telemetry;
+import frc.robot.helpers.Telemetry.Verbosity;
 
 public class Module {
   public int moduleNumber;

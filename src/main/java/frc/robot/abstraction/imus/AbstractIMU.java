@@ -1,9 +1,8 @@
 package frc.robot.abstraction.imus;
 
-import java.util.Optional;
-
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import java.util.Optional;
 
 /**
  * The abstraction class for inertial measurement units.

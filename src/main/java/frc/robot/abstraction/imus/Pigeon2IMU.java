@@ -1,17 +1,14 @@
 package frc.robot.abstraction.imus;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.configs.Pigeon2Configurator;
 import com.ctre.phoenix6.hardware.Pigeon2;
-
+import com.ctre.phoenix6.StatusCode;
 import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
+import java.util.Optional;
 
 /**
  * A CTRE Pigeon 2 Inertial Measurement Unit.

@@ -20,13 +20,13 @@ import frc.robot.abstraction.encoders.AnalogAbsoluteEncoder;
 import frc.robot.abstraction.imus.AbstractIMU;
 import frc.robot.abstraction.imus.Pigeon2IMU;
 import frc.robot.abstraction.motors.RevNEO500;
+import frc.robot.Constants.Driving;
+import frc.robot.Constants.Robot.SwerveDrive;
+import frc.robot.Constants.Robot.SwerveDrive.Modules;
+import frc.robot.Constants.Vision;
 import frc.robot.helpers.LimelightHelpers;
 import frc.robot.helpers.Telemetry;
 import frc.robot.helpers.Telemetry.Verbosity;
-import frc.robot.Constants.Driving;
-import frc.robot.Constants.Vision;
-import frc.robot.Constants.Robot.SwerveDrive;
-import frc.robot.Constants.Robot.SwerveDrive.Modules;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -150,7 +150,7 @@ public class SwerveDrivebase {
         odometryThread = new Notifier(this::updateOdometry);
         odometryThread.startPeriodic(0.02);
         visionThread = new Notifier(this::addLLVisionMeasurement);
-        // visionThread.startPeriodic(0.04);
+        visionThread.startPeriodic(0.04);
     }
 
     /**
