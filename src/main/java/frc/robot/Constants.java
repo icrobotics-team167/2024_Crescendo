@@ -39,7 +39,8 @@ public final class Constants {
      */
     public static final class SwerveDrive {
       /**
-       * The max translational velocity of the drivebase, in meters/s.
+       * The max translational velocity of the drivebase, in meters/s. Note that this
+       * is not a module's absolute max speed.
        */
       public static final double MAX_TRANSLATIONAL_VEL = 3.5;
       /**
@@ -69,7 +70,7 @@ public final class Constants {
         /**
          * Diameter of the wheel, measured in meters.
          */
-        public static final double WHEEL_DIAMETER = Units.inchesToMeters(4);
+        public static final double WHEEL_DIAMETER = 4 * 0.0254; // 4 inches * 0.0254 inches per meter
         /**
          * Circumference of the wheel, measured in meters. Defined as WHEEL_DIAMATER
          * * Math.PI.
@@ -78,6 +79,7 @@ public final class Constants {
         /**
          * Coefficient of friction of the wheel.
          */
+        // TODO: Figure out if this is the right value or not
         public static final double WHEEL_COF = 0.77;
 
         /**
@@ -99,12 +101,12 @@ public final class Constants {
           // 2.625 inches from the edge of the module + 2.5 inches of bumper
           private static final double moduleCenterOfRotationDistanceFromEdge = 2.625 + 2.5;
           /**
-           * The forward component of the robot's distance to the center, in meters.
+           * The forward component of a module's distance to the robot center, in meters.
            */
           private static final double moduleForwardDistanceFromCenter = Units
               .inchesToMeters((robotLength - (2 * moduleCenterOfRotationDistanceFromEdge)) / 2.0);
           /**
-           * The side component of the robot's distance to the center, in meters.
+           * The side component of a module's distance to the robot center, in meters.
            */
           private static final double moduleSideDistanceFromCenter = Units
               .inchesToMeters((robotWidth - (2 * moduleCenterOfRotationDistanceFromEdge)) / 2.0);
@@ -174,21 +176,25 @@ public final class Constants {
            */
           public static final int BACK_RIGHT_TURN = 7;
 
-          // Drivebase Analog Encoder Ports
+          // Drivebase IDs
           /**
-           * The turn encoder analog port number of the front left module.
+           * The turn encoder ID of the front left module. Could either be a CAN ID, a PWM
+           * port number, or an Analog port nummber, depending on configuration.
            */
           public static final int FRONT_LEFT_ENCODER = 0;
           /**
-           * The turn encoder analog port number of the front right module.
+           * The turn encoder ID of the front right module. Could either be a CAN ID, a
+           * PWM port number, or an Analog port nummber, depending on configuration.
            */
           public static final int FRONT_RIGHT_ENCODER = 1;
           /**
-           * The turn encoder analog port number of the back left module.
+           * The turn encoder ID of the back left module. Could either be a CAN ID, a PWM
+           * port number, or an Analog port nummber, depending on configuration.
            */
           public static final int BACK_LEFT_ENCODER = 2;
           /**
-           * The turn encoder analog port number of the back right module.
+           * The turn encoder ID of the back right module. Could either be a CAN ID, a PWM
+           * port number, or an Analog port nummber, depending on configuration.
            */
           public static final int BACK_RIGHT_ENCODER = 3;
         }
