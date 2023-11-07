@@ -262,13 +262,13 @@ public final class Constants {
            * Primary current limit of the Rev NEO 500s, in amps. If the amperage exceeds
            * this amount, motor power will be reduced to compensate.
            */
-          public static final int PRIMARY_CURRENT_LIMIT = 80;
+          public static final int PRIMARY_CURRENT_LIMIT = 60;
           /**
            * Secondary current limit of the Rev NEO 500s, in amps. If the primary current
            * limit doesn't lower current draw enough and the amperage hits this value, the
            * motor will be temporarily shut down.
            */
-          public static final int SECONDARY_CURRENT_LIMIT = 100;
+          public static final int SECONDARY_CURRENT_LIMIT = 80;
         }
 
         /**
