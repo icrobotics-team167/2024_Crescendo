@@ -97,6 +97,15 @@ public class Module {
   }
 
   /**
+   * Sets whether the drive wheel is in brake mode or not.
+   * 
+   * @param brake True for brake, false for coast.
+   */
+  public void setWheelBrake(boolean brake) {
+    driveMotor.configureMotorBrake(brake);
+  }
+
+  /**
    * Sets the desired angle of the swerve module.
    * 
    * @param angle The desired angle.

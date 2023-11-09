@@ -30,6 +30,8 @@ public class Robot extends TimedRobot {
 
   private SendableChooser<PathPlannerAuto> autoSelector;
 
+  private boolean hasMatchStarted = false;
+
   /**
    * This function is run when the robot is first started up and should be used
    * for any
@@ -48,6 +50,8 @@ public class Robot extends TimedRobot {
     if (Constants.TELEMETRY_VERBOSITY == Verbosity.NONE) {
       PPLibTelemetry.enableCompetitionMode();
     }
+
+    m_robotContainer.preMatch();
   }
 
   /**
@@ -75,10 +79,16 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    if (hasMatchStarted) {
+      m_robotContainer.endOfMatchInit();
+    }
   }
 
   @Override
   public void disabledPeriodic() {
+    if (hasMatchStarted) {
+      m_robotContainer.endOfMatchPeriodic();
+    }
   }
 
   /**
@@ -87,6 +97,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    hasMatchStarted = true;
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -109,6 +120,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    hasMatchStarted = true;
   }
 
   /** This function is called periodically during operator control. */

@@ -68,6 +68,37 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     /**
+     * Locks the wheels so that the robot won't move. Use to lock robot motion after
+     * a match or when an enemy is pushing the robot.
+     */
+    public void lockMotion() {
+        swerveDrive.lockMotion();
+    }
+
+    /**
+     * Unlocks wheels.
+     */
+    public void unlockMotion() {
+        swerveDrive.unlockMotion();
+    }
+
+    /**
+     * Sets whether the drive wheels are in brake mode or not.
+     * 
+     * @param brake True for brake, false for coast.
+     */
+    public void setWheelBrake(boolean brake) {
+        swerveDrive.setWheelBrake(brake);
+    }
+
+    /**
+     * Sets the wheels to face forwards.
+     */
+    public void setWheelsForward() {
+        swerveDrive.setWheelsForward();
+    }
+
+    /**
      * Gets the current pose of the robot. (0,0) is the back right corner of
      * the blue driver station/the bottom left corner of the PathPlanner app,
      * depending on your perspective. 0 degrees rotation is facing away from the

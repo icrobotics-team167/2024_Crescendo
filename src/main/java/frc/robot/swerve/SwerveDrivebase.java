@@ -51,6 +51,10 @@ public class SwerveDrivebase {
      * Whether or not slow mode is enabled.
      */
     private boolean slowMode = false;
+    /**
+     * Whether or not motion is locked.
+     */
+    private boolean motionLocked = false;
 
     // Odometry
     /**
@@ -186,6 +190,9 @@ public class SwerveDrivebase {
      *                        relative.
      */
     public void drive(ChassisSpeeds velocityCommand, boolean fieldRelative) {
+        if (motionLocked) {
+            return;
+        }
         if (fieldRelative) {
             velocityCommand = ChassisSpeeds.fromFieldRelativeSpeeds(velocityCommand, getYaw());
         }
@@ -223,6 +230,45 @@ public class SwerveDrivebase {
 
         for (Module module : modules) {
             module.setDesiredState(moduleDesiredStates[module.moduleNumber]);
+        }
+    }
+
+    /**
+     * Locks the wheels so that the robot won't move. Use to lock robot motion after
+     * a match or when an enemy is pushing the robot.
+     */
+    public void lockMotion() {
+        motionLocked = true;
+        modules[0].setDesiredState(new SwerveModuleState(0, Modules.Positions.FRONT_LEFT_POS.getAngle()));
+        modules[1].setDesiredState(new SwerveModuleState(0, Modules.Positions.FRONT_RIGHT_POS.getAngle()));
+        modules[2].setDesiredState(new SwerveModuleState(0, Modules.Positions.BACK_LEFT_POS.getAngle()));
+        modules[3].setDesiredState(new SwerveModuleState(0, Modules.Positions.BACK_RIGHT_POS.getAngle()));
+    }
+
+    /**
+     * Unlocks wheels.
+     */
+    public void unlockMotion() {
+        motionLocked = false;
+    }
+
+    /**
+     * Sets whether the drive wheels are in brake mode or not.
+     * 
+     * @param brake True for brake, false for coast.
+     */
+    public void setWheelBrake(boolean brake) {
+        for (Module module : modules) {
+            module.setWheelBrake(brake);
+        }
+    }
+
+    /**
+     * Sets the wheels to face forwards.
+     */
+    public void setWheelsForward() {
+        for (Module module : modules) {
+            module.setDesiredState(new SwerveModuleState(0, new Rotation2d()));
         }
     }
 

@@ -32,6 +32,11 @@ public final class Constants {
   public static final Verbosity TELEMETRY_VERBOSITY = Verbosity.HIGH;
 
   /**
+   * How many seconds to lock drivebase motion after the end of the match.
+   */
+  public static final double END_OF_MATCH_LOCK = 10;
+
+  /**
    * Field properties.
    */
   public static final class Field {
@@ -71,7 +76,8 @@ public final class Constants {
        */
       public static final double MAX_ROTATIONAL_VEL = 1.5 * Math.PI;
       /**
-       * The max acceleration of the drivebase, in meters/s^2. Usually defined as the CoF of the wheels * Gravity to prevent wheel slip.
+       * The max acceleration of the drivebase, in meters/s^2. Usually defined as the
+       * CoF of the wheels * Gravity to prevent wheel slip.
        */
       public static final double MAX_ACCELERATION = Modules.WHEEL_COF * MathUtils.GRAVITY;
       /**
