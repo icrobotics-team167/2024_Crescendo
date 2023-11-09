@@ -21,19 +21,24 @@ public class Telemetry {
         /**
          * No data will be sent at all. Also disables hot reload for PathPlanner.
          */
-        NONE,
+        NONE(0),
         /**
          * Only the basic data will be sent.
          */
-        LOW,
+        LOW(1),
         /**
          * Some data will be sent.
          */
-        MEDIUM,
+        MEDIUM(2),
         /**
          * All data will be sent.
          */
-        HIGH
+        HIGH(3);
+
+        int lvlNum;
+        Verbosity(int lvlNum) {
+            this.lvlNum = lvlNum;
+        }
     }
 
     /**
@@ -115,16 +120,6 @@ public class Telemetry {
      *         telemetry's verbosity level.
      */
     private static boolean isSendable(Verbosity verbosityLevel) {
-        switch (Constants.TELEMETRY_VERBOSITY) {
-            case HIGH:
-                return true;
-            case MEDIUM:
-                return verbosityLevel == Verbosity.LOW || verbosityLevel == Verbosity.MEDIUM;
-            case LOW:
-                return verbosityLevel == Verbosity.LOW;
-            default:
-                PPLibTelemetry.enableCompetitionMode();
-                return false;
-        }
+        return verbosityLevel.lvlNum <= Constants.TELEMETRY_VERBOSITY.lvlNum;
     }
 }
