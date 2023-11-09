@@ -3,7 +3,8 @@ package frc.robot.commands;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.Robot.SwerveDrive;
-import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
+
 import java.util.function.DoubleSupplier;
 
 /**
@@ -40,6 +41,6 @@ public class AbsoluteFieldDrive extends Command {
         double yVel = vY.getAsDouble() * SwerveDrive.MAX_TRANSLATIONAL_VEL;
         double rotVel = vRot.getAsDouble() * SwerveDrive.MAX_ROTATIONAL_VEL;
         ChassisSpeeds desiredSpeeds = new ChassisSpeeds(xVel, yVel, rotVel);
-        swerve.drive(desiredSpeeds, true);
+        swerve.fieldRelativeDrive(desiredSpeeds);
     }
 }

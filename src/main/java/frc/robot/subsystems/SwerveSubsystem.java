@@ -1,4 +1,4 @@
-package frc.robot.subsystems.swervedrive;
+package frc.robot.subsystems;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -56,7 +56,7 @@ public class SwerveSubsystem extends SubsystemBase {
      * @param fieldRelative   Whether or not the frame of reference is to the robot,
      *                        or to the driver station.
      */
-    public void drive(ChassisSpeeds velocityCommand, boolean fieldRelative) {
+    private void drive(ChassisSpeeds velocityCommand, boolean fieldRelative) {
         swerveDrive.drive(velocityCommand, fieldRelative);
     }
 
