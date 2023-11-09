@@ -33,8 +33,7 @@ public class Module {
    * @param encoderOffset Encoder offset.
    */
   public Module(int moduleNumber, AbstractMotor driveMotor, AbstractMotor turnMotor,
-      AbstractAbsoluteEncoder turnEncoder,
-      double encoderOffset) {
+      AbstractAbsoluteEncoder turnEncoder) {
     this.moduleNumber = moduleNumber;
     this.driveMotor = driveMotor;
     this.turnMotor = turnMotor;
@@ -64,7 +63,7 @@ public class Module {
         turnMotor.getSecondaryCurrentLimit());
     turnMotor.configrePID(0.25, 0, 0.1);
     turnMotor.configurePIDWrapping(-180, 180);
-    turnMotor.configureAbsoluteEncoder(turnEncoder, encoderOffset);
+    turnMotor.configureAbsoluteEncoder(turnEncoder);
   }
 
   /**

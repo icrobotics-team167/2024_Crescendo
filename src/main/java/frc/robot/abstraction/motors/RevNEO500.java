@@ -135,7 +135,7 @@ public class RevNEO500 extends AbstractMotor {
     }
 
     @Override
-    public void configureAbsoluteEncoder(AbstractAbsoluteEncoder encoder, double offset) {
+    public void configureAbsoluteEncoder(AbstractAbsoluteEncoder encoder) {
         if (encoder.getAbsoluteEncoder() instanceof AbsoluteEncoder) {
             absoluteEncoder = (AbsoluteEncoder) encoder.getAbsoluteEncoder();
             configureSparkMax(() -> pid.setFeedbackDevice(absoluteEncoder));

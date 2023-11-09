@@ -30,11 +30,18 @@ public abstract class AbstractAbsoluteEncoder {
     public abstract void clearStickyFaults();
 
     /**
-     * Configure the absolute encoder to read from [-180, 180) per second.
+     * Configure whether the encoder is inverted or not.
      *
      * @param inverted Whether the encoder is inverted.
      */
-    public abstract void configure(boolean inverted);
+    public abstract void configureInverted(boolean inverted);
+
+    /**
+     * Configure the encoder's offset.
+     * 
+     * @param offset The encoder offset, as a Rotation 2d object.
+     */
+    public abstract void configureOffset(Rotation2d offset);
 
     /**
      * Get the absolute position of the encoder.
