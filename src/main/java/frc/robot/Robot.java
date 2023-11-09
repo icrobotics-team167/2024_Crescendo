@@ -5,11 +5,14 @@
 package frc.robot;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.util.PPLibTelemetry;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.helpers.Telemetry.Verbosity;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -41,6 +44,10 @@ public class Robot extends TimedRobot {
     autoSelector = m_robotContainer.autoSelector;
     autoSelector.setDefaultOption("Nothing", null);
     SmartDashboard.putData(autoSelector);
+
+    if (Constants.TELEMETRY_VERBOSITY == Verbosity.NONE) {
+      PPLibTelemetry.enableCompetitionMode();
+    }
   }
 
   /**
