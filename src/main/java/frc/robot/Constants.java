@@ -31,6 +31,28 @@ public final class Constants {
   public static final Verbosity TELEMETRY_VERBOSITY = Verbosity.HIGH;
 
   /**
+   * Field properties.
+   */
+  public static final class Field {
+    /**
+     * In some seasons, such as 2023, the field is assymetrical down the Y axis, so
+     * trajectories/field positions need to be flipped when on the Red alliance.
+     * Usually set to false since the 2023 field was weird.
+     */
+    public static final boolean ASSYMETRICAL_FIELD = true;
+
+    /**
+     * The length (long side) of the field, in meters.
+     */
+    public static final double FIELD_LENGTH = 16.5;
+
+    /**
+     * The width (short side) of the field, in meters.
+     */
+    public static final double FIELD_WIDTH = 8;
+  }
+
+  /**
    * Robot configuration and characteristics.
    */
   public static final class Robot {
@@ -51,7 +73,7 @@ public final class Constants {
        * The max acceleration that the modules can handle before they slip, in
        * meters/s^2.
        */
-      public static final double MAX_ACCELERATION = Modules.WHEEL_COF * 9.81;
+      public static final double MAX_ACCELERATION = Modules.WHEEL_COF * 9.80665;
       /**
        * The time, in seconds, that the robot will take to go from 0 to full speed. Is
        * defined as (MAX_TRANSLATIONAL_VEL / MAX_ACCELERATION)
