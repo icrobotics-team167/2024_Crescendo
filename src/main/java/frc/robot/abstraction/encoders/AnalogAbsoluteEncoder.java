@@ -43,16 +43,18 @@ public class AnalogAbsoluteEncoder extends AbstractAbsoluteEncoder {
 
     @Override
     public void configureOffset(Rotation2d offset) {
-        offset = Rotation2d.fromRotations(offset.getRotations() % 1);
-        if (offset.getRotations() < 0) {
-            offset = Rotation2d.fromRotations(1 - offset.getRotations());
+        double offsetValue = offset.getRotations();
+        offsetValue = offsetValue % 1;
+        if (offsetValue < 0) {
+            offsetValue = 1 - offsetValue;
         }
         encoder.setPositionOffset(offset.getRotations());
     }
 
     @Override
     public Rotation2d getAbsolutePosition() {
-        return Rotation2d.fromDegrees((inverted ? -1 : 1) * (encoder.getAbsolutePosition() * 360 - 180 - encoder.getPositionOffset() ));
+        return Rotation2d.fromDegrees(
+                (inverted ? -1 : 1) * (encoder.getAbsolutePosition() * 360 - 180 - encoder.getPositionOffset()));
     }
 
     @Override
