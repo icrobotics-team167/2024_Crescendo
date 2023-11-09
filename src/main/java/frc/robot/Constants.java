@@ -9,6 +9,7 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.helpers.MathUtils;
 import frc.robot.helpers.Telemetry.Verbosity;
 
 /**
@@ -70,10 +71,9 @@ public final class Constants {
        */
       public static final double MAX_ROTATIONAL_VEL = 1.5 * Math.PI;
       /**
-       * The max acceleration that the modules can handle before they slip, in
-       * meters/s^2.
+       * The max acceleration of the drivebase, in meters/s^2. Usually defined as the CoF of the wheels * Gravity to prevent wheel slip.
        */
-      public static final double MAX_ACCELERATION = Modules.WHEEL_COF * 9.80665;
+      public static final double MAX_ACCELERATION = Modules.WHEEL_COF * MathUtils.GRAVITY;
       /**
        * The time, in seconds, that the robot will take to go from 0 to full speed. Is
        * defined as (MAX_TRANSLATIONAL_VEL / MAX_ACCELERATION)
@@ -100,8 +100,8 @@ public final class Constants {
         public static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
         /**
          * Coefficient of friction of the wheel.
+         * TODO: Figure out if thisis the right value or not.
          */
-        // TODO: Figure out if this is the right value or not
         public static final double WHEEL_COF = 0.77;
 
         /**
