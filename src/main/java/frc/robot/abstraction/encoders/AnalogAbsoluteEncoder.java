@@ -16,9 +16,14 @@ public class AnalogAbsoluteEncoder extends AbstractAbsoluteEncoder {
      *             to.
      */
     public AnalogAbsoluteEncoder(int port) {
+        this(port, new Rotation2d());
+    }
+
+    public AnalogAbsoluteEncoder(int port, Rotation2d offset) {
         this.port = port;
         encoder = new AnalogEncoder(port);
         inverted = false;
+        configureOffset(offset);
     }
 
     @Override
@@ -32,13 +37,24 @@ public class AnalogAbsoluteEncoder extends AbstractAbsoluteEncoder {
     }
 
     @Override
-    public void configure(boolean inverted) {
+    public void configureInverted(boolean inverted) {
         this.inverted = inverted;
     }
 
     @Override
+    public void configureOffset(Rotation2d offset) {
+        double offsetValue = offset.getRotations();
+        offsetValue = offsetValue % 1;
+        if (offsetValue < 0) {
+            offsetValue = 1 - offsetValue;
+        }
+        encoder.setPositionOffset(offset.getRotations());
+    }
+
+    @Override
     public Rotation2d getAbsolutePosition() {
-        return Rotation2d.fromDegrees((inverted ? -1 : 1) * (encoder.getAbsolutePosition() * 360 - 180));
+        return Rotation2d.fromDegrees(
+                (inverted ? -1 : 1) * (encoder.getAbsolutePosition() * 360 - 180 - encoder.getPositionOffset()));
     }
 
     @Override

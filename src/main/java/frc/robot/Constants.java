@@ -7,9 +7,9 @@ package frc.robot;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.helpers.MathUtils;
 import frc.robot.helpers.Telemetry.Verbosity;
 
 /**
@@ -32,6 +32,33 @@ public final class Constants {
   public static final Verbosity TELEMETRY_VERBOSITY = Verbosity.HIGH;
 
   /**
+   * How many seconds to lock drivebase motion after the end of the match.
+   */
+  public static final double END_OF_MATCH_LOCK = 10;
+
+  /**
+   * Field properties.
+   */
+  public static final class Field {
+    /**
+     * In some seasons, such as 2023, the field is assymetrical down the Y axis, so
+     * trajectories/field positions need to be flipped when on the Red alliance.
+     * Usually set to false since the 2023 field was weird.
+     */
+    public static final boolean ASSYMETRICAL_FIELD = true;
+
+    /**
+     * The length (long side) of the field, in meters.
+     */
+    public static final double FIELD_LENGTH = 16.5;
+
+    /**
+     * The width (short side) of the field, in meters.
+     */
+    public static final double FIELD_WIDTH = 8;
+  }
+
+  /**
    * Robot configuration and characteristics.
    */
   public static final class Robot {
@@ -40,7 +67,8 @@ public final class Constants {
      */
     public static final class SwerveDrive {
       /**
-       * The max translational velocity of the drivebase, in meters/s.
+       * The max translational velocity of the drivebase, in meters/s. Note that this
+       * is not a module's absolute max speed.
        */
       public static final double MAX_TRANSLATIONAL_VEL = 3.5;
       /**
@@ -48,10 +76,10 @@ public final class Constants {
        */
       public static final double MAX_ROTATIONAL_VEL = 1.5 * Math.PI;
       /**
-       * The max acceleration that the modules can handle before they slip, in
-       * meters/s^2.
+       * The max acceleration of the drivebase, in meters/s^2. Usually defined as the
+       * CoF of the wheels * Gravity to prevent wheel slip.
        */
-      public static final double MAX_ACCELERATION = Modules.WHEEL_COF * 9.81;
+      public static final double MAX_ACCELERATION = Modules.WHEEL_COF * MathUtils.GRAVITY;
       /**
        * The time, in seconds, that the robot will take to go from 0 to full speed. Is
        * defined as (MAX_TRANSLATIONAL_VEL / MAX_ACCELERATION)
@@ -70,7 +98,7 @@ public final class Constants {
         /**
          * Diameter of the wheel, measured in meters.
          */
-        public static final double WHEEL_DIAMETER = Units.inchesToMeters(4);
+        public static final double WHEEL_DIAMETER = 4 * 0.0254; // 4 inches * 0.0254 inches per meter
         /**
          * Circumference of the wheel, measured in meters. Defined as WHEEL_DIAMATER
          * * Math.PI.
@@ -78,6 +106,7 @@ public final class Constants {
         public static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
         /**
          * Coefficient of friction of the wheel.
+         * TODO: Figure out if thisis the right value or not.
          */
         public static final double WHEEL_COF = 0.77;
 
@@ -100,12 +129,12 @@ public final class Constants {
           // 2.625 inches from the edge of the module + 2.5 inches of bumper
           private static final double moduleCenterOfRotationDistanceFromEdge = 2.625 + 2.5;
           /**
-           * The forward component of the robot's distance to the center, in meters.
+           * The forward component of a module's distance to the robot center, in meters.
            */
           private static final double moduleForwardDistanceFromCenter = Units
               .inchesToMeters((robotLength - (2 * moduleCenterOfRotationDistanceFromEdge)) / 2.0);
           /**
-           * The side component of the robot's distance to the center, in meters.
+           * The side component of a module's distance to the robot center, in meters.
            */
           private static final double moduleSideDistanceFromCenter = Units
               .inchesToMeters((robotWidth - (2 * moduleCenterOfRotationDistanceFromEdge)) / 2.0);
@@ -175,21 +204,25 @@ public final class Constants {
            */
           public static final int BACK_RIGHT_TURN = 7;
 
-          // Drivebase Analog Encoder Ports
+          // Drivebase IDs
           /**
-           * The turn encoder analog port number of the front left module.
+           * The turn encoder ID of the front left module. Could either be a CAN ID, a PWM
+           * port number, or an Analog port nummber, depending on configuration.
            */
           public static final int FRONT_LEFT_ENCODER = 0;
           /**
-           * The turn encoder analog port number of the front right module.
+           * The turn encoder ID of the front right module. Could either be a CAN ID, a
+           * PWM port number, or an Analog port nummber, depending on configuration.
            */
           public static final int FRONT_RIGHT_ENCODER = 1;
           /**
-           * The turn encoder analog port number of the back left module.
+           * The turn encoder ID of the back left module. Could either be a CAN ID, a PWM
+           * port number, or an Analog port nummber, depending on configuration.
            */
           public static final int BACK_LEFT_ENCODER = 2;
           /**
-           * The turn encoder analog port number of the back right module.
+           * The turn encoder ID of the back right module. Could either be a CAN ID, a PWM
+           * port number, or an Analog port nummber, depending on configuration.
            */
           public static final int BACK_RIGHT_ENCODER = 3;
         }
@@ -257,13 +290,13 @@ public final class Constants {
            * Primary current limit of the Rev NEO 500s, in amps. If the amperage exceeds
            * this amount, motor power will be reduced to compensate.
            */
-          public static final int PRIMARY_CURRENT_LIMIT = 80;
+          public static final int PRIMARY_CURRENT_LIMIT = 60;
           /**
            * Secondary current limit of the Rev NEO 500s, in amps. If the primary current
            * limit doesn't lower current draw enough and the amperage hits this value, the
            * motor will be temporarily shut down.
            */
-          public static final int SECONDARY_CURRENT_LIMIT = 100;
+          public static final int SECONDARY_CURRENT_LIMIT = 80;
         }
 
         /**

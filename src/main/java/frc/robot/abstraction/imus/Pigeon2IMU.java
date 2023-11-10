@@ -1,15 +1,14 @@
 package frc.robot.abstraction.imus;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import com.ctre.phoenix.ErrorCode;
-import com.ctre.phoenix.sensors.WPI_Pigeon2;
-
+import com.ctre.phoenix6.configs.Pigeon2Configuration;
+import com.ctre.phoenix6.configs.Pigeon2Configurator;
+import com.ctre.phoenix6.hardware.Pigeon2;
+import com.ctre.phoenix6.StatusCode;
 import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
+import java.util.Optional;
 
 /**
  * A CTRE Pigeon 2 Inertial Measurement Unit.
@@ -18,12 +17,14 @@ public class Pigeon2IMU extends AbstractIMU {
     /**
      * The Pigeon 2 object.
      */
-    WPI_Pigeon2 imu;
+    Pigeon2 imu;
+    Pigeon2Configuration configuration = new Pigeon2Configuration();
+    Pigeon2Configurator configurator;
 
     /**
      * The output offset.
      */
-    Rotation3d offset;
+    Rotation3d offset = new Rotation3d();
 
     /**
      * Configures a new Pigeon 2 IMU.
@@ -31,23 +32,28 @@ public class Pigeon2IMU extends AbstractIMU {
      * @param CANID The CAN ID of the Pigeon 2.
      */
     public Pigeon2IMU(int CANID) {
-        imu = new WPI_Pigeon2(CANID);
+        imu = new Pigeon2(CANID);
+        configurator = imu.getConfigurator();
     }
 
     @Override
     public void factoryDefault() {
-        configurePigeon(() -> imu.configFactoryDefault());
-        configurePigeon(() -> imu.configEnableCompass(false)); // Compass causes weird readings
+        configuration = new Pigeon2Configuration();
+        configuration.Pigeon2Features.EnableCompass = false;
+        applyConfigs();
     }
 
     @Override
     public void configureMountPose(double yaw, double pitch, double roll) {
-        configurePigeon(() -> imu.configMountPose(yaw, pitch, roll));
+        configuration.MountPose.MountPoseYaw = yaw;
+        configuration.MountPose.MountPosePitch = pitch;
+        configuration.MountPose.MountPoseRoll = roll;
+        applyConfigs();
     }
 
     @Override
     public void clearStickyFaults() {
-        configurePigeon(() -> imu.clearStickyFaults());
+        imu.clearStickyFaults();
     }
 
     @Override
@@ -57,9 +63,8 @@ public class Pigeon2IMU extends AbstractIMU {
 
     @Override
     public Rotation3d getRawRotation3d() {
-        double[] wxyz = new double[4];
-        imu.get6dQuaternion(wxyz);
-        return new Rotation3d(new Quaternion(wxyz[0], wxyz[1], wxyz[2], wxyz[3]));
+        return new Rotation3d(new Quaternion(imu.getQuatW().getValue(), imu.getQuatX().getValue(),
+                imu.getQuatY().getValue(), imu.getQuatZ().getValue()));
     }
 
     @Override
@@ -75,13 +80,14 @@ public class Pigeon2IMU extends AbstractIMU {
     @Override
     public Optional<Translation3d> getAccel() {
         short[] initial = new short[3];
-        imu.getBiasedAccelerometer(initial);
+        // imu.getBiasedAccelerometer(initial);
+
         return Optional.of(new Translation3d(initial[0], initial[1], initial[2]).times(9.81 / 16384.0));
     }
 
-    private void configurePigeon(Supplier<ErrorCode> config) {
+    private void applyConfigs() {
         for (int i = 0; i < maximumRetries; i++) {
-            if (config.get() == ErrorCode.OK) {
+            if (configurator.apply(configuration) == StatusCode.OK) {
                 return;
             }
         }

@@ -7,10 +7,10 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.abstraction.encoders.AbstractAbsoluteEncoder;
 import frc.robot.abstraction.motors.AbstractMotor;
-import frc.robot.helpers.Telemetry;
-import frc.robot.helpers.Telemetry.Verbosity;
 import frc.robot.Constants.Robot.SwerveDrive;
 import frc.robot.Constants.Robot.SwerveDrive.Modules;
+import frc.robot.helpers.Telemetry;
+import frc.robot.helpers.Telemetry.Verbosity;
 
 public class Module {
   public int moduleNumber;
@@ -33,8 +33,7 @@ public class Module {
    * @param encoderOffset Encoder offset.
    */
   public Module(int moduleNumber, AbstractMotor driveMotor, AbstractMotor turnMotor,
-      AbstractAbsoluteEncoder turnEncoder,
-      double encoderOffset) {
+      AbstractAbsoluteEncoder turnEncoder) {
     this.moduleNumber = moduleNumber;
     this.driveMotor = driveMotor;
     this.turnMotor = turnMotor;
@@ -64,7 +63,7 @@ public class Module {
         turnMotor.getSecondaryCurrentLimit());
     turnMotor.configrePID(0.25, 0, 0.1);
     turnMotor.configurePIDWrapping(-180, 180);
-    turnMotor.configureAbsoluteEncoder(turnEncoder, encoderOffset);
+    turnMotor.configureAbsoluteEncoder(turnEncoder);
   }
 
   /**
@@ -95,6 +94,15 @@ public class Module {
 
     // Set previous desired angle for the next time this is run.
     previousState = desiredState;
+  }
+
+  /**
+   * Sets whether the drive wheel is in brake mode or not.
+   * 
+   * @param brake True for brake, false for coast.
+   */
+  public void setWheelBrake(boolean brake) {
+    driveMotor.configureMotorBrake(brake);
   }
 
   /**

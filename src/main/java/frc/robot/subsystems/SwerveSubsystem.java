@@ -1,7 +1,6 @@
-package frc.robot.subsystems.swervedrive;
+package frc.robot.subsystems;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -57,7 +56,7 @@ public class SwerveSubsystem extends SubsystemBase {
      * @param fieldRelative   Whether or not the frame of reference is to the robot,
      *                        or to the driver station.
      */
-    public void drive(ChassisSpeeds velocityCommand, boolean fieldRelative) {
+    private void drive(ChassisSpeeds velocityCommand, boolean fieldRelative) {
         swerveDrive.drive(velocityCommand, fieldRelative);
     }
 
@@ -66,6 +65,37 @@ public class SwerveSubsystem extends SubsystemBase {
      */
     public void toggleSlowMode() {
         swerveDrive.toggleSlowMode();
+    }
+
+    /**
+     * Locks the wheels so that the robot won't move. Use to lock robot motion after
+     * a match or when an enemy is pushing the robot.
+     */
+    public void lockMotion() {
+        swerveDrive.lockMotion();
+    }
+
+    /**
+     * Unlocks wheels.
+     */
+    public void unlockMotion() {
+        swerveDrive.unlockMotion();
+    }
+
+    /**
+     * Sets whether the drive wheels are in brake mode or not.
+     * 
+     * @param brake True for brake, false for coast.
+     */
+    public void setWheelBrake(boolean brake) {
+        swerveDrive.setWheelBrake(brake);
+    }
+
+    /**
+     * Sets the wheels to face forwards.
+     */
+    public void setWheelsForward() {
+        swerveDrive.setWheelsForward();
     }
 
     /**

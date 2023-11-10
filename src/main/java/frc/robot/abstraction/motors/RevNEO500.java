@@ -1,21 +1,19 @@
 package frc.robot.abstraction.motors;
 
-import java.util.function.Supplier;
-
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.REVLibError;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
-
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.REVLibError;
+import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.abstraction.encoders.AbstractAbsoluteEncoder;
 import frc.robot.Constants.Robot.Motors.Neo500;
+import java.util.function.Supplier;
 
 /**
  * Class to represent a REV NEO 500 motor.
@@ -137,7 +135,7 @@ public class RevNEO500 extends AbstractMotor {
     }
 
     @Override
-    public void configureAbsoluteEncoder(AbstractAbsoluteEncoder encoder, double offset) {
+    public void configureAbsoluteEncoder(AbstractAbsoluteEncoder encoder) {
         if (encoder.getAbsoluteEncoder() instanceof AbsoluteEncoder) {
             absoluteEncoder = (AbsoluteEncoder) encoder.getAbsoluteEncoder();
             configureSparkMax(() -> pid.setFeedbackDevice(absoluteEncoder));
@@ -232,8 +230,6 @@ public class RevNEO500 extends AbstractMotor {
         configureSparkMax(() -> motor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, CANStatus2));
         configureSparkMax(() -> motor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, CANStatus3));
         configureSparkMax(() -> motor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, CANStatus4));
-        // TODO: Configure Status Frame 5 and 6 if necessary
-        // https://docs.revrobotics.com/sparkmax/operating-modes/control-interfaces
     }
 
     /**

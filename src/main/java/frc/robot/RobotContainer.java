@@ -4,19 +4,18 @@
 
 package frc.robot;
 
-import frc.robot.commands.AbsoluteFieldDrive;
-import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.commands.AbsoluteFieldDrive;
+import frc.robot.subsystems.SwerveSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -29,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
 
-  public SendableChooser<PathPlannerAuto> autoSelector;
+  public SendableChooser<PathPlannerAuto> autoSelector = new SendableChooser<PathPlannerAuto>();
 
   private final SwerveSubsystem driveBase = new SwerveSubsystem();
 
@@ -38,13 +37,15 @@ public class RobotContainer {
   CommandJoystick secondaryLeftStick = new CommandJoystick(Constants.Driving.Controllers.IDs.SECONDARY_LEFT);
   CommandJoystick secondaryRightStick = new CommandJoystick(Constants.Driving.Controllers.IDs.SECONDARY_RIGHT);
 
+  private Timer disabledTimer = new Timer();
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     // Command register template
     // NamedCommands.registerCommand("Command", command());
-    
+
     // Configure the trigger bindings
     configureBindings();
 
@@ -73,6 +74,8 @@ public class RobotContainer {
    */
   private void configureBindings() {
     primaryLeftStick.button(1).toggleOnTrue(new InstantCommand(driveBase::toggleSlowMode));
+    primaryRightStick.button(1).onTrue(new InstantCommand(driveBase::lockMotion));
+    primaryRightStick.button(1).onFalse(new InstantCommand(driveBase::unlockMotion));
   }
 
   /**
@@ -82,5 +85,33 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoSelector.getSelected();
+  }
+
+  /**
+   * Runs once at the end of an match.
+   */
+  public void endOfMatchInit() {
+    driveBase.lockMotion();
+    driveBase.setWheelBrake(true);
+    disabledTimer.reset();
+    disabledTimer.start();
+  }
+
+  /**
+   * Runs every robot tick after a match.
+   */
+  public void endOfMatchPeriodic() {
+    if (disabledTimer.hasElapsed(Constants.END_OF_MATCH_LOCK)) {
+      driveBase.unlockMotion();
+      driveBase.setWheelBrake(false);
+    }
+  }
+
+  /**
+   * Runs once at robot boot, before a match.
+   */
+  public void preMatch() {
+    driveBase.setWheelBrake(true);
+    driveBase.setWheelsForward();
   }
 }

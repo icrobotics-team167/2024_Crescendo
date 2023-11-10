@@ -1,16 +1,16 @@
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.Robot.SwerveDrive;
-import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
+
+import java.util.function.DoubleSupplier;
 
 /**
  * A command to drive the swerve drivebase.
  */
-public class AbsoluteFieldDrive extends CommandBase {
+public class AbsoluteFieldDrive extends Command {
     private final SwerveSubsystem swerve;
     private final DoubleSupplier vX, vY, vRot;
 
@@ -41,6 +41,6 @@ public class AbsoluteFieldDrive extends CommandBase {
         double yVel = vY.getAsDouble() * SwerveDrive.MAX_TRANSLATIONAL_VEL;
         double rotVel = vRot.getAsDouble() * SwerveDrive.MAX_ROTATIONAL_VEL;
         ChassisSpeeds desiredSpeeds = new ChassisSpeeds(xVel, yVel, rotVel);
-        swerve.drive(desiredSpeeds, true);
+        swerve.fieldRelativeDrive(desiredSpeeds);
     }
 }
