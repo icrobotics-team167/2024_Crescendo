@@ -104,7 +104,7 @@ public class RevNEO500 extends AbstractMotor {
     }
 
     @Override
-    public void configrePID(double P, double I, double D) {
+    public void configurePID(double P, double I, double D) {
         configureSparkMax(() -> pid.setP(P));
         configureSparkMax(() -> pid.setI(I));
         configureSparkMax(() -> pid.setD(D));

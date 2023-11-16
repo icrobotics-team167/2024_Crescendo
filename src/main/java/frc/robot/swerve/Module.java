@@ -52,7 +52,7 @@ public class Module {
         driveMotor.getPrimaryCurrentLimit(),
         driveMotor.getSecondaryCurrentLimit());
     driveMotor.configureIntegratedEncoder(getMetersPerRotation());
-    driveMotor.configrePID(0.25, 0, 0);
+    driveMotor.configurePID(0.25, 0, 0);
     driveMotor.configureRampRate(SwerveDrive.ZERO_TO_FULL_TIME);
 
     // Configure turn motor.
@@ -61,7 +61,7 @@ public class Module {
         turnMotor.getNominalVoltage(),
         turnMotor.getPrimaryCurrentLimit(),
         turnMotor.getSecondaryCurrentLimit());
-    turnMotor.configrePID(0.25, 0, 0.1);
+    turnMotor.configurePID(0.25, 0, 0.1);
     turnMotor.configurePIDWrapping(-180, 180);
     turnMotor.configureAbsoluteEncoder(turnEncoder);
   }

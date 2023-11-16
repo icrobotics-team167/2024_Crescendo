@@ -46,7 +46,7 @@ public abstract class AbstractMotor {
      *          increase motor power to push past it. Usually not needed.
      * @param D Derivative value. If you're close to your target, slow down.
      */
-    public abstract void configrePID(double P, double I, double D);
+    public abstract void configurePID(double P, double I, double D);
 
     /**
      * Configure the values in which the PID wraps around. Usually used for angles.
