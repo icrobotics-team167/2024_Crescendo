@@ -63,6 +63,34 @@ public final class Constants {
    */
   public static final class Robot {
     /**
+     * Arm configuration and characteristics.
+     */
+    public static final class Arm {
+      public static final class Pivot {
+        /**
+         * The initial position of pivot on robot boot, in degrees.
+         */
+        public static final double INITIAL_POSITION = 60.0;
+        /**
+         * The max position of the arm, in degrees.
+         */
+        public static final double PIVOT_MAX = 60.0;
+        /**
+         * The min position of the arm, in degrees.
+         */
+        public static final double PIVOT_MIN = -40.0;
+        /**
+         * The gear ratio of the pivot gear.
+         */
+        public static final double PIVOT_GEAR_RATIO = 400.0;
+      }
+      public static final class IDs {
+        public static final int PIVOT_LEADER = 10;
+        public static final int PIVOT_FOLLOWER = 11;
+      }
+    }
+
+    /**
      * Swerve drivebase configuration and characteristics.
      */
     public static final class SwerveDrive {

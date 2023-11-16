@@ -128,6 +128,14 @@ public class RevNEO500 extends AbstractMotor {
     }
 
     @Override
+    public void configureFollow(AbstractMotor otherMotor) {
+        if (!(otherMotor instanceof RevNEO500)) {
+            throw new UnsupportedOperationException("Leader motor must be of the same motor type!");
+        }
+        motor.follow((CANSparkMax)otherMotor.getMotor());
+    }
+
+    @Override
     public void configureCurrentLimits(double nominalVoltage, int primaryAmpLimit, int secondaryAmpLimit) {
         configureSparkMax(() -> motor.enableVoltageCompensation(nominalVoltage));
         configureSparkMax(() -> motor.setSmartCurrentLimit(primaryAmpLimit));
@@ -152,6 +160,10 @@ public class RevNEO500 extends AbstractMotor {
         motor.set(setPoint);
     }
 
+    @Override
+    public void stop() {
+        motor.stopMotor();
+    }
     @Override
     public void setDriveReference(double setPoint, double feedForward) {
         configureSparkMax(() -> pid.setReference(setPoint, ControlType.kVelocity, 0, feedForward));

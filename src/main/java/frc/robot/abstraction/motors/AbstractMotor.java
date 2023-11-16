@@ -73,6 +73,13 @@ public abstract class AbstractMotor {
     public abstract void configureInverted(boolean inverted);
 
     /**
+     * Configures the motor that this motor should follow.
+     * 
+     * @param motor The leader motor.
+     */
+    public abstract void configureFollow(AbstractMotor otherMotor);
+
+    /**
      * Set current limits for the motor.
      * 
      * @param nominalVoltage    Nominal motor voltage. If the voltage being sent to
@@ -105,12 +112,17 @@ public abstract class AbstractMotor {
     public abstract void configureRampRate(double rampRate);
 
     /**
-     * Set desired motor speed.
+     * Set the desired motor speed.
      * 
      * @param setPoint Motor speeds. Goes from +1 (100% speed forwards) to -1 (-100%
      *                 speeds backwards)
      */
     public abstract void set(double setPoint);
+    
+    /**
+     * Stops the motor.
+     */
+    public abstract void stop();
 
     /**
      * If the motor is being used as a swerve drive motor, set the target speed.
