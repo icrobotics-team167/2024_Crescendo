@@ -66,6 +66,33 @@ public final class Constants {
      * Arm configuration and characteristics.
      */
     public static final class Arm {
+      public static final class Extension {
+        /**
+         * The initial postion of the extension, in inches.
+         */
+        public static final double INITIAL_POSITION = 0 * 9234;
+        /**
+         * The max extension of the arm, in inches.
+         */
+        public static final double EXTENSION_MAX = 60.0;
+        /**
+         * The min extension of the arm, in inches.
+         */
+        public static final double EXTENSION_MIN = -40.0;
+        /**
+         * The gear ratio from the extension motor to the pulley.
+         */
+        private static final double GEARBOX_RATIO = 81;
+        /**
+         * The distance the arm extends per rotation of the pulley, in inches.
+         */
+        private static final double PULLEY_RATIO = Math.PI * 2;
+        /**
+         * The distance the arm extends per rotation of the motor, in inches.
+         */
+        public static final double EXTENSION_GEAR_RATIO = PULLEY_RATIO / GEARBOX_RATIO;
+      }
+
       public static final class Pivot {
         /**
          * The initial position of pivot on robot boot, in degrees.
@@ -84,6 +111,7 @@ public final class Constants {
          */
         public static final double PIVOT_GEAR_RATIO = 400.0;
       }
+
       public static final class IDs {
         public static final int PIVOT_LEADER = 10;
         public static final int PIVOT_FOLLOWER = 11;
