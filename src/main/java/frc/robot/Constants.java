@@ -70,15 +70,15 @@ public final class Constants {
         /**
          * The initial postion of the extension, in inches.
          */
-        public static final double INITIAL_POSITION = 0 * 9234;
+        public static final double INITIAL_POSITION = 0;
         /**
          * The max extension of the arm, in inches.
          */
-        public static final double EXTENSION_MAX = 60.0;
+        public static final double EXTENSION_MAX = 40.0;
         /**
          * The min extension of the arm, in inches.
          */
-        public static final double EXTENSION_MIN = -40.0;
+        public static final double EXTENSION_MIN = INITIAL_POSITION;
         /**
          * The gear ratio from the extension motor to the pulley.
          */
@@ -112,9 +112,30 @@ public final class Constants {
         public static final double PIVOT_GEAR_RATIO = 400.0;
       }
 
+      /**
+       * IDs for parts of the arm.
+       */
       public static final class IDs {
+        /**
+         * The CAN ID of the right motor on the pivot mechanism.
+         */
         public static final int PIVOT_LEADER = 10;
+        /**
+         * The CAN ID of the left motor on the pivot mechanism.
+         */
         public static final int PIVOT_FOLLOWER = 11;
+        /**
+         * The CAN ID of the extension motor.
+         */
+        public static final int EXTENSION_MOTOR = 12;
+        /**
+         * The CAN ID of the claw motor.
+         */
+        public static final int CLAW_MOTOR = 13;
+        /**
+         * The DIO port of the minimum extension sensor.
+         */
+        public static final int MIN_EXTENSION_SENSOR = 0;
       }
     }
 
@@ -359,6 +380,39 @@ public final class Constants {
          * Max rotational velocity, measured in RPM.
          */
         public static final double MAX_RPM = 5700;
+      }
+
+      /**
+       * Configuration and characteristics for the REV NEO 550.
+       */
+      public static final class Neo550 {
+        /**
+         * Motor power draw limits in order to prevent motor burnouts/other components
+         * browning out.
+         */
+        public static final class CurrentLimits {
+          /**
+           * Nominal voltage of the Rev NEO 550s. If the voltage being sent to the NEOs
+           * falls below this amount, motor power will be lowered to compensate.
+           */
+          public static final double NOMINAL_VOLTAGE = 12;
+          /**
+           * Primary current limit of the Rev NEO 550s, in amps. If the amperage exceeds
+           * this amount, motor power will be reduced to compensate.
+           */
+          public static final int PRIMARY_CURRENT_LIMIT = 40;
+          /**
+           * Secondary current limit of the Rev NEO 550s, in amps. If the primary current
+           * limit doesn't lower current draw enough and the amperage hits this value, the
+           * motor will be temporarily shut down.
+           */
+          public static final int SECONDARY_CURRENT_LIMIT = 60;
+        }
+
+        /**
+         * Max rotational velocity, measured in RPM.
+         */
+        public static final double MAX_RPM = 11000;
       }
     }
   }
