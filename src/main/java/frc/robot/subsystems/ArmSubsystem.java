@@ -8,7 +8,7 @@ import frc.robot.arm.*;
 import frc.robot.Constants.Robot.Arm;
 
 /**
- *  A SubsystemBase class to implement the arm.
+ * A SubsystemBase class to implement the arm.
  */
 public class ArmSubsystem extends SubsystemBase {
     /**
@@ -23,8 +23,6 @@ public class ArmSubsystem extends SubsystemBase {
      * The pivot mechanism.
      */
     private final Pivot pivot;
-
-
 
     /**
      * Constructs a new ArmSubsystem object.
@@ -45,6 +43,7 @@ public class ArmSubsystem extends SubsystemBase {
     public void pivot(double speed) {
         pivot.move(speed);
     }
+
     /**
      * Moves the extension mechanism.
      * 
@@ -54,12 +53,27 @@ public class ArmSubsystem extends SubsystemBase {
     public void extension(double speed) {
         extension.move(speed);
     }
+
+    /**
+     * Moves the arm.
+     * 
+     * @param pivotSpeed     The speed in which to move the pivot. 1.0 is pivot down full
+     *                  speed, -1.0 is retract full speed.
+     * @param extensionSpeed The speed in which to move the extension. 1.0 is extend out
+     *                  full speed, -1.0 is retract full speed.
+     */
+    public void move(double pivotSpeed, double extensionSpeed) {
+        pivot(pivotSpeed);
+        extension(extensionSpeed);
+    }
+
     /**
      * Runs the intake mechanism.
      */
     public void intake() {
         claw.move(Arm.Claw.INTAKE_SPEED);
     }
+
     /**
      * Runs the intake mechanism backwards to spit anything out.
      */
