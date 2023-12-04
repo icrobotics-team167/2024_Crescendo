@@ -121,7 +121,7 @@ public class Module {
    * @return A SwerveModuleState object representing the current state.
    */
   public SwerveModuleState getState() {
-    return null;
+    return new SwerveModuleState();
     //return new SwerveModuleState(driveMotor.getVelocity(), turnEncoder.getAbsolutePosition());
   }
 
@@ -131,7 +131,7 @@ public class Module {
    * @return A SwerveModulePosition object representing the current position.
    */
   public SwerveModulePosition getPosition() {
-    return null;
+    return new SwerveModulePosition();
     //return new SwerveModulePosition(driveMotor.getPosition(), turnEncoder.getAbsolutePosition());
   }
 
@@ -141,7 +141,7 @@ public class Module {
    * @return A Rotation2d object representing the current rotation.
    */
   public Rotation2d getRotation() {
-    return null;
+    return new Rotation2d();
     //return turnEncoder.getAbsolutePosition();
   }
 
@@ -151,7 +151,7 @@ public class Module {
    * @return Max velocity, in meters per second.
    */
   public double getMaxVel() {
-    return 696969;
+    return 1;
     //return MAX_MOVE_SPEED;
   }
 
@@ -168,7 +168,7 @@ public class Module {
    * @return Meters per rotation.
    */
   public double getMetersPerRotation() {
-    return 696969;
+    return 1;
     //return Modules.WHEEL_CIRCUMFERENCE / Modules.GEAR_RATIO;
   }
 
@@ -178,12 +178,11 @@ public class Module {
    * @return Drive feedforward for drive motor on a swerve module.
    */
   private SimpleMotorFeedforward createDriveFeedforward() {
-    return null;
-    // double kv = driveMotor.getNominalVoltage() / MAX_MOVE_SPEED;
-    // /// ^ Volt-seconds per meter (max voltage divided by max acceleration)
-    // double ka = driveMotor.getNominalVoltage() / (SwerveDrive.MAX_ACCELERATION);
-    // /// ^ Volt-seconds^2 per meter (max voltage divided by max accel)
-    // return new SimpleMotorFeedforward(0, kv, ka);
+    double kv = driveMotor.getNominalVoltage() / MAX_MOVE_SPEED;
+    /// ^ Volt-seconds per meter (max voltage divided by max acceleration)
+    double ka = driveMotor.getNominalVoltage() / (SwerveDrive.MAX_ACCELERATION);
+    /// ^ Volt-seconds^2 per meter (max voltage divided by max accel)
+    return new SimpleMotorFeedforward(0, kv, ka);
   }
 
   private String moduleName() {
