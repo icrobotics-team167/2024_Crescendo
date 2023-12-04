@@ -72,28 +72,28 @@ public class Module {
    * @param desiredState The desired state.
    */
   public void setDesiredState(SwerveModuleState desiredState) {
-    // It might be faster to flip the desired rotation 180 degrees and reverse the
-    // desired movement, so if that is the case, optimize the desired state.
-    desiredState = SwerveModuleState.optimize(desiredState, turnEncoder.getAbsolutePosition());
+    // // It might be faster to flip the desired rotation 180 degrees and reverse the
+    // // desired movement, so if that is the case, optimize the desired state.
+    // desiredState = SwerveModuleState.optimize(desiredState, turnEncoder.getAbsolutePosition());
 
-    // If the desired drive speed is the same as the previous desired drive speed,
-    // no need to do anything.
-    if (desiredState.speedMetersPerSecond != previousState.speedMetersPerSecond) {
-      double feedForward = driveMotorFF.calculate(desiredState.speedMetersPerSecond);
-      driveMotor.setDriveReference(desiredState.speedMetersPerSecond, feedForward);
-      Telemetry.sendNumber(moduleName() + " desired drive speed", desiredState.speedMetersPerSecond, Verbosity.HIGH);
-      Telemetry.sendNumber(moduleName() + " drive feedforward", feedForward, Verbosity.HIGH);
-      Telemetry.sendNumber(moduleName() + " actual drive speed", driveMotor.getVelocity(), Verbosity.HIGH);
-    }
+    // // If the desired drive speed is the same as the previous desired drive speed,
+    // // no need to do anything.
+    // if (desiredState.speedMetersPerSecond != previousState.speedMetersPerSecond) {
+    //   double feedForward = driveMotorFF.calculate(desiredState.speedMetersPerSecond);
+    //   driveMotor.setDriveReference(desiredState.speedMetersPerSecond, feedForward);
+    //   Telemetry.sendNumber(moduleName() + " desired drive speed", desiredState.speedMetersPerSecond, Verbosity.HIGH);
+    //   Telemetry.sendNumber(moduleName() + " drive feedforward", feedForward, Verbosity.HIGH);
+    //   Telemetry.sendNumber(moduleName() + " actual drive speed", driveMotor.getVelocity(), Verbosity.HIGH);
+    // }
 
-    // If the desired turn angle is the same as the previous desired turn angle, no
-    // need to do anything.
-    if (desiredState.angle != previousState.angle) {
-      turnMotor.setTurnReference(desiredState.angle);
-    }
+    // // If the desired turn angle is the same as the previous desired turn angle, no
+    // // need to do anything.
+    // if (desiredState.angle != previousState.angle) {
+    //   turnMotor.setTurnReference(desiredState.angle);
+    // }
 
-    // Set previous desired angle for the next time this is run.
-    previousState = desiredState;
+    // // Set previous desired angle for the next time this is run.
+    // previousState = desiredState;
   }
 
   /**
@@ -102,7 +102,7 @@ public class Module {
    * @param brake True for brake, false for coast.
    */
   public void setWheelBrake(boolean brake) {
-    driveMotor.configureMotorBrake(brake);
+    // driveMotor.configureMotorBrake(brake);
   }
 
   /**
@@ -111,8 +111,8 @@ public class Module {
    * @param angle The desired angle.
    */
   public void setAngle(Rotation2d angle) {
-    turnMotor.setTurnReference(angle);
-    previousState.angle = angle;
+    // turnMotor.setTurnReference(angle);
+    // previousState.angle = angle;
   }
 
   /**
@@ -121,7 +121,8 @@ public class Module {
    * @return A SwerveModuleState object representing the current state.
    */
   public SwerveModuleState getState() {
-    return new SwerveModuleState(driveMotor.getVelocity(), turnEncoder.getAbsolutePosition());
+    return null;
+    //return new SwerveModuleState(driveMotor.getVelocity(), turnEncoder.getAbsolutePosition());
   }
 
   /**
@@ -130,7 +131,8 @@ public class Module {
    * @return A SwerveModulePosition object representing the current position.
    */
   public SwerveModulePosition getPosition() {
-    return new SwerveModulePosition(driveMotor.getPosition(), turnEncoder.getAbsolutePosition());
+    return null;
+    //return new SwerveModulePosition(driveMotor.getPosition(), turnEncoder.getAbsolutePosition());
   }
 
   /**
@@ -139,7 +141,8 @@ public class Module {
    * @return A Rotation2d object representing the current rotation.
    */
   public Rotation2d getRotation() {
-    return turnEncoder.getAbsolutePosition();
+    return null;
+    //return turnEncoder.getAbsolutePosition();
   }
 
   /**
@@ -148,14 +151,15 @@ public class Module {
    * @return Max velocity, in meters per second.
    */
   public double getMaxVel() {
-    return MAX_MOVE_SPEED;
+    return 696969;
+    //return MAX_MOVE_SPEED;
   }
 
   /**
    * Resets the drive motor's positon.
    */
   public void resetPosition() {
-    driveMotor.setPosition(0);
+    //driveMotor.setPosition(0);
   }
 
   /**
@@ -164,7 +168,8 @@ public class Module {
    * @return Meters per rotation.
    */
   public double getMetersPerRotation() {
-    return Modules.WHEEL_CIRCUMFERENCE / Modules.GEAR_RATIO;
+    return 696969;
+    //return Modules.WHEEL_CIRCUMFERENCE / Modules.GEAR_RATIO;
   }
 
   /**
@@ -173,26 +178,28 @@ public class Module {
    * @return Drive feedforward for drive motor on a swerve module.
    */
   private SimpleMotorFeedforward createDriveFeedforward() {
-    double kv = driveMotor.getNominalVoltage() / MAX_MOVE_SPEED;
-    /// ^ Volt-seconds per meter (max voltage divided by max acceleration)
-    double ka = driveMotor.getNominalVoltage() / (SwerveDrive.MAX_ACCELERATION);
-    /// ^ Volt-seconds^2 per meter (max voltage divided by max accel)
-    return new SimpleMotorFeedforward(0, kv, ka);
+    return null;
+    // double kv = driveMotor.getNominalVoltage() / MAX_MOVE_SPEED;
+    // /// ^ Volt-seconds per meter (max voltage divided by max acceleration)
+    // double ka = driveMotor.getNominalVoltage() / (SwerveDrive.MAX_ACCELERATION);
+    // /// ^ Volt-seconds^2 per meter (max voltage divided by max accel)
+    // return new SimpleMotorFeedforward(0, kv, ka);
   }
 
   private String moduleName() {
-    switch (moduleNumber) {
-      case 0:
-        return "Front Left";
-      case 1:
-        return "Front Right";
-      case 2:
-        return "Back Left";
-      case 3:
-        return "Back Right";
-      default:
-        DriverStation.reportError("ERROR: Expected 4 swerve modules, but got 5.", false);
-        return String.valueOf(moduleNumber);
-    }
+    return "This is a string and definately not a spagetto (singular form of spagetti)";
+    // switch (moduleNumber) {
+    //   case 0:
+    //     return "Front Left";
+    //   case 1:
+    //     return "Front Right";
+    //   case 2:
+    //     return "Back Left";
+    //   case 3:
+    //     return "Back Right";
+    //   default:
+    //     DriverStation.reportError("ERROR: Expected 4 swerve modules, but got 5.", false);
+    //     return String.valueOf(moduleNumber);
+    // }
   }
 }
