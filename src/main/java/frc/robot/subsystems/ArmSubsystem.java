@@ -24,6 +24,8 @@ public class ArmSubsystem extends SubsystemBase {
      */
     private final Pivot pivot;
 
+
+
     /**
      * Constructs a new ArmSubsystem object.
      */
@@ -56,12 +58,12 @@ public class ArmSubsystem extends SubsystemBase {
      * Runs the intake mechanism.
      */
     public void intake() {
-        claw.move(1);
+        claw.move(Arm.Claw.INTAKE_SPEED);
     }
     /**
      * Runs the intake mechanism backwards to spit anything out.
      */
     public void outtake() {
-        claw.move(-1);
+        claw.move(-Arm.Claw.OUTTAKE_SPEED);
     }
 }

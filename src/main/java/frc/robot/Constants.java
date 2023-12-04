@@ -66,6 +66,9 @@ public final class Constants {
      * Arm configuration and characteristics.
      */
     public static final class Arm {
+      /**
+       * Extension configuration and characteristics.
+       */
       public static final class Extension {
         /**
          * The initial postion of the extension, in inches.
@@ -93,6 +96,9 @@ public final class Constants {
         public static final double EXTENSION_GEAR_RATIO = PULLEY_RATIO / GEARBOX_RATIO;
       }
 
+      /**
+       * Pivot configuration and characteristics.
+       */
       public static final class Pivot {
         /**
          * The initial position of pivot on robot boot, in degrees.
@@ -110,6 +116,20 @@ public final class Constants {
          * The gear ratio of the pivot gear.
          */
         public static final double PIVOT_GEAR_RATIO = 400.0;
+      }
+
+      /**
+       * Claw configuration and characteristics.
+       */
+      public static final class Claw {
+        /**
+         * The speed cap for the intake motor so it doesn't shred objects.
+         */
+        public static final double INTAKE_SPEED = 0.75;
+        /**
+         * The speed cap for the outtake motor so it doesn't yeet objects.
+         */
+        public static final double OUTTAKE_SPEED = 0.4;
       }
 
       /**
