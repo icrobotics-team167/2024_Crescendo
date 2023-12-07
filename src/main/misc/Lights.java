@@ -4,13 +4,12 @@ import edu.wpi.first.wpilibj.Spark;
  * Lights class for cool lights bruv.
 */
 public class Lights {
-    Spark colourSpark;
+    Spark colorspark;
 
     /**
-     * Cool colours bruv.
+     * Cool colors.
      */
-    private static enum Colours {
-        // cool colours. NOT COLORS BRUV!!!!!!!
+    private static enum Colors {
         RAINBOWPALETTE(-0.99),
         RAINBOWGLITTER(-0.89),
         CONFETTI(-0.87),
@@ -33,30 +32,30 @@ public class Lights {
         LIMESOLID(0.73),
         DARKGREENSOLID(0.75);
 
-        double colourValue;
+        double colorValue;
         /**
-         * Colours constructor bruv
-         * @param colourValue colour value bruv
+         * colors constructor
+         * @param colourValue colour value
          */
-        private Colours(double colourValue) {
+        private colors(double colourValue) {
             this.colourValue = colourValue;
         }
     }
 
     /**
-     * Loit contstructor bruv
-     * @param PWMID the PWMID of the blinky blinky light module bruv (Spark motor)
+     * Light contstructor
+     * @param PWMID the PWMID of the blinky blinky light module (Spark motor)
      */ 
     public Light(int PWMID) {
-        colourSpark = new Spark(PWMID);
+        colorspark = new Spark(PWMID);
     }
 
     /**
-     * Set the colour for the spark motor bruv
-     * @param colour Colours object bruv
+     * Set the color for the spark motor bruv
+     * @param color colors object bruv
      */
-    public void setColour(Colours colour) {
+    public void setColour(colors color) {
         // set colour to set colourValue bruv
-        colourSpark.set(colour.colourValue);
+        colorspark.set(colour.colourValue);
     }
 }
