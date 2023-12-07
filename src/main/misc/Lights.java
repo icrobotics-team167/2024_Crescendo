@@ -35,7 +35,7 @@ public class Lights {
 
         double colourValue;
         /**
-         * Colours constructor 
+         * Colours constructor bruv
          * @param colourValue colour value bruv
          */
         private Colours(double colourValue) {
@@ -52,11 +52,11 @@ public class Lights {
     }
 
     /**
-     * Set the colour for the spark motor
-     * @param colour Colours object
+     * Set the colour for the spark motor bruv
+     * @param colour Colours object bruv
      */
     public void setColour(Colours colour) {
-        // set colour to set colourValue
+        // set colour to set colourValue bruv
         colourSpark.set(colour.colourValue);
     }
 }
