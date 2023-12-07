@@ -11,27 +11,27 @@ public class Lights {
      */
     private static enum Colours {
         // cool colours. NOT COLORS BRUV!!!!!!!
-        RAINBOWPALETTE,
-        RAINBOWGLITTER,
-        CONFETTI,
-        SHOTRED,
-        SINELONRAINBOXPALETTE,
-        SINELONLAVAPALETTE,
-        BPMOCEANPALETTE,
-        FIRELARGE,
-        TWINKLESPARTYPALETTE,
-        LARSONSCANNERGRAY,
-        LIGHTCHASEBLUE,
-        HEARTBEATBLUE,
-        BREATHGRAY,
-        STROBEGOLD,
-        HOTPINKSOLID,
-        DARKREDSOLID,
-        REDSOLID,
-        GOLDSOLID,
-        LAWNGREENSOLID,
-        LIMESOLID,
-        DARKGREENSOLID;
+        RAINBOWPALETTE(-0.99),
+        RAINBOWGLITTER(-0.89),
+        CONFETTI(-0.87),
+        SHOTRED(-0.85),
+        SINELONRAINBOXPALETTE(-0.79),
+        SINELONLAVAPALETTE(-0.73),
+        BPMOCEANPALETTE(-0.75),
+        FIRELARGE(-0.57),
+        TWINKLESPARTYPALETTE(-0.53),
+        LARSONSCANNERGRAY(-0.33),
+        LIGHTCHASEBLUE(-0.29),
+        HEARTBEATBLUE(-0.23),
+        BREATHGRAY(-0.13),
+        STROBEGOLD(-0.07),
+        HOTPINKSOLID(0.57),
+        DARKREDSOLID(0.59),
+        REDSOLID(0.61),
+        GOLDSOLID(0.67),
+        LAWNGREENSOLID(0.71),
+        LIMESOLID(0.73),
+        DARKGREENSOLID(0.75);
 
         double colourValue;
         /**
