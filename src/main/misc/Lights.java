@@ -39,7 +39,7 @@ public class Lights {
          * @param colourValue colour value bruv
          */
         private Colours(double colourValue) {
-            this.colorValue = colourValue;
+            this.colourValue = colourValue;
         }
     }
 
@@ -49,7 +49,14 @@ public class Lights {
      */ 
     public Light(int PWMID) {
         colourSpark = new Spark(PWMID);
+    }
 
-        colourSpark.set(-0.99);
+    /**
+     * Set the colour for the spark motor
+     * @param colour Colours object
+     */
+    public void setColour(Colours colour) {
+        // set colour to set colourValue
+        colourSpark.set(colour.colourValue);
     }
 }
