@@ -27,8 +27,7 @@ public class Pivot {
         this.followerMotor = followerMotor;
 
         leaderMotor.configureIntegratedEncoder(getDegreesPerRotation());
-        followerMotor.configureInverted(true);
-        followerMotor.configureFollow(leaderMotor);
+        followerMotor.configureFollow(leaderMotor, true);
     }
 
     /**

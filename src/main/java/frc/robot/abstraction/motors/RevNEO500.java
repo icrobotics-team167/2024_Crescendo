@@ -128,11 +128,11 @@ public class RevNEO500 extends AbstractMotor {
     }
 
     @Override
-    public void configureFollow(AbstractMotor otherMotor) {
+    public void configureFollow(AbstractMotor otherMotor, boolean invert) {
         if (!(otherMotor instanceof RevNEO500)) {
             throw new UnsupportedOperationException("Leader motor must be of the same motor type!");
         }
-        motor.follow((CANSparkMax)otherMotor.getMotor());
+        motor.follow((CANSparkMax)otherMotor.getMotor(), invert);
     }
 
     @Override

@@ -77,7 +77,7 @@ public abstract class AbstractMotor {
      * 
      * @param motor The leader motor.
      */
-    public abstract void configureFollow(AbstractMotor otherMotor);
+    public abstract void configureFollow(AbstractMotor otherMotor, boolean invert);
 
     /**
      * Set current limits for the motor.
