@@ -63,9 +63,9 @@ public class RobotContainer {
     // Configure arm controls
     MoveArm armController = new MoveArm(
       arm,
-    () -> MathUtil.applyDeadband(-secondaryLeftStick.getY(), Constants.Driving.Controllers.Deadbands.SECONDARY_LEFT),
-    () -> MathUtil.applyDeadband(-secondaryRightStick.getY(), Constants.Driving.Controllers.Deadbands.SECONDARY_RIGHT));
-    driveBase.setDefaultCommand(armController);
+    () -> MathUtil.applyDeadband(-secondaryRightStick.getY(), Constants.Driving.Controllers.Deadbands.SECONDARY_LEFT),
+    () -> MathUtil.applyDeadband(-secondaryLeftStick.getY(), Constants.Driving.Controllers.Deadbands.SECONDARY_RIGHT));
+    arm.setDefaultCommand(armController);
   }
 
   /**

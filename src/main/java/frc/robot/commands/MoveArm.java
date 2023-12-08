@@ -7,14 +7,16 @@ import frc.robot.subsystems.ArmSubsystem;
 
 public class MoveArm extends Command {
     ArmSubsystem arm;
-    DoubleSupplier extend, pivot;
-    public MoveArm( ArmSubsystem arm, DoubleSupplier extend, DoubleSupplier pivot) {
+    DoubleSupplier extendControl, pivotControl;
+    public MoveArm( ArmSubsystem arm, DoubleSupplier extendControl, DoubleSupplier pivotControl) {
         this.arm = arm;
-        this.extend = extend;
-        this.pivot = pivot;
+        this.extendControl = extendControl;
+        this.pivotControl = pivotControl;
+
+        addRequirements(arm);
     }
     @Override
     public void execute() {
-        arm.move(pivot.getAsDouble(), extend.getAsDouble());
+        arm.move(pivotControl.getAsDouble(), extendControl.getAsDouble());
     }
 }

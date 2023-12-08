@@ -392,15 +392,15 @@ public class SwerveDrivebase {
      * position using a LimeLight that's detecting AprilTags.
      */
     public void addLLVisionMeasurement() {
-        // Get pose
-        Pose2d robotPose = LimelightHelpers.getBotPose2d(Vision.LimeLight.APRILTAG_DETECTOR);
-        // Calculate latency in seconds
-        double limeLightLatency = (LimelightHelpers.getLatency_Capture(Vision.LimeLight.APRILTAG_DETECTOR)
-                + LimelightHelpers.getLatency_Pipeline(Vision.LimeLight.APRILTAG_DETECTOR)) / 1000.0;
-        // Calculate timestamp using the current robot FPGA time and the latency.
-        double captureTimeStamp = Timer.getFPGATimestamp() - limeLightLatency;
-        // Call addVisionMeasurement to update the position
-        addVisionMeasurement(robotPose, captureTimeStamp);
+        // // Get pose
+        // Pose2d robotPose = LimelightHelpers.getBotPose2d(Vision.LimeLight.APRILTAG_DETECTOR);
+        // // Calculate latency in seconds
+        // double limeLightLatency = (LimelightHelpers.getLatency_Capture(Vision.LimeLight.APRILTAG_DETECTOR)
+        //         + LimelightHelpers.getLatency_Pipeline(Vision.LimeLight.APRILTAG_DETECTOR)) / 1000.0;
+        // // Calculate timestamp using the current robot FPGA time and the latency.
+        // double captureTimeStamp = Timer.getFPGATimestamp() - limeLightLatency;
+        // // Call addVisionMeasurement to update the position
+        // addVisionMeasurement(robotPose, captureTimeStamp);
     }
 
     /**

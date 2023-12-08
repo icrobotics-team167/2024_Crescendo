@@ -1,6 +1,8 @@
 package frc.robot.arm;
 
 import frc.robot.abstraction.motors.AbstractMotor;
+import frc.robot.helpers.Telemetry;
+import frc.robot.helpers.Telemetry.Verbosity;
 import frc.robot.Constants.Robot.Arm;
 
 /**
@@ -28,6 +30,8 @@ public class Pivot {
 
         leaderMotor.configureIntegratedEncoder(getDegreesPerRotation());
         followerMotor.configureFollow(leaderMotor, true);
+
+        leaderMotor.setPosition(Arm.Pivot.INITIAL_POSITION);
     }
 
     /**
@@ -37,6 +41,7 @@ public class Pivot {
      *              speed, -1.0 is pivot up full speed.
      */
     public void move(double speed) {
+        Telemetry.sendNumber("Pivot.position", leaderMotor.getPosition(), Verbosity.HIGH);
         if (isTooFarUp() && speed < 0) {
             leaderMotor.stop();
             return;
@@ -54,7 +59,7 @@ public class Pivot {
      * @return If the arm is above its max point, configured in Constants.
      */
     public boolean isTooFarUp() {
-        return leaderMotor.getPosition() >= Arm.Pivot.PIVOT_MAX;
+        return Telemetry.sendBoolean("Pivot.isTooFarUp", leaderMotor.getPosition() >= Arm.Pivot.PIVOT_MAX, Verbosity.HIGH);
     }
 
     /**
@@ -63,7 +68,7 @@ public class Pivot {
      * @return If the arm is below its min point, configured in Constants.
      */
     public boolean isTooFarDown() {
-        return leaderMotor.getPosition() <= Arm.Pivot.PIVOT_MIN;
+        return Telemetry.sendBoolean("Pivot.isTooFarDown", leaderMotor.getPosition() <= Arm.Pivot.PIVOT_MIN, Verbosity.HIGH);
     }
 
     /**
