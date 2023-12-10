@@ -13,7 +13,7 @@
         "tiles": {
           "0,0": {
             "size": [
-              15,
+              13,
               3
             ],
             "content": {
@@ -26,12 +26,12 @@
           },
           "0,3": {
             "size": [
-              15,
-              10
+              13,
+              14
             ],
             "content": {
               "_type": "Grid Layout",
-              "_title": "Swerve Module Move Speeds",
+              "_title": "Swerve Module Move Speeds (m/s)",
               "_glyph": 149,
               "_showGlyph": false,
               "Layout/Number of columns": 2,
@@ -39,68 +39,116 @@
               "Layout/Label position": "TOP",
               "_children": {
                 "0,0": {
-                  "_type": "Text View",
+                  "_type": "Number Bar",
                   "_source0": "network_table:///SmartDashboard/Front Left desired move speed",
-                  "_title": "Front Left desired move speed",
+                  "_title": "Front Left Desired",
                   "_glyph": 148,
-                  "_showGlyph": false
+                  "_showGlyph": false,
+                  "Range/Min": -4.0,
+                  "Range/Max": 4.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5,
+                  "Visuals/Show text": true,
+                  "Visuals/Orientation": "HORIZONTAL"
                 },
                 "1,0": {
-                  "_type": "Text View",
+                  "_type": "Number Bar",
                   "_source0": "network_table:///SmartDashboard/Front Right desired move speed",
-                  "_title": "Front Right desired move speed",
+                  "_title": "Front Right Desired",
                   "_glyph": 148,
-                  "_showGlyph": false
+                  "_showGlyph": false,
+                  "Range/Min": -4.0,
+                  "Range/Max": 4.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5,
+                  "Visuals/Show text": true,
+                  "Visuals/Orientation": "HORIZONTAL"
                 },
                 "0,1": {
-                  "_type": "Text View",
+                  "_type": "Number Bar",
                   "_source0": "network_table:///SmartDashboard/Front Left actual move speed",
-                  "_title": "Front Left actual move speed",
+                  "_title": "Front Left Actual",
                   "_glyph": 148,
-                  "_showGlyph": false
+                  "_showGlyph": false,
+                  "Range/Min": -4.0,
+                  "Range/Max": 4.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5,
+                  "Visuals/Show text": true,
+                  "Visuals/Orientation": "HORIZONTAL"
                 },
                 "1,1": {
-                  "_type": "Text View",
+                  "_type": "Number Bar",
                   "_source0": "network_table:///SmartDashboard/Front Right actual move speed",
-                  "_title": "Front Right actual move speed",
+                  "_title": "Front Right Actual",
                   "_glyph": 148,
-                  "_showGlyph": false
+                  "_showGlyph": false,
+                  "Range/Min": -4.0,
+                  "Range/Max": 4.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5,
+                  "Visuals/Show text": true,
+                  "Visuals/Orientation": "HORIZONTAL"
                 },
                 "0,2": {
-                  "_type": "Text View",
+                  "_type": "Number Bar",
                   "_source0": "network_table:///SmartDashboard/Back Left desired move speed",
-                  "_title": "Back Left desired move speed",
+                  "_title": "Back Left Desired",
                   "_glyph": 148,
-                  "_showGlyph": false
+                  "_showGlyph": false,
+                  "Range/Min": -4.0,
+                  "Range/Max": 4.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5,
+                  "Visuals/Show text": true,
+                  "Visuals/Orientation": "HORIZONTAL"
                 },
                 "1,2": {
-                  "_type": "Text View",
+                  "_type": "Number Bar",
                   "_source0": "network_table:///SmartDashboard/Back Right desired move speed",
-                  "_title": "Back Right desired move speed",
+                  "_title": "Back Right Desired",
                   "_glyph": 148,
-                  "_showGlyph": false
+                  "_showGlyph": false,
+                  "Range/Min": -4.0,
+                  "Range/Max": 4.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5,
+                  "Visuals/Show text": true,
+                  "Visuals/Orientation": "HORIZONTAL"
                 },
                 "0,3": {
-                  "_type": "Text View",
+                  "_type": "Number Bar",
                   "_source0": "network_table:///SmartDashboard/Back Left actual move speed",
-                  "_title": "Back Left actual move speed",
+                  "_title": "Back Left Actual",
                   "_glyph": 148,
-                  "_showGlyph": false
+                  "_showGlyph": false,
+                  "Range/Min": -4.0,
+                  "Range/Max": 4.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5,
+                  "Visuals/Show text": true,
+                  "Visuals/Orientation": "HORIZONTAL"
                 },
                 "1,3": {
-                  "_type": "Text View",
+                  "_type": "Number Bar",
                   "_source0": "network_table:///SmartDashboard/Back Right actual move speed",
-                  "_title": "Back Right actual move speed",
+                  "_title": "Back Right Actual",
                   "_glyph": 148,
-                  "_showGlyph": false
+                  "_showGlyph": false,
+                  "Range/Min": -4.0,
+                  "Range/Max": 4.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5,
+                  "Visuals/Show text": true,
+                  "Visuals/Orientation": "HORIZONTAL"
                 }
               }
             }
           },
-          "15,0": {
+          "13,0": {
             "size": [
               12,
-              29
+              30
             ],
             "content": {
               "_type": "Grid Layout",
@@ -202,9 +250,9 @@
               }
             }
           },
-          "52,0": {
+          "51,0": {
             "size": [
-              8,
+              9,
               10
             ],
             "content": {
@@ -245,40 +293,47 @@
               ]
             }
           },
-          "47,0": {
+          "51,10": {
             "size": [
-              5,
-              6
+              9,
+              8
             ],
             "content": {
-              "_type": "List Layout",
+              "_type": "Grid Layout",
               "_title": "Teleop Control Inputs",
               "_glyph": 149,
               "_showGlyph": false,
-              "Layout/Label position": "LEFT",
-              "_children": [
-                {
-                  "_type": "Text View",
+              "Layout/Number of columns": 2,
+              "Layout/Number of rows": 2,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "0,0": {
+                  "_type": "Number Bar",
                   "_source0": "network_table:///SmartDashboard/AbsoluteFieldDrive.controlInX",
                   "_title": "X",
                   "_glyph": 148,
-                  "_showGlyph": false
+                  "_showGlyph": false,
+                  "Range/Min": -1.0,
+                  "Range/Max": 1.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5,
+                  "Visuals/Show text": true,
+                  "Visuals/Orientation": "HORIZONTAL"
                 },
-                {
-                  "_type": "Text View",
+                "1,0": {
+                  "_type": "Number Bar",
                   "_source0": "network_table:///SmartDashboard/AbsoluteFieldDrive.controlInY",
                   "_title": "Y",
                   "_glyph": 148,
-                  "_showGlyph": false
+                  "_showGlyph": false,
+                  "Range/Min": -1.0,
+                  "Range/Max": 1.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5,
+                  "Visuals/Show text": true,
+                  "Visuals/Orientation": "HORIZONTAL"
                 },
-                {
-                  "_type": "Text View",
-                  "_source0": "network_table:///SmartDashboard/AbsoluteFieldDrive.controlInRot",
-                  "_title": "Rot",
-                  "_glyph": 148,
-                  "_showGlyph": false
-                },
-                {
+                "1,1": {
                   "_type": "Boolean Box",
                   "_source0": "network_table:///SmartDashboard/SwerveDrivebase.slowMode",
                   "_title": "Slow Mode",
@@ -286,8 +341,21 @@
                   "_showGlyph": false,
                   "Colors/Color when true": "#7CFC00FF",
                   "Colors/Color when false": "#8B0000FF"
+                },
+                "0,1": {
+                  "_type": "Number Bar",
+                  "_source0": "network_table:///SmartDashboard/AbsoluteFieldDrive.controlInRot",
+                  "_title": "Rot",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Range/Min": -1.0,
+                  "Range/Max": 1.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5,
+                  "Visuals/Show text": true,
+                  "Visuals/Orientation": "HORIZONTAL"
                 }
-              ]
+              }
             }
           }
         }
