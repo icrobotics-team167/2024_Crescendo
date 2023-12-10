@@ -114,10 +114,10 @@ public final class Constants {
         public static final class ControlParams {
           public static final double DRIVE_P = 0.25;
           public static final double DRIVE_I = 0; // Don't use
-          public static final double DRIVE_D = 0; // IDK What the unit is
-          public static final double TURN_P = 1.0 / 360; // Motor output per degree of error
+          public static final double DRIVE_D = 0;
+          public static final double TURN_P = 1.0 / 40;
           public static final double TURN_I = 0; // Don't use
-          public static final double TURN_D = 1.0 / 360; // IDK What the unit is
+          public static final double TURN_D = 1.0 / 360;
         }
 
         /**
@@ -341,7 +341,7 @@ public final class Constants {
     /**
      * Move speed multipliers for slow mode.
      */
-    public static final double SLOWMODE_MULT = 0.4;
+    public static final double SLOWMODE_MULT = 0.25;
 
     /**
      * Controller configurations.
@@ -377,19 +377,19 @@ public final class Constants {
         /**
          * Primary driver's left stick deadband.
          */
-        public static final double PRIMARY_LEFT = 0.1;
+        public static final double PRIMARY_LEFT = 0.05;
         /**
          * Primary driver's right stick deadband.
          */
-        public static final double PRIMARY_RIGHT = 0.1;
+        public static final double PRIMARY_RIGHT = 0.05;
         /**
          * Secondary driver's left stick deadband.
          */
-        public static final double SECONDARY_LEFT = 0.09;
+        public static final double SECONDARY_LEFT = 0.03;
         /**
          * Secondary driver's right stick deadband.
          */
-        public static final double SECONDARY_RIGHT = 0.09;
+        public static final double SECONDARY_RIGHT = 0.03;
       }
     }
 
