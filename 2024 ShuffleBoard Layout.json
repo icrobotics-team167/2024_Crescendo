@@ -1,0 +1,315 @@
+{
+  "tabPane": [
+    {
+      "title": "SmartDashboard",
+      "autoPopulate": true,
+      "autoPopulatePrefix": "SmartDashboard/",
+      "widgetPane": {
+        "gridSize": 32.0,
+        "showGrid": true,
+        "hgap": 0.0,
+        "vgap": 0.0,
+        "titleType": 0,
+        "tiles": {
+          "0,0": {
+            "size": [
+              15,
+              3
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/SendableChooser[0]",
+              "_title": "Auto Chooser",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "0,3": {
+            "size": [
+              15,
+              10
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Swerve Module Move Speeds",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Number of columns": 2,
+              "Layout/Number of rows": 4,
+              "Layout/Label position": "TOP",
+              "_children": {
+                "0,0": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Front Left desired move speed",
+                  "_title": "Front Left desired move speed",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                "1,0": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Front Right desired move speed",
+                  "_title": "Front Right desired move speed",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                "0,1": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Front Left actual move speed",
+                  "_title": "Front Left actual move speed",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                "1,1": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Front Right actual move speed",
+                  "_title": "Front Right actual move speed",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                "0,2": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Back Left desired move speed",
+                  "_title": "Back Left desired move speed",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                "1,2": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Back Right desired move speed",
+                  "_title": "Back Right desired move speed",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                "0,3": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Back Left actual move speed",
+                  "_title": "Back Left actual move speed",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                "1,3": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Back Right actual move speed",
+                  "_title": "Back Right actual move speed",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                }
+              }
+            }
+          },
+          "15,0": {
+            "size": [
+              25,
+              29
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Swerve Module Turn Positions",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Number of columns": 4,
+              "Layout/Number of rows": 4,
+              "Layout/Label position": "TOP",
+              "_children": {
+                "0,0": {
+                  "_type": "Gyro",
+                  "_source0": "network_table:///SmartDashboard/Front Left desired turn angle",
+                  "_title": "Front Left desired turn angle",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Visuals/Major tick spacing": 45.0,
+                  "Visuals/Starting angle": 180.0,
+                  "Visuals/Show tick mark ring": true,
+                  "Visuals/Counter clockwise": false
+                },
+                "2,0": {
+                  "_type": "Gyro",
+                  "_source0": "network_table:///SmartDashboard/Front Right desired turn angle",
+                  "_title": "Front Right desired turn angle",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Visuals/Major tick spacing": 45.0,
+                  "Visuals/Starting angle": 180.0,
+                  "Visuals/Show tick mark ring": true,
+                  "Visuals/Counter clockwise": false
+                },
+                "1,0": {
+                  "_type": "Gyro",
+                  "_source0": "network_table:///SmartDashboard/Front Left integrated encoder turn angle",
+                  "_title": "Front Left integrated encoder turn angle",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Visuals/Major tick spacing": 45.0,
+                  "Visuals/Starting angle": 180.0,
+                  "Visuals/Show tick mark ring": true,
+                  "Visuals/Counter clockwise": false
+                },
+                "0,2": {
+                  "_type": "Gyro",
+                  "_source0": "network_table:///SmartDashboard/Back Left desired turn angle",
+                  "_title": "Back Left desired turn angle",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Visuals/Major tick spacing": 45.0,
+                  "Visuals/Starting angle": 180.0,
+                  "Visuals/Show tick mark ring": true,
+                  "Visuals/Counter clockwise": false
+                },
+                "2,3": {
+                  "_type": "Gyro",
+                  "_source0": "network_table:///SmartDashboard/Back Right actual turn angle",
+                  "_title": "Back Right actual turn angle",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Visuals/Major tick spacing": 45.0,
+                  "Visuals/Starting angle": 180.0,
+                  "Visuals/Show tick mark ring": true,
+                  "Visuals/Counter clockwise": false
+                },
+                "3,2": {
+                  "_type": "Gyro",
+                  "_source0": "network_table:///SmartDashboard/Back Right integrated encoder turn angle",
+                  "_title": "Back Right integrated encoder turn angle",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Visuals/Major tick spacing": 45.0,
+                  "Visuals/Starting angle": 180.0,
+                  "Visuals/Show tick mark ring": true,
+                  "Visuals/Counter clockwise": false
+                },
+                "3,0": {
+                  "_type": "Gyro",
+                  "_source0": "network_table:///SmartDashboard/Front Right integrated encoder turn angle",
+                  "_title": "Front Right integrated encoder turn angle",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Visuals/Major tick spacing": 45.0,
+                  "Visuals/Starting angle": 180.0,
+                  "Visuals/Show tick mark ring": true,
+                  "Visuals/Counter clockwise": false
+                },
+                "1,2": {
+                  "_type": "Gyro",
+                  "_source0": "network_table:///SmartDashboard/Back Left integrated encoder turn angle",
+                  "_title": "Back Left integrated encoder turn angle",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Visuals/Major tick spacing": 45.0,
+                  "Visuals/Starting angle": 180.0,
+                  "Visuals/Show tick mark ring": true,
+                  "Visuals/Counter clockwise": false
+                },
+                "0,3": {
+                  "_type": "Gyro",
+                  "_source0": "network_table:///SmartDashboard/Back Left actual turn angle",
+                  "_title": "Back Left actual turn angle",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Visuals/Major tick spacing": 45.0,
+                  "Visuals/Starting angle": 180.0,
+                  "Visuals/Show tick mark ring": true,
+                  "Visuals/Counter clockwise": false
+                },
+                "2,2": {
+                  "_type": "Gyro",
+                  "_source0": "network_table:///SmartDashboard/Back Right desired turn angle",
+                  "_title": "Back Right desired turn angle",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Visuals/Major tick spacing": 45.0,
+                  "Visuals/Starting angle": 180.0,
+                  "Visuals/Show tick mark ring": true,
+                  "Visuals/Counter clockwise": false
+                },
+                "2,1": {
+                  "_type": "Gyro",
+                  "_source0": "network_table:///SmartDashboard/Front Right actual turn angle",
+                  "_title": "Front Right actual turn angle",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Visuals/Major tick spacing": 45.0,
+                  "Visuals/Starting angle": 180.0,
+                  "Visuals/Show tick mark ring": true,
+                  "Visuals/Counter clockwise": false
+                },
+                "0,1": {
+                  "_type": "Gyro",
+                  "_source0": "network_table:///SmartDashboard/Front Left actual turn angle",
+                  "_title": "Front Left actual turn angle",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Visuals/Major tick spacing": 45.0,
+                  "Visuals/Starting angle": 180.0,
+                  "Visuals/Show tick mark ring": true,
+                  "Visuals/Counter clockwise": false
+                }
+              }
+            }
+          },
+          "52,0": {
+            "size": [
+              8,
+              10
+            ],
+            "content": {
+              "_type": "List Layout",
+              "_title": "Robot Velocities",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Label position": "TOP",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveDrivebase.robotVelX",
+                  "_title": "Vel X (m/s)",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveDrivebase.robotVelY",
+                  "_title": "Vel Y (m/s)",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveDrivebase.robotVelRot",
+                  "_title": "Vel Rot (rad/s)",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveDrivebase.driftCompensation",
+                  "_title": "Drift Compensation",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "LiveWindow",
+      "autoPopulate": true,
+      "autoPopulatePrefix": "LiveWindow/",
+      "widgetPane": {
+        "gridSize": 64.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {}
+      }
+    }
+  ],
+  "windowGeometry": {
+    "x": -8.0,
+    "y": -8.0,
+    "width": 1936.0,
+    "height": 1048.0
+  }
+}

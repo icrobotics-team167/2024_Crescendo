@@ -94,7 +94,8 @@ public final class Constants {
          * Drive motor gear ratio, or how many times the drive motor will rotate before
          * 1 complete rotation of the wheel.
          */
-        public static final double GEAR_RATIO = 6.75;
+        public static final double DRIVE_GEAR_RATIO = 6.75;
+        public static final double TURN_GEAR_RATIO = 150.0/7.0;
         /**
          * Diameter of the wheel, measured in meters.
          */
@@ -109,6 +110,15 @@ public final class Constants {
          * TODO: Figure out if thisis the right value or not.
          */
         public static final double WHEEL_COF = 0.77;
+
+        public static final class ControlParams {
+          public static final double DRIVE_P = 0.25;
+          public static final double DRIVE_I = 0; // Don't use
+          public static final double DRIVE_D = 0; // IDK What the unit is
+          public static final double TURN_P = 1.0 / 180; // Motor output per degree of error
+          public static final double TURN_I = 0; // Don't use
+          public static final double TURN_D = 0; // IDK What the unit is
+        }
 
         /**
          * Positions of the modules, relative to the center of the robot, measured in

@@ -99,7 +99,7 @@ public class RevNEO500 extends AbstractMotor {
             configureCANStatusFrames(10, 20, 20, 500, 500);
         } else {
             configureSparkMax(() -> absoluteEncoder.setPositionConversionFactor(encoderConversionFactor));
-            configureSparkMax(() -> absoluteEncoder.setVelocityConversionFactor(encoderConversionFactor));
+            configureSparkMax(() -> absoluteEncoder.setVelocityConversionFactor(encoderConversionFactor / 60));
         }
     }
 
@@ -111,10 +111,10 @@ public class RevNEO500 extends AbstractMotor {
     }
 
     @Override
-    public void configurePIDWrapping(double minValue, double maxValue) {
-        configureSparkMax(() -> pid.setPositionPIDWrappingEnabled(true));
-        configureSparkMax(() -> pid.setPositionPIDWrappingMinInput(minValue));
-        configureSparkMax(() -> pid.setPositionPIDWrappingMaxInput(maxValue));
+    public void configurePIDWrapping(boolean wrapPID) {
+        configureSparkMax(() -> pid.setPositionPIDWrappingEnabled(wrapPID));
+        configureSparkMax(() -> pid.setPositionPIDWrappingMinInput(-180));
+        configureSparkMax(() -> pid.setPositionPIDWrappingMaxInput(180));
     }
 
     @Override
