@@ -324,9 +324,6 @@ public class SwerveDrivebase {
      */
     public ChassisSpeeds getRobotVelocity() {
         ChassisSpeeds robotVelocity = kinematics.toChassisSpeeds(getStates());
-        Telemetry.sendNumber("SwerveDrivebase.robotVelX", robotVelocity.vxMetersPerSecond, Verbosity.MEDIUM);
-        Telemetry.sendNumber("SwerveDrivebase.robotVelY", robotVelocity.vyMetersPerSecond, Verbosity.MEDIUM);
-        Telemetry.sendNumber("SwerveDrivebase.robotVelRot", robotVelocity.omegaRadiansPerSecond, Verbosity.MEDIUM);
         return robotVelocity;
     }
 
@@ -445,7 +442,6 @@ public class SwerveDrivebase {
         } else {
             slowMode = true;
         }
-        Telemetry.sendBoolean("SwerveDrivebase.slowMode", slowMode, Verbosity.LOW);
     }
 
     /**
@@ -486,6 +482,11 @@ public class SwerveDrivebase {
     }
 
     public void sendTelemetry() {
+        ChassisSpeeds robotVelocity = getRobotVelocity();
+        Telemetry.sendNumber("SwerveDrivebase.robotVelX", robotVelocity.vxMetersPerSecond, Verbosity.MEDIUM);
+        Telemetry.sendNumber("SwerveDrivebase.robotVelY", robotVelocity.vyMetersPerSecond, Verbosity.MEDIUM);
+        Telemetry.sendNumber("SwerveDrivebase.robotVelRot", robotVelocity.omegaRadiansPerSecond, Verbosity.MEDIUM);
+        Telemetry.sendBoolean("SwerveDrivebase.slowMode", slowMode, Verbosity.LOW);
         for (Module module : modules) {
             module.sendTelemetry();
         }
