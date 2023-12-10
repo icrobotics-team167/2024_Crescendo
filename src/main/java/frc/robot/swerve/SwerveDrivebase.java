@@ -221,12 +221,8 @@ public class SwerveDrivebase {
         // Drive modules
         SwerveModuleState[] moduleDesiredStates = kinematics.toSwerveModuleStates(velocityCommand);
         // If the commanded module speeds is too fast, slow down
-        SwerveDriveKinematics.desaturateWheelSpeeds(
-                moduleDesiredStates,
-                getRobotVelocity(),
-                getAbsoluteMaxVel(),
-                getMaxTranslationalVel(),
-                getMaxRotVel());
+        SwerveDriveKinematics.desaturateWheelSpeeds(moduleDesiredStates, velocityCommand, getAbsoluteMaxVel(),
+                getMaxTranslationalVel(), getMaxRotVel());
 
         for (Module module : modules) {
             module.setDesiredState(moduleDesiredStates[module.moduleNumber]);
@@ -393,10 +389,13 @@ public class SwerveDrivebase {
      */
     public void addLLVisionMeasurement() {
         // // Get pose
-        // Pose2d robotPose = LimelightHelpers.getBotPose2d(Vision.LimeLight.APRILTAG_DETECTOR);
+        // Pose2d robotPose =
+        // LimelightHelpers.getBotPose2d(Vision.LimeLight.APRILTAG_DETECTOR);
         // // Calculate latency in seconds
-        // double limeLightLatency = (LimelightHelpers.getLatency_Capture(Vision.LimeLight.APRILTAG_DETECTOR)
-        //         + LimelightHelpers.getLatency_Pipeline(Vision.LimeLight.APRILTAG_DETECTOR)) / 1000.0;
+        // double limeLightLatency =
+        // (LimelightHelpers.getLatency_Capture(Vision.LimeLight.APRILTAG_DETECTOR)
+        // + LimelightHelpers.getLatency_Pipeline(Vision.LimeLight.APRILTAG_DETECTOR)) /
+        // 1000.0;
         // // Calculate timestamp using the current robot FPGA time and the latency.
         // double captureTimeStamp = Timer.getFPGATimestamp() - limeLightLatency;
         // // Call addVisionMeasurement to update the position

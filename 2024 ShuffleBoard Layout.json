@@ -99,7 +99,7 @@
           },
           "15,0": {
             "size": [
-              25,
+              12,
               29
             ],
             "content": {
@@ -107,7 +107,7 @@
               "_title": "Swerve Module Turn Positions",
               "_glyph": 149,
               "_showGlyph": false,
-              "Layout/Number of columns": 4,
+              "Layout/Number of columns": 2,
               "Layout/Number of rows": 4,
               "Layout/Label position": "TOP",
               "_children": {
@@ -120,7 +120,7 @@
                   "Visuals/Major tick spacing": 45.0,
                   "Visuals/Starting angle": 180.0,
                   "Visuals/Show tick mark ring": true,
-                  "Visuals/Counter clockwise": false
+                  "Visuals/Counter clockwise": true
                 },
                 "2,0": {
                   "_type": "Gyro",
@@ -131,18 +131,7 @@
                   "Visuals/Major tick spacing": 45.0,
                   "Visuals/Starting angle": 180.0,
                   "Visuals/Show tick mark ring": true,
-                  "Visuals/Counter clockwise": false
-                },
-                "1,0": {
-                  "_type": "Gyro",
-                  "_source0": "network_table:///SmartDashboard/Front Left integrated encoder turn angle",
-                  "_title": "Front Left integrated encoder turn angle",
-                  "_glyph": 148,
-                  "_showGlyph": false,
-                  "Visuals/Major tick spacing": 45.0,
-                  "Visuals/Starting angle": 180.0,
-                  "Visuals/Show tick mark ring": true,
-                  "Visuals/Counter clockwise": false
+                  "Visuals/Counter clockwise": true
                 },
                 "0,2": {
                   "_type": "Gyro",
@@ -153,7 +142,7 @@
                   "Visuals/Major tick spacing": 45.0,
                   "Visuals/Starting angle": 180.0,
                   "Visuals/Show tick mark ring": true,
-                  "Visuals/Counter clockwise": false
+                  "Visuals/Counter clockwise": true
                 },
                 "2,3": {
                   "_type": "Gyro",
@@ -164,40 +153,7 @@
                   "Visuals/Major tick spacing": 45.0,
                   "Visuals/Starting angle": 180.0,
                   "Visuals/Show tick mark ring": true,
-                  "Visuals/Counter clockwise": false
-                },
-                "3,2": {
-                  "_type": "Gyro",
-                  "_source0": "network_table:///SmartDashboard/Back Right integrated encoder turn angle",
-                  "_title": "Back Right integrated encoder turn angle",
-                  "_glyph": 148,
-                  "_showGlyph": false,
-                  "Visuals/Major tick spacing": 45.0,
-                  "Visuals/Starting angle": 180.0,
-                  "Visuals/Show tick mark ring": true,
-                  "Visuals/Counter clockwise": false
-                },
-                "3,0": {
-                  "_type": "Gyro",
-                  "_source0": "network_table:///SmartDashboard/Front Right integrated encoder turn angle",
-                  "_title": "Front Right integrated encoder turn angle",
-                  "_glyph": 148,
-                  "_showGlyph": false,
-                  "Visuals/Major tick spacing": 45.0,
-                  "Visuals/Starting angle": 180.0,
-                  "Visuals/Show tick mark ring": true,
-                  "Visuals/Counter clockwise": false
-                },
-                "1,2": {
-                  "_type": "Gyro",
-                  "_source0": "network_table:///SmartDashboard/Back Left integrated encoder turn angle",
-                  "_title": "Back Left integrated encoder turn angle",
-                  "_glyph": 148,
-                  "_showGlyph": false,
-                  "Visuals/Major tick spacing": 45.0,
-                  "Visuals/Starting angle": 180.0,
-                  "Visuals/Show tick mark ring": true,
-                  "Visuals/Counter clockwise": false
+                  "Visuals/Counter clockwise": true
                 },
                 "0,3": {
                   "_type": "Gyro",
@@ -208,7 +164,7 @@
                   "Visuals/Major tick spacing": 45.0,
                   "Visuals/Starting angle": 180.0,
                   "Visuals/Show tick mark ring": true,
-                  "Visuals/Counter clockwise": false
+                  "Visuals/Counter clockwise": true
                 },
                 "2,2": {
                   "_type": "Gyro",
@@ -219,7 +175,7 @@
                   "Visuals/Major tick spacing": 45.0,
                   "Visuals/Starting angle": 180.0,
                   "Visuals/Show tick mark ring": true,
-                  "Visuals/Counter clockwise": false
+                  "Visuals/Counter clockwise": true
                 },
                 "2,1": {
                   "_type": "Gyro",
@@ -230,7 +186,7 @@
                   "Visuals/Major tick spacing": 45.0,
                   "Visuals/Starting angle": 180.0,
                   "Visuals/Show tick mark ring": true,
-                  "Visuals/Counter clockwise": false
+                  "Visuals/Counter clockwise": true
                 },
                 "0,1": {
                   "_type": "Gyro",
@@ -241,7 +197,7 @@
                   "Visuals/Major tick spacing": 45.0,
                   "Visuals/Starting angle": 180.0,
                   "Visuals/Show tick mark ring": true,
-                  "Visuals/Counter clockwise": false
+                  "Visuals/Counter clockwise": true
                 }
               }
             }
@@ -288,6 +244,51 @@
                 }
               ]
             }
+          },
+          "47,0": {
+            "size": [
+              5,
+              6
+            ],
+            "content": {
+              "_type": "List Layout",
+              "_title": "Teleop Control Inputs",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Label position": "LEFT",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/AbsoluteFieldDrive.controlInX",
+                  "_title": "X",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/AbsoluteFieldDrive.controlInY",
+                  "_title": "Y",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/AbsoluteFieldDrive.controlInRot",
+                  "_title": "Rot",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/SwerveDrivebase.slowMode",
+                  "_title": "Slow Mode",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                }
+              ]
+            }
           }
         }
       }
@@ -310,6 +311,6 @@
     "x": -8.0,
     "y": -8.0,
     "width": 1936.0,
-    "height": 1048.0
+    "height": 1056.0
   }
 }

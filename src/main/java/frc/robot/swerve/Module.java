@@ -69,8 +69,10 @@ public class Module {
     turnMotor.configureMotorBrake(false);
     turnMotor.configurePIDWrapping(true);
     turnMotor.configurePID(Modules.ControlParams.TURN_P, Modules.ControlParams.TURN_I, Modules.ControlParams.TURN_D);
-    turnMotor.configureAbsoluteEncoder(turnEncoder);
     turnMotor.configureIntegratedEncoder(360 / Modules.TURN_GEAR_RATIO);
+    turnMotor.configureAbsoluteEncoder(turnEncoder, 360);
+    turnMotor.configureInverted(true);
+    turnMotor.setPosition(turnEncoder.getAbsolutePosition().getDegrees());
   }
 
   /**
@@ -84,8 +86,8 @@ public class Module {
     this.desiredState = SwerveModuleState.optimize(desiredState, getRotation());
 
     driveMotor.setDriveReference(desiredState.speedMetersPerSecond,
-        // DRIVE_FEEDFORWARD.calculate(desiredState.speedMetersPerSecond));
-        0);
+        DRIVE_FEEDFORWARD.calculate(desiredState.speedMetersPerSecond));
+        // 0);
     turnMotor.setPosition(turnEncoder.getAbsolutePosition().getDegrees());
     turnMotor.setTurnReference(desiredState.angle);
   }
@@ -167,7 +169,6 @@ public class Module {
     Telemetry.sendNumber(moduleName() + " actual move speed", driveMotor.getVelocity(), Verbosity.HIGH);
     Telemetry.sendNumber(moduleName() + " desired turn angle", desiredState.angle.getDegrees(), Verbosity.HIGH);
     Telemetry.sendNumber(moduleName() + " actual turn angle", turnEncoder.getAbsolutePosition().getDegrees(), Verbosity.HIGH);
-    Telemetry.sendNumber(moduleName() + " integrated encoder turn angle", turnMotor.getPosition(), Verbosity.HIGH);
   }
 
   /**

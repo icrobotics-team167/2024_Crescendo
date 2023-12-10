@@ -115,9 +115,9 @@ public final class Constants {
           public static final double DRIVE_P = 0.25;
           public static final double DRIVE_I = 0; // Don't use
           public static final double DRIVE_D = 0; // IDK What the unit is
-          public static final double TURN_P = 1.0 / 180; // Motor output per degree of error
+          public static final double TURN_P = 1.0 / 360; // Motor output per degree of error
           public static final double TURN_I = 0; // Don't use
-          public static final double TURN_D = 0; // IDK What the unit is
+          public static final double TURN_D = 1.0 / 360; // IDK What the unit is
         }
 
         /**
@@ -244,19 +244,19 @@ public final class Constants {
           /**
            * The angle offset for the front left turn encoder.
            */
-          public static final double FRONT_LEFT_OFFSET = -95;
+          public static final double FRONT_LEFT_OFFSET = 95;
           /**
            * The angle offset for the front right turn encoder.
            */
-          public static final double FRONT_RIGHT_OFFSET = -53;
+          public static final double FRONT_RIGHT_OFFSET = 53;
           /**
            * The angle offset for the back left turn encoder.
            */
-          public static final double BACK_LEFT_OFFSET = -42;
+          public static final double BACK_LEFT_OFFSET = 42;
           /**
            * The angle offset for the back right turn encoder.
            */
-          public static final double BACK_RIGHT_OFFSET = 32;
+          public static final double BACK_RIGHT_OFFSET = 328;
         }
       }
     }

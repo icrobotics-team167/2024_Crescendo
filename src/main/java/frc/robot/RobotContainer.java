@@ -52,8 +52,8 @@ public class RobotContainer {
     // Configure field oriented driving
     AbsoluteFieldDrive driveController = new AbsoluteFieldDrive(
         driveBase,
-        () -> MathUtil.applyDeadband(primaryLeftStick.getY(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
-        () -> MathUtil.applyDeadband(primaryLeftStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
+        () -> MathUtil.applyDeadband(-primaryLeftStick.getY(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
+        () -> MathUtil.applyDeadband(-primaryLeftStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
         () -> MathUtil.applyDeadband(primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
     driveBase.setDefaultCommand(driveController);
   }

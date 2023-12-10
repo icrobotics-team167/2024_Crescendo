@@ -91,8 +91,9 @@ public abstract class AbstractMotor {
      * Set the absolute encoder to be used by the motor.
      * 
      * @param absoluteEncoder The encoder to be used.
+     * @param positionConversionFactor The factor in which the encoder's position will be multiplied by.
      */
-    public abstract void configureAbsoluteEncoder(AbstractAbsoluteEncoder absoluteEncoder);
+    public abstract void configureAbsoluteEncoder(AbstractAbsoluteEncoder absoluteEncoder, double positionConversionFactor);
 
     /**
      * Set how long the motor can take to go from 0 to max power.
