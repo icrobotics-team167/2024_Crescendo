@@ -54,22 +54,22 @@ public class RevNEO500 extends AbstractMotor {
     /**
      * Constructs a new REV NEO 500 motor.
      * 
-     * @param motor The CANSparkMax motor object.
+     * @param sparkMax The CANSparkMax motor object.
      */
-    public RevNEO500(CANSparkMax motor) {
+    public RevNEO500(CANSparkMax sparkMax) {
         // Load motor.
-        this.motor = motor;
+        this.motor = sparkMax;
 
         // Spin off configurations in a different thread.
-        configureSparkMax(() -> motor.setCANTimeout(0));
+        configureSparkMax(() -> sparkMax.setCANTimeout(0));
 
         // Clear existing motor configurations and faults.
         factoryDefaults();
         clearStickyFaults();
 
         // Configure PIDs and encoders.
-        this.pid = motor.getPIDController();
-        this.encoder = motor.getEncoder();
+        this.pid = sparkMax.getPIDController();
+        this.encoder = sparkMax.getEncoder();
         this.pid.setFeedbackDevice(encoder);
     }
 
@@ -266,6 +266,6 @@ public class RevNEO500 extends AbstractMotor {
                 return;
             }
         }
-        DriverStation.reportWarning("Failure configuring NEO 500 on CAN ID " + motor.getDeviceId(), true);
+        DriverStation.reportWarning("Failure configuring Spark Max on CAN ID " + motor.getDeviceId(), true);
     }
 }
