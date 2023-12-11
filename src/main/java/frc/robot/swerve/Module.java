@@ -13,15 +13,15 @@ import frc.robot.helpers.Telemetry;
 import frc.robot.helpers.Telemetry.Verbosity;
 
 public class Module {
-  public int moduleNumber;
+  private final double MAX_MOVE_SPEED;
+  public final int moduleNumber;
+
   private AbstractMotor driveMotor;
   private AbstractMotor turnMotor;
   private AbstractAbsoluteEncoder turnEncoder;
-  private final double MAX_MOVE_SPEED;
 
-  private SimpleMotorFeedforward driveMotorFF;
-
-  private SwerveModuleState previousState = new SwerveModuleState();
+  private SwerveModuleState desiredState;
+  private final SimpleMotorFeedforward DRIVE_FEEDFORWARD;
 
   /**
    * Constructs a new swerve module and initializes the motors and encoders.
@@ -34,36 +34,45 @@ public class Module {
    */
   public Module(int moduleNumber, AbstractMotor driveMotor, AbstractMotor turnMotor,
       AbstractAbsoluteEncoder turnEncoder) {
-    this.moduleNumber = moduleNumber;
     this.driveMotor = driveMotor;
     this.turnMotor = turnMotor;
     this.turnEncoder = turnEncoder;
 
     // Create max move speed constant for math
-    MAX_MOVE_SPEED = getMetersPerRotation() * driveMotor.getMaxRPM() / 60.0;
+    MAX_MOVE_SPEED = getMetersPerRotation() * this.driveMotor.getMaxRPM() / 60.0;
+    // Create drive feedforward
+    DRIVE_FEEDFORWARD = createDriveFeedforward();
+    // Set module number (See moduleName() method for what values correspond to what
+    // moduke)
+    this.moduleNumber = moduleNumber;
 
-    // Create feedforward for driving calculations
-    driveMotorFF = createDriveFeedforward();
+    configure();
+  }
 
-    // Configure drive motor.
-    driveMotor.configureMotorBrake(true);
+  private void configure() {
+    driveMotor.clearStickyFaults();
     driveMotor.configureCurrentLimits(
         driveMotor.getNominalVoltage(),
         driveMotor.getPrimaryCurrentLimit(),
         driveMotor.getSecondaryCurrentLimit());
-    driveMotor.configureIntegratedEncoder(getMetersPerRotation());
-    driveMotor.configurePID(0.25, 0, 0);
+    driveMotor.configureMotorBrake(true);
     driveMotor.configureRampRate(SwerveDrive.ZERO_TO_FULL_TIME);
+    driveMotor.configurePID(Modules.ControlParams.DRIVE_P, Modules.ControlParams.DRIVE_I,
+        Modules.ControlParams.DRIVE_D);
+    driveMotor.configureIntegratedEncoder(getMetersPerRotation());
 
-    // Configure turn motor.
-    turnMotor.configureMotorBrake(false);
+    turnMotor.clearStickyFaults();
     turnMotor.configureCurrentLimits(
         turnMotor.getNominalVoltage(),
         turnMotor.getPrimaryCurrentLimit(),
         turnMotor.getSecondaryCurrentLimit());
-    turnMotor.configurePID(0.25, 0, 0.1);
-    turnMotor.configurePIDWrapping(-180, 180);
-    turnMotor.configureAbsoluteEncoder(turnEncoder);
+    turnMotor.configureMotorBrake(false);
+    turnMotor.configurePIDWrapping(true);
+    turnMotor.configurePID(Modules.ControlParams.TURN_P, Modules.ControlParams.TURN_I, Modules.ControlParams.TURN_D);
+    turnMotor.configureIntegratedEncoder(360 / Modules.TURN_GEAR_RATIO);
+    turnMotor.configureAbsoluteEncoder(turnEncoder, 360);
+    turnMotor.configureInverted(true);
+    turnMotor.setPosition(turnEncoder.getAbsolutePosition().getDegrees());
   }
 
   /**
@@ -72,28 +81,15 @@ public class Module {
    * @param desiredState The desired state.
    */
   public void setDesiredState(SwerveModuleState desiredState) {
-    // // It might be faster to flip the desired rotation 180 degrees and reverse the
-    // // desired movement, so if that is the case, optimize the desired state.
-    // desiredState = SwerveModuleState.optimize(desiredState, turnEncoder.getAbsolutePosition());
+    // It might be the case that flipping the desired angle and reversing driving
+    // direction might be faster to move to, so check for that
+    this.desiredState = SwerveModuleState.optimize(desiredState, getRotation());
 
-    // // If the desired drive speed is the same as the previous desired drive speed,
-    // // no need to do anything.
-    // if (desiredState.speedMetersPerSecond != previousState.speedMetersPerSecond) {
-    //   double feedForward = driveMotorFF.calculate(desiredState.speedMetersPerSecond);
-    //   driveMotor.setDriveReference(desiredState.speedMetersPerSecond, feedForward);
-    //   Telemetry.sendNumber(moduleName() + " desired drive speed", desiredState.speedMetersPerSecond, Verbosity.HIGH);
-    //   Telemetry.sendNumber(moduleName() + " drive feedforward", feedForward, Verbosity.HIGH);
-    //   Telemetry.sendNumber(moduleName() + " actual drive speed", driveMotor.getVelocity(), Verbosity.HIGH);
-    // }
-
-    // // If the desired turn angle is the same as the previous desired turn angle, no
-    // // need to do anything.
-    // if (desiredState.angle != previousState.angle) {
-    //   turnMotor.setTurnReference(desiredState.angle);
-    // }
-
-    // // Set previous desired angle for the next time this is run.
-    // previousState = desiredState;
+    driveMotor.setDriveReference(desiredState.speedMetersPerSecond,
+        DRIVE_FEEDFORWARD.calculate(desiredState.speedMetersPerSecond));
+        // 0);
+    turnMotor.setPosition(turnEncoder.getAbsolutePosition().getDegrees());
+    turnMotor.setTurnReference(desiredState.angle);
   }
 
   /**
@@ -111,8 +107,9 @@ public class Module {
    * @param angle The desired angle.
    */
   public void setAngle(Rotation2d angle) {
-    // turnMotor.setTurnReference(angle);
-    // previousState.angle = angle;
+    SwerveModuleState state = getState();
+    state.angle = angle;
+    setDesiredState(state);
   }
 
   /**
@@ -121,8 +118,7 @@ public class Module {
    * @return A SwerveModuleState object representing the current state.
    */
   public SwerveModuleState getState() {
-    return new SwerveModuleState();
-    //return new SwerveModuleState(driveMotor.getVelocity(), turnEncoder.getAbsolutePosition());
+    return new SwerveModuleState(driveMotor.getVelocity(), getRotation());
   }
 
   /**
@@ -131,8 +127,7 @@ public class Module {
    * @return A SwerveModulePosition object representing the current position.
    */
   public SwerveModulePosition getPosition() {
-    return new SwerveModulePosition();
-    //return new SwerveModulePosition(driveMotor.getPosition(), turnEncoder.getAbsolutePosition());
+    return new SwerveModulePosition(driveMotor.getPosition(), getRotation());
   }
 
   /**
@@ -141,8 +136,7 @@ public class Module {
    * @return A Rotation2d object representing the current rotation.
    */
   public Rotation2d getRotation() {
-    return new Rotation2d();
-    //return turnEncoder.getAbsolutePosition();
+    return Rotation2d.fromDegrees(turnMotor.getPosition());
   }
 
   /**
@@ -168,8 +162,14 @@ public class Module {
    * @return Meters per rotation.
    */
   public double getMetersPerRotation() {
-    return 1;
-    //return Modules.WHEEL_CIRCUMFERENCE / Modules.GEAR_RATIO;
+    return Modules.WHEEL_CIRCUMFERENCE / Modules.DRIVE_GEAR_RATIO;
+  }
+
+  public void sendTelemetry() {
+    Telemetry.sendNumber(moduleName() + " desired move speed", desiredState.speedMetersPerSecond, Verbosity.HIGH);
+    Telemetry.sendNumber(moduleName() + " actual move speed", driveMotor.getVelocity(), Verbosity.HIGH);
+    Telemetry.sendNumber(moduleName() + " desired turn angle", desiredState.angle.getDegrees(), Verbosity.HIGH);
+    Telemetry.sendNumber(moduleName() + " actual turn angle", turnEncoder.getAbsolutePosition().getDegrees(), Verbosity.HIGH);
   }
 
   /**

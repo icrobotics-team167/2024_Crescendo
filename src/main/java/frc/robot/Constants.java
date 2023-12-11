@@ -191,7 +191,8 @@ public final class Constants {
          * Drive motor gear ratio, or how many times the drive motor will rotate before
          * 1 complete rotation of the wheel.
          */
-        public static final double GEAR_RATIO = 6.75;
+        public static final double DRIVE_GEAR_RATIO = 6.75;
+        public static final double TURN_GEAR_RATIO = 150.0/7.0;
         /**
          * Diameter of the wheel, measured in meters.
          */
@@ -206,6 +207,15 @@ public final class Constants {
          * TODO: Figure out if thisis the right value or not.
          */
         public static final double WHEEL_COF = 0.77;
+
+        public static final class ControlParams {
+          public static final double DRIVE_P = 0.25;
+          public static final double DRIVE_I = 0; // Don't use
+          public static final double DRIVE_D = 0;
+          public static final double TURN_P = 1.0 / 40;
+          public static final double TURN_I = 0; // Don't use
+          public static final double TURN_D = 1.0 / 360;
+        }
 
         /**
          * Positions of the modules, relative to the center of the robot, measured in
@@ -331,19 +341,19 @@ public final class Constants {
           /**
            * The angle offset for the front left turn encoder.
            */
-          public static final double FRONT_LEFT_OFFSET = -95;
+          public static final double FRONT_LEFT_OFFSET = 95;
           /**
            * The angle offset for the front right turn encoder.
            */
-          public static final double FRONT_RIGHT_OFFSET = -53;
+          public static final double FRONT_RIGHT_OFFSET = 53;
           /**
            * The angle offset for the back left turn encoder.
            */
-          public static final double BACK_LEFT_OFFSET = -42;
+          public static final double BACK_LEFT_OFFSET = 42;
           /**
            * The angle offset for the back right turn encoder.
            */
-          public static final double BACK_RIGHT_OFFSET = 32;
+          public static final double BACK_RIGHT_OFFSET = 328;
         }
       }
     }
@@ -461,7 +471,7 @@ public final class Constants {
     /**
      * Move speed multipliers for slow mode.
      */
-    public static final double SLOWMODE_MULT = 0.4;
+    public static final double SLOWMODE_MULT = 0.25;
 
     /**
      * Controller configurations.
@@ -497,19 +507,19 @@ public final class Constants {
         /**
          * Primary driver's left stick deadband.
          */
-        public static final double PRIMARY_LEFT = 0.1;
+        public static final double PRIMARY_LEFT = 0.05;
         /**
          * Primary driver's right stick deadband.
          */
-        public static final double PRIMARY_RIGHT = 0.1;
+        public static final double PRIMARY_RIGHT = 0.05;
         /**
          * Secondary driver's left stick deadband.
          */
-        public static final double SECONDARY_LEFT = 0.09;
+        public static final double SECONDARY_LEFT = 0.03;
         /**
          * Secondary driver's right stick deadband.
          */
-        public static final double SECONDARY_RIGHT = 0.09;
+        public static final double SECONDARY_RIGHT = 0.03;
       }
     }
 

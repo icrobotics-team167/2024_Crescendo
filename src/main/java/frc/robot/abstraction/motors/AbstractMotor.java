@@ -49,14 +49,11 @@ public abstract class AbstractMotor {
     public abstract void configurePID(double P, double I, double D);
 
     /**
-     * Configure the values in which the PID wraps around. Usually used for angles.
+     * Configure whether or not the PIDs should wrap around 180/-180, considering them the same point.
      * 
-     * @param minValue Minimum value of the PID. If set, the PID will consider
-     *                 maxValue as the same point.
-     * @param maxValue Maximum value of the PID. If set, the PID will consider
-     *                 minValue as the same point.
+     * @param wrapPID Whether or not to wrap the PID or not.
      */
-    public abstract void configurePIDWrapping(double minValue, double maxValue);
+    public abstract void configurePIDWrapping(boolean wrapPID);
 
     /**
      * Configure whether the motor is in brake mode or coast mode.
@@ -101,8 +98,9 @@ public abstract class AbstractMotor {
      * Set the absolute encoder to be used by the motor.
      * 
      * @param absoluteEncoder The encoder to be used.
+     * @param positionConversionFactor The factor in which the encoder's position will be multiplied by.
      */
-    public abstract void configureAbsoluteEncoder(AbstractAbsoluteEncoder absoluteEncoder);
+    public abstract void configureAbsoluteEncoder(AbstractAbsoluteEncoder absoluteEncoder, double positionConversionFactor);
 
     /**
      * Set how long the motor can take to go from 0 to max power.
