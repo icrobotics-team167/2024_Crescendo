@@ -28,7 +28,7 @@ public class Pivot {
         this.leaderMotor = leaderMotor;
         this.followerMotor = followerMotor;
 
-        leaderMotor.configureIntegratedEncoder(getDegreesPerRotation());
+        leaderMotor.configureEncoder(getDegreesPerRotation());
         followerMotor.configureFollow(leaderMotor, true);
 
         leaderMotor.setPosition(Arm.Pivot.INITIAL_POSITION);

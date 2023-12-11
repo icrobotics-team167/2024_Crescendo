@@ -59,7 +59,7 @@ public class Module {
     driveMotor.configureRampRate(SwerveDrive.ZERO_TO_FULL_TIME);
     driveMotor.configurePID(Modules.ControlParams.DRIVE_P, Modules.ControlParams.DRIVE_I,
         Modules.ControlParams.DRIVE_D);
-    driveMotor.configureIntegratedEncoder(getMetersPerRotation());
+    driveMotor.configureEncoder(getMetersPerRotation());
 
     turnMotor.clearStickyFaults();
     turnMotor.configureCurrentLimits(
@@ -69,7 +69,7 @@ public class Module {
     turnMotor.configureMotorBrake(false);
     turnMotor.configurePIDWrapping(true);
     turnMotor.configurePID(Modules.ControlParams.TURN_P, Modules.ControlParams.TURN_I, Modules.ControlParams.TURN_D);
-    turnMotor.configureIntegratedEncoder(360 / Modules.TURN_GEAR_RATIO);
+    turnMotor.configureEncoder(360 / Modules.TURN_GEAR_RATIO);
     turnMotor.configureAbsoluteEncoder(turnEncoder, 360);
     turnMotor.configureInverted(true);
     turnMotor.setPosition(turnEncoder.getAbsolutePosition().getDegrees());
@@ -98,7 +98,7 @@ public class Module {
    * @param brake True for brake, false for coast.
    */
   public void setWheelBrake(boolean brake) {
-    // driveMotor.configureMotorBrake(brake);
+    driveMotor.configureMotorBrake(brake);
   }
 
   /**
@@ -145,15 +145,14 @@ public class Module {
    * @return Max velocity, in meters per second.
    */
   public double getMaxVel() {
-    return 1;
-    //return MAX_MOVE_SPEED;
+    return MAX_MOVE_SPEED;
   }
 
   /**
    * Resets the drive motor's positon.
    */
   public void resetPosition() {
-    //driveMotor.setPosition(0);
+    driveMotor.setPosition(0);
   }
 
   /**
@@ -186,19 +185,18 @@ public class Module {
   }
 
   private String moduleName() {
-    return "This is a string and definately not a spagetto (singular form of spagetti)";
-    // switch (moduleNumber) {
-    //   case 0:
-    //     return "Front Left";
-    //   case 1:
-    //     return "Front Right";
-    //   case 2:
-    //     return "Back Left";
-    //   case 3:
-    //     return "Back Right";
-    //   default:
-    //     DriverStation.reportError("ERROR: Expected 4 swerve modules, but got 5.", false);
-    //     return String.valueOf(moduleNumber);
-    // }
+    switch (moduleNumber) {
+      case 0:
+        return "Front Left";
+      case 1:
+        return "Front Right";
+      case 2:
+        return "Back Left";
+      case 3:
+        return "Back Right";
+      default:
+        DriverStation.reportError("ERROR: Expected 4 swerve modules, but got 5.", false);
+        return String.valueOf(moduleNumber);
+    }
   }
 }

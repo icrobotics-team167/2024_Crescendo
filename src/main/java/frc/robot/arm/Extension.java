@@ -27,7 +27,7 @@ public class Extension {
         this.motor = motor;
         this.retractSensor = retractSensor;
 
-        motor.configureIntegratedEncoder(getInchesPerRotation());
+        motor.configureEncoder(getInchesPerRotation());
         if (retractSensor.get()) {
             DriverStation.reportError(
                     "Retraction switch is not activated on boot, turn off the robot and push arm all the way in.",

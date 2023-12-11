@@ -87,7 +87,7 @@ public class RevNEO500 extends AbstractMotor {
     }
 
     @Override
-    public void configureIntegratedEncoder(double encoderConversionFactor) {
+    public void configureEncoder(double encoderConversionFactor) {
         if (absoluteEncoder == null) {
             configureSparkMax(() -> encoder.setPositionConversionFactor(encoderConversionFactor));
             configureSparkMax(() -> encoder.setVelocityConversionFactor(encoderConversionFactor / 60));
@@ -146,7 +146,7 @@ public class RevNEO500 extends AbstractMotor {
     public void configureAbsoluteEncoder(AbstractAbsoluteEncoder encoder, double positionConversionFactor) {
         if (encoder.getAbsoluteEncoder() instanceof AbsoluteEncoder) {
             absoluteEncoder = (AbsoluteEncoder) encoder.getAbsoluteEncoder();
-            configureIntegratedEncoder(positionConversionFactor);
+            configureEncoder(positionConversionFactor);
             absoluteEncoder.setZeroOffset(encoder.getOffset().getDegrees());
             configureSparkMax(() -> pid.setFeedbackDevice(absoluteEncoder));
         }
