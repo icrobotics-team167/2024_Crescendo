@@ -318,7 +318,6 @@ public class SwerveDrivebase {
 
     /**
      * Gets the current robot velocity as a ChassisSpeeds object. Is robot relative.
-     * TODO: Figure out if this is actually robot relative.
      * 
      * @return The current robot velocity.
      */
