@@ -235,10 +235,10 @@ public class SwerveDrivebase {
      */
     public void lockMotion() {
         motionLocked = true;
-        modules[0].setDesiredState(new SwerveModuleState(0, Modules.Positions.FRONT_LEFT_POS.getAngle()));
-        modules[1].setDesiredState(new SwerveModuleState(0, Modules.Positions.FRONT_RIGHT_POS.getAngle()));
-        modules[2].setDesiredState(new SwerveModuleState(0, Modules.Positions.BACK_LEFT_POS.getAngle()));
-        modules[3].setDesiredState(new SwerveModuleState(0, Modules.Positions.BACK_RIGHT_POS.getAngle()));
+        modules[0].setAngle(Modules.Positions.FRONT_LEFT_POS.getAngle());
+        modules[1].setAngle(Modules.Positions.FRONT_RIGHT_POS.getAngle());
+        modules[2].setAngle(Modules.Positions.BACK_LEFT_POS.getAngle());
+        modules[3].setAngle(Modules.Positions.BACK_RIGHT_POS.getAngle());
     }
 
     /**

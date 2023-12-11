@@ -13,14 +13,35 @@ import frc.robot.helpers.Telemetry;
 import frc.robot.helpers.Telemetry.Verbosity;
 
 public class Module {
+  /**
+   * The absolute max move speed that the modules can attain, in m/s.
+   */
   private final double MAX_MOVE_SPEED;
+  /**
+   * The module ID for kinematics.
+   */
   public final int moduleNumber;
 
+  /**
+   * The drive motor.
+   */
   private AbstractMotor driveMotor;
+  /**
+   * The turn motor.
+   */
   private AbstractMotor turnMotor;
+  /**
+   * The turn encoder.
+   */
   private AbstractAbsoluteEncoder turnEncoder;
 
+  /**
+   * The desired state of the module.
+   */
   private SwerveModuleState desiredState;
+  /**
+   * The feedforward for the drive motor.
+   */
   private final SimpleMotorFeedforward DRIVE_FEEDFORWARD;
 
   /**
@@ -107,14 +128,12 @@ public class Module {
   }
 
   /**
-   * Sets the desired angle of the swerve module.
+   * Sets the desired angle of the swerve module, with no driving.
    * 
    * @param angle The desired angle.
    */
   public void setAngle(Rotation2d angle) {
-    SwerveModuleState state = getState();
-    state.angle = angle;
-    setDesiredState(state);
+    setDesiredState(new SwerveModuleState(0, angle));
   }
 
   /**
