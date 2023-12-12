@@ -18,6 +18,8 @@ public class Pivot {
      */
     private AbstractMotor followerMotor; // VSCode is saying that this is never used, ignore that.
 
+    private double initialEncoderPosition;
+
     /**
      * Creates a new Pivot object.
      * 
@@ -28,10 +30,12 @@ public class Pivot {
         this.leaderMotor = leaderMotor;
         this.followerMotor = followerMotor;
 
-        leaderMotor.configureEncoder(getDegreesPerRotation());
+        leaderMotor.configureMotorBrake(true);
+        followerMotor.configureMotorBrake(true);
+
         followerMotor.configureFollow(leaderMotor, true);
 
-        leaderMotor.setPosition(Arm.Pivot.INITIAL_POSITION);
+        initialEncoderPosition = leaderMotor.getPosition();
     }
 
     /**
@@ -41,7 +45,7 @@ public class Pivot {
      *              speed, -1.0 is pivot up full speed.
      */
     public void move(double speed) {
-        Telemetry.sendNumber("Pivot.position", leaderMotor.getPosition(), Verbosity.HIGH);
+        Telemetry.sendNumber("Pivot.position", getPosition(), Verbosity.HIGH);
         if (isTooFarUp() && speed < 0) {
             leaderMotor.stop();
             return;
@@ -59,7 +63,7 @@ public class Pivot {
      * @return If the arm is above its max point, configured in Constants.
      */
     public boolean isTooFarUp() {
-        return Telemetry.sendBoolean("Pivot.isTooFarUp", leaderMotor.getPosition() >= Arm.Pivot.PIVOT_MAX, Verbosity.HIGH);
+        return Telemetry.sendBoolean("Pivot.isTooFarUp", getPosition() >= Arm.Pivot.PIVOT_MAX, Verbosity.MEDIUM);
     }
 
     /**
@@ -68,7 +72,17 @@ public class Pivot {
      * @return If the arm is below its min point, configured in Constants.
      */
     public boolean isTooFarDown() {
-        return Telemetry.sendBoolean("Pivot.isTooFarDown", leaderMotor.getPosition() <= Arm.Pivot.PIVOT_MIN, Verbosity.HIGH);
+        return Telemetry.sendBoolean("Pivot.isTooFarDown", getPosition() <= Arm.Pivot.PIVOT_MIN, Verbosity.MEDIUM);
+    }
+
+    /**
+     * Gets the position of the pivot, in degrees.
+     * 
+     * @return The position in degrees
+     */
+    public double getPosition() {
+        return (leaderMotor.getPosition() - initialEncoderPosition) * getDegreesPerRotation()
+                + Arm.Pivot.INITIAL_POSITION;
     }
 
     /**
@@ -77,6 +91,6 @@ public class Pivot {
      * @return Degrees per rotation.
      */
     private double getDegreesPerRotation() {
-        return 360.0 / Arm.Pivot.PIVOT_GEAR_RATIO;
+        return -360.0 / Arm.Pivot.PIVOT_GEAR_RATIO;
     }
 }

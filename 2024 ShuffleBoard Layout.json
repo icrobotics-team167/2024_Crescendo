@@ -202,9 +202,9 @@
               }
             }
           },
-          "52,0": {
+          "50,0": {
             "size": [
-              8,
+              10,
               10
             ],
             "content": {
@@ -245,10 +245,10 @@
               ]
             }
           },
-          "47,0": {
+          "45,0": {
             "size": [
               5,
-              6
+              8
             ],
             "content": {
               "_type": "List Layout",
@@ -286,51 +286,102 @@
                   "_showGlyph": false,
                   "Colors/Color when true": "#7CFC00FF",
                   "Colors/Color when false": "#8B0000FF"
+                },
+                {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/SwerveDrivebase.motionLocked",
+                  "_title": "Motion Locked",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
                 }
               ]
             }
           },
-          "35,0": {
+          "50,10": {
             "size": [
-              2,
-              1
+              10,
+              9
             ],
             "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Pivot.position",
-              "_title": "Pivot.position",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "37,0": {
-            "size": [
-              4,
-              4
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/Pivot.isTooFarUp",
-              "_title": "Pivot.isTooFarUp",
-              "_glyph": 148,
+              "_type": "Grid Layout",
+              "_title": "Arm",
+              "_glyph": 149,
               "_showGlyph": false,
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
-          },
-          "41,0": {
-            "size": [
-              4,
-              4
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/Pivot.isTooFarDown",
-              "_title": "Pivot.isTooFarDown",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
+              "Layout/Number of columns": 2,
+              "Layout/Number of rows": 1,
+              "Layout/Label position": "TOP",
+              "_children": {
+                "0,0": {
+                  "_type": "List Layout",
+                  "_title": "Extension",
+                  "_glyph": 149,
+                  "_showGlyph": false,
+                  "Layout/Label position": "TOP",
+                  "_children": [
+                    {
+                      "_type": "Boolean Box",
+                      "_source0": "network_table:///SmartDashboard/Extension.isTooFarIn",
+                      "_title": "Is Too Far In?",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Colors/Color when true": "#FF0000FF",
+                      "Colors/Color when false": "#000000FF"
+                    },
+                    {
+                      "_type": "Boolean Box",
+                      "_source0": "network_table:///SmartDashboard/Extension.isTooFarOut",
+                      "_title": "Is Too Far Out?",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Colors/Color when true": "#FF0000FF",
+                      "Colors/Color when false": "#000000FF"
+                    },
+                    {
+                      "_type": "Text View",
+                      "_source0": "network_table:///SmartDashboard/Extension.position",
+                      "_title": "Position (inches)",
+                      "_glyph": 148,
+                      "_showGlyph": false
+                    }
+                  ]
+                },
+                "1,0": {
+                  "_type": "List Layout",
+                  "_title": "Pivot",
+                  "_glyph": 149,
+                  "_showGlyph": false,
+                  "Layout/Label position": "TOP",
+                  "_children": [
+                    {
+                      "_type": "Boolean Box",
+                      "_source0": "network_table:///SmartDashboard/Pivot.isTooFarUp",
+                      "_title": "Is Too Far Up?",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Colors/Color when true": "#FF0000FF",
+                      "Colors/Color when false": "#000000FF"
+                    },
+                    {
+                      "_type": "Boolean Box",
+                      "_source0": "network_table:///SmartDashboard/Pivot.isTooFarDown",
+                      "_title": "Is Too Far Down?",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Colors/Color when true": "#FF0000FF",
+                      "Colors/Color when false": "#000000FF"
+                    },
+                    {
+                      "_type": "Text View",
+                      "_source0": "network_table:///SmartDashboard/Pivot.position",
+                      "_title": "Position (deg)",
+                      "_glyph": 148,
+                      "_showGlyph": false
+                    }
+                  ]
+                }
+              }
             }
           }
         }
