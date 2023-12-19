@@ -77,7 +77,7 @@ public final class Constants {
         /**
          * The max extension of the arm, in inches.
          */
-        public static final double EXTENSION_MAX = 40.0;
+        public static final double EXTENSION_MAX = 20.0;
         /**
          * The min extension of the arm, in inches.
          */
@@ -212,9 +212,9 @@ public final class Constants {
           public static final double DRIVE_P = 0.25;
           public static final double DRIVE_I = 0; // Don't use
           public static final double DRIVE_D = 0;
-          public static final double TURN_P = 1.0 / 50;
+          public static final double TURN_P = 1.0 / 70;
           public static final double TURN_I = 0; // Don't use
-          public static final double TURN_D = 1.0 / 200;
+          public static final double TURN_D = 1.0 / 160;
         }
 
         /**
