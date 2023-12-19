@@ -73,9 +73,12 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    primaryLeftStick.button(1).toggleOnTrue(new InstantCommand(driveBase::toggleSlowMode));
-    primaryRightStick.button(1).onTrue(new InstantCommand(driveBase::lockMotion));
-    primaryRightStick.button(1).onFalse(new InstantCommand(driveBase::unlockMotion));
+    primaryLeftStick.button(1)
+        .onTrue(new InstantCommand(driveBase::toggleSlowMode))
+        .onFalse(new InstantCommand(driveBase::toggleSlowMode));
+    primaryRightStick.button(1)
+        .onTrue(new InstantCommand(driveBase::lockMotion))
+        .onFalse(new InstantCommand(driveBase::unlockMotion));
   }
 
   /**

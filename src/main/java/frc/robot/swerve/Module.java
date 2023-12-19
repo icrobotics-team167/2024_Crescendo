@@ -13,14 +13,35 @@ import frc.robot.helpers.Telemetry;
 import frc.robot.helpers.Telemetry.Verbosity;
 
 public class Module {
+  /**
+   * The absolute max move speed that the modules can attain, in m/s.
+   */
   private final double MAX_MOVE_SPEED;
+  /**
+   * The module ID for kinematics.
+   */
   public final int moduleNumber;
 
+  /**
+   * The drive motor.
+   */
   private AbstractMotor driveMotor;
+  /**
+   * The turn motor.
+   */
   private AbstractMotor turnMotor;
+  /**
+   * The turn encoder.
+   */
   private AbstractAbsoluteEncoder turnEncoder;
 
+  /**
+   * The desired state of the module.
+   */
   private SwerveModuleState desiredState;
+  /**
+   * The feedforward for the drive motor.
+   */
   private final SimpleMotorFeedforward DRIVE_FEEDFORWARD;
 
   /**
@@ -49,7 +70,11 @@ public class Module {
     configure();
   }
 
+  /**
+   * Configures the motors.
+   */
   private void configure() {
+    // Configure drive motor
     driveMotor.clearStickyFaults();
     driveMotor.configureCurrentLimits(
         driveMotor.getNominalVoltage(),
@@ -61,6 +86,7 @@ public class Module {
         Modules.ControlParams.DRIVE_D);
     driveMotor.configureIntegratedEncoder(getMetersPerRotation());
 
+    // Configure turn motor
     turnMotor.clearStickyFaults();
     turnMotor.configureCurrentLimits(
         turnMotor.getNominalVoltage(),
@@ -87,7 +113,7 @@ public class Module {
 
     driveMotor.setDriveReference(desiredState.speedMetersPerSecond,
         DRIVE_FEEDFORWARD.calculate(desiredState.speedMetersPerSecond));
-        // 0);
+    // 0);
     turnMotor.setPosition(turnEncoder.getAbsolutePosition().getDegrees());
     turnMotor.setTurnReference(desiredState.angle);
   }
@@ -102,14 +128,12 @@ public class Module {
   }
 
   /**
-   * Sets the desired angle of the swerve module.
+   * Sets the desired angle of the swerve module, with no driving.
    * 
    * @param angle The desired angle.
    */
   public void setAngle(Rotation2d angle) {
-    SwerveModuleState state = getState();
-    state.angle = angle;
-    setDesiredState(state);
+    setDesiredState(new SwerveModuleState(0, angle));
   }
 
   /**
@@ -164,11 +188,15 @@ public class Module {
     return Modules.WHEEL_CIRCUMFERENCE / Modules.DRIVE_GEAR_RATIO;
   }
 
+  /**
+   * Sends telemetry data.
+   */
   public void sendTelemetry() {
     Telemetry.sendNumber(moduleName() + " desired move speed", desiredState.speedMetersPerSecond, Verbosity.HIGH);
     Telemetry.sendNumber(moduleName() + " actual move speed", driveMotor.getVelocity(), Verbosity.HIGH);
     Telemetry.sendNumber(moduleName() + " desired turn angle", desiredState.angle.getDegrees(), Verbosity.HIGH);
-    Telemetry.sendNumber(moduleName() + " actual turn angle", turnEncoder.getAbsolutePosition().getDegrees(), Verbosity.HIGH);
+    Telemetry.sendNumber(moduleName() + " actual turn angle", turnEncoder.getAbsolutePosition().getDegrees(),
+        Verbosity.HIGH);
   }
 
   /**
@@ -184,6 +212,11 @@ public class Module {
     return new SimpleMotorFeedforward(0, kv, ka);
   }
 
+  /**
+   * Gets the name of the module for cleaner telemetry.
+   * 
+   * @return The module name.
+   */
   private String moduleName() {
     switch (moduleNumber) {
       case 0:
