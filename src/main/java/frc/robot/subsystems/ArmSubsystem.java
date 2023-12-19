@@ -80,4 +80,11 @@ public class ArmSubsystem extends SubsystemBase {
     public void outtake() {
         claw.move(-Arm.Claw.OUTTAKE_SPEED);
     }
+
+    /**
+     * Stops the intake mexhanism.
+     */
+    public void stopIntake() {
+        claw.move(0);
+    }
 }

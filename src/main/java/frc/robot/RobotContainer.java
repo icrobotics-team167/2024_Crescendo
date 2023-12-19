@@ -4,17 +4,17 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.commands.AbsoluteFieldDrive;
 import frc.robot.commands.MoveArm;
 import frc.robot.subsystems.ArmSubsystem;
@@ -90,6 +90,8 @@ public class RobotContainer {
         .onFalse(new InstantCommand(driveBase::toggleSlowMode));
     primaryRightStick.button(1).onTrue(new InstantCommand(driveBase::lockMotion))
         .onFalse(new InstantCommand(driveBase::unlockMotion));
+    secondaryRightStick.button(3).whileTrue(new StartEndCommand(arm::intake, arm::stopIntake));
+    secondaryRightStick.button(4).whileTrue(new StartEndCommand(arm::outtake, arm::stopIntake));
   }
 
   /**
