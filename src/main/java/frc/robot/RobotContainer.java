@@ -9,12 +9,15 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.AbsoluteFieldDrive;
+import frc.robot.commands.MoveArm;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
 /**
@@ -31,6 +34,7 @@ public class RobotContainer {
   public SendableChooser<PathPlannerAuto> autoSelector = new SendableChooser<PathPlannerAuto>();
 
   private final SwerveSubsystem driveBase = new SwerveSubsystem();
+  private final ArmSubsystem arm = new ArmSubsystem();
 
   CommandJoystick primaryLeftStick = new CommandJoystick(Constants.Driving.Controllers.IDs.PRIMARY_LEFT);
   CommandJoystick primaryRightStick = new CommandJoystick(Constants.Driving.Controllers.IDs.PRIMARY_RIGHT);
@@ -56,6 +60,15 @@ public class RobotContainer {
         () -> MathUtil.applyDeadband(-primaryLeftStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
         () -> MathUtil.applyDeadband(primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
     driveBase.setDefaultCommand(driveController);
+
+    // Configure arm controls
+    MoveArm armController = new MoveArm(
+        arm,
+        () -> MathUtil.applyDeadband(-secondaryRightStick.getY(),
+            Constants.Driving.Controllers.Deadbands.SECONDARY_RIGHT),
+        () -> MathUtil.applyDeadband(-secondaryLeftStick.getY(),
+            Constants.Driving.Controllers.Deadbands.SECONDARY_LEFT));
+    arm.setDefaultCommand(armController);
   }
 
   /**
@@ -73,9 +86,10 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    primaryLeftStick.button(1).toggleOnTrue(new InstantCommand(driveBase::toggleSlowMode));
-    primaryRightStick.button(1).onTrue(new InstantCommand(driveBase::lockMotion));
-    primaryRightStick.button(1).onFalse(new InstantCommand(driveBase::unlockMotion));
+    primaryLeftStick.button(1).onTrue(new InstantCommand(driveBase::toggleSlowMode))
+        .onFalse(new InstantCommand(driveBase::toggleSlowMode));
+    primaryRightStick.button(1).onTrue(new InstantCommand(driveBase::lockMotion))
+        .onFalse(new InstantCommand(driveBase::unlockMotion));
   }
 
   /**

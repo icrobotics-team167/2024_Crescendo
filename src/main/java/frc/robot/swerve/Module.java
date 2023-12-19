@@ -59,7 +59,7 @@ public class Module {
     driveMotor.configureRampRate(SwerveDrive.ZERO_TO_FULL_TIME);
     driveMotor.configurePID(Modules.ControlParams.DRIVE_P, Modules.ControlParams.DRIVE_I,
         Modules.ControlParams.DRIVE_D);
-    driveMotor.configureIntegratedEncoder(getMetersPerRotation());
+    driveMotor.configureEncoder(getMetersPerRotation());
 
     turnMotor.clearStickyFaults();
     turnMotor.configureCurrentLimits(
@@ -69,7 +69,7 @@ public class Module {
     turnMotor.configureMotorBrake(false);
     turnMotor.configurePIDWrapping(true);
     turnMotor.configurePID(Modules.ControlParams.TURN_P, Modules.ControlParams.TURN_I, Modules.ControlParams.TURN_D);
-    turnMotor.configureIntegratedEncoder(360 / Modules.TURN_GEAR_RATIO);
+    turnMotor.configureEncoder(360 / Modules.TURN_GEAR_RATIO);
     turnMotor.configureAbsoluteEncoder(turnEncoder, 360);
     turnMotor.configureInverted(true);
     turnMotor.setPosition(turnEncoder.getAbsolutePosition().getDegrees());
