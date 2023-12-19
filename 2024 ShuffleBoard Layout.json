@@ -296,7 +296,7 @@
           "51,10": {
             "size": [
               9,
-              8
+              12
             ],
             "content": {
               "_type": "Grid Layout",
@@ -304,26 +304,13 @@
               "_glyph": 149,
               "_showGlyph": false,
               "Layout/Number of columns": 2,
-              "Layout/Number of rows": 2,
+              "Layout/Number of rows": 3,
               "Layout/Label position": "BOTTOM",
               "_children": {
                 "0,0": {
                   "_type": "Number Bar",
                   "_source0": "network_table:///SmartDashboard/AbsoluteFieldDrive.controlInX",
                   "_title": "X",
-                  "_glyph": 148,
-                  "_showGlyph": false,
-                  "Range/Min": -1.0,
-                  "Range/Max": 1.0,
-                  "Range/Center": 0.0,
-                  "Visuals/Num tick marks": 5,
-                  "Visuals/Show text": true,
-                  "Visuals/Orientation": "HORIZONTAL"
-                },
-                "1,0": {
-                  "_type": "Number Bar",
-                  "_source0": "network_table:///SmartDashboard/AbsoluteFieldDrive.controlInY",
-                  "_title": "Y",
                   "_glyph": 148,
                   "_showGlyph": false,
                   "Range/Min": -1.0,
@@ -354,24 +341,118 @@
                   "Visuals/Num tick marks": 5,
                   "Visuals/Show text": true,
                   "Visuals/Orientation": "HORIZONTAL"
+                },
+                "0,2": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/SwerveDrivebase.motionLocked",
+                  "_title": "SwerveDrivebase.motionLocked",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "1,0": {
+                  "_type": "Number Bar",
+                  "_source0": "network_table:///SmartDashboard/AbsoluteFieldDrive.controlInY",
+                  "_title": "Y",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Range/Min": -1.0,
+                  "Range/Max": 1.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5,
+                  "Visuals/Show text": true,
+                  "Visuals/Orientation": "HORIZONTAL"
+                }
+              }
+            }
+          },
+          "35,0": {
+            "size": [
+              16,
+              9
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Arm",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Number of columns": 2,
+              "Layout/Number of rows": 1,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "1,0": {
+                  "_type": "List Layout",
+                  "_title": "Extension",
+                  "_glyph": 149,
+                  "_showGlyph": false,
+                  "Layout/Label position": "RIGHT",
+                  "_children": [
+                    {
+                      "_type": "Text View",
+                      "_source0": "network_table:///SmartDashboard/Extension.position",
+                      "_title": "Position (Inch)",
+                      "_glyph": 148,
+                      "_showGlyph": false
+                    },
+                    {
+                      "_type": "Boolean Box",
+                      "_source0": "network_table:///SmartDashboard/Extension.isTooFarIn",
+                      "_title": "Is Too Far In?",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Colors/Color when true": "#FF0000FF",
+                      "Colors/Color when false": "#000000FF"
+                    },
+                    {
+                      "_type": "Boolean Box",
+                      "_source0": "network_table:///SmartDashboard/Extension.isTooFarOut",
+                      "_title": "Is Too Far Out?",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Colors/Color when true": "#FF0000FF",
+                      "Colors/Color when false": "#000000FF"
+                    }
+                  ]
+                },
+                "0,0": {
+                  "_type": "List Layout",
+                  "_title": "Pivot",
+                  "_glyph": 149,
+                  "_showGlyph": false,
+                  "Layout/Label position": "LEFT",
+                  "_children": [
+                    {
+                      "_type": "Text View",
+                      "_source0": "network_table:///SmartDashboard/Pivot.position",
+                      "_title": "Position (Deg)",
+                      "_glyph": 148,
+                      "_showGlyph": false
+                    },
+                    {
+                      "_type": "Boolean Box",
+                      "_source0": "network_table:///SmartDashboard/Pivot.isTooFarUp",
+                      "_title": "Is Too Far Up?",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Colors/Color when true": "#FF0000FF",
+                      "Colors/Color when false": "#000000FF"
+                    },
+                    {
+                      "_type": "Boolean Box",
+                      "_source0": "network_table:///SmartDashboard/Pivot.isTooFarDown",
+                      "_title": "Is Too Far Down?",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Colors/Color when true": "#FF0000FF",
+                      "Colors/Color when false": "#000000FF"
+                    }
+                  ]
                 }
               }
             }
           }
         }
-      }
-    },
-    {
-      "title": "LiveWindow",
-      "autoPopulate": true,
-      "autoPopulatePrefix": "LiveWindow/",
-      "widgetPane": {
-        "gridSize": 64.0,
-        "showGrid": true,
-        "hgap": 16.0,
-        "vgap": 16.0,
-        "titleType": 0,
-        "tiles": {}
       }
     }
   ],
