@@ -18,8 +18,6 @@ public class Pivot {
      */
     private AbstractMotor followerMotor; // VSCode is saying that this is never used, ignore that.
 
-    private double initialEncoderPosition;
-
     /**
      * Creates a new Pivot object.
      * 
@@ -33,9 +31,9 @@ public class Pivot {
         leaderMotor.configureMotorBrake(true);
         followerMotor.configureMotorBrake(true);
 
+        leaderMotor.setPosition(0);
+        leaderMotor.configureEncoder(getDegreesPerRotation());
         followerMotor.configureFollow(leaderMotor, true);
-
-        initialEncoderPosition = leaderMotor.getPosition();
     }
 
     /**
@@ -81,16 +79,15 @@ public class Pivot {
      * @return The position in degrees
      */
     public double getPosition() {
-        return (leaderMotor.getPosition() - initialEncoderPosition) * getDegreesPerRotation()
-                + Arm.Pivot.INITIAL_POSITION;
+        return Arm.Pivot.INITIAL_POSITION - leaderMotor.getPosition();
     }
 
     /**
-     * Calculate how many degrees that the pivots for 1 full rotation of the motor.
+     * Calculate how many degrees that it pivots for 1 full rotation of the motor.
      * 
      * @return Degrees per rotation.
      */
     private double getDegreesPerRotation() {
-        return -360.0 / Arm.Pivot.PIVOT_GEAR_RATIO;
+        return 360.0 / Arm.Pivot.PIVOT_GEAR_RATIO;
     }
 }

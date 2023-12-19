@@ -20,8 +20,6 @@ public class Extension {
      */
     private DigitalInput retractSensor;
 
-    private double initialEncoderPosition;
-
     /**
      * Creates a new Extension object.
      * 
@@ -31,7 +29,8 @@ public class Extension {
         this.motor = motor;
         this.retractSensor = retractSensor;
 
-        initialEncoderPosition = motor.getPosition();
+        motor.setPosition(0);
+        motor.configureEncoder(getInchesPerRotation());
         if (retractSensor.get()) {
             DriverStation.reportError(
                     "Retraction switch is not activated on boot, turn off the robot and push arm all the way in.",
@@ -65,7 +64,7 @@ public class Extension {
      * @return If the arm is above its max point, configured in Constants.
      */
     public boolean isTooFarOut() {
-        return Telemetry.sendBoolean("Extension.isTooFarOut", motor.getPosition() >= Arm.Extension.EXTENSION_MAX, Verbosity.MEDIUM);
+        return Telemetry.sendBoolean("Extension.isTooFarOut", getPosition() >= Arm.Extension.EXTENSION_MAX, Verbosity.MEDIUM);
     }
 
     /**
@@ -87,7 +86,7 @@ public class Extension {
      * @return The position in inches
      */
     public double getPosition() {
-        return (motor.getPosition() - initialEncoderPosition) * getInchesPerRotation();
+        return Arm.Extension.INITIAL_POSITION - motor.getPosition();
     }
 
     /**
@@ -97,6 +96,6 @@ public class Extension {
      * @return Degrees per rotation.
      */
     private double getInchesPerRotation() {
-        return -Arm.Extension.EXTENSION_GEAR_RATIO;
+        return Arm.Extension.EXTENSION_GEAR_RATIO;
     }
 }
