@@ -10,7 +10,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 import java.util.function.DoubleSupplier;
 
 /**
- * A command to drive the swerve drivebase.
+ * A teleop command to drive the swerve drivebase.
  */
 public class AbsoluteFieldDrive extends Command {
     private final SwerveSubsystem swerve;
