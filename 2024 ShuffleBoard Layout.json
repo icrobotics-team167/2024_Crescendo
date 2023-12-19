@@ -250,9 +250,9 @@
               }
             }
           },
-          "50,0": {
+          "51,0": {
             "size": [
-              10,
+              9,
               10
             ],
             "content": {
@@ -293,9 +293,9 @@
               ]
             }
           },
-          "45,0": {
+          "51,10": {
             "size": [
-              5,
+              9,
               8
             ],
             "content": {
@@ -342,99 +342,18 @@
                   "Colors/Color when true": "#7CFC00FF",
                   "Colors/Color when false": "#8B0000FF"
                 },
-                {
-                  "_type": "Boolean Box",
-                  "_source0": "network_table:///SmartDashboard/SwerveDrivebase.motionLocked",
-                  "_title": "Motion Locked",
+                "0,1": {
+                  "_type": "Number Bar",
+                  "_source0": "network_table:///SmartDashboard/AbsoluteFieldDrive.controlInRot",
+                  "_title": "Rot",
                   "_glyph": 148,
                   "_showGlyph": false,
-                  "Colors/Color when true": "#7CFC00FF",
-                  "Colors/Color when false": "#8B0000FF"
-                }
-              ]
-            }
-          },
-          "50,10": {
-            "size": [
-              10,
-              9
-            ],
-            "content": {
-              "_type": "Grid Layout",
-              "_title": "Arm",
-              "_glyph": 149,
-              "_showGlyph": false,
-              "Layout/Number of columns": 2,
-              "Layout/Number of rows": 1,
-              "Layout/Label position": "TOP",
-              "_children": {
-                "0,0": {
-                  "_type": "List Layout",
-                  "_title": "Extension",
-                  "_glyph": 149,
-                  "_showGlyph": false,
-                  "Layout/Label position": "TOP",
-                  "_children": [
-                    {
-                      "_type": "Boolean Box",
-                      "_source0": "network_table:///SmartDashboard/Extension.isTooFarIn",
-                      "_title": "Is Too Far In?",
-                      "_glyph": 148,
-                      "_showGlyph": false,
-                      "Colors/Color when true": "#FF0000FF",
-                      "Colors/Color when false": "#000000FF"
-                    },
-                    {
-                      "_type": "Boolean Box",
-                      "_source0": "network_table:///SmartDashboard/Extension.isTooFarOut",
-                      "_title": "Is Too Far Out?",
-                      "_glyph": 148,
-                      "_showGlyph": false,
-                      "Colors/Color when true": "#FF0000FF",
-                      "Colors/Color when false": "#000000FF"
-                    },
-                    {
-                      "_type": "Text View",
-                      "_source0": "network_table:///SmartDashboard/Extension.position",
-                      "_title": "Position (inches)",
-                      "_glyph": 148,
-                      "_showGlyph": false
-                    }
-                  ]
-                },
-                "1,0": {
-                  "_type": "List Layout",
-                  "_title": "Pivot",
-                  "_glyph": 149,
-                  "_showGlyph": false,
-                  "Layout/Label position": "TOP",
-                  "_children": [
-                    {
-                      "_type": "Boolean Box",
-                      "_source0": "network_table:///SmartDashboard/Pivot.isTooFarUp",
-                      "_title": "Is Too Far Up?",
-                      "_glyph": 148,
-                      "_showGlyph": false,
-                      "Colors/Color when true": "#FF0000FF",
-                      "Colors/Color when false": "#000000FF"
-                    },
-                    {
-                      "_type": "Boolean Box",
-                      "_source0": "network_table:///SmartDashboard/Pivot.isTooFarDown",
-                      "_title": "Is Too Far Down?",
-                      "_glyph": 148,
-                      "_showGlyph": false,
-                      "Colors/Color when true": "#FF0000FF",
-                      "Colors/Color when false": "#000000FF"
-                    },
-                    {
-                      "_type": "Text View",
-                      "_source0": "network_table:///SmartDashboard/Pivot.position",
-                      "_title": "Position (deg)",
-                      "_glyph": 148,
-                      "_showGlyph": false
-                    }
-                  ]
+                  "Range/Min": -1.0,
+                  "Range/Max": 1.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5,
+                  "Visuals/Show text": true,
+                  "Visuals/Orientation": "HORIZONTAL"
                 }
               }
             }
