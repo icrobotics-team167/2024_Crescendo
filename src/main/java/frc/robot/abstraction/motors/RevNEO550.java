@@ -5,7 +5,15 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import frc.robot.Constants.Robot.Motors.Neo550;
 
+/**
+ * Class to represent a REV NEO 550 motor.
+ */
 public class RevNEO550 extends RevNEO500 {
+    /*
+     * This class is super simplified, as all of its functional parts are identical
+     * to RevNEO500.java, it just has different constants.
+     */
+
     /**
      * Constructs a new REV NEO 550 motor.
      * 

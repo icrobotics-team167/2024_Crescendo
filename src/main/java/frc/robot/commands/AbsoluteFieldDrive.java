@@ -13,7 +13,13 @@ import java.util.function.DoubleSupplier;
  * A teleop command to drive the swerve drivebase.
  */
 public class AbsoluteFieldDrive extends Command {
+    /**
+     * The swerve drive subsystem.
+     */
     private final SwerveSubsystem swerve;
+    /**
+     * DoubleSuppliers for the controls.
+     */
     private final DoubleSupplier vX, vY, vRot;
 
     /**

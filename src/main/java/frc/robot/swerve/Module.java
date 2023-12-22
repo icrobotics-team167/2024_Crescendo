@@ -12,6 +12,9 @@ import frc.robot.Constants.Robot.SwerveDrive.Modules;
 import frc.robot.helpers.Telemetry;
 import frc.robot.helpers.Telemetry.Verbosity;
 
+/**
+ * A class representing a swerve module.
+ */
 public class Module {
   /**
    * The absolute max move speed that the modules can attain, in m/s.
