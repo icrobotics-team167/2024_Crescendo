@@ -9,8 +9,14 @@ import frc.robot.subsystems.ArmSubsystem;
  * A teleop command to move the arm.
  */
 public class MoveArm extends Command {
-    ArmSubsystem arm;
-    DoubleSupplier extendControl, pivotControl;
+    /**
+     * The arm subsystem.
+     */
+    private ArmSubsystem arm;
+    /**
+     * DoubleSuppliers for the controls.
+     */
+    private DoubleSupplier extendControl, pivotControl;
 
     /**
      * Constructs a new MoveArm command.

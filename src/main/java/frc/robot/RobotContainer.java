@@ -104,6 +104,34 @@ public class RobotContainer {
   }
 
   /**
+   * Runs once at the start of autonomous.
+   */
+  public void autonomousInit() {
+    driveBase.unlockMotion();
+  }
+
+  /**
+   * Runs every robot tick during autonomous.
+   */
+  public void autonomousPeriodic() {
+
+  }
+
+  /**
+   * Runs once at the start of teleop.
+   */
+  public void teleopInit() {
+    driveBase.unlockMotion();
+  }
+
+  /**
+   * Runs every robot tick during teleop.
+   */
+  public void teleopPeriodic() {
+
+  }
+
+  /**
    * Runs once at the end of an match.
    */
   public void endOfMatchInit() {
