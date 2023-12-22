@@ -104,11 +104,14 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+
+    m_robotContainer.autonomousInit();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    m_robotContainer.autonomousPeriodic();
   }
 
   @Override
@@ -121,11 +124,14 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     hasMatchStarted = true;
+
+    m_robotContainer.teleopInit();
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+    m_robotContainer.teleopPeriodic();
   }
 
   @Override
