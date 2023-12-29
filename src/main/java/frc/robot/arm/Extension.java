@@ -68,9 +68,9 @@ public class Extension {
     }
 
     /**
-     * Gets if the arm is too far down.
+     * Gets if the arm is too far in.
      * 
-     * @return If the arm is below its min point, configured in Constants.
+     * @return If the arm is retracted past its min point, configured in Constants.
      */
     public boolean isTooFarIn() {
         if (!retractSensor.get() || getPosition() <= Arm.Extension.EXTENSION_MIN) {

@@ -2,7 +2,7 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.97,
+      "x": 2.0,
       "y": 4.96
     },
     "rotation": 180.0
@@ -12,9 +12,22 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Score cone then cube part 1"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Score cone then cube path 1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Move Arm (Ground Pickup)"
+                }
+              }
+            ]
           }
         }
       ]

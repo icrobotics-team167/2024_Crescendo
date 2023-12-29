@@ -192,7 +192,7 @@ public final class Constants {
          * 1 complete rotation of the wheel.
          */
         public static final double DRIVE_GEAR_RATIO = 6.75;
-        public static final double TURN_GEAR_RATIO = 150.0/7.0;
+        public static final double TURN_GEAR_RATIO = 150.0 / 7.0;
         /**
          * Diameter of the wheel, measured in meters.
          */
@@ -204,7 +204,7 @@ public final class Constants {
         public static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
         /**
          * Coefficient of friction of the wheel.
-         * TODO: Figure out if thisis the right value or not.
+         * TODO: Figure out if this is the right value or not.
          */
         public static final double WHEEL_COF = 0.77;
 
@@ -366,6 +366,7 @@ public final class Constants {
        * The path follower configuration for PathPlanner.
        */
       public static final HolonomicPathFollowerConfig PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(
+          // TODO: Tune
           new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
           new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
           Robot.SwerveDrive.MAX_TRANSLATIONAL_VEL, // Max module speed, in m/s

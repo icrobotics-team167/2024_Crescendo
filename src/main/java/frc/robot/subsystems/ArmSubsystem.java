@@ -82,9 +82,52 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     /**
-     * Stops the intake mexhanism.
+     * Stops the intake mechanism.
      */
     public void stopIntake() {
         claw.move(0);
+    }
+
+    /**
+     * Stops the arm.
+     */
+    public void stop() {
+        move(0, 0);
+    }
+
+    /**
+     * Gets if the arm is too far up.
+     * 
+     * @return If the arm is above its max point, configured in Constants.
+     */
+    public boolean isTooFarUp() {
+        return pivot.isTooFarUp();
+    }
+
+    /**
+     * Gets if the arm is too far down.
+     * 
+     * @return If the arm is below its min point, configured in Constants.
+     */
+    public boolean isTooFarDown() {
+        return pivot.isTooFarDown();
+    }
+
+    /**
+     * Gets if the arm is too far in.
+     * 
+     * @return If the arm is retracted past its min point, configured in Constants.
+     */
+    public boolean isTooFarIn() {
+        return extension.isTooFarIn();
+    }
+
+    /**
+     * Gets if the arm is too far out.
+     * 
+     * @return If the arm is extended past its max point, configured in Constants.
+     */
+    public boolean isTooFarOut() {
+        return extension.isTooFarOut();
     }
 }
