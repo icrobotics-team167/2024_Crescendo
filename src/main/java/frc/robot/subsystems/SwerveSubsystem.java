@@ -61,10 +61,17 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     /**
-     * Toggles slow mode.
+     * Puts the drivebase into slow mode.
      */
-    public void toggleSlowMode() {
-        swerveDrive.toggleSlowMode();
+    public void setSlowMode() {
+        swerveDrive.setSlowMode(true);
+    }
+
+    /**
+     * Puts the drivebase into normal mode.
+     */
+    public void unsetSlowMode() {
+        swerveDrive.setSlowMode(false);
     }
 
     /**

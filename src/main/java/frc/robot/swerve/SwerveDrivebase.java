@@ -391,7 +391,7 @@ public class SwerveDrivebase {
 
         // // If the LimeLight returns a null pose, stop
         // if (robotPose == null) {
-        //     return;
+        // return;
         // }
 
         // // Calculate latency in seconds
@@ -440,14 +440,12 @@ public class SwerveDrivebase {
     }
 
     /**
-     * Toggles slow mode when driving.
+     * Sets the state of slow mode.
+     * 
+     * @param slowMode True for slow mode, false for full speed.
      */
-    public void toggleSlowMode() {
-        if (slowMode) {
-            slowMode = false;
-        } else {
-            slowMode = true;
-        }
+    public void setSlowMode(boolean slowMode) {
+        this.slowMode = slowMode;
     }
 
     /**

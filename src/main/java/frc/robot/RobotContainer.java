@@ -86,12 +86,16 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    primaryLeftStick.button(1).onTrue(new InstantCommand(driveBase::toggleSlowMode))
-        .onFalse(new InstantCommand(driveBase::toggleSlowMode));
-    primaryRightStick.button(1).onTrue(new InstantCommand(driveBase::lockMotion))
-        .onFalse(new InstantCommand(driveBase::unlockMotion));
-    secondaryRightStick.button(3).whileTrue(new StartEndCommand(arm::intake, arm::stopIntake));
-    secondaryRightStick.button(4).whileTrue(new StartEndCommand(arm::outtake, arm::stopIntake));
+    primaryLeftStick.button(1) // Trigger on the primary driver's left stick
+        .whileTrue(new StartEndCommand(driveBase::setSlowMode, driveBase::unsetSlowMode)); // Press and hold for slow
+    primaryRightStick.button(1) // Trigger on the primary driver's right stick
+        .whileTrue(new StartEndCommand(driveBase::lockMotion, driveBase::unlockMotion)); // Press and hold to lock
+                                                                                         // the drivebase
+
+    secondaryRightStick.button(3) // Button #3 on the secondary driver's right stick
+        .whileTrue(new StartEndCommand(arm::intake, arm::stopIntake)); // Press and hold to intake
+    secondaryRightStick.button(4) // Button #3 on the secondary driver's left stick
+        .whileTrue(new StartEndCommand(arm::outtake, arm::stopIntake)); // Press and hold to outtake
   }
 
   /**
