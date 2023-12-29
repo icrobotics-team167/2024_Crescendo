@@ -14,9 +14,13 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.commands.auto.*;
 import frc.robot.commands.teleop.*;
+import frc.robot.subsystems.ArmPosition;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -48,7 +52,10 @@ public class RobotContainer {
    */
   public RobotContainer() {
     // Auto Command Registering
-    NamedCommands.registerCommand("Reset Arm", new ResetArm(arm));
+    NamedCommands.registerCommand("Reset Arm", new MoveArmTo(arm, ArmPosition.INITIAL));
+    NamedCommands.registerCommand("Move Arm (Ground Pickup)", new MoveArmTo(arm, ArmPosition.GROUND_INTAKE));
+    NamedCommands.registerCommand("Intake", new Intake(arm));
+    NamedCommands.registerCommand("Outtake", new Outtake(arm));
 
     // Configure the trigger bindings
     configureBindings();
@@ -88,6 +95,7 @@ public class RobotContainer {
   private void configureBindings() {
     primaryLeftStick.button(1) // Trigger on the primary driver's left stick
         .whileTrue(new StartEndCommand(driveBase::setSlowMode, driveBase::unsetSlowMode)); // Press and hold for slow
+                                                                                           // mode
     primaryRightStick.button(1) // Trigger on the primary driver's right stick
         .whileTrue(new StartEndCommand(driveBase::lockMotion, driveBase::unlockMotion)); // Press and hold to lock
                                                                                          // the drivebase

@@ -105,4 +105,20 @@ public class MathUtils {
         }
         return trajectory;
     }
+
+    /**
+     * Applies a deadzone to a value, putting a sharp drop where the cutoff is. This
+     * is unlike WPILib's MathUtil.applyDeadband() where values not set to 0 are
+     * scaled to be continuous.
+     * 
+     * @param value        The value to apply the deadzone to.
+     * @param deadzoneSize If value is less than this, returns 0.
+     * @return The value with the deadzone applied.
+     */
+    public static double applyDeadzone(double value, double deadzoneSize) {
+        if (Math.abs(value) < deadzoneSize) {
+            return 0;
+        }
+        return value;
+    }
 }

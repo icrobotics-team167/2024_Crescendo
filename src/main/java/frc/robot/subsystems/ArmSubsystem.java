@@ -83,6 +83,8 @@ public class ArmSubsystem extends SubsystemBase {
 
     /**
      * Stops the intake mechanism.
+     * 
+     * <p>This method MUST be called if you want the intake mechanism to stop running, as otherwise it just runs forever.
      */
     public void stopIntake() {
         claw.move(0);
@@ -93,6 +95,14 @@ public class ArmSubsystem extends SubsystemBase {
      */
     public void stop() {
         move(0, 0);
+    }
+
+    /**
+     * Gets the position of the arm.
+     * @return The position, represented as an ArmPosition object.
+     */
+    public ArmPosition getPosition() {
+        return new ArmPosition(pivot.getPosition(), extension.getPosition());
     }
 
     /**

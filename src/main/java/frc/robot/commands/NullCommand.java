@@ -18,7 +18,7 @@ public class NullCommand extends Command {
 
     @Override
     public void execute() {
-        // This method runs every robot tick until isFinished() is true.
+        // This method runs every robot tick until the command is stopped.
     }
 
     @Override
