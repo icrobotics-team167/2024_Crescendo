@@ -28,8 +28,6 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
-  private SendableChooser<PathPlannerAuto> autoSelector;
-
   private boolean hasMatchStarted = false;
 
   /**
@@ -43,9 +41,6 @@ public class Robot extends TimedRobot {
     // and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    autoSelector = m_robotContainer.autoSelector;
-    autoSelector.setDefaultOption("Nothing", null);
-    SmartDashboard.putData(autoSelector);
 
     if (Constants.TELEMETRY_VERBOSITY == Verbosity.NONE) {
       PPLibTelemetry.enableCompetitionMode();

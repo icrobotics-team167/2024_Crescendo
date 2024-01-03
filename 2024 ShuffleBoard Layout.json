@@ -11,19 +11,6 @@
         "vgap": 0.0,
         "titleType": 0,
         "tiles": {
-          "0,0": {
-            "size": [
-              13,
-              3
-            ],
-            "content": {
-              "_type": "ComboBox Chooser",
-              "_source0": "network_table:///SmartDashboard/SendableChooser[0]",
-              "_title": "Auto Chooser",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
           "0,3": {
             "size": [
               13,
@@ -450,6 +437,19 @@
                   ]
                 }
               }
+            }
+          },
+          "0,0": {
+            "size": [
+              13,
+              3
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/SendableChooser[1]",
+              "_title": "Auto Chooser",
+              "_glyph": 148,
+              "_showGlyph": false
             }
           }
         }

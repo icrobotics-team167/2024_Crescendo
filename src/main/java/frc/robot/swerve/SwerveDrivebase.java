@@ -31,6 +31,8 @@ import frc.robot.helpers.Telemetry.Verbosity;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.pathplanner.lib.util.PPLibTelemetry;
+
 /**
  * A class for running ths swerve drivebase.
  */
@@ -44,10 +46,6 @@ public class SwerveDrivebase {
      * The modules.
      */
     private final Module modules[];
-    /**
-     * The module positions.
-     */
-    private final SwerveModulePosition[] modulePositions;
     /**
      * Whether or not slow mode is enabled.
      */
@@ -137,16 +135,10 @@ public class SwerveDrivebase {
         resetStates();
 
         // Initialize odometry.
-        modulePositions = new SwerveModulePosition[] {
-                modules[0].getPosition(),
-                modules[1].getPosition(),
-                modules[2].getPosition(),
-                modules[3].getPosition(),
-        };
         poseEstimator = new SwerveDrivePoseEstimator(
                 kinematics,
                 getYaw(),
-                modulePositions,
+                getModulePositions(),
                 new Pose2d(),
                 stateStdDevs,
                 visionMeasurementStdDevs);
@@ -205,19 +197,7 @@ public class SwerveDrivebase {
                     velocityCommand.omegaRadiansPerSecond * Driving.SLOWMODE_MULT);
         }
 
-        // When driving and turning at the same time, the robot slightly drifts. This
-        // compensates for that.
-        // TODO: See if this is actually neccesary.
-        // Stolen code from 254
-        // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
-        double dtConstant = 0.02;
-        Pose2d robotPoseVel = new Pose2d(velocityCommand.vxMetersPerSecond * dtConstant,
-                velocityCommand.vyMetersPerSecond * dtConstant,
-                Rotation2d.fromRadians(velocityCommand.omegaRadiansPerSecond * dtConstant));
-        Twist2d twistVel = poseLog(robotPoseVel);
-        Telemetry.sendString("SwerveDrivebase.driftCompensation", twistVel.toString(), Verbosity.HIGH);
-        velocityCommand = new ChassisSpeeds(twistVel.dx / dtConstant, twistVel.dy / dtConstant,
-                twistVel.dtheta / dtConstant);
+        
 
         // Drive modules
         SwerveModuleState[] moduleDesiredStates = kinematics.toSwerveModuleStates(velocityCommand);
@@ -369,13 +349,13 @@ public class SwerveDrivebase {
     public void updateOdometry() {
         odometryLock.lock();
         try {
-            poseEstimator.update(getYaw(), modulePositions);
             Telemetry.setRobotPose(getPose());
         } catch (Exception e) {
             odometryLock.unlock();
             throw e;
         }
         odometryLock.unlock();
+        poseEstimator.update(getYaw(), getModulePositions());
         Telemetry.setRobotPose(getPose());
         Telemetry.sendField();
     }
@@ -446,6 +426,13 @@ public class SwerveDrivebase {
      */
     public void setSlowMode(boolean slowMode) {
         this.slowMode = slowMode;
+    }
+
+    /**
+     * Resets the rotation of the robot to be forwards.
+     */
+    public void resetRotation() {
+        resetPose(new Pose2d(getPose().getTranslation(), new Rotation2d()));
     }
 
     /**

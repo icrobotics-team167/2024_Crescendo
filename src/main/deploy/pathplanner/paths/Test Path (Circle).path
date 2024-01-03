@@ -4,65 +4,62 @@
     {
       "anchor": {
         "x": 2.0,
-        "y": 4.96
+        "y": 1.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1209827256821008,
-        "y": 4.273872867351306
+        "x": 2.0,
+        "y": 0.249
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.280347287967303,
-        "y": 4.891738056203385
+        "x": 3.0,
+        "y": 1.0
       },
       "prevControl": {
-        "x": 3.2803472879673032,
-        "y": 4.891738056203385
+        "x": 3.0,
+        "y": 0.25
       },
       "nextControl": {
-        "x": 5.280347287967303,
-        "y": 4.891738056203385
+        "x": 3.0,
+        "y": 1.7499999999999993
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.5,
-        "y": 4.60325256965362
+        "x": 2.0,
+        "y": 1.0
       },
       "prevControl": {
-        "x": 5.5,
-        "y": 4.60325256965362
+        "x": 2.0,
+        "y": 1.75
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Score cone then cube path 1-2 transition"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
+    "maxVelocity": 1.0,
     "maxAcceleration": 7.55,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 2038.5
+    "maxAngularAcceleration": 2000.0
   },
   "goalEndState": {
-    "velocity": 0.5,
-    "rotation": 0.0,
+    "velocity": 0,
+    "rotation": 180.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
-  "previewStartingState": {
-    "rotation": 180.0,
-    "velocity": 0
-  },
-  "useDefaultConstraints": true
+  "previewStartingState": null,
+  "useDefaultConstraints": false
 }

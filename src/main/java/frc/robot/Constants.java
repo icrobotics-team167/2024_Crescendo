@@ -362,18 +362,8 @@ public final class Constants {
      * Autonomous period configurations.
      */
     public static final class Auto {
-      /**
-       * The path follower configuration for PathPlanner.
-       */
-      public static final HolonomicPathFollowerConfig PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(
-          // TODO: Tune
-          new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-          new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-          Robot.SwerveDrive.MAX_TRANSLATIONAL_VEL, // Max module speed, in m/s
-          Robot.SwerveDrive.Modules.Positions.FRONT_LEFT_POS.getNorm(), // Drive base radius in meters. Distance from
-                                                                        // robot center to furthest module.
-          new ReplanningConfig() // Default path replanning config. See the API for the options here
-      );
+      public static final PIDConstants translationalPIDs = new PIDConstants(5.0, 0.0, 0);
+      public static final PIDConstants rotationalPIDs = new PIDConstants(-4.0, 0.0, 0);
     }
 
     /**

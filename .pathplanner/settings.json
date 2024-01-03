@@ -7,7 +7,7 @@
   "defaultMaxVel": 2.0,
   "defaultMaxAccel": 7.55,
   "defaultMaxAngVel": 540.0,
-  "defaultMaxAngAccel": 2000.0,
+  "defaultMaxAngAccel": 2038.5,
   "maxModuleSpeed": 4.5,
   "choreoProjectPath": null
 }

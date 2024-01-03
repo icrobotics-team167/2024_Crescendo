@@ -4,11 +4,15 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.util.PPLibTelemetry;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -35,7 +39,7 @@ import frc.robot.subsystems.SwerveSubsystem;
  */
 public class RobotContainer {
 
-  public SendableChooser<PathPlannerAuto> autoSelector = new SendableChooser<PathPlannerAuto>();
+  public SendableChooser<Command> autoSelector = new SendableChooser<Command>();
 
   private final SwerveSubsystem driveBase = new SwerveSubsystem();
   private final ArmSubsystem arm = new ArmSubsystem();
@@ -56,6 +60,10 @@ public class RobotContainer {
     NamedCommands.registerCommand("Move Arm (Ground Pickup)", new MoveArmTo(arm, ArmPosition.GROUND_INTAKE));
     NamedCommands.registerCommand("Intake", new Intake(arm));
     NamedCommands.registerCommand("Outtake", new Outtake(arm));
+
+    // Auto selector configuring
+    autoSelector = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData(autoSelector);
 
     // Configure the trigger bindings
     configureBindings();
@@ -99,6 +107,11 @@ public class RobotContainer {
     primaryRightStick.button(1) // Trigger on the primary driver's right stick
         .whileTrue(new StartEndCommand(driveBase::lockMotion, driveBase::unlockMotion)); // Press and hold to lock
                                                                                          // the drivebase
+    primaryRightStick.button(2) // Button #2 on the primary driver's right stick
+        .onTrue(new InstantCommand(driveBase::resetRotation)); // Resets which way the robot thinks is forward, used
+                                                               // when the robot wasn't facing away from the driver
+                                                               // station on boot and can't get an AprilTag lock to
+                                                               // calculate its orientation
 
     secondaryRightStick.button(3) // Button #3 on the secondary driver's right stick
         .whileTrue(new StartEndCommand(arm::intake, arm::stopIntake)); // Press and hold to intake
@@ -126,7 +139,6 @@ public class RobotContainer {
    * Runs every robot tick during autonomous.
    */
   public void autonomousPeriodic() {
-
   }
 
   /**

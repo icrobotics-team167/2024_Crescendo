@@ -1,10 +1,16 @@
 package frc.robot.subsystems;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
+
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.Robot;
 import frc.robot.swerve.SwerveDrivebase;
 
 /**
@@ -18,12 +24,22 @@ public class SwerveSubsystem extends SubsystemBase {
      */
     public SwerveSubsystem() {
         swerveDrive = new SwerveDrivebase();
+        HolonomicPathFollowerConfig PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(
+                // TODO: Tune
+                Constants.Robot.Auto.translationalPIDs, // Translation PID constants
+                Constants.Robot.Auto.rotationalPIDs, // Rotation PID constants
+                getMaxVel(), // Max module speed, in m/s
+                Robot.SwerveDrive.Modules.Positions.FRONT_LEFT_POS.getNorm(), // Drive base radius in meters. Distance
+                                                                              // from
+                                                                              // robot center to furthest module.
+                new ReplanningConfig() // Default path replanning config. See the API for the options here
+        );
         AutoBuilder.configureHolonomic(
                 this::getPose, // Robot pose supplier
                 this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::robotRelativeDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                Constants.Robot.Auto.PATH_FOLLOWER_CONFIG,
+                PATH_FOLLOWER_CONFIG,
                 this // Reference to this subsystem to set requirements
         );
     }
@@ -103,6 +119,13 @@ public class SwerveSubsystem extends SubsystemBase {
      */
     public void setWheelsForward() {
         swerveDrive.setWheelsForward();
+    }
+
+    /**
+     * Resets the rotation of the robot to be forwards.
+     */
+    public void resetRotation() {
+        swerveDrive.resetRotation();
     }
 
     /**
