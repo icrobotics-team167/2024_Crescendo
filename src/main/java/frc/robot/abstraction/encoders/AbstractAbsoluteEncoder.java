@@ -43,6 +43,8 @@ public abstract class AbstractAbsoluteEncoder {
      */
     public abstract void configureOffset(Rotation2d offset);
 
+    public abstract Rotation2d getOffset();
+
     /**
      * Get the absolute position of the encoder.
      *

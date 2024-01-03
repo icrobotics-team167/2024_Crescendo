@@ -47,11 +47,14 @@ public class Telemetry {
      * @param dataName       The ID in which the data will be displayed as.
      * @param data           The String data to be sent.
      * @param verbosityLevel The verbosity level of the data.
+     * 
+     * @return The data, without any changes, for easy inline coding.
      */
-    public static void sendString(String dataName, String data, Verbosity verbosityLevel) {
+    public static String sendString(String dataName, String data, Verbosity verbosityLevel) {
         if (isSendable(verbosityLevel)) {
             SmartDashboard.putString(dataName, data);
         }
+        return data;
     }
 
     /**
@@ -60,11 +63,14 @@ public class Telemetry {
      * @param dataName       The ID in which the data will be displayed as.
      * @param data           The double data to be sent.
      * @param verbosityLevel The verbosity level of the data.
+     * 
+     * @return The data, without any changes, for easy inline coding.
      */
-    public static void sendNumber(String dataName, double data, Verbosity verbosityLevel) {
+    public static double sendNumber(String dataName, double data, Verbosity verbosityLevel) {
         if (isSendable(verbosityLevel)) {
             SmartDashboard.putNumber(dataName, data);
         }
+        return data;
     }
 
     /**
@@ -73,11 +79,14 @@ public class Telemetry {
      * @param dataName       The ID in which the data will be displayed as.
      * @param data           The boolean data to be sent.
      * @param verbosityLevel The verbosity level of the data.
+     * 
+     * @return The data, without any changes, for easy inline coding.
      */
-    public static void sendBoolean(String dataName, boolean data, Verbosity verbosityLevel) {
+    public static boolean sendBoolean(String dataName, boolean data, Verbosity verbosityLevel) {
         if (isSendable(verbosityLevel)) {
             SmartDashboard.putBoolean(dataName, data);
         }
+        return data;
     }
 
     /**

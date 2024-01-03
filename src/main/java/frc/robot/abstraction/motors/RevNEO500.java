@@ -54,22 +54,22 @@ public class RevNEO500 extends AbstractMotor {
     /**
      * Constructs a new REV NEO 500 motor.
      * 
-     * @param motor The CANSparkMax motor object.
+     * @param sparkMax The CANSparkMax motor object.
      */
-    public RevNEO500(CANSparkMax motor) {
+    public RevNEO500(CANSparkMax sparkMax) {
         // Load motor.
-        this.motor = motor;
+        this.motor = sparkMax;
 
         // Spin off configurations in a different thread.
-        configureSparkMax(() -> motor.setCANTimeout(0));
+        configureSparkMax(() -> sparkMax.setCANTimeout(0));
 
         // Clear existing motor configurations and faults.
         factoryDefaults();
         clearStickyFaults();
 
         // Configure PIDs and encoders.
-        this.pid = motor.getPIDController();
-        this.encoder = motor.getEncoder();
+        this.pid = sparkMax.getPIDController();
+        this.encoder = sparkMax.getEncoder();
         this.pid.setFeedbackDevice(encoder);
     }
 
@@ -87,7 +87,7 @@ public class RevNEO500 extends AbstractMotor {
     }
 
     @Override
-    public void configureIntegratedEncoder(double encoderConversionFactor) {
+    public void configureEncoder(double encoderConversionFactor) {
         if (absoluteEncoder == null) {
             configureSparkMax(() -> encoder.setPositionConversionFactor(encoderConversionFactor));
             configureSparkMax(() -> encoder.setVelocityConversionFactor(encoderConversionFactor / 60));
@@ -99,7 +99,7 @@ public class RevNEO500 extends AbstractMotor {
             configureCANStatusFrames(10, 20, 20, 500, 500);
         } else {
             configureSparkMax(() -> absoluteEncoder.setPositionConversionFactor(encoderConversionFactor));
-            configureSparkMax(() -> absoluteEncoder.setVelocityConversionFactor(encoderConversionFactor));
+            configureSparkMax(() -> absoluteEncoder.setVelocityConversionFactor(encoderConversionFactor / 60));
         }
     }
 
@@ -111,10 +111,10 @@ public class RevNEO500 extends AbstractMotor {
     }
 
     @Override
-    public void configurePIDWrapping(double minValue, double maxValue) {
-        configureSparkMax(() -> pid.setPositionPIDWrappingEnabled(true));
-        configureSparkMax(() -> pid.setPositionPIDWrappingMinInput(minValue));
-        configureSparkMax(() -> pid.setPositionPIDWrappingMaxInput(maxValue));
+    public void configurePIDWrapping(boolean wrapPID) {
+        configureSparkMax(() -> pid.setPositionPIDWrappingEnabled(wrapPID));
+        configureSparkMax(() -> pid.setPositionPIDWrappingMinInput(-180));
+        configureSparkMax(() -> pid.setPositionPIDWrappingMaxInput(180));
     }
 
     @Override
@@ -128,6 +128,14 @@ public class RevNEO500 extends AbstractMotor {
     }
 
     @Override
+    public void configureFollow(AbstractMotor otherMotor, boolean invert) {
+        if (!(otherMotor instanceof RevNEO500)) {
+            throw new UnsupportedOperationException("Leader motor must be of the same motor type!");
+        }
+        motor.follow((CANSparkMax)otherMotor.getMotor(), invert);
+    }
+
+    @Override
     public void configureCurrentLimits(double nominalVoltage, int primaryAmpLimit, int secondaryAmpLimit) {
         configureSparkMax(() -> motor.enableVoltageCompensation(nominalVoltage));
         configureSparkMax(() -> motor.setSmartCurrentLimit(primaryAmpLimit));
@@ -135,9 +143,11 @@ public class RevNEO500 extends AbstractMotor {
     }
 
     @Override
-    public void configureAbsoluteEncoder(AbstractAbsoluteEncoder encoder) {
+    public void configureAbsoluteEncoder(AbstractAbsoluteEncoder encoder, double positionConversionFactor) {
         if (encoder.getAbsoluteEncoder() instanceof AbsoluteEncoder) {
             absoluteEncoder = (AbsoluteEncoder) encoder.getAbsoluteEncoder();
+            configureEncoder(positionConversionFactor);
+            absoluteEncoder.setZeroOffset(encoder.getOffset().getDegrees());
             configureSparkMax(() -> pid.setFeedbackDevice(absoluteEncoder));
         }
     }
@@ -152,6 +162,10 @@ public class RevNEO500 extends AbstractMotor {
         motor.set(setPoint);
     }
 
+    @Override
+    public void stop() {
+        motor.stopMotor();
+    }
     @Override
     public void setDriveReference(double setPoint, double feedForward) {
         configureSparkMax(() -> pid.setReference(setPoint, ControlType.kVelocity, 0, feedForward));
@@ -252,6 +266,6 @@ public class RevNEO500 extends AbstractMotor {
                 return;
             }
         }
-        DriverStation.reportWarning("Failure configuring NEO 500 on CAN ID " + motor.getDeviceId(), true);
+        DriverStation.reportWarning("Failure configuring Spark Max on CAN ID " + motor.getDeviceId(), true);
     }
 }

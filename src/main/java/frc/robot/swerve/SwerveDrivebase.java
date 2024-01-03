@@ -1,5 +1,6 @@
 package frc.robot.swerve;
 
+// Like almost a full screen's worth of import lines
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -221,12 +222,8 @@ public class SwerveDrivebase {
         // Drive modules
         SwerveModuleState[] moduleDesiredStates = kinematics.toSwerveModuleStates(velocityCommand);
         // If the commanded module speeds is too fast, slow down
-        SwerveDriveKinematics.desaturateWheelSpeeds(
-                moduleDesiredStates,
-                getRobotVelocity(),
-                getAbsoluteMaxVel(),
-                getMaxTranslationalVel(),
-                getMaxRotVel());
+        SwerveDriveKinematics.desaturateWheelSpeeds(moduleDesiredStates, velocityCommand, getAbsoluteMaxVel(),
+                getMaxTranslationalVel(), getMaxRotVel());
 
         for (Module module : modules) {
             module.setDesiredState(moduleDesiredStates[module.moduleNumber]);
@@ -239,10 +236,10 @@ public class SwerveDrivebase {
      */
     public void lockMotion() {
         motionLocked = true;
-        modules[0].setDesiredState(new SwerveModuleState(0, Modules.Positions.FRONT_LEFT_POS.getAngle()));
-        modules[1].setDesiredState(new SwerveModuleState(0, Modules.Positions.FRONT_RIGHT_POS.getAngle()));
-        modules[2].setDesiredState(new SwerveModuleState(0, Modules.Positions.BACK_LEFT_POS.getAngle()));
-        modules[3].setDesiredState(new SwerveModuleState(0, Modules.Positions.BACK_RIGHT_POS.getAngle()));
+        modules[0].setAngle(Modules.Positions.FRONT_LEFT_POS.getAngle());
+        modules[1].setAngle(Modules.Positions.FRONT_RIGHT_POS.getAngle());
+        modules[2].setAngle(Modules.Positions.BACK_LEFT_POS.getAngle());
+        modules[3].setAngle(Modules.Positions.BACK_RIGHT_POS.getAngle());
     }
 
     /**
@@ -322,15 +319,11 @@ public class SwerveDrivebase {
 
     /**
      * Gets the current robot velocity as a ChassisSpeeds object. Is robot relative.
-     * TODO: Figure out if this is actually robot relative.
      * 
      * @return The current robot velocity.
      */
     public ChassisSpeeds getRobotVelocity() {
         ChassisSpeeds robotVelocity = kinematics.toChassisSpeeds(getStates());
-        Telemetry.sendNumber("SwerveDrivebase.robotVelX", robotVelocity.vxMetersPerSecond, Verbosity.MEDIUM);
-        Telemetry.sendNumber("SwerveDrivebase.robotVelY", robotVelocity.vyMetersPerSecond, Verbosity.MEDIUM);
-        Telemetry.sendNumber("SwerveDrivebase.robotVelRot", robotVelocity.omegaRadiansPerSecond, Verbosity.MEDIUM);
         return robotVelocity;
     }
 
@@ -393,10 +386,19 @@ public class SwerveDrivebase {
      */
     public void addLLVisionMeasurement() {
         // Get pose
-        Pose2d robotPose = LimelightHelpers.getBotPose2d(Vision.LimeLight.APRILTAG_DETECTOR);
+        Pose2d robotPose =
+        LimelightHelpers.getBotPose2d(Vision.LimeLight.APRILTAG_DETECTOR);
+
+        // If the LimeLight returns a null pose, stop
+        if (robotPose == null) {
+            return;
+        }
+
         // Calculate latency in seconds
-        double limeLightLatency = (LimelightHelpers.getLatency_Capture(Vision.LimeLight.APRILTAG_DETECTOR)
-                + LimelightHelpers.getLatency_Pipeline(Vision.LimeLight.APRILTAG_DETECTOR)) / 1000.0;
+        double limeLightLatency =
+        (LimelightHelpers.getLatency_Capture(Vision.LimeLight.APRILTAG_DETECTOR)
+        + LimelightHelpers.getLatency_Pipeline(Vision.LimeLight.APRILTAG_DETECTOR)) /
+        1000.0;
         // Calculate timestamp using the current robot FPGA time and the latency.
         double captureTimeStamp = Timer.getFPGATimestamp() - limeLightLatency;
         // Call addVisionMeasurement to update the position
@@ -446,7 +448,6 @@ public class SwerveDrivebase {
         } else {
             slowMode = true;
         }
-        Telemetry.sendBoolean("SwerveDrivebase.slowMode", slowMode, Verbosity.LOW);
     }
 
     /**
@@ -484,6 +485,18 @@ public class SwerveDrivebase {
      */
     public double getMaxRotVel() {
         return SwerveDrive.MAX_ROTATIONAL_VEL;
+    }
+
+    public void sendTelemetry() {
+        ChassisSpeeds robotVelocity = getRobotVelocity();
+        Telemetry.sendNumber("SwerveDrivebase.robotVelX", robotVelocity.vxMetersPerSecond, Verbosity.MEDIUM);
+        Telemetry.sendNumber("SwerveDrivebase.robotVelY", robotVelocity.vyMetersPerSecond, Verbosity.MEDIUM);
+        Telemetry.sendNumber("SwerveDrivebase.robotVelRot", robotVelocity.omegaRadiansPerSecond, Verbosity.MEDIUM);
+        Telemetry.sendBoolean("SwerveDrivebase.slowMode", slowMode, Verbosity.LOW);
+        Telemetry.sendBoolean("SwerveDrivebase.motionLocked", motionLocked, Verbosity.LOW);
+        for (Module module : modules) {
+            module.sendTelemetry();
+        }
     }
 
     /**

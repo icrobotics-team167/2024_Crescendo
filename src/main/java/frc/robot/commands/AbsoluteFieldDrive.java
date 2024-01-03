@@ -3,15 +3,23 @@ package frc.robot.commands;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.Robot.SwerveDrive;
+import frc.robot.helpers.Telemetry;
+import frc.robot.helpers.Telemetry.Verbosity;
 import frc.robot.subsystems.SwerveSubsystem;
 
 import java.util.function.DoubleSupplier;
 
 /**
- * A command to drive the swerve drivebase.
+ * A teleop command to drive the swerve drivebase.
  */
 public class AbsoluteFieldDrive extends Command {
+    /**
+     * The swerve drive subsystem.
+     */
     private final SwerveSubsystem swerve;
+    /**
+     * DoubleSuppliers for the controls.
+     */
     private final DoubleSupplier vX, vY, vRot;
 
     /**
@@ -37,10 +45,20 @@ public class AbsoluteFieldDrive extends Command {
 
     @Override
     public void execute() {
-        double xVel = vX.getAsDouble() * SwerveDrive.MAX_TRANSLATIONAL_VEL;
-        double yVel = vY.getAsDouble() * SwerveDrive.MAX_TRANSLATIONAL_VEL;
+        // Desaturate control inputs
+        double inputX = vX.getAsDouble();
+        double inputY = vY.getAsDouble();
+        inputX /= Math.max(Math.hypot(inputX, inputY), 1);
+        inputY /= Math.max(Math.hypot(inputX, inputY), 1);
+
+        Telemetry.sendNumber("AbsoluteFieldDrive.controlInX", inputX, Verbosity.MEDIUM);
+        Telemetry.sendNumber("AbsoluteFieldDrive.controlInY", inputY, Verbosity.MEDIUM);
+        Telemetry.sendNumber("AbsoluteFieldDrive.controlInRot", vRot.getAsDouble(), Verbosity.MEDIUM);
+        double xVel = inputX * SwerveDrive.MAX_TRANSLATIONAL_VEL;
+        double yVel = inputY * SwerveDrive.MAX_TRANSLATIONAL_VEL;
         double rotVel = vRot.getAsDouble() * SwerveDrive.MAX_ROTATIONAL_VEL;
         ChassisSpeeds desiredSpeeds = new ChassisSpeeds(xVel, yVel, rotVel);
         swerve.fieldRelativeDrive(desiredSpeeds);
+        swerve.sendTelemetry();
     }
 }
