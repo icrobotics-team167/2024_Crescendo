@@ -16,7 +16,7 @@ public class Pivot {
     /**
      * The left motor on the pivot.
      */
-    private AbstractMotor followerMotor; // VSCode is saying that this is never used, ignore that.
+    private AbstractMotor followerMotor;
 
     /**
      * Creates a new Pivot object.
@@ -28,12 +28,16 @@ public class Pivot {
         this.leaderMotor = leaderMotor;
         this.followerMotor = followerMotor;
 
-        leaderMotor.configureMotorBrake(true);
-        followerMotor.configureMotorBrake(true);
+        // Make sure the motors are in brake mode.
+        this.leaderMotor.configureMotorBrake(true);
+        this.followerMotor.configureMotorBrake(true);
 
-        leaderMotor.setPosition(0);
-        leaderMotor.configureEncoder(getDegreesPerRotation());
-        followerMotor.configureFollow(leaderMotor, true);
+        // Configure encoders
+        this.leaderMotor.setPosition(0);
+        this.leaderMotor.configureEncoder(getDegreesPerRotation());
+
+        // Configure follower motor.
+        this.followerMotor.configureFollow(leaderMotor, true);
     }
 
     /**
@@ -44,14 +48,17 @@ public class Pivot {
      */
     public void move(double speed) {
         Telemetry.sendNumber("Pivot.position", getPosition(), Verbosity.HIGH);
+        // Stop any motion if it's too far up
         if (isTooFarUp() && speed < 0) {
             leaderMotor.stop();
             return;
         }
+        // Stop any motion if it's too far down
         if (isTooFarDown() && speed > 0) {
             leaderMotor.stop();
             return;
         }
+        // If it passes both checks, actually move the pivot.
         leaderMotor.set(speed);
     }
 

@@ -21,7 +21,7 @@ import frc.robot.abstraction.motors.RevNEO500;
 import frc.robot.Constants.Driving;
 import frc.robot.Constants.Robot.SwerveDrive;
 import frc.robot.Constants.Robot.SwerveDrive.Modules;
-import frc.robot.Constants.Vision;
+import frc.robot.Constants.Vision; // Keep these 2 imports around so that we don't get a bunch of errors when we uncomment addLLVisionMeasurement()
 import frc.robot.helpers.LimelightHelpers;
 import frc.robot.helpers.Telemetry;
 import frc.robot.helpers.Telemetry.Verbosity;
@@ -178,13 +178,17 @@ public class SwerveDrivebase {
      *                        relative.
      */
     public void drive(ChassisSpeeds velocityCommand, boolean fieldRelative) {
+        // If the wheels are locked, don't move at all.
         if (motionLocked) {
             return;
         }
+        // If the velocity command is field relative, convert it to robot relative
+        // speeds.
         if (fieldRelative) {
             velocityCommand = ChassisSpeeds.fromFieldRelativeSpeeds(velocityCommand, getYaw());
         }
 
+        // If we're in slow mode, apply a velocity multiplier.
         if (slowMode) {
             velocityCommand = new ChassisSpeeds(
                     velocityCommand.vxMetersPerSecond * Driving.SLOWMODE_MULT,
@@ -192,23 +196,25 @@ public class SwerveDrivebase {
                     velocityCommand.omegaRadiansPerSecond * Driving.SLOWMODE_MULT);
         }
 
-        
-
-        // Drive modules
+        // Due to how converting continous velocity inputs into discrete module speeds
+        // works, sometimes the robot will drift when moving and turning at the same
+        // time. This compensates for that.
         velocityCommand = ChassisSpeeds.discretize(velocityCommand, 0.02);
+        // Calculate module states.
         SwerveModuleState[] moduleDesiredStates = kinematics.toSwerveModuleStates(velocityCommand);
         // If the commanded module speeds is too fast, slow down
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleDesiredStates, velocityCommand, getAbsoluteMaxVel(),
                 getMaxTranslationalVel(), getMaxRotVel());
 
+        // Loop through the modules and apply commanded states.
         for (Module module : modules) {
             module.setDesiredState(moduleDesiredStates[module.moduleNumber]);
         }
     }
 
     /**
-     * Locks the wheels so that the robot won't move. Use to lock robot motion after
-     * a match or when an enemy is pushing the robot.
+     * Orients the wheels in such a way that the robot can't move. Use to lock robot
+     * motion after a match or when an enemy is pushing the robot.
      */
     public void lockMotion() {
         motionLocked = true;
@@ -441,7 +447,7 @@ public class SwerveDrivebase {
     }
 
     /**
-     * Gets the absolute max velocity of the drivebase. Not neccesarily the max
+     * Gets the absolute max velocity of the modules. Not neccesarily the max
      * configured speed.
      * 
      * @return The max velocity, in m/s
@@ -468,6 +474,9 @@ public class SwerveDrivebase {
         return SwerveDrive.MAX_ROTATIONAL_VEL;
     }
 
+    /**
+     * Sends telemetry data.
+     */
     public void sendTelemetry() {
         ChassisSpeeds robotVelocity = getRobotVelocity();
         Telemetry.sendNumber("SwerveDrivebase.robotVelX", robotVelocity.vxMetersPerSecond, Verbosity.MEDIUM);

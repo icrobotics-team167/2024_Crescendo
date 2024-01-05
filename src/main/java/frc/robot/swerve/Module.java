@@ -208,10 +208,10 @@ public class Module {
    * @return Drive feedforward for drive motor on a swerve module.
    */
   private SimpleMotorFeedforward createDriveFeedforward() {
+    // Volt-seconds per meter (max voltage divided by max acceleration)
     double kv = driveMotor.getNominalVoltage() / MAX_MOVE_SPEED;
-    /// ^ Volt-seconds per meter (max voltage divided by max acceleration)
+    // Volt-seconds^2 per meter (max voltage divided by max accel)
     double ka = driveMotor.getNominalVoltage() / (SwerveDrive.MAX_ACCELERATION);
-    /// ^ Volt-seconds^2 per meter (max voltage divided by max accel)
     return new SimpleMotorFeedforward(0, kv, ka);
   }
 

@@ -166,6 +166,9 @@ public class SwerveSubsystem extends SubsystemBase {
         return swerveDrive.getAbsoluteMaxVel();
     }
 
+    /**
+     * Sends telemetry data.
+     */
     public void sendTelemetry() {
         swerveDrive.sendTelemetry();
     }
