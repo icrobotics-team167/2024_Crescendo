@@ -114,11 +114,11 @@ public class Module {
     // direction might be faster to move to, so check for that
     this.desiredState = SwerveModuleState.optimize(desiredState, getRotation());
 
-    driveMotor.setDriveReference(desiredState.speedMetersPerSecond,
-        DRIVE_FEEDFORWARD.calculate(desiredState.speedMetersPerSecond));
+    driveMotor.setDriveReference(this.desiredState.speedMetersPerSecond,
+        DRIVE_FEEDFORWARD.calculate(this.desiredState.speedMetersPerSecond));
     // 0);
     turnMotor.setPosition(turnEncoder.getAbsolutePosition().getDegrees());
-    turnMotor.setTurnReference(desiredState.angle);
+    turnMotor.setTurnReference(this.desiredState.angle);
   }
 
   /**
