@@ -4,9 +4,7 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.helpers.MathUtils;
@@ -362,6 +360,7 @@ public final class Constants {
      * Autonomous period configurations.
      */
     public static final class Auto {
+      // TODO: Tune
       public static final PIDConstants translationalPIDs = new PIDConstants(5.0, 0.0, 0);
       public static final PIDConstants rotationalPIDs = new PIDConstants(-4.0, 0.0, 0);
     }
