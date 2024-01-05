@@ -2,8 +2,14 @@
   "robotWidth": 0.8636,
   "robotLength": 0.889,
   "holonomicMode": true,
-  "pathFolders": [],
-  "autoFolders": [],
+  "pathFolders": [
+    "Score Cone Then Cube",
+    "Test Paths"
+  ],
+  "autoFolders": [
+    "Autos",
+    "Test Autos"
+  ],
   "defaultMaxVel": 2.0,
   "defaultMaxAccel": 7.55,
   "defaultMaxAngVel": 540.0,
