@@ -13,10 +13,6 @@ public class Pivot {
      * The right motor on the pivot.
      */
     private AbstractMotor leaderMotor;
-    /**
-     * The left motor on the pivot.
-     */
-    private AbstractMotor followerMotor;
 
     /**
      * Creates a new Pivot object.
@@ -25,19 +21,18 @@ public class Pivot {
      * @param followerMotor The left motor on the pivot mechanism.
      */
     public Pivot(AbstractMotor leaderMotor, AbstractMotor followerMotor) {
-        this.leaderMotor = leaderMotor;
-        this.followerMotor = followerMotor;
-
         // Make sure the motors are in brake mode.
-        this.leaderMotor.configureMotorBrake(true);
-        this.followerMotor.configureMotorBrake(true);
+        leaderMotor.configureMotorBrake(true);
+        followerMotor.configureMotorBrake(true);
 
         // Configure encoders
-        this.leaderMotor.setPosition(0);
-        this.leaderMotor.configureEncoder(getDegreesPerRotation());
+        leaderMotor.setPosition(0);
+        leaderMotor.configureEncoder(getDegreesPerRotation());
 
         // Configure follower motor.
-        this.followerMotor.configureFollow(leaderMotor, true);
+        followerMotor.configureFollow(leaderMotor, true);
+
+        this.leaderMotor = leaderMotor;
     }
 
     /**
@@ -48,12 +43,12 @@ public class Pivot {
      */
     public void move(double speed) {
         Telemetry.sendNumber("Pivot.position", getPosition(), Verbosity.HIGH);
-        // Stop any motion if it's too far up
+        // Prevent upwards motion if it's already too far up.
         if (isTooFarUp() && speed < 0) {
             leaderMotor.stop();
             return;
         }
-        // Stop any motion if it's too far down
+        // Prevents downwards motion if it's already too far down.
         if (isTooFarDown() && speed > 0) {
             leaderMotor.stop();
             return;

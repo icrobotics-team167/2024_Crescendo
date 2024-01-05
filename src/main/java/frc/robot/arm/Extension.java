@@ -45,17 +45,20 @@ public class Extension {
      *              speed, -1.0 is retract full speed.
      */
     public void move(double speed) {
-        speed *= -1;
         Telemetry.sendNumber("Extension.position", getPosition(), Verbosity.HIGH);
-        if (isTooFarOut() && speed < 0) {
+        // Prevents outwards motion if it's already too far out.
+        if (isTooFarOut() && speed > 0) {
             motor.stop();
             return;
         }
-        if (isTooFarIn() && speed > 0) {
+        // Prevents inwards motion if it's already too far out.
+        if (isTooFarIn() && speed < 0) {
             motor.stop();
             return;
         }
-        motor.set(speed);
+        // If it passes both checks, actually run the motor.
+        // The motor's movement direction is inverted
+        motor.set(-speed);
     }
 
     /**
@@ -64,7 +67,8 @@ public class Extension {
      * @return If the arm is above its max point, configured in Constants.
      */
     public boolean isTooFarOut() {
-        return Telemetry.sendBoolean("Extension.isTooFarOut", getPosition() >= Arm.Extension.EXTENSION_MAX, Verbosity.MEDIUM);
+        return Telemetry.sendBoolean("Extension.isTooFarOut", getPosition() >= Arm.Extension.EXTENSION_MAX,
+                Verbosity.MEDIUM);
     }
 
     /**
