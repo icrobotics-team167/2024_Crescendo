@@ -361,8 +361,14 @@ public final class Constants {
      */
     public static final class Auto {
       // TODO: Tune
-      public static final PIDConstants translationalPIDs = new PIDConstants(5.0, 0.0, 0);
-      public static final PIDConstants rotationalPIDs = new PIDConstants(-4.0, 0.0, 0);
+      /**
+       * PID values for translational movement.
+       */
+      public static final PIDConstants translationalPIDs = new PIDConstants(5.5, 0.0, 0.0);
+      /**
+       * PID values for rotational movement.
+       */
+      public static final PIDConstants rotationalPIDs = new PIDConstants(-4.0, 0.0, -1);
     }
 
     /**
