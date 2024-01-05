@@ -237,124 +237,7 @@
               }
             }
           },
-          "51,0": {
-            "size": [
-              9,
-              10
-            ],
-            "content": {
-              "_type": "List Layout",
-              "_title": "Robot Velocities",
-              "_glyph": 149,
-              "_showGlyph": false,
-              "Layout/Label position": "TOP",
-              "_children": [
-                {
-                  "_type": "Text View",
-                  "_source0": "network_table:///SmartDashboard/SwerveDrivebase.robotVelX",
-                  "_title": "Vel X (m/s)",
-                  "_glyph": 148,
-                  "_showGlyph": false
-                },
-                {
-                  "_type": "Text View",
-                  "_source0": "network_table:///SmartDashboard/SwerveDrivebase.robotVelY",
-                  "_title": "Vel Y (m/s)",
-                  "_glyph": 148,
-                  "_showGlyph": false
-                },
-                {
-                  "_type": "Text View",
-                  "_source0": "network_table:///SmartDashboard/SwerveDrivebase.robotVelRot",
-                  "_title": "Vel Rot (rad/s)",
-                  "_glyph": 148,
-                  "_showGlyph": false
-                },
-                {
-                  "_type": "Text View",
-                  "_source0": "network_table:///SmartDashboard/SwerveDrivebase.driftCompensation",
-                  "_title": "Drift Compensation",
-                  "_glyph": 148,
-                  "_showGlyph": false
-                }
-              ]
-            }
-          },
-          "51,10": {
-            "size": [
-              9,
-              12
-            ],
-            "content": {
-              "_type": "Grid Layout",
-              "_title": "Teleop Control Inputs",
-              "_glyph": 149,
-              "_showGlyph": false,
-              "Layout/Number of columns": 2,
-              "Layout/Number of rows": 3,
-              "Layout/Label position": "BOTTOM",
-              "_children": {
-                "0,0": {
-                  "_type": "Number Bar",
-                  "_source0": "network_table:///SmartDashboard/AbsoluteFieldDrive.controlInX",
-                  "_title": "X",
-                  "_glyph": 148,
-                  "_showGlyph": false,
-                  "Range/Min": -1.0,
-                  "Range/Max": 1.0,
-                  "Range/Center": 0.0,
-                  "Visuals/Num tick marks": 5,
-                  "Visuals/Show text": true,
-                  "Visuals/Orientation": "HORIZONTAL"
-                },
-                "1,1": {
-                  "_type": "Boolean Box",
-                  "_source0": "network_table:///SmartDashboard/SwerveDrivebase.slowMode",
-                  "_title": "Slow Mode",
-                  "_glyph": 148,
-                  "_showGlyph": false,
-                  "Colors/Color when true": "#7CFC00FF",
-                  "Colors/Color when false": "#8B0000FF"
-                },
-                "0,1": {
-                  "_type": "Number Bar",
-                  "_source0": "network_table:///SmartDashboard/AbsoluteFieldDrive.controlInRot",
-                  "_title": "Rot",
-                  "_glyph": 148,
-                  "_showGlyph": false,
-                  "Range/Min": -1.0,
-                  "Range/Max": 1.0,
-                  "Range/Center": 0.0,
-                  "Visuals/Num tick marks": 5,
-                  "Visuals/Show text": true,
-                  "Visuals/Orientation": "HORIZONTAL"
-                },
-                "0,2": {
-                  "_type": "Boolean Box",
-                  "_source0": "network_table:///SmartDashboard/SwerveDrivebase.motionLocked",
-                  "_title": "SwerveDrivebase.motionLocked",
-                  "_glyph": 148,
-                  "_showGlyph": false,
-                  "Colors/Color when true": "#7CFC00FF",
-                  "Colors/Color when false": "#8B0000FF"
-                },
-                "1,0": {
-                  "_type": "Number Bar",
-                  "_source0": "network_table:///SmartDashboard/AbsoluteFieldDrive.controlInY",
-                  "_title": "Y",
-                  "_glyph": 148,
-                  "_showGlyph": false,
-                  "Range/Min": -1.0,
-                  "Range/Max": 1.0,
-                  "Range/Center": 0.0,
-                  "Visuals/Num tick marks": 5,
-                  "Visuals/Show text": true,
-                  "Visuals/Orientation": "HORIZONTAL"
-                }
-              }
-            }
-          },
-          "35,0": {
+          "29,0": {
             "size": [
               16,
               9
@@ -450,6 +333,164 @@
               "_title": "Auto Chooser",
               "_glyph": 148,
               "_showGlyph": false
+            }
+          },
+          "45,0": {
+            "size": [
+              15,
+              11
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Drivebase",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Number of columns": 2,
+              "Layout/Number of rows": 1,
+              "Layout/Label position": "TOP",
+              "_children": {
+                "1,0": {
+                  "_type": "List Layout",
+                  "_title": "Robot Velocities",
+                  "_glyph": 149,
+                  "_showGlyph": false,
+                  "Layout/Label position": "TOP",
+                  "_children": [
+                    {
+                      "_type": "Text View",
+                      "_source0": "network_table:///SmartDashboard/SwerveDrivebase.robotVelX",
+                      "_title": "Vel X (m/s)",
+                      "_glyph": 148,
+                      "_showGlyph": false
+                    },
+                    {
+                      "_type": "Text View",
+                      "_source0": "network_table:///SmartDashboard/SwerveDrivebase.robotVelY",
+                      "_title": "Vel Y (m/s)",
+                      "_glyph": 148,
+                      "_showGlyph": false
+                    },
+                    {
+                      "_type": "Text View",
+                      "_source0": "network_table:///SmartDashboard/SwerveDrivebase.robotVelRot",
+                      "_title": "Vel Rot (rad/s)",
+                      "_glyph": 148,
+                      "_showGlyph": false
+                    },
+                    {
+                      "_type": "Text View",
+                      "_source0": "network_table:///SmartDashboard/SwerveDrivebase.driftCompensation",
+                      "_title": "Drift Compensation",
+                      "_glyph": 148,
+                      "_showGlyph": false
+                    }
+                  ]
+                },
+                "0,0": {
+                  "_type": "List Layout",
+                  "_title": "Robot Position",
+                  "_glyph": 149,
+                  "_showGlyph": false,
+                  "Layout/Label position": "LEFT",
+                  "_children": [
+                    {
+                      "_type": "Text View",
+                      "_source0": "network_table:///SmartDashboard/Robot.posX",
+                      "_title": "X (m)",
+                      "_glyph": 148,
+                      "_showGlyph": false
+                    },
+                    {
+                      "_type": "Text View",
+                      "_source0": "network_table:///SmartDashboard/Robot.posY",
+                      "_title": "Y (m)",
+                      "_glyph": 148,
+                      "_showGlyph": false
+                    },
+                    {
+                      "_type": "Text View",
+                      "_source0": "network_table:///SmartDashboard/Robot.posRot",
+                      "_title": "Rot (Deg)",
+                      "_glyph": 148,
+                      "_showGlyph": false
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "49,11": {
+            "size": [
+              11,
+              11
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Teleop Control Inputs",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Number of columns": 2,
+              "Layout/Number of rows": 3,
+              "Layout/Label position": "TOP",
+              "_children": {
+                "0,0": {
+                  "_type": "Number Bar",
+                  "_source0": "network_table:///SmartDashboard/AbsoluteFieldDrive.controlInX",
+                  "_title": "X",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Range/Min": -1.0,
+                  "Range/Max": 1.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5,
+                  "Visuals/Show text": true,
+                  "Visuals/Orientation": "HORIZONTAL"
+                },
+                "1,1": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/SwerveDrivebase.slowMode",
+                  "_title": "Slow Mode",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "0,1": {
+                  "_type": "Number Bar",
+                  "_source0": "network_table:///SmartDashboard/AbsoluteFieldDrive.controlInRot",
+                  "_title": "Rot",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Range/Min": -1.0,
+                  "Range/Max": 1.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5,
+                  "Visuals/Show text": true,
+                  "Visuals/Orientation": "HORIZONTAL"
+                },
+                "0,2": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/SwerveDrivebase.motionLocked",
+                  "_title": "SwerveDrivebase.motionLocked",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "1,0": {
+                  "_type": "Number Bar",
+                  "_source0": "network_table:///SmartDashboard/AbsoluteFieldDrive.controlInY",
+                  "_title": "Y",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Range/Min": -1.0,
+                  "Range/Max": 1.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5,
+                  "Visuals/Show text": true,
+                  "Visuals/Orientation": "HORIZONTAL"
+                }
+              }
             }
           }
         }
