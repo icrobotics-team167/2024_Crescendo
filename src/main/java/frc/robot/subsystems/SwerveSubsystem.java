@@ -22,21 +22,22 @@ public class SwerveSubsystem extends SubsystemBase {
      */
     public SwerveSubsystem() {
         swerveDrive = new SwerveDrivebase();
-        HolonomicPathFollowerConfig PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(
-                Constants.Robot.Auto.translationalPIDs, // Translation PID constants
-                Constants.Robot.Auto.rotationalPIDs, // Rotation PID constants
-                getMaxVel(), // Max module speed, in m/s
-                Robot.SwerveDrive.Modules.Positions.FRONT_LEFT_POS.getNorm(), // Drive base radius in meters. Distance
-                                                                              // from
-                                                                              // robot center to furthest module.
-                new ReplanningConfig() // Default path replanning config. See the API for the options here
-        );
         AutoBuilder.configureHolonomic(
                 this::getPose, // Robot pose supplier
                 this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::robotRelativeDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                PATH_FOLLOWER_CONFIG,
+                new HolonomicPathFollowerConfig(
+                        Constants.Robot.Auto.translationalPIDs, // Translation PID constants
+                        Constants.Robot.Auto.rotationalPIDs, // Rotation PID constants
+                        getMaxVel(), // Max module speed, in m/s
+                        Robot.SwerveDrive.Modules.Positions.FRONT_LEFT_POS.getNorm(), // Drive base radius in meters.
+                                                                                      // Distance
+                                                                                      // from
+                                                                                      // robot center to furthest
+                                                                                      // module.
+                        new ReplanningConfig() // Default path replanning config. See the API for the options here
+                ),
                 this // Reference to this subsystem to set requirements
         );
     }
