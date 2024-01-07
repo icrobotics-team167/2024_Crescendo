@@ -25,6 +25,5 @@
       }
     },
   ],
-  "java.test.defaultConfig": "WPIlibUnitTests",
-  "C_Cpp.default.compilerPath": ""
+  "java.test.defaultConfig": "WPIlibUnitTests"
 }
