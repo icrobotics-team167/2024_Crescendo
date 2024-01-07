@@ -3,7 +3,6 @@
   "robotLength": 0.889,
   "holonomicMode": true,
   "pathFolders": [
-    "Score Cone Then Cube",
     "Test Paths"
   ],
   "autoFolders": [

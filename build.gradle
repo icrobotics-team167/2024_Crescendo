@@ -1,4 +1,4 @@
-plugins {
+plugins { // It compiles correctly, so idk wtf gradle is on about
     id "java"
     id "edu.wpi.first.GradleRIO" version "2024.1.1"
 }

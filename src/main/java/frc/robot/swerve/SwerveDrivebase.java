@@ -172,8 +172,9 @@ public class SwerveDrivebase {
      * 
      * @param velocityCommand The commanded linear velocity of the robot, in meters
      *                        per second. Positive x is forwards, (either from the
-     *                        robot or from the driver station) positve y is left
+     *                        robot or from the driver station) positve y is left.
      *                        (either from the robot or from the driver station)
+     *                        Rotation is CCW+.
      * @param fieldRelative   Driving mode. True for field relative, false for robot
      *                        relative.
      */
@@ -182,6 +183,7 @@ public class SwerveDrivebase {
         if (motionLocked) {
             return;
         }
+        velocityCommand.omegaRadiansPerSecond *= -1;
         // If the velocity command is field relative, convert it to robot relative
         // speeds.
         if (fieldRelative) {

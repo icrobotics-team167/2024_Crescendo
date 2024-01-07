@@ -368,7 +368,7 @@ public final class Constants {
       /**
        * PID values for rotational movement.
        */
-      public static final PIDConstants rotationalPIDs = new PIDConstants(-4.0, 0.0, -1);
+      public static final PIDConstants rotationalPIDs = new PIDConstants(4.0, 0.0, 1);
     }
 
     /**
