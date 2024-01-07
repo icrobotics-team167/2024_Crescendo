@@ -16,10 +16,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import frc.robot.commands.auto.*;
+// import frc.robot.commands.auto.*; // Complier no likey when we have a blank folder
 import frc.robot.commands.teleop.*;
-import frc.robot.subsystems.ArmPosition;
-import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
 /**
@@ -36,7 +34,6 @@ public class RobotContainer {
   public SendableChooser<Command> autoSelector = new SendableChooser<Command>();
 
   private final SwerveSubsystem driveBase = new SwerveSubsystem();
-  private final ArmSubsystem arm = new ArmSubsystem();
 
   CommandJoystick primaryLeftStick = new CommandJoystick(Constants.Driving.Controllers.IDs.PRIMARY_LEFT);
   CommandJoystick primaryRightStick = new CommandJoystick(Constants.Driving.Controllers.IDs.PRIMARY_RIGHT);
@@ -50,10 +47,6 @@ public class RobotContainer {
    */
   public RobotContainer() {
     // Auto Command Registering
-    NamedCommands.registerCommand("Reset Arm", new MoveArmTo(arm, ArmPosition.INITIAL));
-    NamedCommands.registerCommand("Move Arm (Ground Pickup)", new MoveArmTo(arm, ArmPosition.GROUND_INTAKE));
-    NamedCommands.registerCommand("Intake", new Intake(arm));
-    NamedCommands.registerCommand("Outtake", new Outtake(arm));
 
     // Auto selector configuring
     autoSelector = AutoBuilder.buildAutoChooser();
@@ -69,15 +62,6 @@ public class RobotContainer {
         () -> MathUtil.applyDeadband(-primaryLeftStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
         () -> MathUtil.applyDeadband(primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
     driveBase.setDefaultCommand(driveController);
-
-    // Configure arm controls
-    MoveArm armController = new MoveArm(
-        arm,
-        () -> MathUtil.applyDeadband(-secondaryRightStick.getY(),
-            Constants.Driving.Controllers.Deadbands.SECONDARY_RIGHT),
-        () -> MathUtil.applyDeadband(-secondaryLeftStick.getY(),
-            Constants.Driving.Controllers.Deadbands.SECONDARY_LEFT));
-    arm.setDefaultCommand(armController);
   }
 
   /**
@@ -106,11 +90,6 @@ public class RobotContainer {
                                                                // when the robot wasn't facing away from the driver
                                                                // station on boot and can't get an AprilTag lock to
                                                                // calculate its orientation
-
-    secondaryRightStick.button(3) // Button #3 on the secondary driver's right stick
-        .whileTrue(new StartEndCommand(arm::intake, arm::stopIntake)); // Press and hold to intake
-    secondaryRightStick.button(4) // Button #3 on the secondary driver's left stick
-        .whileTrue(new StartEndCommand(arm::outtake, arm::stopIntake)); // Press and hold to outtake
   }
 
   /**
