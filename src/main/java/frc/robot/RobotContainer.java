@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import frc.robot.commands.auto.testAutos.TestWheels;
 // import frc.robot.commands.auto.*; // Complier no likey when we have a blank folder
 import frc.robot.commands.teleop.*;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -49,7 +50,9 @@ public class RobotContainer {
     // Auto Command Registering
 
     // Auto selector configuring
-    autoSelector = AutoBuilder.buildAutoChooser();
+    autoSelector = AutoBuilder.buildAutoChooser(); // Load all the pathplanner autos
+    // Load non-pathplanner autos
+    autoSelector.addOption("Test Auto (Module Actuation)", new TestWheels(driveBase));
     SmartDashboard.putData(autoSelector);
 
     // Configure the trigger bindings

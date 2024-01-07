@@ -6,6 +6,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Robot;
@@ -117,6 +118,10 @@ public class SwerveSubsystem extends SubsystemBase {
      */
     public void setWheelsForward() {
         swerveDrive.setWheelsForward();
+    }
+
+    public void setIndividualModule(int moduleID, SwerveModuleState desiredState) {
+        swerveDrive.setIndividualModule(moduleID, desiredState);
     }
 
     /**

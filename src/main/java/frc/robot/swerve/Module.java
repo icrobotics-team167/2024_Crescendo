@@ -112,13 +112,18 @@ public class Module {
   public void setDesiredState(SwerveModuleState desiredState) {
     // It might be the case that flipping the desired angle and reversing driving
     // direction might be faster to move to, so check for that
-    this.desiredState = SwerveModuleState.optimize(desiredState, getRotation());
+    desiredState = SwerveModuleState.optimize(desiredState, getRotation());
 
-    driveMotor.setDriveReference(this.desiredState.speedMetersPerSecond,
-        DRIVE_FEEDFORWARD.calculate(this.desiredState.speedMetersPerSecond));
+    setRawState(desiredState);
+  }
+
+  public void setRawState(SwerveModuleState rawState) {
+    this.desiredState = rawState;
+    driveMotor.setDriveReference(rawState.speedMetersPerSecond,
+        DRIVE_FEEDFORWARD.calculate(rawState.speedMetersPerSecond));
     // 0);
     turnMotor.setPosition(turnEncoder.getAbsolutePosition().getDegrees());
-    turnMotor.setTurnReference(this.desiredState.angle);
+    turnMotor.setTurnReference(rawState.angle);
   }
 
   /**
@@ -200,6 +205,7 @@ public class Module {
     Telemetry.sendNumber(moduleName() + " desired turn angle", desiredState.angle.getDegrees(), Verbosity.HIGH);
     Telemetry.sendNumber(moduleName() + " actual turn angle", turnEncoder.getAbsolutePosition().getDegrees(),
         Verbosity.HIGH);
+    Telemetry.sendNumber(moduleName() + " turn angle error", turnEncoder.getAbsolutePosition().minus(desiredState.angle).getDegrees(), Verbosity.HIGH);
   }
 
   /**

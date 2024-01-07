@@ -183,6 +183,8 @@ public class SwerveDrivebase {
         if (motionLocked) {
             return;
         }
+        // For some reason if we don't do this it's CW+ instead of CCW+
+        // TODO: Fix root cause to not have to do this
         velocityCommand.omegaRadiansPerSecond *= -1;
         // If the velocity command is field relative, convert it to robot relative
         // speeds.
@@ -251,6 +253,10 @@ public class SwerveDrivebase {
         for (Module module : modules) {
             module.setDesiredState(new SwerveModuleState(0, new Rotation2d()));
         }
+    }
+
+    public void setIndividualModule(int moduleID, SwerveModuleState desiredState) {
+        modules[moduleID].setRawState(desiredState);
     }
 
     /**

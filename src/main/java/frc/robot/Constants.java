@@ -165,7 +165,7 @@ public final class Constants {
        * The max translational velocity of the drivebase, in meters/s. Note that this
        * is not a module's absolute max speed.
        */
-      public static final double MAX_TRANSLATIONAL_VEL = 2;
+      public static final double MAX_TRANSLATIONAL_VEL = 4;
       /**
        * The max rotational velocity of the drivebase, in radians/s.
        */

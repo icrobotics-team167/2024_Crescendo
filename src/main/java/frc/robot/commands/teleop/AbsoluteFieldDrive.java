@@ -40,6 +40,7 @@ public class AbsoluteFieldDrive extends Command {
         this.vY = vY;
         this.vRot = vRot;
 
+        setName("Field Oriented Drive");
         addRequirements(swerve);
     }
 
