@@ -64,6 +64,7 @@ public class Module {
 
     // Create max move speed constant for math
     MAX_MOVE_SPEED = getMetersPerRotation() * this.driveMotor.getMaxRPM() / 60.0;
+    System.out.println(moduleName() + " max move speed: " + MAX_MOVE_SPEED);
     // Create drive feedforward
     DRIVE_FEEDFORWARD = createDriveFeedforward();
     // Set module number (See moduleName() method for what values correspond to what

@@ -10,9 +10,9 @@
     "Test Autos"
   ],
   "defaultMaxVel": 2.0,
-  "defaultMaxAccel": 7.55,
-  "defaultMaxAngVel": 540.0,
-  "defaultMaxAngAccel": 2038.5,
+  "defaultMaxAccel": 15.69064,
+  "defaultMaxAngVel": 360.0,
+  "defaultMaxAngAccel": 2824.2,
   "maxModuleSpeed": 4.5,
   "choreoProjectPath": null
 }
