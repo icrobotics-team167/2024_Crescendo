@@ -5,6 +5,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -461,7 +462,31 @@ public class SwerveDrivebase {
      * @return The max velocity, in m/s
      */
     public double getAbsoluteMaxVel() {
-        return modules[0].getMaxVel();
+        double maxVel = Double.MAX_VALUE;
+        for (Module module : modules) {
+            if (module.getMaxVel() < maxVel) {
+                maxVel = module.getMaxVel();
+            }
+        }
+        return maxVel;
+    }
+
+    /**
+     * Gets the distance of the furthest module from the center of the robot.
+     * 
+     * @return The radius, in meters.
+     */
+    public double getDrivebaseRadius() {
+        double radius = 0;
+        Translation2d[] modulePositions = { SwerveDrive.Modules.Positions.FRONT_LEFT_POS,
+                SwerveDrive.Modules.Positions.FRONT_RIGHT_POS, SwerveDrive.Modules.Positions.BACK_LEFT_POS,
+                SwerveDrive.Modules.Positions.BACK_RIGHT_POS };
+        for (Translation2d position : modulePositions) {
+            if (radius < position.getNorm()) {
+                radius = position.getNorm();
+            }
+        }
+        return radius;
     }
 
     /**

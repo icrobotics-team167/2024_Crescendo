@@ -10,7 +10,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.Constants.Robot;
 import frc.robot.swerve.SwerveDrivebase;
 
 /**
@@ -32,12 +31,9 @@ public class SwerveSubsystem extends SubsystemBase {
                 new HolonomicPathFollowerConfig(
                         Constants.Robot.Auto.translationalPIDs, // Translation PID constants
                         Constants.Robot.Auto.rotationalPIDs, // Rotation PID constants
-                        getMaxVel(), // Max module speed, in m/s
-                        Robot.SwerveDrive.Modules.Positions.FRONT_LEFT_POS.getNorm(), // Drive base radius in meters.
-                                                                                      // Distance
-                                                                                      // from
-                                                                                      // robot center to furthest
-                                                                                      // module.
+                        getAbsoluteMaxVel(), // Max module speed of the slowest module, in m/s.
+                        getDrivebaseRadius(), // Drive base radius in meters.
+                                              // Distance from robot center to furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
                 ),
                 RobotContainer::isRedAlliance,
@@ -169,8 +165,17 @@ public class SwerveSubsystem extends SubsystemBase {
      * 
      * @return The max velocity, in m/s
      */
-    public double getMaxVel() {
+    public double getAbsoluteMaxVel() {
         return swerveDrive.getAbsoluteMaxVel();
+    }
+
+    /**
+     * Gets the distance of the furthest module from the center of the robot.
+     * 
+     * @return The radius, in meters.
+     */
+    public double getDrivebaseRadius() {
+        return swerveDrive.getDrivebaseRadius();
     }
 
     /**
