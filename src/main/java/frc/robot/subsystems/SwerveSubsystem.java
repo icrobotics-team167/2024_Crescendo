@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.Robot;
 import frc.robot.swerve.SwerveDrivebase;
 
@@ -39,6 +40,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                                                                       // module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
                 ),
+                RobotContainer::isRedAlliance,
                 this // Reference to this subsystem to set requirements
         );
     }

@@ -7,7 +7,9 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -157,5 +159,18 @@ public class RobotContainer {
   public void preMatch() {
     driveBase.setWheelBrake(true);
     driveBase.setWheelsForward();
+  }
+
+  /**
+   * Gets which alliance the robot is on
+   * 
+   * @return If the robot is on red alliance. False if it is on the blue alliance,
+   *         or if the alliance cannot be loaded.
+   */
+  public static boolean isRedAlliance() {
+    if (DriverStation.getAlliance().isPresent()) {
+      return DriverStation.getAlliance().get() == Alliance.Red;
+    }
+    return false;
   }
 }
