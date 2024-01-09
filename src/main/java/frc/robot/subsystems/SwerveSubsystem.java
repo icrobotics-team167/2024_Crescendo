@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.Driving;
 import frc.robot.swerve.SwerveDrivebase;
 
 /**
@@ -74,17 +75,19 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     /**
-     * Puts the drivebase into slow mode.
+     * Puts the drivebase into modified driving (Either slow mode or normal speed
+     * depending on Constants.Driving.SLOWMODE_DEFAULT)
      */
     public void setSlowMode() {
-        swerveDrive.setSlowMode(true);
+        swerveDrive.setSlowMode(!Driving.SLOWMODE_DEFAULT);
     }
 
     /**
-     * Puts the drivebase into normal mode.
+     * Puts the drivebase into normal driving (Either normal speed or slow mode
+     * depending on Constants.Driving.SLOWMODE_DEFAULT)
      */
     public void unsetSlowMode() {
-        swerveDrive.setSlowMode(false);
+        swerveDrive.setSlowMode(Driving.SLOWMODE_DEFAULT);
     }
 
     /**

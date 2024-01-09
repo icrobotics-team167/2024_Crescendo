@@ -370,6 +370,10 @@ public final class Constants {
      * Move speed multipliers for slow mode.
      */
     public static final double SLOWMODE_MULT = 0.2;
+    /**
+     * If slow mode is enabled by default or not.
+     */
+    public static final boolean SLOWMODE_DEFAULT = true;
 
     /**
      * Controller configurations.
