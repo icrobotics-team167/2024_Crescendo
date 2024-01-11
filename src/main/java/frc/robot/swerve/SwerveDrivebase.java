@@ -15,6 +15,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.abstraction.encoders.AnalogAbsoluteEncoder;
 import frc.robot.abstraction.imus.AbstractIMU;
 import frc.robot.abstraction.imus.Pigeon2IMU;
@@ -376,24 +377,24 @@ public class SwerveDrivebase {
      * position using a LimeLight that's detecting AprilTags.
      */
     public void addLLVisionMeasurement() {
-        // // Get pose
-        // Pose2d robotPose =
-        // LimelightHelpers.getBotPose2d(Vision.LimeLight.APRILTAG_DETECTOR);
+        // Get pose
+        Pose2d robotPose = LimelightHelpers.getBotPose2d(Vision.LimeLight.APRILTAG_DETECTOR);
 
-        // // If the LimeLight returns a null pose, stop
-        // if (robotPose == null) {
-        // return;
-        // }
+        // If the LimeLight returns a null pose, stop
+        if (robotPose == null) {
+            return;
+        }
 
-        // // Calculate latency in seconds
-        // double limeLightLatency =
-        // (LimelightHelpers.getLatency_Capture(Vision.LimeLight.APRILTAG_DETECTOR)
-        // + LimelightHelpers.getLatency_Pipeline(Vision.LimeLight.APRILTAG_DETECTOR)) /
-        // 1000.0;
-        // // Calculate timestamp using the current robot FPGA time and the latency.
-        // double captureTimeStamp = Timer.getFPGATimestamp() - limeLightLatency;
-        // // Call addVisionMeasurement to update the position
-        // addVisionMeasurement(robotPose, captureTimeStamp);
+        // Calculate latency in seconds
+        // The Limelight outputs in ms, we need it in seconds
+        double limeLightLatency = (LimelightHelpers.getLatency_Capture(Vision.LimeLight.APRILTAG_DETECTOR)
+                + LimelightHelpers.getLatency_Pipeline(Vision.LimeLight.APRILTAG_DETECTOR)) /
+                1000.0;
+        // Calculate timestamp using the current robot FPGA time and the latency.
+        double captureTimeStamp = Timer.getFPGATimestamp() - limeLightLatency;
+
+        // Call addVisionMeasurement to update the position
+        addVisionMeasurement(robotPose, captureTimeStamp);
     }
 
     /**
