@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.Spark;
  * Lights class for cool lights bruv.
 */
 public class Lights {
-    Spark colourspark;
+    Spark colourSpark;
 
     /**
      * Cool colours.
@@ -47,7 +47,7 @@ public class Lights {
      * @param PWMID the PWMID of the blinky blinky light module (Spark motor)
      */ 
     public Light(int PWMID) {
-        colourspark = new Spark(PWMID);
+        colourSpark = new Spark(PWMID);
     }
 
     /**
@@ -56,6 +56,6 @@ public class Lights {
      */
     public void setColour(colours colour) {
         // set colour to set colourValue bruv
-        colourspark.set(colour.colourValue);
+        colourSpark.set(colour.colourValue);
     }
 }
