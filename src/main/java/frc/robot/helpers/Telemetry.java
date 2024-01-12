@@ -1,7 +1,5 @@
 package frc.robot.helpers;
 
-import com.pathplanner.lib.util.PPLibTelemetry;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -98,6 +96,9 @@ public class Telemetry {
      */
     public static void setRobotPose(Pose2d robotPose) {
         field.setRobotPose(robotPose);
+        sendNumber("Robot.posX", robotPose.getX(), Verbosity.MEDIUM);
+        sendNumber("Robot.posY", robotPose.getY(), Verbosity.MEDIUM);
+        sendNumber("Robot.posRot", robotPose.getRotation().getDegrees(), Verbosity.MEDIUM);
     }
 
     /**

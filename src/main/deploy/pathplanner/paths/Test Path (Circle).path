@@ -1,0 +1,65 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.0,
+        "y": 1.0
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.0,
+        "y": -0.5
+      },
+      "isLocked": false,
+      "linkedName": "Test Path (Circle)"
+    },
+    {
+      "anchor": {
+        "x": 4.0,
+        "y": 1.0
+      },
+      "prevControl": {
+        "x": 4.0,
+        "y": -0.5
+      },
+      "nextControl": {
+        "x": 4.0,
+        "y": 2.5
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.0,
+        "y": 1.0
+      },
+      "prevControl": {
+        "x": 2.0,
+        "y": 2.5
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Test Path (Circle)"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.0,
+    "maxAcceleration": 15.69064,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 2824.2
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 0.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Test Paths",
+  "previewStartingState": null,
+  "useDefaultConstraints": true
+}

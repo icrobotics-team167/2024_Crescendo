@@ -1,7 +1,7 @@
 package frc.robot.abstraction.motors;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import frc.robot.Constants.Robot.Motors.Neo550;
 

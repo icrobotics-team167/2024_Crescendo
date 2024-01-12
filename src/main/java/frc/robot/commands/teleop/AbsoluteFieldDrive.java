@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.teleop;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -40,6 +40,7 @@ public class AbsoluteFieldDrive extends Command {
         this.vY = vY;
         this.vRot = vRot;
 
+        setName("Field Oriented Drive");
         addRequirements(swerve);
     }
 

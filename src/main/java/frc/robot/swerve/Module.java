@@ -64,6 +64,7 @@ public class Module {
 
     // Create max move speed constant for math
     MAX_MOVE_SPEED = getMetersPerRotation() * this.driveMotor.getMaxRPM() / 60.0;
+    System.out.println(moduleName() + " max move speed: " + MAX_MOVE_SPEED);
     // Create drive feedforward
     DRIVE_FEEDFORWARD = createDriveFeedforward();
     // Set module number (See moduleName() method for what values correspond to what
@@ -112,13 +113,18 @@ public class Module {
   public void setDesiredState(SwerveModuleState desiredState) {
     // It might be the case that flipping the desired angle and reversing driving
     // direction might be faster to move to, so check for that
-    this.desiredState = SwerveModuleState.optimize(desiredState, getRotation());
+    desiredState = SwerveModuleState.optimize(desiredState, getRotation());
 
-    driveMotor.setDriveReference(desiredState.speedMetersPerSecond,
-        DRIVE_FEEDFORWARD.calculate(desiredState.speedMetersPerSecond));
+    setRawState(desiredState);
+  }
+
+  public void setRawState(SwerveModuleState rawState) {
+    this.desiredState = rawState;
+    driveMotor.setDriveReference(rawState.speedMetersPerSecond,
+        DRIVE_FEEDFORWARD.calculate(rawState.speedMetersPerSecond));
     // 0);
     turnMotor.setPosition(turnEncoder.getAbsolutePosition().getDegrees());
-    turnMotor.setTurnReference(desiredState.angle);
+    turnMotor.setTurnReference(rawState.angle);
   }
 
   /**
@@ -200,6 +206,7 @@ public class Module {
     Telemetry.sendNumber(moduleName() + " desired turn angle", desiredState.angle.getDegrees(), Verbosity.HIGH);
     Telemetry.sendNumber(moduleName() + " actual turn angle", turnEncoder.getAbsolutePosition().getDegrees(),
         Verbosity.HIGH);
+    Telemetry.sendNumber(moduleName() + " turn angle error", turnEncoder.getAbsolutePosition().minus(desiredState.angle).getDegrees(), Verbosity.HIGH);
   }
 
   /**
@@ -208,10 +215,10 @@ public class Module {
    * @return Drive feedforward for drive motor on a swerve module.
    */
   private SimpleMotorFeedforward createDriveFeedforward() {
+    // Volt-seconds per meter (max voltage divided by max acceleration)
     double kv = driveMotor.getNominalVoltage() / MAX_MOVE_SPEED;
-    /// ^ Volt-seconds per meter (max voltage divided by max acceleration)
+    // Volt-seconds^2 per meter (max voltage divided by max accel)
     double ka = driveMotor.getNominalVoltage() / (SwerveDrive.MAX_ACCELERATION);
-    /// ^ Volt-seconds^2 per meter (max voltage divided by max accel)
     return new SimpleMotorFeedforward(0, kv, ka);
   }
 
