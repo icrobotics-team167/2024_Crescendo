@@ -1,4 +1,6 @@
-import edu.wpi.first.wpilibj.Spark;
+package frc.robot.misc;
+
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 
 /**
  * Lights class for cool lights bruv.
@@ -9,7 +11,7 @@ public class Lights {
     /**
      * Cool colours.
      */
-    private static enum Colours {
+    public static enum Colours {
         RAINBOW_PALETTE(-0.99),
         RAINBOW_GLITTER(-0.89),
         CONFETTI(-0.87),
@@ -37,7 +39,7 @@ public class Lights {
          * colours constructor
          * @param colourValue colour value
          */
-        private colours(double colourValue) {
+        private Colours(double colourValue) {
             this.colourValue = colourValue;
         }
     }
@@ -46,7 +48,7 @@ public class Lights {
      * Lights constructor
      * @param PWMID the PWMID of the blinky blinky light module (Spark motor)
      */ 
-    public Light(int PWMID) {
+    public Lights(int PWMID) {
         colourSpark = new Spark(PWMID);
     }
 
@@ -54,7 +56,7 @@ public class Lights {
      * Set the colour for the spark motor bruv
      * @param colour colours object bruv
      */
-    public void setColour(colours colour) {
+    public void setColour(Colours colour) {
         // set colour to set colourValue bruv
         colourSpark.set(colour.colourValue);
     }
