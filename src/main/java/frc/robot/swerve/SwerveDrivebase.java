@@ -411,7 +411,6 @@ public class SwerveDrivebase {
         odometryLock.lock();
         poseEstimator.addVisionMeasurement(robotPose, timestamp);
         odometryLock.unlock();
-        resetPose(robotPose);
     }
 
     /**
@@ -423,7 +422,6 @@ public class SwerveDrivebase {
         odometryLock.lock();
         poseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
         odometryLock.unlock();
-        kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, pose.getRotation()));
         Rotation3d currentOffset = imu.getOffset();
         imu.setOffset(new Rotation3d(
                 currentOffset.getX(),
