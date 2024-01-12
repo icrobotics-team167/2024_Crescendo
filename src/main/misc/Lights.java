@@ -43,7 +43,7 @@ public class Lights {
     }
 
     /**
-     * Light contstructor
+     * Lights constructor
      * @param PWMID the PWMID of the blinky blinky light module (Spark motor)
      */ 
     public Light(int PWMID) {
