@@ -21,7 +21,9 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 // import frc.robot.commands.auto.*; // Compiler no likey because there's no autos in the auto folder
 import frc.robot.commands.auto.testAutos.*;
 import frc.robot.commands.teleop.*;
+import frc.robot.subsystems.LightSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.misc.Lights.Colours;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -35,8 +37,10 @@ import frc.robot.subsystems.SwerveSubsystem;
 public class RobotContainer {
 
   public SendableChooser<Command> autoSelector = new SendableChooser<Command>();
+  public SendableChooser<Colours> colourSelector = new SendableChooser<Colours>();
 
   private final SwerveSubsystem driveBase = new SwerveSubsystem();
+  private final LightSubsystem lights = new LightSubsystem();
 
   CommandJoystick primaryLeftStick = new CommandJoystick(Constants.Driving.Controllers.IDs.PRIMARY_LEFT);
   CommandJoystick primaryRightStick = new CommandJoystick(Constants.Driving.Controllers.IDs.PRIMARY_RIGHT);
@@ -56,6 +60,11 @@ public class RobotContainer {
     // Load non-pathplanner autos
     autoSelector.addOption("Test Auto (Module Actuation)", new TestWheels(driveBase));
     SmartDashboard.putData(autoSelector);
+
+    for (Colours colour : Colours.values()) {
+      colourSelector.addOption(colour.name(), colour);
+    
+    }
 
     // Configure the trigger bindings
     configureBindings();
@@ -95,6 +104,10 @@ public class RobotContainer {
                                                                // when the robot wasn't facing away from the driver
                                                                // station on boot and can't get an AprilTag lock to
                                                                // calculate its orientation
+  }
+
+  public void robotPeriodic() {
+    lights.setColour(colourSelector.getSelected());
   }
 
   /**
