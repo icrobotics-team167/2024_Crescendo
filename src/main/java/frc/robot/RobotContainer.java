@@ -62,9 +62,13 @@ public class RobotContainer {
     SmartDashboard.putData(autoSelector);
 
     for (Colours colour : Colours.values()) {
-      colourSelector.addOption(colour.name(), colour);
-    
+      if (colour == Colours.SHOT_RED) {
+        colourSelector.setDefaultOption(colour.name(), colour);
+      } else {
+        colourSelector.addOption(colour.name(), colour);
+      }
     }
+    SmartDashboard.putData(colourSelector);
 
     // Configure the trigger bindings
     configureBindings();
