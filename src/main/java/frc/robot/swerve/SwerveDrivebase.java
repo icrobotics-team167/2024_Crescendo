@@ -23,8 +23,9 @@ import frc.robot.abstraction.motors.RevNEO500;
 import frc.robot.Constants.Driving;
 import frc.robot.Constants.Robot.SwerveDrive;
 import frc.robot.Constants.Robot.SwerveDrive.Modules;
-import frc.robot.Constants.Vision; // Keep these 2 imports around so that we don't get a bunch of errors when we uncomment addLLVisionMeasurement()
+import frc.robot.Constants.Vision;
 import frc.robot.helpers.LimelightHelpers;
+import frc.robot.helpers.MathUtils;
 import frc.robot.helpers.Telemetry;
 import frc.robot.helpers.Telemetry.Verbosity;
 import java.util.concurrent.locks.Lock;
@@ -379,11 +380,12 @@ public class SwerveDrivebase {
     public void addLLVisionMeasurement() {
         // Get pose
         Pose2d robotPose = LimelightHelpers.getBotPose2d(Vision.LimeLight.APRILTAG_DETECTOR);
-
         // If the LimeLight returns a null pose, stop
         if (robotPose == null) {
+            Telemetry.sendBoolean("LimeLight.hasTracking", false, Verbosity.LOW);
             return;
         }
+        Telemetry.sendBoolean("LimeLight.hasTracking", true, Verbosity.LOW);
 
         // Calculate latency in seconds
         // The Limelight outputs in ms, we need it in seconds
