@@ -379,7 +379,7 @@ public class SwerveDrivebase {
      */
     public void addLLVisionMeasurement() {
         // Get pose
-        Pose2d robotPose = LimelightHelpers.getBotPose2d(Vision.LimeLight.APRILTAG_DETECTOR);
+        Pose2d robotPose = LimelightHelpers.getBotPose2d_wpiBlue(Vision.LimeLight.APRILTAG_DETECTOR);
         // If the LimeLight returns a null pose, stop
         if (robotPose == null) {
             Telemetry.sendBoolean("LimeLight.hasTracking", false, Verbosity.LOW);
