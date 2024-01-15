@@ -1,7 +1,7 @@
 {
   "tabPane": [
     {
-      "title": "SmartDashboard",
+      "title": "Telemetry",
       "autoPopulate": false,
       "autoPopulatePrefix": "SmartDashboard/",
       "widgetPane": {
@@ -588,6 +588,153 @@
                   "Colors/Color when false": "#8B0000FF"
                 }
               }
+            }
+          },
+          "68,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Grid Layout",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Number of columns": 3,
+              "Layout/Number of rows": 3,
+              "Layout/Label position": "BOTTOM",
+              "_children": {}
+            }
+          },
+          "42,9": {
+            "size": [
+              9,
+              8
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "LimeLight",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Number of columns": 2,
+              "Layout/Number of rows": 2,
+              "Layout/Label position": "TOP",
+              "_children": {
+                "0,1": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/LimeLight.hasTracking",
+                  "_title": "/SmartDashboard/LimeLight.hasTracking",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#00FF00FF",
+                  "Colors/Color when false": "#FF0000FF"
+                },
+                "0,0": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/LimeLight.tagPosX",
+                  "_title": "/SmartDashboard/LimeLight.tagPosX",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                "1,1": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Limelight.tagPosRot",
+                  "_title": "/SmartDashboard/Limelight.tagPosRot",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                "1,0": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Limelight.tagPosY",
+                  "_title": "/SmartDashboard/Limelight.tagPosY",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Driver view",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 32.0,
+        "showGrid": true,
+        "hgap": 0.0,
+        "vgap": 0.0,
+        "titleType": 0,
+        "tiles": {
+          "42,0": {
+            "size": [
+              18,
+              9
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Robot Comms",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Number of columns": 2,
+              "Layout/Number of rows": 1,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "0,0": {
+                  "_type": "Basic FMS Info",
+                  "_source0": "network_table:///FMSInfo",
+                  "_title": "/FMSInfo",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                "1,0": {
+                  "_type": "List Layout",
+                  "_title": "Alliance",
+                  "_glyph": 149,
+                  "_showGlyph": false,
+                  "Layout/Label position": "TOP",
+                  "_children": [
+                    {
+                      "_type": "Boolean Box",
+                      "_source0": "network_table:///FMSInfo/IsRedAlliance",
+                      "_title": "/FMSInfo/IsRedAlliance",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Colors/Color when true": "#FF0000FF",
+                      "Colors/Color when false": "#0000FFFF"
+                    },
+                    {
+                      "_type": "Text View",
+                      "_source0": "network_table:///FMSInfo/StationNumber",
+                      "_title": "/FMSInfo/StationNumber",
+                      "_glyph": 148,
+                      "_showGlyph": false
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "1,0": {
+            "size": [
+              28,
+              24
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://limelight",
+              "_title": "limelight",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Crosshair/Show crosshair": false,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": false,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
             }
           }
         }
