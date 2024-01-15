@@ -2,13 +2,12 @@ package frc.robot.abstraction.motors;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.REVLibError;
-import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.abstraction.encoders.AbstractAbsoluteEncoder;
@@ -27,7 +26,7 @@ public class RevNEO500 extends AbstractMotor {
     /**
      * The PID controller for the motor.
      */
-    SparkMaxPIDController pid;
+    SparkPIDController pid;
     /**
      * The motor's internal encoder.
      */
@@ -91,12 +90,6 @@ public class RevNEO500 extends AbstractMotor {
         if (absoluteEncoder == null) {
             configureSparkMax(() -> encoder.setPositionConversionFactor(encoderConversionFactor));
             configureSparkMax(() -> encoder.setVelocityConversionFactor(encoderConversionFactor / 60));
-
-            // Taken from
-            // https://github.com/frc3512/SwerveBot-2022/blob/9d31afd05df6c630d5acb4ec2cf5d734c9093bf8/src/main/java/frc/lib/util/CANSparkMaxUtil.java#L67
-            // As we're not using the CAN status frames for alternate encoders, slow down
-            // data send rates for alternate encoder values.
-            configureCANStatusFrames(10, 20, 20, 500, 500);
         } else {
             configureSparkMax(() -> absoluteEncoder.setPositionConversionFactor(encoderConversionFactor));
             configureSparkMax(() -> absoluteEncoder.setVelocityConversionFactor(encoderConversionFactor / 60));
@@ -223,27 +216,6 @@ public class RevNEO500 extends AbstractMotor {
     @Override
     public double getMaxRPM() {
         return Neo500.MAX_RPM;
-    }
-
-    /**
-     * Set the CAN status frames, or the clock rate in milliseconds in which certain
-     * types of data will be sent down CAN wires.
-     *
-     * @param CANStatus0 Applied Output, Faults, Sticky Faults, Is Follower
-     * @param CANStatus1 Motor Velocity, Motor Temperature, Motor Voltage, Motor
-     *                   Current
-     * @param CANStatus2 Motor Position
-     * @param CANStatus3 Analog Sensor Voltage, Analog Sensor Velocity, Analog
-     *                   Sensor Position
-     * @param CANStatus4 Alternate Encoder Velocity, Alternate Encoder Position
-     */
-    public void configureCANStatusFrames(
-            int CANStatus0, int CANStatus1, int CANStatus2, int CANStatus3, int CANStatus4) {
-        configureSparkMax(() -> motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, CANStatus0));
-        configureSparkMax(() -> motor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, CANStatus1));
-        configureSparkMax(() -> motor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, CANStatus2));
-        configureSparkMax(() -> motor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, CANStatus3));
-        configureSparkMax(() -> motor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, CANStatus4));
     }
 
     /**

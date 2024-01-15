@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.97,
-      "y": 4.96
+      "x": 2.0,
+      "y": 1.0
     },
-    "rotation": 180.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -14,11 +14,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Score cone then cube part 1"
+            "pathName": "Test Path (Line, yes rotate)"
           }
         }
       ]
     }
   },
-  "folder": null
+  "folder": "Test Autos",
+  "choreoAuto": false
 }

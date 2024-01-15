@@ -1,10 +1,16 @@
 package frc.robot.subsystems;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.ReplanningConfig;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
+import frc.robot.Constants.Driving;
 import frc.robot.swerve.SwerveDrivebase;
 
 /**
@@ -23,7 +29,15 @@ public class SwerveSubsystem extends SubsystemBase {
                 this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::robotRelativeDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                Constants.Robot.Auto.PATH_FOLLOWER_CONFIG,
+                new HolonomicPathFollowerConfig(
+                        Constants.Robot.Auto.translationalPIDs, // Translation PID constants
+                        Constants.Robot.Auto.rotationalPIDs, // Rotation PID constants
+                        getAbsoluteMaxVel(), // Max module speed of the slowest module, in m/s.
+                        getDrivebaseRadius(), // Drive base radius in meters.
+                                              // Distance from robot center to furthest module.
+                        new ReplanningConfig() // Default path replanning config. See the API for the options here
+                ),
+                RobotContainer::isRedAlliance,
                 this // Reference to this subsystem to set requirements
         );
     }
@@ -61,10 +75,19 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     /**
-     * Toggles slow mode.
+     * Puts the drivebase into modified driving (Either slow mode or normal speed
+     * depending on Constants.Driving.SLOWMODE_DEFAULT)
      */
-    public void toggleSlowMode() {
-        swerveDrive.toggleSlowMode();
+    public void setSlowMode() {
+        swerveDrive.setSlowMode(!Driving.SLOWMODE_DEFAULT);
+    }
+
+    /**
+     * Puts the drivebase into normal driving (Either normal speed or slow mode
+     * depending on Constants.Driving.SLOWMODE_DEFAULT)
+     */
+    public void unsetSlowMode() {
+        swerveDrive.setSlowMode(Driving.SLOWMODE_DEFAULT);
     }
 
     /**
@@ -96,6 +119,17 @@ public class SwerveSubsystem extends SubsystemBase {
      */
     public void setWheelsForward() {
         swerveDrive.setWheelsForward();
+    }
+
+    public void setIndividualModule(int moduleID, SwerveModuleState desiredState) {
+        swerveDrive.setIndividualModule(moduleID, desiredState);
+    }
+
+    /**
+     * Resets the rotation of the robot to be forwards.
+     */
+    public void resetRotation() {
+        swerveDrive.resetRotation();
     }
 
     /**
@@ -134,10 +168,22 @@ public class SwerveSubsystem extends SubsystemBase {
      * 
      * @return The max velocity, in m/s
      */
-    public double getMaxVel() {
+    public double getAbsoluteMaxVel() {
         return swerveDrive.getAbsoluteMaxVel();
     }
 
+    /**
+     * Gets the distance of the furthest module from the center of the robot.
+     * 
+     * @return The radius, in meters.
+     */
+    public double getDrivebaseRadius() {
+        return swerveDrive.getDrivebaseRadius();
+    }
+
+    /**
+     * Sends telemetry data.
+     */
     public void sendTelemetry() {
         swerveDrive.sendTelemetry();
     }

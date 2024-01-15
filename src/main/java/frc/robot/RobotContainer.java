@@ -4,20 +4,23 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands; // Keep this around so that we don't have to reimport when we add named commands
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import frc.robot.commands.AbsoluteFieldDrive;
-import frc.robot.commands.MoveArm;
-import frc.robot.subsystems.ArmSubsystem;
+// import frc.robot.commands.auto.*; // Compiler no likey because there's no autos in the auto folder
+import frc.robot.commands.auto.testAutos.*;
+import frc.robot.commands.teleop.*;
 import frc.robot.subsystems.SwerveSubsystem;
 
 /**
@@ -31,10 +34,9 @@ import frc.robot.subsystems.SwerveSubsystem;
  */
 public class RobotContainer {
 
-  public SendableChooser<PathPlannerAuto> autoSelector = new SendableChooser<PathPlannerAuto>();
+  public SendableChooser<Command> autoSelector = new SendableChooser<Command>();
 
   private final SwerveSubsystem driveBase = new SwerveSubsystem();
-  private final ArmSubsystem arm = new ArmSubsystem();
 
   CommandJoystick primaryLeftStick = new CommandJoystick(Constants.Driving.Controllers.IDs.PRIMARY_LEFT);
   CommandJoystick primaryRightStick = new CommandJoystick(Constants.Driving.Controllers.IDs.PRIMARY_RIGHT);
@@ -47,8 +49,13 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    // Command register template
-    // NamedCommands.registerCommand("Command", command());
+    // Auto Command Registering
+
+    // Auto selector configuring
+    autoSelector = AutoBuilder.buildAutoChooser(); // Load all the pathplanner autos
+    // Load non-pathplanner autos
+    autoSelector.addOption("Test Auto (Module Actuation)", new TestWheels(driveBase));
+    SmartDashboard.putData(autoSelector);
 
     // Configure the trigger bindings
     configureBindings();
@@ -58,17 +65,8 @@ public class RobotContainer {
         driveBase,
         () -> MathUtil.applyDeadband(-primaryLeftStick.getY(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
         () -> MathUtil.applyDeadband(-primaryLeftStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
-        () -> MathUtil.applyDeadband(primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
+        () -> MathUtil.applyDeadband(-primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
     driveBase.setDefaultCommand(driveController);
-
-    // Configure arm controls
-    MoveArm armController = new MoveArm(
-        arm,
-        () -> MathUtil.applyDeadband(-secondaryRightStick.getY(),
-            Constants.Driving.Controllers.Deadbands.SECONDARY_RIGHT),
-        () -> MathUtil.applyDeadband(-secondaryLeftStick.getY(),
-            Constants.Driving.Controllers.Deadbands.SECONDARY_LEFT));
-    arm.setDefaultCommand(armController);
   }
 
   /**
@@ -86,12 +84,17 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    primaryLeftStick.button(1).onTrue(new InstantCommand(driveBase::toggleSlowMode))
-        .onFalse(new InstantCommand(driveBase::toggleSlowMode));
-    primaryRightStick.button(1).onTrue(new InstantCommand(driveBase::lockMotion))
-        .onFalse(new InstantCommand(driveBase::unlockMotion));
-    secondaryRightStick.button(3).whileTrue(new StartEndCommand(arm::intake, arm::stopIntake));
-    secondaryRightStick.button(4).whileTrue(new StartEndCommand(arm::outtake, arm::stopIntake));
+    primaryLeftStick.button(1) // Trigger on the primary driver's left stick
+        .whileTrue(new StartEndCommand(driveBase::setSlowMode, driveBase::unsetSlowMode)); // Press and hold for slow
+                                                                                           // mode
+    primaryRightStick.button(1) // Trigger on the primary driver's right stick
+        .whileTrue(new StartEndCommand(driveBase::lockMotion, driveBase::unlockMotion)); // Press and hold to lock
+                                                                                         // the drivebase
+    primaryRightStick.button(2) // Button #2 on the primary driver's right stick
+        .onTrue(new InstantCommand(driveBase::resetRotation)); // Resets which way the robot thinks is forward, used
+                                                               // when the robot wasn't facing away from the driver
+                                                               // station on boot and can't get an AprilTag lock to
+                                                               // calculate its orientation
   }
 
   /**
@@ -114,7 +117,6 @@ public class RobotContainer {
    * Runs every robot tick during autonomous.
    */
   public void autonomousPeriodic() {
-
   }
 
   /**
@@ -157,5 +159,18 @@ public class RobotContainer {
   public void preMatch() {
     driveBase.setWheelBrake(true);
     driveBase.setWheelsForward();
+  }
+
+  /**
+   * Gets which alliance the robot is on
+   * 
+   * @return If the robot is on red alliance. False if it is on the blue alliance,
+   *         or if the alliance cannot be loaded.
+   */
+  public static boolean isRedAlliance() {
+    if (DriverStation.getAlliance().isPresent()) {
+      return DriverStation.getAlliance().get() == Alliance.Red;
+    }
+    return false;
   }
 }

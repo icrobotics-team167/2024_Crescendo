@@ -4,9 +4,7 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.helpers.MathUtils;
@@ -63,103 +61,6 @@ public final class Constants {
    */
   public static final class Robot {
     /**
-     * Arm configuration and characteristics.
-     */
-    public static final class Arm {
-      /**
-       * Extension configuration and characteristics.
-       */
-      public static final class Extension {
-        /**
-         * The initial postion of the extension, in inches.
-         */
-        public static final double INITIAL_POSITION = 0;
-        /**
-         * The max extension of the arm, in inches.
-         */
-        public static final double EXTENSION_MAX = 20.0;
-        /**
-         * The min extension of the arm, in inches.
-         */
-        public static final double EXTENSION_MIN = INITIAL_POSITION;
-        /**
-         * The gear ratio from the extension motor to the pulley.
-         */
-        private static final double GEARBOX_RATIO = 81;
-        /**
-         * The distance the arm extends per rotation of the pulley, in inches.
-         */
-        private static final double PULLEY_RATIO = Math.PI * 2;
-        /**
-         * The distance the arm extends per rotation of the motor, in inches.
-         */
-        public static final double EXTENSION_GEAR_RATIO = PULLEY_RATIO / GEARBOX_RATIO;
-      }
-
-      /**
-       * Pivot configuration and characteristics.
-       */
-      public static final class Pivot {
-        /**
-         * The initial position of pivot on robot boot, in degrees.
-         */
-        public static final double INITIAL_POSITION = 60.0;
-        /**
-         * The max position of the arm, in degrees.
-         */
-        public static final double PIVOT_MAX = 60.0;
-        /**
-         * The min position of the arm, in degrees.
-         */
-        public static final double PIVOT_MIN = -40.0;
-        /**
-         * The gear ratio of the pivot gear.
-         */
-        public static final double PIVOT_GEAR_RATIO = 400.0;
-      }
-
-      /**
-       * Claw configuration and characteristics.
-       */
-      public static final class Claw {
-        /**
-         * The speed cap for the intake motor so it doesn't shred objects.
-         */
-        public static final double INTAKE_SPEED = 0.75;
-        /**
-         * The speed cap for the outtake motor so it doesn't yeet objects.
-         */
-        public static final double OUTTAKE_SPEED = 0.4;
-      }
-
-      /**
-       * IDs for parts of the arm.
-       */
-      public static final class IDs {
-        /**
-         * The CAN ID of the right motor on the pivot mechanism.
-         */
-        public static final int PIVOT_LEADER = 10;
-        /**
-         * The CAN ID of the left motor on the pivot mechanism.
-         */
-        public static final int PIVOT_FOLLOWER = 11;
-        /**
-         * The CAN ID of the extension motor.
-         */
-        public static final int EXTENSION_MOTOR = 12;
-        /**
-         * The CAN ID of the claw motor.
-         */
-        public static final int CLAW_MOTOR = 13;
-        /**
-         * The DIO port of the minimum extension sensor.
-         */
-        public static final int MIN_EXTENSION_SENSOR = 0;
-      }
-    }
-
-    /**
      * Swerve drivebase configuration and characteristics.
      */
     public static final class SwerveDrive {
@@ -167,7 +68,7 @@ public final class Constants {
        * The max translational velocity of the drivebase, in meters/s. Note that this
        * is not a module's absolute max speed.
        */
-      public static final double MAX_TRANSLATIONAL_VEL = 2;
+      public static final double MAX_TRANSLATIONAL_VEL = 4;
       /**
        * The max rotational velocity of the drivebase, in radians/s.
        */
@@ -192,7 +93,7 @@ public final class Constants {
          * 1 complete rotation of the wheel.
          */
         public static final double DRIVE_GEAR_RATIO = 6.75;
-        public static final double TURN_GEAR_RATIO = 150.0/7.0;
+        public static final double TURN_GEAR_RATIO = 150.0 / 7.0;
         /**
          * Diameter of the wheel, measured in meters.
          */
@@ -204,14 +105,13 @@ public final class Constants {
         public static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
         /**
          * Coefficient of friction of the wheel.
-         * TODO: Figure out if thisis the right value or not.
          */
-        public static final double WHEEL_COF = 0.77;
+        public static final double WHEEL_COF = 1.01;
 
         public static final class ControlParams {
-          public static final double DRIVE_P = 0.25;
+          public static final double DRIVE_P = 0.3;
           public static final double DRIVE_I = 0; // Don't use
-          public static final double DRIVE_D = 0;
+          public static final double DRIVE_D = 4;
           public static final double TURN_P = 1.0 / 70;
           public static final double TURN_I = 0; // Don't use
           public static final double TURN_D = 1.0 / 160;
@@ -362,17 +262,15 @@ public final class Constants {
      * Autonomous period configurations.
      */
     public static final class Auto {
+      // TODO: Tune
       /**
-       * The path follower configuration for PathPlanner.
+       * PID values for translational movement.
        */
-      public static final HolonomicPathFollowerConfig PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(
-          new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-          new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-          Robot.SwerveDrive.MAX_TRANSLATIONAL_VEL, // Max module speed, in m/s
-          Robot.SwerveDrive.Modules.Positions.FRONT_LEFT_POS.getNorm(), // Drive base radius in meters. Distance from
-                                                                        // robot center to furthest module.
-          new ReplanningConfig() // Default path replanning config. See the API for the options here
-      );
+      public static final PIDConstants translationalPIDs = new PIDConstants(5.5, 0.0, 0.0);
+      /**
+       * PID values for rotational movement.
+       */
+      public static final PIDConstants rotationalPIDs = new PIDConstants(4.0, 0.0, 1);
     }
 
     /**
@@ -471,7 +369,11 @@ public final class Constants {
     /**
      * Move speed multipliers for slow mode.
      */
-    public static final double SLOWMODE_MULT = 0.25;
+    public static final double SLOWMODE_MULT = 0.2;
+    /**
+     * If slow mode is enabled by default or not.
+     */
+    public static final boolean SLOWMODE_DEFAULT = true;
 
     /**
      * Controller configurations.

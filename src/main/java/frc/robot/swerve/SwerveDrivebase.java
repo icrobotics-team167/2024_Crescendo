@@ -6,7 +6,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -16,7 +15,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.Timer;
 import frc.robot.abstraction.encoders.AnalogAbsoluteEncoder;
 import frc.robot.abstraction.imus.AbstractIMU;
 import frc.robot.abstraction.imus.Pigeon2IMU;
@@ -24,7 +22,7 @@ import frc.robot.abstraction.motors.RevNEO500;
 import frc.robot.Constants.Driving;
 import frc.robot.Constants.Robot.SwerveDrive;
 import frc.robot.Constants.Robot.SwerveDrive.Modules;
-import frc.robot.Constants.Vision;
+import frc.robot.Constants.Vision; // Keep these 2 imports around so that we don't get a bunch of errors when we uncomment addLLVisionMeasurement()
 import frc.robot.helpers.LimelightHelpers;
 import frc.robot.helpers.Telemetry;
 import frc.robot.helpers.Telemetry.Verbosity;
@@ -44,10 +42,6 @@ public class SwerveDrivebase {
      * The modules.
      */
     private final Module modules[];
-    /**
-     * The module positions.
-     */
-    private final SwerveModulePosition[] modulePositions;
     /**
      * Whether or not slow mode is enabled.
      */
@@ -137,16 +131,10 @@ public class SwerveDrivebase {
         resetStates();
 
         // Initialize odometry.
-        modulePositions = new SwerveModulePosition[] {
-                modules[0].getPosition(),
-                modules[1].getPosition(),
-                modules[2].getPosition(),
-                modules[3].getPosition(),
-        };
         poseEstimator = new SwerveDrivePoseEstimator(
                 kinematics,
                 getYaw(),
-                modulePositions,
+                getModulePositions(),
                 new Pose2d(),
                 stateStdDevs,
                 visionMeasurementStdDevs);
@@ -185,19 +173,27 @@ public class SwerveDrivebase {
      * 
      * @param velocityCommand The commanded linear velocity of the robot, in meters
      *                        per second. Positive x is forwards, (either from the
-     *                        robot or from the driver station) positve y is left
+     *                        robot or from the driver station) positve y is left.
      *                        (either from the robot or from the driver station)
+     *                        Rotation is CCW+.
      * @param fieldRelative   Driving mode. True for field relative, false for robot
      *                        relative.
      */
     public void drive(ChassisSpeeds velocityCommand, boolean fieldRelative) {
+        // If the wheels are locked, don't move at all.
         if (motionLocked) {
             return;
         }
+        // For some reason if we don't do this it's CW+ instead of CCW+
+        // TODO: Fix root cause to not have to do this
+        velocityCommand.omegaRadiansPerSecond *= -1;
+        // If the velocity command is field relative, convert it to robot relative
+        // speeds.
         if (fieldRelative) {
             velocityCommand = ChassisSpeeds.fromFieldRelativeSpeeds(velocityCommand, getYaw());
         }
 
+        // If we're in slow mode, apply a velocity multiplier.
         if (slowMode) {
             velocityCommand = new ChassisSpeeds(
                     velocityCommand.vxMetersPerSecond * Driving.SLOWMODE_MULT,
@@ -205,34 +201,25 @@ public class SwerveDrivebase {
                     velocityCommand.omegaRadiansPerSecond * Driving.SLOWMODE_MULT);
         }
 
-        // When driving and turning at the same time, the robot slightly drifts. This
-        // compensates for that.
-        // TODO: See if this is actually neccesary.
-        // Stolen code from 254
-        // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
-        double dtConstant = 0.02;
-        Pose2d robotPoseVel = new Pose2d(velocityCommand.vxMetersPerSecond * dtConstant,
-                velocityCommand.vyMetersPerSecond * dtConstant,
-                Rotation2d.fromRadians(velocityCommand.omegaRadiansPerSecond * dtConstant));
-        Twist2d twistVel = poseLog(robotPoseVel);
-        Telemetry.sendString("SwerveDrivebase.driftCompensation", twistVel.toString(), Verbosity.HIGH);
-        velocityCommand = new ChassisSpeeds(twistVel.dx / dtConstant, twistVel.dy / dtConstant,
-                twistVel.dtheta / dtConstant);
-
-        // Drive modules
+        // Due to how converting continous velocity inputs into discrete module speeds
+        // works, sometimes the robot will drift when moving and turning at the same
+        // time. This compensates for that.
+        velocityCommand = ChassisSpeeds.discretize(velocityCommand, 0.02);
+        // Calculate module states.
         SwerveModuleState[] moduleDesiredStates = kinematics.toSwerveModuleStates(velocityCommand);
         // If the commanded module speeds is too fast, slow down
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleDesiredStates, velocityCommand, getAbsoluteMaxVel(),
                 getMaxTranslationalVel(), getMaxRotVel());
 
+        // Loop through the modules and apply commanded states.
         for (Module module : modules) {
             module.setDesiredState(moduleDesiredStates[module.moduleNumber]);
         }
     }
 
     /**
-     * Locks the wheels so that the robot won't move. Use to lock robot motion after
-     * a match or when an enemy is pushing the robot.
+     * Orients the wheels in such a way that the robot can't move. Use to lock robot
+     * motion after a match or when an enemy is pushing the robot.
      */
     public void lockMotion() {
         motionLocked = true;
@@ -267,6 +254,10 @@ public class SwerveDrivebase {
         for (Module module : modules) {
             module.setDesiredState(new SwerveModuleState(0, new Rotation2d()));
         }
+    }
+
+    public void setIndividualModule(int moduleID, SwerveModuleState desiredState) {
+        modules[moduleID].setRawState(desiredState);
     }
 
     /**
@@ -369,13 +360,13 @@ public class SwerveDrivebase {
     public void updateOdometry() {
         odometryLock.lock();
         try {
-            poseEstimator.update(getYaw(), modulePositions);
             Telemetry.setRobotPose(getPose());
         } catch (Exception e) {
             odometryLock.unlock();
             throw e;
         }
         odometryLock.unlock();
+        poseEstimator.update(getYaw(), getModulePositions());
         Telemetry.setRobotPose(getPose());
         Telemetry.sendField();
     }
@@ -385,24 +376,24 @@ public class SwerveDrivebase {
      * position using a LimeLight that's detecting AprilTags.
      */
     public void addLLVisionMeasurement() {
-        // Get pose
-        Pose2d robotPose =
-        LimelightHelpers.getBotPose2d(Vision.LimeLight.APRILTAG_DETECTOR);
+        // // Get pose
+        // Pose2d robotPose =
+        // LimelightHelpers.getBotPose2d(Vision.LimeLight.APRILTAG_DETECTOR);
 
-        // If the LimeLight returns a null pose, stop
-        if (robotPose == null) {
-            return;
-        }
+        // // If the LimeLight returns a null pose, stop
+        // if (robotPose == null) {
+        // return;
+        // }
 
-        // Calculate latency in seconds
-        double limeLightLatency =
-        (LimelightHelpers.getLatency_Capture(Vision.LimeLight.APRILTAG_DETECTOR)
-        + LimelightHelpers.getLatency_Pipeline(Vision.LimeLight.APRILTAG_DETECTOR)) /
-        1000.0;
-        // Calculate timestamp using the current robot FPGA time and the latency.
-        double captureTimeStamp = Timer.getFPGATimestamp() - limeLightLatency;
-        // Call addVisionMeasurement to update the position
-        addVisionMeasurement(robotPose, captureTimeStamp);
+        // // Calculate latency in seconds
+        // double limeLightLatency =
+        // (LimelightHelpers.getLatency_Capture(Vision.LimeLight.APRILTAG_DETECTOR)
+        // + LimelightHelpers.getLatency_Pipeline(Vision.LimeLight.APRILTAG_DETECTOR)) /
+        // 1000.0;
+        // // Calculate timestamp using the current robot FPGA time and the latency.
+        // double captureTimeStamp = Timer.getFPGATimestamp() - limeLightLatency;
+        // // Call addVisionMeasurement to update the position
+        // addVisionMeasurement(robotPose, captureTimeStamp);
     }
 
     /**
@@ -440,14 +431,19 @@ public class SwerveDrivebase {
     }
 
     /**
-     * Toggles slow mode when driving.
+     * Sets the state of slow mode.
+     * 
+     * @param slowMode True for slow mode, false for full speed.
      */
-    public void toggleSlowMode() {
-        if (slowMode) {
-            slowMode = false;
-        } else {
-            slowMode = true;
-        }
+    public void setSlowMode(boolean slowMode) {
+        this.slowMode = slowMode;
+    }
+
+    /**
+     * Resets the rotation of the robot to be forwards.
+     */
+    public void resetRotation() {
+        resetPose(new Pose2d(getPose().getTranslation(), new Rotation2d()));
     }
 
     /**
@@ -460,13 +456,37 @@ public class SwerveDrivebase {
     }
 
     /**
-     * Gets the absolute max velocity of the drivebase. Not neccesarily the max
+     * Gets the absolute max velocity of the modules. Not neccesarily the max
      * configured speed.
      * 
      * @return The max velocity, in m/s
      */
     public double getAbsoluteMaxVel() {
-        return modules[0].getMaxVel();
+        double maxVel = Double.MAX_VALUE;
+        for (Module module : modules) {
+            if (module.getMaxVel() < maxVel) {
+                maxVel = module.getMaxVel();
+            }
+        }
+        return maxVel;
+    }
+
+    /**
+     * Gets the distance of the furthest module from the center of the robot.
+     * 
+     * @return The radius, in meters.
+     */
+    public double getDrivebaseRadius() {
+        double radius = 0;
+        Translation2d[] modulePositions = { SwerveDrive.Modules.Positions.FRONT_LEFT_POS,
+                SwerveDrive.Modules.Positions.FRONT_RIGHT_POS, SwerveDrive.Modules.Positions.BACK_LEFT_POS,
+                SwerveDrive.Modules.Positions.BACK_RIGHT_POS };
+        for (Translation2d position : modulePositions) {
+            if (radius < position.getNorm()) {
+                radius = position.getNorm();
+            }
+        }
+        return radius;
     }
 
     /**
@@ -487,6 +507,9 @@ public class SwerveDrivebase {
         return SwerveDrive.MAX_ROTATIONAL_VEL;
     }
 
+    /**
+     * Sends telemetry data.
+     */
     public void sendTelemetry() {
         ChassisSpeeds robotVelocity = getRobotVelocity();
         Telemetry.sendNumber("SwerveDrivebase.robotVelX", robotVelocity.vxMetersPerSecond, Verbosity.MEDIUM);
@@ -497,28 +520,5 @@ public class SwerveDrivebase {
         for (Module module : modules) {
             module.sendTelemetry();
         }
-    }
-
-    /**
-     * Logical inverse of the Pose exponential from 254. Taken from team 3181.
-     *
-     * @param transform Pose to perform the log on.
-     * @return {@link Twist2d} of the transformed pose.
-     */
-    private Twist2d poseLog(final Pose2d transform) {
-        final double kEps = 1E-9;
-        final double dtheta = transform.getRotation().getRadians();
-        final double half_dtheta = 0.5 * dtheta;
-        final double cos_minus_one = transform.getRotation().getCos() - 1.0;
-        double halftheta_by_tan_of_halfdtheta;
-        if (Math.abs(cos_minus_one) < kEps) {
-            halftheta_by_tan_of_halfdtheta = 1.0 - 1.0 / 12.0 * dtheta * dtheta;
-        } else {
-            halftheta_by_tan_of_halfdtheta = -(half_dtheta * transform.getRotation().getSin()) / cos_minus_one;
-        }
-        final Translation2d translation_part = transform.getTranslation()
-                .rotateBy(new Rotation2d(halftheta_by_tan_of_halfdtheta,
-                        -half_dtheta));
-        return new Twist2d(translation_part.getX(), translation_part.getY(), dtheta);
     }
 }
