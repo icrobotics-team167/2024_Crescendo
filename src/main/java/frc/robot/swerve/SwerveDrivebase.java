@@ -75,7 +75,7 @@ public class SwerveDrivebase {
      * (meters of position and degrees of
      * rotation)
      */
-    public Matrix<N3, N1> visionMeasurementStdDevs = VecBuilder.fill(0.3, 0.3, 0.3);
+    public Matrix<N3, N1> visionMeasurementStdDevs = VecBuilder.fill(0.4, 0.4, 0.5);
     /**
      * The Notifier thread to keep odometry up to date.
      */
@@ -419,7 +419,6 @@ public class SwerveDrivebase {
         odometryLock.lock();
         poseEstimator.addVisionMeasurement(robotPose, timestamp);
         odometryLock.unlock();
-        resetYaw(poseEstimator.getEstimatedPosition().getRotation());
     }
 
     /**
@@ -429,19 +428,10 @@ public class SwerveDrivebase {
      */
     public void resetPose(Pose2d pose) {
         odometryLock.lock();
-        poseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
+        poseEstimator.resetPosition(getYaw(), getModulePositions(), pose);
         odometryLock.unlock();
-        resetYaw(pose.getRotation());
         Telemetry.setRobotPose(getPose());
         Telemetry.sendField();
-    }
-
-    public void resetYaw(Rotation2d yaw) {
-        Rotation3d currentOffset = imu.getOffset();
-        imu.setOffset(new Rotation3d(
-                currentOffset.getX(),
-                currentOffset.getY(),
-                imu.getRawRotation3d().getZ() - yaw.getRadians()));
     }
 
     /**
