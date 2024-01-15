@@ -357,8 +357,8 @@ public final class Constants {
        * NetworkTable camera name for the Limelight vision processor that's assigned
        * to detecting field AprilTags.
        */
-      // TODO: Configure
-      public static final String APRILTAG_DETECTOR = "LimeLight";
+      // public static final String APRILTAG_DETECTOR = "AprilTagLL";
+      public static final String APRILTAG_DETECTOR = "limelight";
     }
   }
 
