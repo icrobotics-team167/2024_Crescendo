@@ -362,13 +362,12 @@ public class SwerveDrivebase {
     public void updateOdometry() {
         odometryLock.lock();
         try {
-            Telemetry.setRobotPose(getPose());
+            poseEstimator.update(getYaw(), getModulePositions());
         } catch (Exception e) {
             odometryLock.unlock();
             throw e;
         }
         odometryLock.unlock();
-        poseEstimator.update(getYaw(), getModulePositions());
         Telemetry.setRobotPose(getPose());
         Telemetry.sendField();
     }
@@ -381,8 +380,13 @@ public class SwerveDrivebase {
         // Get pose
         Pose2d robotPose = LimelightHelpers.getBotPose2d_wpiBlue(Vision.LimeLight.APRILTAG_DETECTOR);
         // If the LimeLight returns a null pose, stop
-        if (robotPose == null || robotPose == new Pose2d()) {
+        if (robotPose == null
+                || (robotPose.getX() == 0 && robotPose.getY() == 0 && robotPose.getRotation().getDegrees() == 0)) {
             Telemetry.sendBoolean("LimeLight.hasTracking", false, Verbosity.LOW);
+            Telemetry.sendNumber("LimeLight.tagPosX", 0, Verbosity.HIGH);
+            Telemetry.sendNumber("Limelight.tagPosY", 0, Verbosity.HIGH);
+            Telemetry.sendNumber("Limelight.tagPosRot", 0, Verbosity.HIGH);
+            Telemetry.sendNumber("LimeLight.latencyMs", 0, Verbosity.HIGH);
             return;
         }
         Telemetry.sendBoolean("LimeLight.hasTracking", true, Verbosity.LOW);
@@ -395,6 +399,7 @@ public class SwerveDrivebase {
         double limeLightLatency = (LimelightHelpers.getLatency_Capture(Vision.LimeLight.APRILTAG_DETECTOR)
                 + LimelightHelpers.getLatency_Pipeline(Vision.LimeLight.APRILTAG_DETECTOR)) /
                 1000.0;
+        Telemetry.sendNumber("LimeLight.latencyMs", limeLightLatency * 1000, Verbosity.HIGH);
         // Calculate timestamp using the current robot FPGA time and the latency.
         double captureTimeStamp = Timer.getFPGATimestamp() - limeLightLatency;
 
@@ -414,6 +419,7 @@ public class SwerveDrivebase {
         odometryLock.lock();
         poseEstimator.addVisionMeasurement(robotPose, timestamp);
         odometryLock.unlock();
+        resetYaw(poseEstimator.getEstimatedPosition().getRotation());
     }
 
     /**
@@ -425,13 +431,17 @@ public class SwerveDrivebase {
         odometryLock.lock();
         poseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
         odometryLock.unlock();
+        resetYaw(pose.getRotation());
+        Telemetry.setRobotPose(getPose());
+        Telemetry.sendField();
+    }
+
+    public void resetYaw(Rotation2d yaw) {
         Rotation3d currentOffset = imu.getOffset();
         imu.setOffset(new Rotation3d(
                 currentOffset.getX(),
                 currentOffset.getY(),
-                imu.getRawRotation3d().getZ() - pose.getRotation().getRadians()));
-        Telemetry.setRobotPose(getPose());
-        Telemetry.sendField();
+                imu.getRawRotation3d().getZ() - yaw.getRadians()));
     }
 
     /**

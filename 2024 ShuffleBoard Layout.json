@@ -519,7 +519,7 @@
           "51,9": {
             "size": [
               9,
-              8
+              11
             ],
             "content": {
               "_type": "Grid Layout",
@@ -606,51 +606,67 @@
               "_children": {}
             }
           },
-          "42,9": {
+          "41,9": {
             "size": [
-              9,
-              8
+              10,
+              11
             ],
             "content": {
-              "_type": "Grid Layout",
+              "_type": "List Layout",
               "_title": "LimeLight",
               "_glyph": 149,
               "_showGlyph": false,
-              "Layout/Number of columns": 2,
-              "Layout/Number of rows": 2,
-              "Layout/Label position": "TOP",
-              "_children": {
-                "0,1": {
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
                   "_type": "Boolean Box",
                   "_source0": "network_table:///SmartDashboard/LimeLight.hasTracking",
-                  "_title": "/SmartDashboard/LimeLight.hasTracking",
+                  "_title": "Has Tracking?",
                   "_glyph": 148,
                   "_showGlyph": false,
                   "Colors/Color when true": "#00FF00FF",
                   "Colors/Color when false": "#FF0000FF"
                 },
-                "0,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///SmartDashboard/LimeLight.tagPosX",
-                  "_title": "/SmartDashboard/LimeLight.tagPosX",
-                  "_glyph": 148,
-                  "_showGlyph": false
-                },
-                "1,1": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///SmartDashboard/Limelight.tagPosRot",
-                  "_title": "/SmartDashboard/Limelight.tagPosRot",
-                  "_glyph": 148,
-                  "_showGlyph": false
-                },
-                "1,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///SmartDashboard/Limelight.tagPosY",
-                  "_title": "/SmartDashboard/Limelight.tagPosY",
-                  "_glyph": 148,
-                  "_showGlyph": false
+                {
+                  "_type": "Grid Layout",
+                  "_title": "LimeLight Est. Pos",
+                  "_glyph": 149,
+                  "_showGlyph": false,
+                  "Layout/Number of columns": 2,
+                  "Layout/Number of rows": 2,
+                  "Layout/Label position": "TOP",
+                  "_children": {
+                    "0,0": {
+                      "_type": "Text View",
+                      "_source0": "network_table:///SmartDashboard/LimeLight.tagPosX",
+                      "_title": "Est. Pos X",
+                      "_glyph": 148,
+                      "_showGlyph": false
+                    },
+                    "1,1": {
+                      "_type": "Text View",
+                      "_source0": "network_table:///SmartDashboard/Limelight.tagPosRot",
+                      "_title": "Est. Pos Rot",
+                      "_glyph": 148,
+                      "_showGlyph": false
+                    },
+                    "1,0": {
+                      "_type": "Text View",
+                      "_source0": "network_table:///SmartDashboard/Limelight.tagPosY",
+                      "_title": "Est. Pos Y",
+                      "_glyph": 148,
+                      "_showGlyph": false
+                    },
+                    "0,1": {
+                      "_type": "Text View",
+                      "_source0": "network_table:///SmartDashboard/LimeLight.latencyMs",
+                      "_title": "SmartDashboard/LimeLight.latencyMs",
+                      "_glyph": 148,
+                      "_showGlyph": false
+                    }
+                  }
                 }
-              }
+              ]
             }
           }
         }
