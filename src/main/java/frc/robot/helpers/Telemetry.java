@@ -119,7 +119,7 @@ public class Telemetry {
      * every robot tick for accurate data.
      */
     public static void sendField() {
-        LiveWindow.enableTelemetry(field);
+        SmartDashboard.putData(field);
     }
 
     /**

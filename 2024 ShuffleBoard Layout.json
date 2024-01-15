@@ -660,7 +660,7 @@
                     "0,1": {
                       "_type": "Text View",
                       "_source0": "network_table:///SmartDashboard/LimeLight.latencyMs",
-                      "_title": "SmartDashboard/LimeLight.latencyMs",
+                      "_title": "Latency (ms)",
                       "_glyph": 148,
                       "_showGlyph": false
                     }
@@ -714,7 +714,7 @@
                     {
                       "_type": "Boolean Box",
                       "_source0": "network_table:///FMSInfo/IsRedAlliance",
-                      "_title": "/FMSInfo/IsRedAlliance",
+                      "_title": "Alliance Color",
                       "_glyph": 148,
                       "_showGlyph": false,
                       "Colors/Color when true": "#FF0000FF",
@@ -723,7 +723,7 @@
                     {
                       "_type": "Text View",
                       "_source0": "network_table:///FMSInfo/StationNumber",
-                      "_title": "/FMSInfo/StationNumber",
+                      "_title": "Station #",
                       "_glyph": 148,
                       "_showGlyph": false
                     }

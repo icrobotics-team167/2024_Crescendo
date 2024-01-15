@@ -81,8 +81,8 @@ public class Pigeon2IMU extends AbstractIMU {
     public Optional<Translation3d> getAccel() {
         short[] initial = new short[3];
         // imu.getBiasedAccelerometer(initial);
-
-        return Optional.of(new Translation3d(initial[0], initial[1], initial[2]).times(9.81 / 16384.0));
+        return Optional.empty();
+        // return Optional.of(new Translation3d(initial[0], initial[1], initial[2]).times(9.81 / 16384.0));
     }
 
     private void applyConfigs() {
