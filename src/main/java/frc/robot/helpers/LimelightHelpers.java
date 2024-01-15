@@ -383,7 +383,8 @@ public class LimelightHelpers {
 
     private static Pose3d toPose3D(double[] inData) {
         if (inData.length < 6) {
-            System.err.println("Bad LL 3D Pose Data! Expected an array of length 6 and got an array of length " + inData.length);
+            System.err.println(
+                    "Bad LL 3D Pose Data! Expected an array of length 6 and got an array of length " + inData.length);
             return null;
         }
         return new Pose3d(
@@ -394,7 +395,8 @@ public class LimelightHelpers {
 
     private static Pose2d toPose2D(double[] inData) {
         if (inData.length < 6) {
-            System.err.println("Bad LL 2D Pose Data! Expected an array of length 6 and got an array of length " + inData.length);
+            System.err.println(
+                    "Bad LL 2D Pose Data! Expected an array of length 6 and got an array of length " + inData.length);
             return null;
         }
         Translation2d tran2d = new Translation2d(inData[0], inData[1]);
@@ -589,10 +591,10 @@ public class LimelightHelpers {
     }
 
     /**
-     * Gets the Pose2d for easy use with Odometry vision pose estimator
-     * (addVisionMeasurement)
+     * Gets the Pose2d of the robot, assuming origin (0, 0, 0) is at the back right
+     * corner from the blue driver station.
      * 
-     * @param limelightName
+     * @param limelightName The name of the Limelight.
      * @return
      */
     public static Pose2d getBotPose2d_wpiBlue(String limelightName) {
@@ -602,8 +604,8 @@ public class LimelightHelpers {
     }
 
     /**
-     * Gets the Pose2d for easy use with Odometry vision pose estimator
-     * (addVisionMeasurement)
+     * Gets the Pose2d of the robot, assuming origin (0, 0, 0) is at the back left
+     * corner from the red driver station.
      * 
      * @param limelightName
      * @return
@@ -616,8 +618,8 @@ public class LimelightHelpers {
     }
 
     /**
-     * Gets the Pose2d for easy use with Odometry vision pose estimator
-     * (addVisionMeasurement)
+     * Gets the Pose2d of the robot, assuming origin (0, 0, 0) is at the center of
+     * the robot
      * 
      * @param limelightName
      * @return

@@ -15,6 +15,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.abstraction.encoders.AnalogAbsoluteEncoder;
 import frc.robot.abstraction.imus.AbstractIMU;
 import frc.robot.abstraction.imus.Pigeon2IMU;
@@ -22,8 +23,9 @@ import frc.robot.abstraction.motors.RevNEO500;
 import frc.robot.Constants.Driving;
 import frc.robot.Constants.Robot.SwerveDrive;
 import frc.robot.Constants.Robot.SwerveDrive.Modules;
-import frc.robot.Constants.Vision; // Keep these 2 imports around so that we don't get a bunch of errors when we uncomment addLLVisionMeasurement()
+import frc.robot.Constants.Vision;
 import frc.robot.helpers.LimelightHelpers;
+import frc.robot.helpers.MathUtils;
 import frc.robot.helpers.Telemetry;
 import frc.robot.helpers.Telemetry.Verbosity;
 import java.util.concurrent.locks.Lock;
@@ -360,13 +362,12 @@ public class SwerveDrivebase {
     public void updateOdometry() {
         odometryLock.lock();
         try {
-            Telemetry.setRobotPose(getPose());
+            poseEstimator.update(getYaw(), getModulePositions());
         } catch (Exception e) {
             odometryLock.unlock();
             throw e;
         }
         odometryLock.unlock();
-        poseEstimator.update(getYaw(), getModulePositions());
         Telemetry.setRobotPose(getPose());
         Telemetry.sendField();
     }
@@ -376,24 +377,34 @@ public class SwerveDrivebase {
      * position using a LimeLight that's detecting AprilTags.
      */
     public void addLLVisionMeasurement() {
-        // // Get pose
-        // Pose2d robotPose =
-        // LimelightHelpers.getBotPose2d(Vision.LimeLight.APRILTAG_DETECTOR);
+        // Get pose
+        Pose2d robotPose = LimelightHelpers.getBotPose2d_wpiBlue(Vision.LimeLight.APRILTAG_DETECTOR);
+        // If the LimeLight returns a null pose, stop
+        if (robotPose == null
+                || (robotPose.getX() == 0 && robotPose.getY() == 0 && robotPose.getRotation().getDegrees() == 0)) {
+            Telemetry.sendBoolean("LimeLight.hasTracking", false, Verbosity.LOW);
+            Telemetry.sendNumber("LimeLight.tagPosX", 0, Verbosity.HIGH);
+            Telemetry.sendNumber("Limelight.tagPosY", 0, Verbosity.HIGH);
+            Telemetry.sendNumber("Limelight.tagPosRot", 0, Verbosity.HIGH);
+            Telemetry.sendNumber("LimeLight.latencyMs", 0, Verbosity.HIGH);
+            return;
+        }
+        Telemetry.sendBoolean("LimeLight.hasTracking", true, Verbosity.LOW);
+        Telemetry.sendNumber("LimeLight.tagPosX", robotPose.getX(), Verbosity.HIGH);
+        Telemetry.sendNumber("Limelight.tagPosY", robotPose.getY(), Verbosity.HIGH);
+        Telemetry.sendNumber("Limelight.tagPosRot", robotPose.getRotation().getDegrees(), Verbosity.HIGH);
 
-        // // If the LimeLight returns a null pose, stop
-        // if (robotPose == null) {
-        // return;
-        // }
+        // Calculate latency in seconds
+        // The Limelight outputs in ms, we need it in seconds
+        double limeLightLatency = (LimelightHelpers.getLatency_Capture(Vision.LimeLight.APRILTAG_DETECTOR)
+                + LimelightHelpers.getLatency_Pipeline(Vision.LimeLight.APRILTAG_DETECTOR)) /
+                1000.0;
+        Telemetry.sendNumber("LimeLight.latencyMs", limeLightLatency * 1000, Verbosity.HIGH);
+        // Calculate timestamp using the current robot FPGA time and the latency.
+        double captureTimeStamp = Timer.getFPGATimestamp() - limeLightLatency;
 
-        // // Calculate latency in seconds
-        // double limeLightLatency =
-        // (LimelightHelpers.getLatency_Capture(Vision.LimeLight.APRILTAG_DETECTOR)
-        // + LimelightHelpers.getLatency_Pipeline(Vision.LimeLight.APRILTAG_DETECTOR)) /
-        // 1000.0;
-        // // Calculate timestamp using the current robot FPGA time and the latency.
-        // double captureTimeStamp = Timer.getFPGATimestamp() - limeLightLatency;
-        // // Call addVisionMeasurement to update the position
-        // addVisionMeasurement(robotPose, captureTimeStamp);
+        // Call addVisionMeasurement to update the position
+        addVisionMeasurement(robotPose, captureTimeStamp);
     }
 
     /**
@@ -408,7 +419,7 @@ public class SwerveDrivebase {
         odometryLock.lock();
         poseEstimator.addVisionMeasurement(robotPose, timestamp);
         odometryLock.unlock();
-        resetPose(robotPose);
+        resetYaw(poseEstimator.getEstimatedPosition().getRotation());
     }
 
     /**
@@ -420,14 +431,17 @@ public class SwerveDrivebase {
         odometryLock.lock();
         poseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
         odometryLock.unlock();
-        kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, pose.getRotation()));
+        resetYaw(pose.getRotation());
+        Telemetry.setRobotPose(getPose());
+        Telemetry.sendField();
+    }
+
+    public void resetYaw(Rotation2d yaw) {
         Rotation3d currentOffset = imu.getOffset();
         imu.setOffset(new Rotation3d(
                 currentOffset.getX(),
                 currentOffset.getY(),
-                imu.getRawRotation3d().getZ() - pose.getRotation().getRadians()));
-        Telemetry.setRobotPose(getPose());
-        Telemetry.sendField();
+                imu.getRawRotation3d().getZ() - yaw.getRadians()));
     }
 
     /**
