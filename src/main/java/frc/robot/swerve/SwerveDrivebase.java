@@ -381,11 +381,14 @@ public class SwerveDrivebase {
         // Get pose
         Pose2d robotPose = LimelightHelpers.getBotPose2d_wpiBlue(Vision.LimeLight.APRILTAG_DETECTOR);
         // If the LimeLight returns a null pose, stop
-        if (robotPose == null) {
+        if (robotPose == null || robotPose == new Pose2d()) {
             Telemetry.sendBoolean("LimeLight.hasTracking", false, Verbosity.LOW);
             return;
         }
         Telemetry.sendBoolean("LimeLight.hasTracking", true, Verbosity.LOW);
+        Telemetry.sendNumber("LimeLight.tagPosX", robotPose.getX(), Verbosity.HIGH);
+        Telemetry.sendNumber("Limelight.tagPosY", robotPose.getY(), Verbosity.HIGH);
+        Telemetry.sendNumber("Limelight.tagPosRot", robotPose.getRotation().getDegrees(), Verbosity.HIGH);
 
         // Calculate latency in seconds
         // The Limelight outputs in ms, we need it in seconds
