@@ -732,10 +732,10 @@
               }
             }
           },
-          "1,0": {
+          "42,9": {
             "size": [
-              28,
-              24
+              17,
+              15
             ],
             "content": {
               "_type": "Camera Stream",
@@ -751,6 +751,22 @@
               "fps": -1,
               "imageWidth": -1,
               "imageHeight": -1
+            }
+          },
+          "0,0": {
+            "size": [
+              42,
+              20
+            ],
+            "content": {
+              "_type": "Field",
+              "_source0": "network_table:///SmartDashboard/Field",
+              "_title": "/SmartDashboard/Field",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Game/Game": "k2024Crescendo",
+              "Visuals/Robot Icon Size": 50.0,
+              "Visuals/Show Outside Circles": false
             }
           }
         }
