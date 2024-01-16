@@ -125,7 +125,7 @@ public class RevNEO500 extends AbstractMotor {
         if (!(otherMotor instanceof RevNEO500)) {
             throw new UnsupportedOperationException("Leader motor must be of the same motor type!");
         }
-        motor.follow((CANSparkMax)otherMotor.getMotor(), invert);
+        motor.follow((CANSparkMax) otherMotor.getMotor(), invert);
     }
 
     @Override
@@ -137,12 +137,13 @@ public class RevNEO500 extends AbstractMotor {
 
     @Override
     public void configureAbsoluteEncoder(AbstractAbsoluteEncoder encoder, double positionConversionFactor) {
-        if (encoder.getAbsoluteEncoder() instanceof AbsoluteEncoder) {
-            absoluteEncoder = (AbsoluteEncoder) encoder.getAbsoluteEncoder();
-            configureEncoder(positionConversionFactor);
-            absoluteEncoder.setZeroOffset(encoder.getOffset().getDegrees());
-            configureSparkMax(() -> pid.setFeedbackDevice(absoluteEncoder));
+        if (!(encoder.getAbsoluteEncoder() instanceof AbsoluteEncoder)) {
+            throw new UnsupportedOperationException("Absolute encoder must be a Rev supported encoder!");
         }
+        absoluteEncoder = (AbsoluteEncoder) encoder.getAbsoluteEncoder();
+        configureEncoder(positionConversionFactor);
+        absoluteEncoder.setZeroOffset(encoder.getOffset().getDegrees());
+        configureSparkMax(() -> pid.setFeedbackDevice(absoluteEncoder));
     }
 
     @Override
@@ -159,6 +160,7 @@ public class RevNEO500 extends AbstractMotor {
     public void stop() {
         motor.stopMotor();
     }
+
     @Override
     public void setVelocityReference(double setPoint, double feedForward) {
         configureSparkMax(() -> pid.setReference(setPoint, ControlType.kVelocity, 0, feedForward));
