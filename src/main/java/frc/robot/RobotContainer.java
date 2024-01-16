@@ -49,7 +49,17 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    // Auto Command Registering
+    // Create commands
+    AimAtSpeaker aimAtSpeaker = new AimAtSpeaker(shooter, driveBase::getPose);
+    AbsoluteFieldDrive driveController = new AbsoluteFieldDrive(
+        driveBase,
+        () -> MathUtil.applyDeadband(-primaryLeftStick.getY(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
+        () -> MathUtil.applyDeadband(-primaryLeftStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
+        () -> MathUtil.applyDeadband(-primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
+
+    // Register auto commands for PathPlanner
+    NamedCommands.registerCommand("Intake", new Intake(shooter));
+    NamedCommands.registerCommand("Aim At Speaker", aimAtSpeaker);
 
     // Auto selector configuring
     autoSelector = AutoBuilder.buildAutoChooser(); // Load all the pathplanner autos
@@ -60,15 +70,9 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    // Configure field oriented driving
-    AbsoluteFieldDrive driveController = new AbsoluteFieldDrive(
-        driveBase,
-        () -> MathUtil.applyDeadband(-primaryLeftStick.getY(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
-        () -> MathUtil.applyDeadband(-primaryLeftStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
-        () -> MathUtil.applyDeadband(-primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
+    // Set default commands
     driveBase.setDefaultCommand(driveController);
-
-    shooter.setDefaultCommand(new AimAtSpeaker(shooter, driveBase::getPose));
+    shooter.setDefaultCommand(aimAtSpeaker);
   }
 
   /**
