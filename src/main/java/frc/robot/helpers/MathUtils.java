@@ -132,7 +132,7 @@ public class MathUtils {
      *         If it's on blue, no changes made to rawPose.
      */
     public static Pose2d toAlliancePose(Pose2d rawPose) {
-        if (RobotContainer.isRedAlliance()) {
+        if (RobotContainer.isRedAlliance() && Constants.Field.ASSYMETRICAL_FIELD) {
             return new Pose2d(Constants.Field.FIELD_LENGTH - rawPose.getX(), rawPose.getY(),
                     Rotation2d.fromDegrees(180 - rawPose.getRotation().getDegrees()));
         }
@@ -148,7 +148,7 @@ public class MathUtils {
      *         origin. If it's on blue, no changes made to rawTranslation.
      */
     public static Translation2d toAllianceTranslation(Translation2d rawTranslation) {
-        if (RobotContainer.isRedAlliance()) {
+        if (RobotContainer.isRedAlliance() && Constants.Field.ASSYMETRICAL_FIELD) {
             return new Translation2d(Constants.Field.FIELD_LENGTH - rawTranslation.getX(), rawTranslation.getY());
         }
         return rawTranslation;
