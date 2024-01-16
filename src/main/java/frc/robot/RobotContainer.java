@@ -91,6 +91,7 @@ public class RobotContainer {
     // Set default commands
     driveBase.setDefaultCommand(driveController);
     shooter.setDefaultCommand(aimAtSpeaker);
+    // shooter.setDefaultCommand(new TestShooter(shooter));
   }
 
   /**

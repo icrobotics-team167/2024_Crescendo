@@ -16,6 +16,6 @@ public class Intake {
     }
 
     public void stop() {
-        motor.set(0);
+        motor.stop();
     }
 }
