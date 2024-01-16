@@ -381,24 +381,24 @@ public class SwerveDrivebase {
         // If the LimeLight returns a null pose, stop
         if (robotPose == null
                 || (robotPose.getX() == 0 && robotPose.getY() == 0 && robotPose.getRotation().getDegrees() == 0)) {
-            Telemetry.sendBoolean("LimeLight.hasTracking", false, Verbosity.LOW);
-            Telemetry.sendNumber("LimeLight.tagPosX", 0, Verbosity.HIGH);
-            Telemetry.sendNumber("Limelight.tagPosY", 0, Verbosity.HIGH);
-            Telemetry.sendNumber("Limelight.tagPosRot", 0, Verbosity.HIGH);
-            Telemetry.sendNumber("LimeLight.latencyMs", 0, Verbosity.HIGH);
+            Telemetry.sendBoolean("LimeLight/hasTracking", false, Verbosity.LOW);
+            Telemetry.sendNumber("LimeLight/tagPosX", 0, Verbosity.HIGH);
+            Telemetry.sendNumber("LimeLight/tagPosY", 0, Verbosity.HIGH);
+            Telemetry.sendNumber("LimeLight/tagPosRot", 0, Verbosity.HIGH);
+            Telemetry.sendNumber("LimeLight/latencyMs", 0, Verbosity.HIGH);
             return;
         }
-        Telemetry.sendBoolean("LimeLight.hasTracking", true, Verbosity.LOW);
-        Telemetry.sendNumber("LimeLight.tagPosX", robotPose.getX(), Verbosity.HIGH);
-        Telemetry.sendNumber("Limelight.tagPosY", robotPose.getY(), Verbosity.HIGH);
-        Telemetry.sendNumber("Limelight.tagPosRot", robotPose.getRotation().getDegrees(), Verbosity.HIGH);
+        Telemetry.sendBoolean("LimeLight/hasTracking", true, Verbosity.LOW);
+        Telemetry.sendNumber("LimeLight/tagPosX", robotPose.getX(), Verbosity.HIGH);
+        Telemetry.sendNumber("LimeLight/tagPosY", robotPose.getY(), Verbosity.HIGH);
+        Telemetry.sendNumber("LimeLight/tagPosRot", robotPose.getRotation().getDegrees(), Verbosity.HIGH);
 
         // Calculate latency in seconds
         // The Limelight outputs in ms, we need it in seconds
         double limeLightLatency = (LimelightHelpers.getLatency_Capture(Vision.LimeLight.APRILTAG_DETECTOR)
                 + LimelightHelpers.getLatency_Pipeline(Vision.LimeLight.APRILTAG_DETECTOR)) /
                 1000.0;
-        Telemetry.sendNumber("LimeLight.latencyMs", limeLightLatency * 1000, Verbosity.HIGH);
+        Telemetry.sendNumber("LimeLight/latencyMs", limeLightLatency * 1000, Verbosity.HIGH);
         // Calculate timestamp using the current robot FPGA time and the latency.
         double captureTimeStamp = Timer.getFPGATimestamp() - limeLightLatency;
 
@@ -515,11 +515,11 @@ public class SwerveDrivebase {
      */
     public void sendTelemetry() {
         ChassisSpeeds robotVelocity = getRobotVelocity();
-        Telemetry.sendNumber("SwerveDrivebase.robotVelX", robotVelocity.vxMetersPerSecond, Verbosity.MEDIUM);
-        Telemetry.sendNumber("SwerveDrivebase.robotVelY", robotVelocity.vyMetersPerSecond, Verbosity.MEDIUM);
-        Telemetry.sendNumber("SwerveDrivebase.robotVelRot", robotVelocity.omegaRadiansPerSecond, Verbosity.MEDIUM);
-        Telemetry.sendBoolean("SwerveDrivebase.slowMode", slowMode, Verbosity.LOW);
-        Telemetry.sendBoolean("SwerveDrivebase.motionLocked", motionLocked, Verbosity.LOW);
+        Telemetry.sendNumber("SwerveDrivebase/robotVelX", robotVelocity.vxMetersPerSecond, Verbosity.MEDIUM);
+        Telemetry.sendNumber("SwerveDrivebase/robotVelY", robotVelocity.vyMetersPerSecond, Verbosity.MEDIUM);
+        Telemetry.sendNumber("SwerveDrivebase/robotVelRot", robotVelocity.omegaRadiansPerSecond, Verbosity.MEDIUM);
+        Telemetry.sendBoolean("SwerveDrivebase/slowMode", slowMode, Verbosity.LOW);
+        Telemetry.sendBoolean("SwerveDrivebase/motionLocked", motionLocked, Verbosity.LOW);
         for (Module module : modules) {
             module.sendTelemetry();
         }
