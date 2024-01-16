@@ -45,28 +45,34 @@ public class TestWheels extends Command {
         }
         switch (currentTestState) {
             case 0:
-                drivebase.setIndividualModule(currentlyTestedModule, new SwerveModuleState(0, Rotation2d.fromDegrees(90)));
+                drivebase.setIndividualModule(currentlyTestedModule,
+                        new SwerveModuleState(0, Rotation2d.fromDegrees(90)));
                 break;
             case 1:
-                drivebase.setIndividualModule(currentlyTestedModule, new SwerveModuleState(0, Rotation2d.fromDegrees(180)));
+                drivebase.setIndividualModule(currentlyTestedModule,
+                        new SwerveModuleState(0, Rotation2d.fromDegrees(180)));
                 break;
             case 2:
-                drivebase.setIndividualModule(currentlyTestedModule, new SwerveModuleState(0, Rotation2d.fromDegrees(270)));
+                drivebase.setIndividualModule(currentlyTestedModule,
+                        new SwerveModuleState(0, Rotation2d.fromDegrees(270)));
                 break;
             case 3:
-                drivebase.setIndividualModule(currentlyTestedModule, new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
+                drivebase.setIndividualModule(currentlyTestedModule,
+                        new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
                 break;
             case 4:
-                drivebase.setIndividualModule(currentlyTestedModule, new SwerveModuleState(2, Rotation2d.fromDegrees(0)));
+                drivebase.setIndividualModule(currentlyTestedModule,
+                        new SwerveModuleState(2, Rotation2d.fromDegrees(0)));
                 break;
             case 5:
-                drivebase.setIndividualModule(currentlyTestedModule, new SwerveModuleState(-2, Rotation2d.fromDegrees(0)));
+                drivebase.setIndividualModule(currentlyTestedModule,
+                        new SwerveModuleState(-2, Rotation2d.fromDegrees(0)));
                 break;
             default:
                 drivebase.setIndividualModule(currentlyTestedModule, new SwerveModuleState());
                 currentlyTestedModule++;
                 currentTestState = 0;
-                System.out.println("Moving to next module. Next module: " + currentlyTestedModule);
+                System.out.println("Done testing module #" + currentlyTestedModule + ", moving to next module.");
                 return;
         }
         drivebase.sendTelemetry();
