@@ -51,4 +51,12 @@ public class RevNEO550 extends RevNEO500 {
     public double getMaxRPM() {
         return Neo550.MAX_RPM;
     }
+
+    @Override
+    public void configureFollow(AbstractMotor otherMotor, boolean invert) {
+        if (!(otherMotor instanceof RevNEO550)) {
+            throw new UnsupportedOperationException("Leader motor must be of the same motor type!");
+        }
+        motor.follow((CANSparkMax) otherMotor.getMotor(), invert);
+    }
 }
