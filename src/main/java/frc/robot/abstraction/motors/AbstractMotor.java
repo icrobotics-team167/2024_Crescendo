@@ -132,15 +132,15 @@ public abstract class AbstractMotor {
     public abstract void stop();
 
     /**
-     * If the motor is being used as a swerve drive motor, set the target speed.
+     * Set the motor's target velocity.
      * 
      * @param setPoint    Target velocity, in meters per second.
      * @param feedForward Feedforward in volt-meters per second.
      */
-    public abstract void setDriveReference(double setPoint, double feedForward);
+    public abstract void setVelocityReference(double setPoint, double feedForward);
 
     /**
-     * If the motor is being used as a swerve turn motor, set the target angle.
+     * Set the motor's target angle.
      * 
      * @param setPoint Target angle, as a Rotation2d object.
      */

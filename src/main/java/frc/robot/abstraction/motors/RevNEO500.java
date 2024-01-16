@@ -160,7 +160,7 @@ public class RevNEO500 extends AbstractMotor {
         motor.stopMotor();
     }
     @Override
-    public void setDriveReference(double setPoint, double feedForward) {
+    public void setVelocityReference(double setPoint, double feedForward) {
         configureSparkMax(() -> pid.setReference(setPoint, ControlType.kVelocity, 0, feedForward));
     }
 
