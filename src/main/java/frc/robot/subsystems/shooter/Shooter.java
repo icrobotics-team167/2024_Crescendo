@@ -21,4 +21,8 @@ public class Shooter {
     public void stop() {
         motor.set(0);
     }
+
+    public double getVelocityPercentage() {
+        return motor.getVelocity() / motor.getMaxRPM();
+    }
 }

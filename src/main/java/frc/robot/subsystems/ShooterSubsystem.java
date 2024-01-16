@@ -21,7 +21,7 @@ public class ShooterSubsystem extends SubsystemBase {
         pivot.setDesiredAngle(angle);
     }
 
-    public void intake() {
+    public void runIntake() {
         intake.run();
     }
 
@@ -29,11 +29,20 @@ public class ShooterSubsystem extends SubsystemBase {
         intake.stop();
     }
 
-    public void shoot() {
+    public void runShooter() {
         shooter.run();
     }
 
     public void stopShooter() {
         shooter.stop();
+    }
+
+    public boolean hasRing() {
+        // TODO: Implement
+        return false;
+    }
+
+    public double shooterVelocityPercentage() {
+        return shooter.getVelocityPercentage();
     }
 }
