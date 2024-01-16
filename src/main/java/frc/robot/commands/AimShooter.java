@@ -1,4 +1,4 @@
-package frc.robot.commands.teleop;
+package frc.robot.commands;
 
 import java.util.function.Supplier;
 
