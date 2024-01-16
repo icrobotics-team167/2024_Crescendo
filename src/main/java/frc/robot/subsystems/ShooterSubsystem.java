@@ -45,4 +45,8 @@ public class ShooterSubsystem extends SubsystemBase {
     public double shooterVelocityPercentage() {
         return shooter.getVelocityPercentage();
     }
+
+    public Rotation2d shooterAngle() {
+        return pivot.getAngle();
+    }
 }

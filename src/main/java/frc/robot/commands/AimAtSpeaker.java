@@ -12,15 +12,15 @@ import frc.robot.helpers.Telemetry;
 import frc.robot.helpers.Telemetry.Verbosity;
 import frc.robot.subsystems.ShooterSubsystem;
 
-public class AimShooter extends Command {
+public class AimAtSpeaker extends Command {
     ShooterSubsystem shooter;
     Supplier<Pose2d> botPoseSupplier;
 
-    public AimShooter(ShooterSubsystem shooter, Supplier<Pose2d> botPoseSupplier) {
+    public AimAtSpeaker(ShooterSubsystem shooter, Supplier<Pose2d> botPoseSupplier) {
         this.shooter = shooter;
         this.botPoseSupplier = botPoseSupplier;
         addRequirements(shooter);
-        setName("Aim");
+        setName("Aim At Speaker");
     }
 
     @Override
@@ -31,7 +31,7 @@ public class AimShooter extends Command {
         }
         shooter.runShooter();
         shooter.setPivot(calculateShotAngle());
-        if (Telemetry.sendBoolean("AimShooter/isOkToShoot", isOkToShoot(), Verbosity.HIGH)) {
+        if (Telemetry.sendBoolean("AimAtSpeaker/isOkToShoot", isOkToShoot(), Verbosity.HIGH)) {
             shooter.runIntake();
         }
     }
@@ -71,22 +71,25 @@ public class AimShooter extends Command {
      */
     private boolean isOkToShoot() {
         // Can we make the shot without hitting the slope?
-        boolean angleNotTooLow = Telemetry.sendNumber("AimShooter/shotAngle", calculateShotAngle().getDegrees(),
+        boolean angleNotTooLow = Telemetry.sendNumber("AimAtSpeaker/shotAngle", calculateShotAngle().getDegrees(),
                 Verbosity.HIGH) > 14;
 
         // Is the bot pointed at the target?
         Rotation2d[] shotRotationRange = calculateShotRotationRange();
-        Telemetry.sendNumber("AimShooter/shotRotationLowerBound", shotRotationRange[0].getDegrees(), Verbosity.HIGH);
-        Telemetry.sendNumber("AimShooter/shotRotationUpperBound", shotRotationRange[1].getDegrees(), Verbosity.HIGH);
+        Telemetry.sendNumber("AimAtSpeaker/shotRotationLowerBound", shotRotationRange[0].getDegrees(), Verbosity.HIGH);
+        Telemetry.sendNumber("AimAtSpeaker/shotRotationUpperBound", shotRotationRange[1].getDegrees(), Verbosity.HIGH);
         Rotation2d botRotation = botPoseSupplier.get().getRotation();
         boolean pointedAtTarget = botRotation.getDegrees() > shotRotationRange[0].getDegrees()
                 && botRotation.getDegrees() < shotRotationRange[1].getDegrees();
 
         // Is the shooter spinning fast enough?
-        boolean shooterSpinningFastEnough = Telemetry.sendNumber("AimShooter/shooterSpeedPercent",
+        boolean shooterSpinningFastEnough = Telemetry.sendNumber("AimAtSpeaker/shooterSpeedPercent",
                 shooter.shooterVelocityPercentage(), Verbosity.HIGH) > 0.8;
 
-        return angleNotTooLow && pointedAtTarget && shooterSpinningFastEnough;
+        // Is the shooter at roughly the right angle?
+        boolean shooterAtRightAngle = Math.abs(shooter.shooterAngle().minus(calculateShotAngle()).getDegrees()) < 2;
+
+        return angleNotTooLow && pointedAtTarget && shooterSpinningFastEnough && shooterAtRightAngle;
     }
 
     /**

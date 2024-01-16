@@ -68,7 +68,7 @@ public class RobotContainer {
         () -> MathUtil.applyDeadband(-primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
     driveBase.setDefaultCommand(driveController);
 
-    shooter.setDefaultCommand(new AimShooter(shooter, driveBase::getPose));
+    shooter.setDefaultCommand(new AimAtSpeaker(shooter, driveBase::getPose));
   }
 
   /**
