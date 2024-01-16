@@ -28,7 +28,7 @@ public class Pivot {
     }
 
     public void setDesiredAngle(Rotation2d desired) {
-        Telemetry.sendNumber("Pivot.desiredAngle", desired.getDegrees(), Verbosity.HIGH);
+        Telemetry.sendNumber("Pivot/desiredAngle", desired.getDegrees(), Verbosity.HIGH);
         motor.setTurnReference(desired);
     }
 

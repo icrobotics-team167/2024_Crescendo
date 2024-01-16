@@ -30,10 +30,8 @@ public class AimShooter extends Command {
             return;
         }
         shooter.runShooter();
-        Rotation2d shotAngle = calculateShotAngle();
-        Telemetry.sendNumber("AimShooter.shotAngle", shotAngle.getDegrees(), Verbosity.MEDIUM);
         shooter.setPivot(calculateShotAngle());
-        if (Telemetry.sendBoolean("AimShooter.isOkToShoot", isOkToShoot(), Verbosity.HIGH)) {
+        if (Telemetry.sendBoolean("AimShooter/isOkToShoot", isOkToShoot(), Verbosity.HIGH)) {
             shooter.runIntake();
         }
     }
@@ -73,19 +71,19 @@ public class AimShooter extends Command {
      */
     private boolean isOkToShoot() {
         // Can we make the shot without hitting the slope?
-        boolean angleNotTooLow = Telemetry.sendNumber("AimShooter.shotAngle", calculateShotAngle().getDegrees(),
+        boolean angleNotTooLow = Telemetry.sendNumber("AimShooter/shotAngle", calculateShotAngle().getDegrees(),
                 Verbosity.HIGH) > 14;
 
         // Is the bot pointed at the target?
         Rotation2d[] shotRotationRange = calculateShotRotationRange();
-        Telemetry.sendNumber("AimShooter.shotRotationLowerBound", shotRotationRange[0].getDegrees(), Verbosity.HIGH);
-        Telemetry.sendNumber("AimShooter.shotRotationUpperBound", shotRotationRange[1].getDegrees(), Verbosity.HIGH);
+        Telemetry.sendNumber("AimShooter/shotRotationLowerBound", shotRotationRange[0].getDegrees(), Verbosity.HIGH);
+        Telemetry.sendNumber("AimShooter/shotRotationUpperBound", shotRotationRange[1].getDegrees(), Verbosity.HIGH);
         Rotation2d botRotation = botPoseSupplier.get().getRotation();
         boolean pointedAtTarget = botRotation.getDegrees() > shotRotationRange[0].getDegrees()
                 && botRotation.getDegrees() < shotRotationRange[1].getDegrees();
 
         // Is the shooter spinning fast enough?
-        boolean shooterSpinningFastEnough = Telemetry.sendNumber("AimShooter.shooterSpeedPercent",
+        boolean shooterSpinningFastEnough = Telemetry.sendNumber("AimShooter/shooterSpeedPercent",
                 shooter.shooterVelocityPercentage(), Verbosity.HIGH) > 0.8;
 
         return angleNotTooLow && pointedAtTarget && shooterSpinningFastEnough;
