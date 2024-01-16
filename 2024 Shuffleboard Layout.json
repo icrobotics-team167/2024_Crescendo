@@ -1,0 +1,333 @@
+{
+  "tabPane": [
+    {
+      "title": "Telemetry",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "SmartDashboard/",
+      "widgetPane": {
+        "gridSize": 32.0,
+        "showGrid": true,
+        "hgap": 0.0,
+        "vgap": 0.0,
+        "titleType": 1,
+        "tiles": {
+          "12,0": {
+            "size": [
+              25,
+              28
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Swerve Modules",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Number of columns": 2,
+              "Layout/Number of rows": 2,
+              "Layout/Label position": "TOP",
+              "_children": {
+                "0,0": {
+                  "_type": "Grid Layout",
+                  "_title": "Front Left",
+                  "_glyph": 149,
+                  "_showGlyph": false,
+                  "Layout/Number of columns": 2,
+                  "Layout/Number of rows": 2,
+                  "Layout/Label position": "TOP",
+                  "_children": {
+                    "0,0": {
+                      "_type": "Gyro",
+                      "_source0": "network_table:///SmartDashboard/SwerveDrivebase/Front Left/Actual turn angle",
+                      "_title": "Actual Angle",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Visuals/Major tick spacing": 45.0,
+                      "Visuals/Starting angle": 180.0,
+                      "Visuals/Show tick mark ring": true,
+                      "Visuals/Counter clockwise": true
+                    },
+                    "1,0": {
+                      "_type": "Gyro",
+                      "_source0": "network_table:///SmartDashboard/SwerveDrivebase/Front Left/Desired turn angle",
+                      "_title": "Desired Angle",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Visuals/Major tick spacing": 45.0,
+                      "Visuals/Starting angle": 180.0,
+                      "Visuals/Show tick mark ring": true,
+                      "Visuals/Counter clockwise": true
+                    },
+                    "0,1": {
+                      "_type": "Number Bar",
+                      "_source0": "network_table:///SmartDashboard/SwerveDrivebase/Front Left/Actual move speed",
+                      "_title": "Actual Speed",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Range/Min": -4.5,
+                      "Range/Max": 4.5,
+                      "Range/Center": 0.0,
+                      "Visuals/Num tick marks": 3,
+                      "Visuals/Show text": true,
+                      "Visuals/Orientation": "HORIZONTAL"
+                    },
+                    "1,1": {
+                      "_type": "Number Bar",
+                      "_source0": "network_table:///SmartDashboard/SwerveDrivebase/Front Left/Desired move speed",
+                      "_title": "Desired Speed",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Range/Min": -4.5,
+                      "Range/Max": 4.5,
+                      "Range/Center": 0.0,
+                      "Visuals/Num tick marks": 3,
+                      "Visuals/Show text": true,
+                      "Visuals/Orientation": "HORIZONTAL"
+                    }
+                  }
+                },
+                "1,0": {
+                  "_type": "Grid Layout",
+                  "_title": "Front Right",
+                  "_glyph": 149,
+                  "_showGlyph": false,
+                  "Layout/Number of columns": 2,
+                  "Layout/Number of rows": 2,
+                  "Layout/Label position": "TOP",
+                  "_children": {
+                    "0,0": {
+                      "_type": "Gyro",
+                      "_source0": "network_table:///SmartDashboard/SwerveDrivebase/Front Right/Actual turn angle",
+                      "_title": "Actual Angle",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Visuals/Major tick spacing": 45.0,
+                      "Visuals/Starting angle": 180.0,
+                      "Visuals/Show tick mark ring": true,
+                      "Visuals/Counter clockwise": true
+                    },
+                    "1,0": {
+                      "_type": "Gyro",
+                      "_source0": "network_table:///SmartDashboard/SwerveDrivebase/Front Right/Desired turn angle",
+                      "_title": "Desired Angle",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Visuals/Major tick spacing": 45.0,
+                      "Visuals/Starting angle": 180.0,
+                      "Visuals/Show tick mark ring": true,
+                      "Visuals/Counter clockwise": true
+                    },
+                    "0,1": {
+                      "_type": "Number Bar",
+                      "_source0": "network_table:///SmartDashboard/SwerveDrivebase/Front Right/Actual move speed",
+                      "_title": "Actual Speed",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Range/Min": -4.5,
+                      "Range/Max": 4.5,
+                      "Range/Center": 0.0,
+                      "Visuals/Num tick marks": 3,
+                      "Visuals/Show text": true,
+                      "Visuals/Orientation": "HORIZONTAL"
+                    },
+                    "1,1": {
+                      "_type": "Number Bar",
+                      "_source0": "network_table:///SmartDashboard/SwerveDrivebase/Front Right/Desired move speed",
+                      "_title": "Desired Speed",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Range/Min": -4.5,
+                      "Range/Max": 4.5,
+                      "Range/Center": 0.0,
+                      "Visuals/Num tick marks": 3,
+                      "Visuals/Show text": true,
+                      "Visuals/Orientation": "HORIZONTAL"
+                    }
+                  }
+                },
+                "0,1": {
+                  "_type": "Grid Layout",
+                  "_title": "Back Left",
+                  "_glyph": 149,
+                  "_showGlyph": false,
+                  "Layout/Number of columns": 2,
+                  "Layout/Number of rows": 2,
+                  "Layout/Label position": "TOP",
+                  "_children": {
+                    "0,0": {
+                      "_type": "Gyro",
+                      "_source0": "network_table:///SmartDashboard/SwerveDrivebase/Back Left/Actual turn angle",
+                      "_title": "Actual Angle",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Visuals/Major tick spacing": 45.0,
+                      "Visuals/Starting angle": 180.0,
+                      "Visuals/Show tick mark ring": true,
+                      "Visuals/Counter clockwise": true
+                    },
+                    "1,0": {
+                      "_type": "Gyro",
+                      "_source0": "network_table:///SmartDashboard/SwerveDrivebase/Back Left/Desired turn angle",
+                      "_title": "Desired Angle",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Visuals/Major tick spacing": 45.0,
+                      "Visuals/Starting angle": 180.0,
+                      "Visuals/Show tick mark ring": true,
+                      "Visuals/Counter clockwise": true
+                    },
+                    "0,1": {
+                      "_type": "Number Bar",
+                      "_source0": "network_table:///SmartDashboard/SwerveDrivebase/Back Left/Actual move speed",
+                      "_title": "Actual Speed",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Range/Min": -4.5,
+                      "Range/Max": 4.5,
+                      "Range/Center": 0.0,
+                      "Visuals/Num tick marks": 3,
+                      "Visuals/Show text": true,
+                      "Visuals/Orientation": "HORIZONTAL"
+                    },
+                    "1,1": {
+                      "_type": "Number Bar",
+                      "_source0": "network_table:///SmartDashboard/SwerveDrivebase/Back Left/Desired move speed",
+                      "_title": "Desired Speed",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Range/Min": -4.5,
+                      "Range/Max": 4.5,
+                      "Range/Center": 0.0,
+                      "Visuals/Num tick marks": 3,
+                      "Visuals/Show text": true,
+                      "Visuals/Orientation": "HORIZONTAL"
+                    }
+                  }
+                },
+                "1,1": {
+                  "_type": "Grid Layout",
+                  "_title": "Back Right",
+                  "_glyph": 149,
+                  "_showGlyph": false,
+                  "Layout/Number of columns": 2,
+                  "Layout/Number of rows": 2,
+                  "Layout/Label position": "TOP",
+                  "_children": {
+                    "0,1": {
+                      "_type": "Number Bar",
+                      "_source0": "network_table:///SmartDashboard/SwerveDrivebase/Back Right/Actual move speed",
+                      "_title": "Actual Speed",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Range/Min": -4.5,
+                      "Range/Max": 4.5,
+                      "Range/Center": 0.0,
+                      "Visuals/Num tick marks": 3,
+                      "Visuals/Show text": true,
+                      "Visuals/Orientation": "HORIZONTAL"
+                    },
+                    "1,1": {
+                      "_type": "Number Bar",
+                      "_source0": "network_table:///SmartDashboard/SwerveDrivebase/Back Right/Desired move speed",
+                      "_title": "Desired Speed",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Range/Min": -4.5,
+                      "Range/Max": 4.5,
+                      "Range/Center": 0.0,
+                      "Visuals/Num tick marks": 3,
+                      "Visuals/Show text": true,
+                      "Visuals/Orientation": "HORIZONTAL"
+                    },
+                    "0,0": {
+                      "_type": "Gyro",
+                      "_source0": "network_table:///SmartDashboard/SwerveDrivebase/Back Right/Actual turn angle",
+                      "_title": "Actual Angle",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Visuals/Major tick spacing": 45.0,
+                      "Visuals/Starting angle": 180.0,
+                      "Visuals/Show tick mark ring": true,
+                      "Visuals/Counter clockwise": true
+                    },
+                    "1,0": {
+                      "_type": "Gyro",
+                      "_source0": "network_table:///SmartDashboard/SwerveDrivebase/Back Right/Desired turn angle",
+                      "_title": "Desired Angle",
+                      "_glyph": 148,
+                      "_showGlyph": false,
+                      "Visuals/Major tick spacing": 45.0,
+                      "Visuals/Starting angle": 180.0,
+                      "Visuals/Show tick mark ring": true,
+                      "Visuals/Counter clockwise": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Driver View",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 32.0,
+        "showGrid": true,
+        "hgap": 0.0,
+        "vgap": 0.0,
+        "titleType": 1,
+        "tiles": {
+          "49,0": {
+            "size": [
+              11,
+              5
+            ],
+            "content": {
+              "_type": "Basic FMS Info",
+              "_source0": "network_table:///FMSInfo",
+              "_title": "FMSInfo",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "0,0": {
+            "size": [
+              49,
+              28
+            ],
+            "content": {
+              "_type": "Field",
+              "_source0": "network_table:///SmartDashboard/Field",
+              "_title": "SmartDashboard/Field",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Game/Game": "k2024Crescendo",
+              "Visuals/Robot Icon Size": 50.0,
+              "Visuals/Show Outside Circles": false
+            }
+          },
+          "49,5": {
+            "size": [
+              11,
+              2
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/SendableChooser[1]",
+              "_title": "Auto Chooser",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    }
+  ],
+  "windowGeometry": {
+    "x": -8.0,
+    "y": -8.0,
+    "width": 1936.0,
+    "height": 1048.0
+  }
+}

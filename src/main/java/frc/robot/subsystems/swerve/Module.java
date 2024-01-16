@@ -201,10 +201,14 @@ public class Module {
    * Sends telemetry data.
    */
   public void sendTelemetry() {
-    Telemetry.sendNumber(moduleName() + "/Desired move speed", desiredState.speedMetersPerSecond, Verbosity.HIGH);
-    Telemetry.sendNumber(moduleName() + "/Actual move speed", driveMotor.getVelocity(), Verbosity.HIGH);
-    Telemetry.sendNumber(moduleName() + "/Desired turn angle", desiredState.angle.getDegrees(), Verbosity.HIGH);
-    Telemetry.sendNumber(moduleName() + "/Actual turn angle", turnEncoder.getAbsolutePosition().getDegrees(),
+    Telemetry.sendNumber("SwerveDrivebase/" + moduleName() + "/Desired move speed", desiredState.speedMetersPerSecond,
+        Verbosity.HIGH);
+    Telemetry.sendNumber("SwerveDrivebase/" + moduleName() + "/Actual move speed", driveMotor.getVelocity(),
+        Verbosity.HIGH);
+    Telemetry.sendNumber("SwerveDrivebase/" + moduleName() + "/Desired turn angle", desiredState.angle.getDegrees(),
+        Verbosity.HIGH);
+    Telemetry.sendNumber("SwerveDrivebase/" + moduleName() + "/Actual turn angle",
+        turnEncoder.getAbsolutePosition().getDegrees(),
         Verbosity.HIGH);
   }
 
