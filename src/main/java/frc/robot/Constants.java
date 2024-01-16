@@ -342,6 +342,39 @@ public final class Constants {
          */
         public static final double MAX_RPM = 11000;
       }
+
+      /**
+       * Configuration and characteristics of the REV Vortexes.
+       */
+      public static final class Vortex {
+        /**
+         * Motor power draw limits in order to prevent motor burnouts/other components
+         * browning out.
+         */
+        public static final class CurrentLimits {
+          /**
+           * Nominal voltage of the Rev Vortexes. If the voltage being sent to the NEOs
+           * falls below this amount, motor power will be lowered to compensate.
+           */
+          public static final double NOMINAL_VOLTAGE = 12;
+          /**
+           * Primary current limit of the Rev Vortexes, in amps. If the amperage exceeds
+           * this amount, motor power will be reduced to compensate.
+           */
+          public static final int PRIMARY_CURRENT_LIMIT = 80;
+          /**
+           * Secondary current limit of the Rev Vortexes, in amps. If the primary current
+           * limit doesn't lower current draw enough and the amperage hits this value, the
+           * motor will be temporarily shut down.
+           */
+          public static final int SECONDARY_CURRENT_LIMIT = 100;
+        }
+
+        /**
+         * Max rotational velocity, measured in RPM.
+         */
+        public static final double MAX_RPM = 6784;
+      }
     }
   }
 
