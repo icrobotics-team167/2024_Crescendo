@@ -40,6 +40,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 RobotContainer::isRedAlliance,
                 this // Reference to this subsystem to set requirements
         );
+        setName("Swerve Drivebase");
     }
 
     /**
