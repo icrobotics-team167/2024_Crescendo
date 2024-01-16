@@ -10,6 +10,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.Field;
 
 /**
@@ -120,5 +122,35 @@ public class MathUtils {
             return 0;
         }
         return value;
+    }
+
+    /**
+     * If the robot is on the red alliance, flips the pose.
+     * 
+     * @param rawPose The Pose2d of the robot. Origin must be on WPI Blue.
+     * @return If the robot is on red, flipped pose, maintaining a WPI Blue Origin.
+     *         If it's on blue, no changes made to rawPose.
+     */
+    public static Pose2d toAlliancePose(Pose2d rawPose) {
+        if (RobotContainer.isRedAlliance()) {
+            return new Pose2d(Constants.Field.FIELD_LENGTH - rawPose.getX(), rawPose.getY(),
+                    Rotation2d.fromDegrees(180 - rawPose.getRotation().getDegrees()));
+        }
+        return rawPose;
+    }
+
+    /**
+     * If the robot is on the red alliance, flips the translation.
+     * 
+     * @param rawTranslation The Translation2d of the robot. Origin must be on WPI
+     *                       Blue.
+     * @return If the robot is on red, flipped translation, maintaining a WPI Blue
+     *         origin. If it's on blue, no changes made to rawTranslation.
+     */
+    public static Translation2d toAllianceTranslation(Translation2d rawTranslation) {
+        if (RobotContainer.isRedAlliance()) {
+            return new Translation2d(Constants.Field.FIELD_LENGTH - rawTranslation.getX(), rawTranslation.getY());
+        }
+        return rawTranslation;
     }
 }
