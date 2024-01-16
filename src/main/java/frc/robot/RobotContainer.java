@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 // import frc.robot.commands.auto.*; // Compiler no likey because there's no autos in the auto folder
 import frc.robot.commands.auto.testAutos.*;
 import frc.robot.commands.teleop.*;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
 /**
@@ -37,6 +38,7 @@ public class RobotContainer {
   public SendableChooser<Command> autoSelector = new SendableChooser<Command>();
 
   private final SwerveSubsystem driveBase = new SwerveSubsystem();
+  private final ShooterSubsystem shooter = new ShooterSubsystem();
 
   CommandJoystick primaryLeftStick = new CommandJoystick(Constants.Driving.Controllers.IDs.PRIMARY_LEFT);
   CommandJoystick primaryRightStick = new CommandJoystick(Constants.Driving.Controllers.IDs.PRIMARY_RIGHT);
@@ -67,6 +69,8 @@ public class RobotContainer {
         () -> MathUtil.applyDeadband(-primaryLeftStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
         () -> MathUtil.applyDeadband(-primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
     driveBase.setDefaultCommand(driveController);
+
+    shooter.setDefaultCommand(new AimShooter(shooter, driveBase::getPose));
   }
 
   /**
