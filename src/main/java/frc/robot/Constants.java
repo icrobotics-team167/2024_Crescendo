@@ -53,7 +53,7 @@ public final class Constants {
     /**
      * The width (short side) of the field, in meters.
      */
-    public static final double FIELD_WIDTH = 8;
+    public static final double FIELD_WIDTH = 8.21;
   }
 
   /**
