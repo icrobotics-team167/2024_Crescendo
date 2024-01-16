@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.abstraction.motors.RevNEO500;
 import frc.robot.subsystems.shooter.Intake;
 import frc.robot.subsystems.shooter.Pivot;
 import frc.robot.subsystems.shooter.Shooter;
@@ -12,21 +13,21 @@ public class ShooterSubsystem extends SubsystemBase {
     Shooter shooter;
     public ShooterSubsystem() {
         // TODO: Configure
-        pivot = new Pivot(null, null, null);
-        intake = new Intake(null);
-        shooter = new Shooter(null, null);
+        // pivot = new Pivot(null, null, null);
+        // intake = new Intake(null);
+        shooter = new Shooter(new RevNEO500(10), new RevNEO500(11));
     }
 
     public void setPivot(Rotation2d angle) {
-        pivot.setDesiredAngle(angle);
+        // pivot.setDesiredAngle(angle);
     }
 
     public void runIntake() {
-        intake.run();
+        // intake.run();
     }
 
     public void stopIntake() {
-        intake.stop();
+        // intake.stop();
     }
 
     public void runShooter() {
@@ -47,6 +48,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public Rotation2d shooterAngle() {
-        return pivot.getAngle();
+        // return pivot.getAngle();
+        return new Rotation2d();
     }
 }

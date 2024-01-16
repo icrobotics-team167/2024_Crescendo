@@ -42,7 +42,7 @@ public class RevNEO500 extends AbstractMotor {
     boolean hasFactoryReset;
 
     /**
-     * Constructs a new Rev NEO 500 motor.
+     * Constructs a new REV NEO 500 motor.
      * 
      * @param CANID The CAN ID of the Spark Max controlling the motor.
      */
@@ -51,7 +51,7 @@ public class RevNEO500 extends AbstractMotor {
     }
 
     /**
-     * Constructs a new Rev NEO 500 motor.
+     * Constructs a new REV NEO 500 motor.
      * 
      * @param sparkMax The CANSparkMax motor object.
      */
@@ -137,13 +137,12 @@ public class RevNEO500 extends AbstractMotor {
 
     @Override
     public void configureAbsoluteEncoder(AbstractAbsoluteEncoder encoder, double positionConversionFactor) {
-        if (!(encoder.getAbsoluteEncoder() instanceof AbsoluteEncoder)) {
-            throw new UnsupportedOperationException("Absolute encoder must be a Rev supported encoder!");
+        if (encoder.getAbsoluteEncoder() instanceof AbsoluteEncoder) {
+            absoluteEncoder = (AbsoluteEncoder) encoder.getAbsoluteEncoder();
+            configureEncoder(positionConversionFactor);
+            absoluteEncoder.setZeroOffset(encoder.getOffset().getDegrees());
+            configureSparkMax(() -> pid.setFeedbackDevice(absoluteEncoder));
         }
-        absoluteEncoder = (AbsoluteEncoder) encoder.getAbsoluteEncoder();
-        configureEncoder(positionConversionFactor);
-        absoluteEncoder.setZeroOffset(encoder.getOffset().getDegrees());
-        configureSparkMax(() -> pid.setFeedbackDevice(absoluteEncoder));
     }
 
     @Override

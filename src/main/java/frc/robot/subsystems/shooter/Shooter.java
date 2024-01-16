@@ -8,6 +8,8 @@ public class Shooter {
     public Shooter(AbstractMotor leaderMotor, AbstractMotor followerMotor) {
         leaderMotor.configureCurrentLimits(leaderMotor.getNominalVoltage(), 150, 200);
         followerMotor.configureCurrentLimits(followerMotor.getNominalVoltage(), 150, 200);
+        leaderMotor.configureMotorBrake(false);
+        followerMotor.configureMotorBrake(false);
 
         followerMotor.configureFollow(leaderMotor, true);
 
@@ -19,7 +21,7 @@ public class Shooter {
     }
 
     public void stop() {
-        motor.set(0);
+        motor.stop();
     }
 
     public double getVelocityPercentage() {
