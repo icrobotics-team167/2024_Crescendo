@@ -120,7 +120,7 @@ public class Module {
 
   public void setRawState(SwerveModuleState rawState) {
     this.desiredState = rawState;
-    driveMotor.setDriveReference(rawState.speedMetersPerSecond,
+    driveMotor.setVelocityReference(rawState.speedMetersPerSecond,
         DRIVE_FEEDFORWARD.calculate(rawState.speedMetersPerSecond));
     // 0);
     //turnMotor.setPosition(turnEncoder.getAbsolutePosition().getDegrees());
