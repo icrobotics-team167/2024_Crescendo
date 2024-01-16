@@ -14,11 +14,29 @@ import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.Robot.Motors.Vortex;
 import frc.robot.abstraction.encoders.AbstractAbsoluteEncoder;
 
+/**
+ * Class to represent a Rev NEO Vortex.
+ */
 public class RevNEOVortex extends AbstractMotor {
+    /**
+     * The motor itself.
+     */
     CANSparkFlex motor;
+    /**
+     * The motor's absolute encoder, if there is one.
+     */
     AbsoluteEncoder absoluteEncoder;
+    /**
+     * If the motor controller has already reset to factory refaults. If true,
+     * factoryDefaults() does nothing.
+     */
     boolean hasFactoryReset = false;
 
+    /**
+     * Constructs a new Rev NEO Vortex motor.
+     * 
+     * @param CANID The CAN ID of the motor.
+     */
     public RevNEOVortex(int CANID) {
         motor = new CANSparkFlex(CANID, MotorType.kBrushless);
     }

@@ -15,7 +15,7 @@ public class RevNEO550 extends RevNEO500 {
      */
 
     /**
-     * Constructs a new REV NEO 550 motor.
+     * Constructs a new Rev NEO 550 motor.
      * 
      * @param CANID The CAN ID of the Spark Max controlling the motor.
      */
@@ -24,7 +24,7 @@ public class RevNEO550 extends RevNEO500 {
     }
 
     /**
-     * Constructs a new REV NEO 550 motor.
+     * Constructs a new Rev NEO 550 motor.
      * 
      * @param sparkMax The CANSparkMax motor object.
      */
