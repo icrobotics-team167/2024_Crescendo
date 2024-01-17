@@ -54,6 +54,7 @@ public class AbsoluteFieldDrive extends Command {
 
         Telemetry.sendNumber("AbsoluteFieldDrive/controlInX", inputX, Verbosity.MEDIUM);
         Telemetry.sendNumber("AbsoluteFieldDrive/controlInY", inputY, Verbosity.MEDIUM);
+        Telemetry.sendNumber("AbsoluteFieldDrive/controlInMagnitude", Math.hypot(inputX, inputY), Verbosity.MEDIUM);
         Telemetry.sendNumber("AbsoluteFieldDrive/controlInRot", vRot.getAsDouble(), Verbosity.MEDIUM);
         double xVel = inputX * SwerveDrive.MAX_TRANSLATIONAL_VEL;
         double yVel = inputY * SwerveDrive.MAX_TRANSLATIONAL_VEL;
