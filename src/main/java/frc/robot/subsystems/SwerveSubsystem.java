@@ -43,6 +43,11 @@ public class SwerveSubsystem extends SubsystemBase {
         setName("Swerve Drivebase");
     }
 
+    @Override
+    public void periodic() {
+        sendTelemetry();
+    }
+
     /**
      * Drives the robot, relative to itself.
      * 

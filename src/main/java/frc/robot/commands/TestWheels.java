@@ -75,7 +75,6 @@ public class TestWheels extends Command {
                 System.out.println("Done testing module #" + currentlyTestedModule + ", moving to next module.");
                 return;
         }
-        drivebase.sendTelemetry();
     }
 
     @Override

@@ -60,6 +60,5 @@ public class AbsoluteFieldDrive extends Command {
         double rotVel = vRot.getAsDouble() * SwerveDrive.MAX_ROTATIONAL_VEL;
         ChassisSpeeds desiredSpeeds = new ChassisSpeeds(xVel, yVel, rotVel);
         swerve.fieldRelativeDrive(desiredSpeeds);
-        swerve.sendTelemetry();
     }
 }
