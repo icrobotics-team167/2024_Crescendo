@@ -119,6 +119,15 @@ public abstract class AbstractMotor {
     public abstract void configureRampRate(double rampRate);
 
     /**
+     * Configure the motor's feedforward parameters.
+     * 
+     * @param kS Static component, in volts.
+     * @param kV Velocity component, in volt-seconds/(units vary).
+     * @param kA Acceleration component, in volt-seconds^2/(units vary).
+     */
+    public abstract void configureFeedForward(double kS, double kV, double kA);
+
+    /**
      * Set the desired motor speed.
      * 
      * @param setPoint Motor speeds. Goes from +1 (100% speed forwards) to -1 (-100%
@@ -137,7 +146,7 @@ public abstract class AbstractMotor {
      * @param setPoint    Target velocity, in meters per second.
      * @param feedForward Feedforward in volt-meters per second.
      */
-    public abstract void setVelocityReference(double setPoint, double feedForward);
+    public abstract void setVelocityReference(double setPoint);
 
     /**
      * Set the motor's target angle.
