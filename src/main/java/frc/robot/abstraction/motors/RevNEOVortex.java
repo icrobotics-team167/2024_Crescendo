@@ -9,6 +9,7 @@ import com.revrobotics.REVLibError;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.Robot.Motors.Vortex;
@@ -31,6 +32,10 @@ public class RevNEOVortex extends AbstractMotor {
      * factoryDefaults() does nothing.
      */
     boolean hasFactoryReset = false;
+    /**
+     * Feedforward component of the motor's control loop.
+     */
+    SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0, 0, 0);
 
     /**
      * Constructs a new Rev NEO Vortex motor.
@@ -122,6 +127,11 @@ public class RevNEOVortex extends AbstractMotor {
     }
 
     @Override
+    public void configureFeedForward(double kS, double kV, double kA) {
+        feedforward = new SimpleMotorFeedforward(kS, kV, kA);
+    }
+
+    @Override
     public void set(double setPoint) {
         motor.set(setPoint);
     }
@@ -132,8 +142,8 @@ public class RevNEOVortex extends AbstractMotor {
     }
 
     @Override
-    public void setVelocityReference(double setPoint, double feedForward) {
-        motor.getPIDController().setReference(setPoint, ControlType.kVelocity, 0, feedForward);
+    public void setVelocityReference(double setPoint) {
+        motor.getPIDController().setReference(setPoint, ControlType.kVelocity, 0, feedforward.calculate(setPoint));
     }
 
     @Override

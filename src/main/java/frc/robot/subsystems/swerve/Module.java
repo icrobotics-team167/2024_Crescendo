@@ -1,6 +1,5 @@
 package frc.robot.subsystems.swerve;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -42,10 +41,6 @@ public class Module {
    * The desired state of the module.
    */
   private SwerveModuleState desiredState;
-  /**
-   * The feedforward for the drive motor.
-   */
-  private final SimpleMotorFeedforward DRIVE_FEEDFORWARD;
 
   /**
    * Constructs a new swerve module and initializes the motors and encoders.
@@ -65,8 +60,6 @@ public class Module {
     // Create max move speed constant for math
     MAX_MOVE_SPEED = getMetersPerRotation() * this.driveMotor.getMaxRPM() / 60.0;
     System.out.println(moduleName() + " max move speed: " + MAX_MOVE_SPEED);
-    // Create drive feedforward
-    DRIVE_FEEDFORWARD = createDriveFeedforward();
     // Set module number (See moduleName() method for what values correspond to what
     // moduke)
     this.moduleNumber = moduleNumber;
@@ -88,6 +81,7 @@ public class Module {
     driveMotor.configureRampRate(SwerveDrive.ZERO_TO_FULL_TIME);
     driveMotor.configurePID(Modules.ControlParams.DRIVE_P, Modules.ControlParams.DRIVE_I,
         Modules.ControlParams.DRIVE_D);
+    driveMotor.configureFeedForward(0, 0, 0);
     driveMotor.configureEncoder(getMetersPerRotation());
 
     // Configure turn motor
@@ -99,6 +93,7 @@ public class Module {
     turnMotor.configureMotorBrake(false);
     turnMotor.configurePIDWrapping(true);
     turnMotor.configurePID(Modules.ControlParams.TURN_P, Modules.ControlParams.TURN_I, Modules.ControlParams.TURN_D);
+    driveMotor.configureFeedForward(0, 0, 0);
     turnMotor.configureEncoder(360 / Modules.TURN_GEAR_RATIO);
     turnMotor.configureAbsoluteEncoder(turnEncoder, 360);
     turnMotor.configureInverted(true);
@@ -120,8 +115,7 @@ public class Module {
 
   public void setRawState(SwerveModuleState rawState) {
     this.desiredState = rawState;
-    driveMotor.setVelocityReference(rawState.speedMetersPerSecond,
-        DRIVE_FEEDFORWARD.calculate(rawState.speedMetersPerSecond));
+    driveMotor.setVelocityReference(rawState.speedMetersPerSecond);
     // 0);
     //turnMotor.setPosition(turnEncoder.getAbsolutePosition().getDegrees());
     turnMotor.setTurnReference(rawState.angle);
@@ -210,19 +204,6 @@ public class Module {
     Telemetry.sendNumber("SwerveDrivebase/" + moduleName() + "/Actual turn angle",
         turnEncoder.getAbsolutePosition().getDegrees(),
         Verbosity.HIGH);
-  }
-
-  /**
-   * Create the drive feedforward for swerve modules.
-   *
-   * @return Drive feedforward for drive motor on a swerve module.
-   */
-  private SimpleMotorFeedforward createDriveFeedforward() {
-    // Volt-seconds per meter (max voltage divided by max acceleration)
-    double kv = driveMotor.getNominalVoltage() / MAX_MOVE_SPEED;
-    // Volt-seconds^2 per meter (max voltage divided by max accel)
-    double ka = driveMotor.getNominalVoltage() / (SwerveDrive.MAX_ACCELERATION);
-    return new SimpleMotorFeedforward(0, kv, ka);
   }
 
   /**

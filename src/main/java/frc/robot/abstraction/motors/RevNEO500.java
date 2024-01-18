@@ -8,6 +8,8 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.REVLibError;
 import com.revrobotics.SparkPIDController;
+
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.abstraction.encoders.AbstractAbsoluteEncoder;
@@ -40,6 +42,10 @@ public class RevNEO500 extends AbstractMotor {
      * factoryDefaults() does nothing.
      */
     boolean hasFactoryReset;
+    /**
+     * Feedforward component of the motor's control loop.
+     */
+    SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0, 0, 0);
 
     /**
      * Constructs a new REV NEO 500 motor.
@@ -151,6 +157,11 @@ public class RevNEO500 extends AbstractMotor {
     }
 
     @Override
+    public void configureFeedForward(double kS, double kV, double kA) {
+        feedforward = new SimpleMotorFeedforward(kS, kV, kA);
+    }
+
+    @Override
     public void set(double setPoint) {
         motor.set(setPoint);
     }
@@ -161,8 +172,8 @@ public class RevNEO500 extends AbstractMotor {
     }
 
     @Override
-    public void setVelocityReference(double setPoint, double feedForward) {
-        configureSparkMax(() -> pid.setReference(setPoint, ControlType.kVelocity, 0, feedForward));
+    public void setVelocityReference(double setPoint) {
+        configureSparkMax(() -> pid.setReference(setPoint, ControlType.kVelocity, 0, feedforward.calculate(setPoint)));
     }
 
     @Override
