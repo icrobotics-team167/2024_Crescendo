@@ -52,6 +52,11 @@ public class RobotContainer {
   CommandJoystick secondaryLeftStick = new CommandJoystick(Constants.Driving.Controllers.IDs.SECONDARY_LEFT);
   CommandJoystick secondaryRightStick = new CommandJoystick(Constants.Driving.Controllers.IDs.SECONDARY_RIGHT);
 
+  AimAtSpeaker aimAtSpeakerCommand;
+  AimManualOverride aimManualOverrideCommand;
+  AbsoluteFieldDrive driveControllerCommand;
+  Intake intakeCommand;
+
   private Timer disabledTimer = new Timer();
 
   /**
@@ -59,19 +64,20 @@ public class RobotContainer {
    */
   public RobotContainer() {
     // Create commands
-    AimAtSpeaker aimAtSpeaker = new AimAtSpeaker(shooter, driveBase::getPose);
-    AimManualOverride aimManualOverride = new AimManualOverride(() -> MathUtil
+    aimAtSpeakerCommand = new AimAtSpeaker(shooter, driveBase::getPose);
+    aimManualOverrideCommand = new AimManualOverride(() -> MathUtil
         .applyDeadband(-secondaryRightStick.getY(), Constants.Driving.Controllers.Deadbands.SECONDARY_RIGHT),
         secondaryRightStick.button(2), shooter);
-    AbsoluteFieldDrive driveController = new AbsoluteFieldDrive(
+    intakeCommand = new Intake(shooter);
+    driveControllerCommand = new AbsoluteFieldDrive(
         driveBase,
         () -> MathUtil.applyDeadband(-primaryLeftStick.getY(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
         () -> MathUtil.applyDeadband(-primaryLeftStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
         () -> MathUtil.applyDeadband(-primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
 
     // Register auto commands for PathPlanner
-    NamedCommands.registerCommand("Intake", new Intake(shooter));
-    NamedCommands.registerCommand("Aim At Speaker", aimAtSpeaker);
+    NamedCommands.registerCommand("Intake", intakeCommand);
+    NamedCommands.registerCommand("Aim At Speaker", aimAtSpeakerCommand);
 
     // Auto selector configuring
     autoSelector = AutoBuilder.buildAutoChooser(); // Load all the pathplanner autos
@@ -92,8 +98,8 @@ public class RobotContainer {
     configureBindings();
 
     // Set default commands
-    driveBase.setDefaultCommand(driveController);
-    shooter.setDefaultCommand(aimManualOverride);
+    driveBase.setDefaultCommand(driveControllerCommand);
+    shooter.setDefaultCommand(aimManualOverrideCommand);
     // shooter.setDefaultCommand(new TestShooter(shooter));
   }
 
@@ -121,10 +127,12 @@ public class RobotContainer {
     primaryRightStick.button(2) // Button #2 on the primary driver's right stick
         .onTrue(new InstantCommand(driveBase::resetRotation)); // Resets which way the robot thinks is forward, used
                                                                // when the robot wasn't facing away from the driver
-                                                               // station on boot and can't get an AprilTag lock to
-                                                               // calculate its orientation
-
-
+                                                               // station on boot
+    secondaryRightStick.button(2) // Button #2 on the secondary driver's right stick
+        .whileTrue(intakeCommand); // Intake a note while the button is held down. Automatically stops once a note
+                                   // is loaded.
+    secondaryRightStick.button(1) // Trigger on the secondary driver's right stick
+        .whileTrue(aimAtSpeakerCommand); // Aim and shoot the note at the speaker.
   }
 
   public void robotPeriodic() {
