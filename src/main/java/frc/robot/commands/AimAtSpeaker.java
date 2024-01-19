@@ -26,7 +26,6 @@ public class AimAtSpeaker extends Command {
     @Override
     public void execute() {
         if (!shooter.hasRing()) {
-            shooter.stopShooter();
             return;
         }
         shooter.runShooter();
@@ -84,7 +83,7 @@ public class AimAtSpeaker extends Command {
 
         // Is the shooter spinning fast enough?
         boolean shooterSpinningFastEnough = Telemetry.sendNumber("AimAtSpeaker/shooterSpeedPercent",
-                shooter.shooterVelocityPercentage(), Verbosity.HIGH) > 0.8;
+                shooter.shooterVelocity(), Verbosity.HIGH) > 4;
 
         // Is the shooter at roughly the right angle?
         boolean shooterAtRightAngle = Math.abs(shooter.shooterAngle().minus(calculateShotAngle()).getDegrees()) < 2;

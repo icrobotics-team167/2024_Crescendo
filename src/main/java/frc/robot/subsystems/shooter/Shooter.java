@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import edu.wpi.first.math.util.Units;
 import frc.robot.abstraction.motors.AbstractMotor;
 
 public class Shooter {
@@ -10,6 +11,8 @@ public class Shooter {
         followerMotor.configureCurrentLimits(followerMotor.getNominalVoltage(), 150, 200);
         leaderMotor.configureMotorBrake(false);
         followerMotor.configureMotorBrake(false);
+
+        leaderMotor.configureEncoder(1.0 / Units.inchesToMeters(4.0 * Math.PI));
 
         followerMotor.configureFollow(leaderMotor, true);
 
@@ -24,7 +27,7 @@ public class Shooter {
         motor.stop();
     }
 
-    public double getVelocityPercentage() {
-        return motor.getVelocity() / motor.getMaxRPM();
+    public double getVelocity() {
+        return motor.getVelocity();
     }
 }
