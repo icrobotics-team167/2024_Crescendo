@@ -18,6 +18,7 @@ public class Pivot {
         leaderMotor.setPosition(encoder.getAbsolutePosition().getDegrees());
         leaderMotor.configureMotorBrake(true);
         leaderMotor.configurePID(0, 0, 0); // TODO: Configure
+        leaderMotor.configureFeedForward(0, 0, 0);
 
         followerMotor.configureCurrentLimits(followerMotor.getNominalVoltage(), followerMotor.getPrimaryCurrentLimit(),
                 followerMotor.getSecondaryCurrentLimit());
@@ -34,5 +35,9 @@ public class Pivot {
 
     public Rotation2d getAngle() {
         return Rotation2d.fromDegrees(motor.getPosition());
+    }
+
+    public void move(double speed) {
+        motor.set(speed);
     }
 }
