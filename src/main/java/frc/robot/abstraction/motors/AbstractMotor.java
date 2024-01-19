@@ -144,7 +144,6 @@ public abstract class AbstractMotor {
      * Set the motor's target velocity.
      * 
      * @param setPoint    Target velocity, in meters per second.
-     * @param feedForward Feedforward in volt-meters per second.
      */
     public abstract void setVelocityReference(double setPoint);
 

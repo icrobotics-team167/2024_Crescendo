@@ -12,7 +12,9 @@ public class Shooter {
         leaderMotor.configureMotorBrake(false);
         followerMotor.configureMotorBrake(false);
 
-        leaderMotor.configureEncoder(1.0 / Units.inchesToMeters(4.0 * Math.PI));
+        leaderMotor.configureEncoder(Units.inchesToMeters(4.0 * Math.PI));
+        leaderMotor.configurePID(0, 0, 0); // TODO: Tune
+        leaderMotor.configureFeedForward(0, 0, 0);
 
         followerMotor.configureFollow(leaderMotor, true);
 
@@ -20,7 +22,7 @@ public class Shooter {
     }
 
     public void run() {
-        motor.set(1);
+        motor.setVelocityReference(30);
     }
 
     public void stop() {
