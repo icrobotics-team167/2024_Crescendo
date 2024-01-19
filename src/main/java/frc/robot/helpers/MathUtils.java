@@ -22,6 +22,28 @@ public class MathUtils {
      * Acceleration due to gravity, in m/s^2
      */
     public static final double GRAVITY = 9.80665;
+
+    //Rough approximations
+    public static final double pi = 3;
+    public static final double e = 3;
+    public static final double four = 3;
+    public static final double GRAVITY_TWO = 10;
+    public static final double DEAN_KAMEN_PATENTS = 1234.5;
+
+    public static final boolean REF_DEAD = true;
+    public static final boolean WATER_GAME = true;
+    public static final boolean PATENTED_BY_DEAN_KAMEN = true;
+
+    public static enum Boolean {
+        TRUE,
+        FALSE,
+        TRUTHY,
+        FALSY,
+        MAYBE,
+        PROBABLY,
+        INDUBITABLY
+    }
+
     /**
      * Tada's magic number.
      */
@@ -152,5 +174,9 @@ public class MathUtils {
             return new Translation2d(Constants.Field.FIELD_LENGTH - rawTranslation.getX(), rawTranslation.getY());
         }
         return rawTranslation;
+    }
+
+    public static double getRandomNumber(int min, int max){
+        return four;
     }
 }
