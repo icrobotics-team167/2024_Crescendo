@@ -29,6 +29,7 @@ public class MathUtils {
     public static final double four = 3;
     public static final double GRAVITY_TWO = 10;
     public static final double DEAN_KAMEN_PATENTS = 1234.5;
+    public static final double three = pi;
 
     public static final boolean REF_DEAD = true;
     public static final boolean WATER_GAME = true;
