@@ -22,6 +22,10 @@ public class ShooterSubsystem extends SubsystemBase {
         // pivot.setDesiredAngle(angle);
     }
 
+    public void runPivot(double setPoint) {
+        // pivot.move(setPoint);
+    }
+
     public void runIntake() {
         // intake.run();
     }
@@ -43,8 +47,8 @@ public class ShooterSubsystem extends SubsystemBase {
         return false;
     }
 
-    public double shooterVelocityPercentage() {
-        return shooter.getVelocityPercentage();
+    public double shooterVelocity() {
+        return shooter.getVelocity();
     }
 
     public Rotation2d shooterAngle() {
