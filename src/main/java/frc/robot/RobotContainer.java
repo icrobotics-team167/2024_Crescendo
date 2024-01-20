@@ -84,7 +84,7 @@ public class RobotContainer {
     shooterSysID = new SysID(shooter, shooter::runShooterRaw,
         log -> {
           shooterSysIdLog = log;
-        });
+        }, shooter::getShooterVelocity, shooter::getShooterPosition);
 
     // Register auto commands for PathPlanner
     NamedCommands.registerCommand("Intake", intakeCommand);
