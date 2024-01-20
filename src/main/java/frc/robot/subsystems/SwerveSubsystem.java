@@ -153,6 +153,8 @@ public class SwerveSubsystem extends SubsystemBase {
         odometryThread.startPeriodic(0.02);
         visionThread = new Notifier(this::addLLVisionMeasurement);
         visionThread.startPeriodic(0.04);
+
+        // Configure PathPlanner
         AutoBuilder.configureHolonomic(
                 this::getPose, // Robot pose supplier
                 this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
