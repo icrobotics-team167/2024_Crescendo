@@ -17,7 +17,7 @@ public class ShooterSubsystem extends SubsystemBase {
         // TODO: Configure
         // pivot = new Pivot(null, null, null);
         // intake = new Intake(null);
-        shooter = new Shooter(new RevNEO500(10), new RevNEO500(11));
+        shooter = new Shooter(new RevNEO500(10), new RevNEO500(11), 0.0);
     }
 
     public void setPivot(Rotation2d angle) {

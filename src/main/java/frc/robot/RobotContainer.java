@@ -49,6 +49,7 @@ public class RobotContainer {
   AimManualOverride aimManualOverrideCommand;
   AbsoluteFieldDrive driveControllerCommand;
   Intake intakeCommand;
+  TestShooter testShooterCommand;
 
   SysID shooterSysID;
   SysIdRoutineLog shooterSysIdLog;

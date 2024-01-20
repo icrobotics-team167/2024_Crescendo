@@ -6,8 +6,9 @@ import frc.robot.abstraction.motors.AbstractMotor;
 
 public class Shooter {
     AbstractMotor motor;
+    double targetSpeed;
 
-    public Shooter(AbstractMotor leaderMotor, AbstractMotor followerMotor) {
+    public Shooter(AbstractMotor leaderMotor, AbstractMotor followerMotor, double targetSpeed) {
         leaderMotor.configureCurrentLimits(leaderMotor.getNominalVoltage(), 150, 200);
         followerMotor.configureCurrentLimits(followerMotor.getNominalVoltage(), 150, 200);
         leaderMotor.configureMotorBrake(false);
@@ -17,9 +18,11 @@ public class Shooter {
         leaderMotor.configurePID(0, 0, 0); // TODO: Tune
         leaderMotor.configureFeedForward(0, 0, 0);
 
-        followerMotor.configureFollow(leaderMotor, true);
+        followerMotor.configureFollow(leaderMotor, true); //might need to make sure follower and leader are reversed directions
 
         motor = leaderMotor;
+
+        this.targetSpeed = targetSpeed;
     }
 
     public void run() {
