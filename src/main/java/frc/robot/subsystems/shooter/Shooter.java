@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.abstraction.motors.AbstractMotor;
 
@@ -24,7 +25,7 @@ public class Shooter {
         this.targetSpeed = targetSpeed;
     }
 
-    public void runTest() {
+    public void run() {
         motor.setVelocityReference(30);
     }
 
@@ -37,6 +38,13 @@ public class Shooter {
         }
     }  //Bang Bang controller thing, this may implode
 
+    public void runVolts(double volts) {
+        motor.setVolts(volts);
+    }
+
+    public double getPosition() {
+        return motor.getPosition();
+    }
     public void stop() {
         motor.stop();
     }

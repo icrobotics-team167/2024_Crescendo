@@ -167,6 +167,11 @@ public class RevNEO500 extends AbstractMotor {
     }
 
     @Override
+    public void setVolts(double voltsSetPoint) {
+        motor.setVoltage(voltsSetPoint);
+    }
+
+    @Override
     public void stop() {
         motor.stopMotor();
     }

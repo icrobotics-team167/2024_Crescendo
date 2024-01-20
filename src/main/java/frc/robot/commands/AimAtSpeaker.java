@@ -83,7 +83,7 @@ public class AimAtSpeaker extends Command {
 
         // Is the shooter spinning fast enough?
         boolean shooterSpinningFastEnough = Telemetry.sendNumber("AimAtSpeaker/shooterSpeedPercent",
-                shooter.shooterVelocity(), Verbosity.HIGH) > 4;
+                shooter.getShooterVelocity(), Verbosity.HIGH) > 4;
 
         // Is the shooter at roughly the right angle?
         boolean shooterAtRightAngle = Math.abs(shooter.shooterAngle().minus(calculateShotAngle()).getDegrees()) < 2;

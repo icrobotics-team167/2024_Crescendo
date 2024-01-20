@@ -136,6 +136,13 @@ public abstract class AbstractMotor {
     public abstract void set(double setPoint);
 
     /**
+     * Set the desired motor voltage.
+     * 
+     * @param voltsSetPoint The desired motor voltage.
+     */
+    public abstract void setVolts(double voltsSetPoint);
+
+    /**
      * Stops the motor.
      */
     public abstract void stop();
@@ -143,7 +150,7 @@ public abstract class AbstractMotor {
     /**
      * Set the motor's target velocity.
      * 
-     * @param setPoint    Target velocity, in meters per second.
+     * @param setPoint Target velocity, in meters per second.
      */
     public abstract void setVelocityReference(double setPoint);
 
