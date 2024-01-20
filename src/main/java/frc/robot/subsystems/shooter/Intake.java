@@ -20,6 +20,13 @@ public class Intake {
     }
 
     public void stopIntake() {
+    }
+
+    public void run() {
+        intakeMotor.set(1);
+    }
+
+    public void stop() {
         intakeMotor.stop();
     }
 
