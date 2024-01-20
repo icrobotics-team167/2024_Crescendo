@@ -3,19 +3,21 @@ package frc.robot.subsystems.shooter;
 import frc.robot.abstraction.motors.AbstractMotor;
 
 public class Intake {
-    AbstractMotor motor;
+    AbstractMotor feedMotor;
+    AbstractMotor intakeMotor;
 
     public Intake(AbstractMotor motor) {
         motor.configureCurrentLimits(motor.getNominalVoltage(), motor.getPrimaryCurrentLimit(),
                 motor.getSecondaryCurrentLimit());
-        this.motor = motor;
+        this.intakeMotor = motor;
+
     }
 
     public void run() {
-        motor.set(1);
+        intakeMotor.set(1);
     }
 
     public void stop() {
-        motor.stop();
+        intakeMotor.stop();
     }
 }
