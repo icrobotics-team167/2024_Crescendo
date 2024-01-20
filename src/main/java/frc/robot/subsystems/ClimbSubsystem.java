@@ -1,25 +1,27 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.abstraction.motors.AbstractMotor;
 //import frc.robot.abstraction.motors.AbstractMotor;
 import frc.robot.abstraction.motors.RevNEO500;
 
 public class ClimbSubsystem extends SubsystemBase {
-    Climb climb;
+        AbstractMotor motor;
 
-    public ClimbSubsystem(int canID){
-        this.climb = new Climb(new RevNEO500(canID));
+    public ClimbSubsystem(AbstractMotor motor){
+        motor.configureCurrentLimits(motor.getNominalVoltage(), motor.getPrimaryCurrentLimit(), motor.getSecondaryCurrentLimit());
+        this.motor = motor;
     }
 
     public void runForward(){
-        this.climb.runForward();
+        this.motor.set(1);
     }
 
     public void runBackward(){
-        this.climb.runBackward();
+        this.motor.set(-1);
     }
 
     public void stop(){
-        this.climb.stop();
+        this.motor.stop();
     }
 }
