@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.abstraction.motors.AbstractMotor;
 
@@ -29,6 +30,9 @@ public class Shooter {
         motor.setVolts(volts);
     }
 
+    public double getPosition() {
+        return motor.getPosition();
+    }
     public void stop() {
         motor.stop();
     }

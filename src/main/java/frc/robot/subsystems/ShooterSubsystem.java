@@ -53,8 +53,12 @@ public class ShooterSubsystem extends SubsystemBase {
         return false;
     }
 
-    public double shooterVelocity() {
+    public double getShooterVelocity() {
         return shooter.getVelocity();
+    }
+
+    public double getShooterPosition() {
+        return shooter.getPosition();
     }
 
     public Rotation2d shooterAngle() {
