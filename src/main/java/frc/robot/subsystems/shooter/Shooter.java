@@ -25,7 +25,7 @@ public class Shooter {
         this.targetSpeed = targetSpeed;
     }
 
-    public void run() {
+    public void runTest() {
         motor.setVelocityReference(30);
     }
 
