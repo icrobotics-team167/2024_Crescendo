@@ -25,6 +25,10 @@ public class Shooter {
         motor.setVelocityReference(30);
     }
 
+    public void runVolts(double volts) {
+        motor.setVolts(volts);
+    }
+
     public void stop() {
         motor.stop();
     }

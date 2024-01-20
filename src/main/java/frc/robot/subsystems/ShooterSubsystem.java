@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.abstraction.motors.RevNEO500;
 import frc.robot.subsystems.shooter.Intake;
@@ -36,6 +38,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void runShooter() {
         shooter.run();
+    }
+
+    public void runShooterRaw(Measure<Voltage> volts) {
+        shooter.runVolts(volts.magnitude());
     }
 
     public void stopShooter() {
