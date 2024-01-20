@@ -36,6 +36,18 @@ public class ShooterSubsystem extends SubsystemBase {
         // intake.stop();
     }
 
+    public void runFeedIn() {
+        //intake.runFeedIn();
+    }
+
+    public void runFeedOut() { 
+        //intake.runFeedOut();
+    }
+
+    public void stopFeed() {
+        //intake.stopFeed();
+    }
+
     public void runShooter() {
         shooter.run();
     }

@@ -29,6 +29,15 @@ public class Shooter {
         motor.setVelocityReference(30);
     }
 
+    public void run(){
+        if(this.getVelocity() < targetSpeed) {
+            motor.set(1);
+        }
+        if(this.getVelocity() >= targetSpeed) {
+            motor.stop(); //make sure its coast mode like a coooooool dude
+        }
+    }  //Bang Bang controller thing, this may implode
+
     public void runVolts(double volts) {
         motor.setVolts(volts);
     }
