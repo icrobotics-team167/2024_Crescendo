@@ -33,7 +33,7 @@ public class Shooter {
             motor.set(1);
         }
         if(this.getVelocity() >= targetSpeed) {
-            motor.stop();
+            motor.stop(); //make sure its coast mode like a coooooool dude
         }
     }  //Bang Bang controller thing, this may implode
 

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.shooter;
+package frc.robot.subsystems;
 
 //import edu.wpi.first.math.util.Units;
 import frc.robot.abstraction.motors.AbstractMotor;
