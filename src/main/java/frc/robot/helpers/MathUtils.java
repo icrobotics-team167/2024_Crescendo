@@ -48,7 +48,7 @@ public class MathUtils {
     /**
      * Tada's magic number.
      */
-    public static final double TADAS_MAGIC_NUMER = 0.4;
+    public static final double TADAS_MAGIC_NUMER = four*4/30; //four*4/30
 
     /**
      * Gets the sign of a number.
