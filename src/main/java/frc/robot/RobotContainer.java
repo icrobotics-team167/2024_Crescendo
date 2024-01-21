@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.commands.*;
+import frc.robot.helpers.LimelightHelpers;
 import frc.robot.helpers.SysID;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -66,11 +67,18 @@ public class RobotContainer {
         .applyDeadband(-secondaryRightStick.getY(), Constants.Driving.Controllers.Deadbands.SECONDARY_RIGHT),
         secondaryRightStick.button(2), shooter);
     intakeCommand = new Intake(shooter);
-    driveControllerCommand = new AbsoluteFieldDrive(
+    // driveControllerCommand = new AbsoluteFieldDrive(
+    //     driveBase,
+    //     () -> MathUtil.applyDeadband(-primaryLeftStick.getY(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
+    //     () -> MathUtil.applyDeadband(-primaryLeftStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
+    //     () -> MathUtil.applyDeadband(-primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
+
+    // this is a system to test the auto tracking of target by removing control from driver, it is a toggled switch. TODO: Make a better toggle function for buttons that doesn't force use of commands.
+        driveControllerCommand = new AbsoluteFieldDrive(
         driveBase,
         () -> MathUtil.applyDeadband(-primaryLeftStick.getY(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
         () -> MathUtil.applyDeadband(-primaryLeftStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
-        () -> MathUtil.applyDeadband(-primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
+        () -> primaryLeftStick.button(3).getAsBoolean() ? (LimelightHelpers.getTX("limelight") / -75) : MathUtil.applyDeadband(-primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
 
     shooterSysID = new SysID(shooter, shooter::runShooterRaw,
         log -> {
@@ -128,6 +136,8 @@ public class RobotContainer {
                                    // is loaded.
     secondaryRightStick.button(1) // Trigger on the secondary driver's right stick
         .whileTrue(aimAtSpeakerCommand); // Aim and shoot the note at the speaker.
+
+    //primaryLeftStick.button(3).whileTrue(new StartEndCommand(driveBase::trackTag, driveBase::setSlowMode));
   }
 
   /**
