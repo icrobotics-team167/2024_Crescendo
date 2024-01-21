@@ -555,6 +555,7 @@ public class SwerveSubsystem extends SubsystemBase {
         Telemetry.sendNumber("SwerveDrivebase/robotVelX", robotVelocity.vxMetersPerSecond, Verbosity.MEDIUM);
         Telemetry.sendNumber("SwerveDrivebase/robotVelY", robotVelocity.vyMetersPerSecond, Verbosity.MEDIUM);
         Telemetry.sendNumber("SwerveDrivebase/robotVelRot", robotVelocity.omegaRadiansPerSecond, Verbosity.MEDIUM);
+        Telemetry.sendNumber("SwerveDriverbase/robotYaw", getYaw().getDegrees(), Verbosity.MEDIUM);
         Telemetry.sendBoolean("SwerveDrivebase/slowMode", slowMode, Verbosity.LOW);
         Telemetry.sendBoolean("SwerveDrivebase/motionLocked", motionLocked, Verbosity.LOW);
         for (Module module : modules) {
