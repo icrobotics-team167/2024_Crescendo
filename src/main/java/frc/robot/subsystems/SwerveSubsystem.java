@@ -37,6 +37,7 @@ import frc.robot.Constants.Robot.SwerveDrive;
 import frc.robot.Constants.Robot.SwerveDrive.Modules;
 import frc.robot.Constants.Vision;
 import frc.robot.subsystems.swerve.Module;
+import frc.robot.commands.AbsoluteFieldDrive;
 
 /**
  * A SubsystemBase class to implement the swerve drive.
@@ -558,6 +559,9 @@ public class SwerveSubsystem extends SubsystemBase {
         Telemetry.sendNumber("SwerveDriverbase/robotYaw", getYaw().getDegrees(), Verbosity.MEDIUM);
         Telemetry.sendBoolean("SwerveDrivebase/slowMode", slowMode, Verbosity.LOW);
         Telemetry.sendBoolean("SwerveDrivebase/motionLocked", motionLocked, Verbosity.LOW);
+        Telemetry.sendNumber("TX + yaw", (LimelightHelpers.getTX("limelight") + getYaw().getDegrees()), Verbosity.MEDIUM);
+        Telemetry.sendNumber("Tx", LimelightHelpers.getTX("limelight"), Verbosity.MEDIUM);
+
         for (Module module : modules) {
             module.sendTelemetry();
         }
