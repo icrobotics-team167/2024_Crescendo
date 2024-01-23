@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.Driving;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -66,6 +67,8 @@ public class SwerveSubsystem extends SubsystemBase {
             };
     private SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation,
             lastModulePositions, new Pose2d());
+
+    private boolean slowmode = Driving.SLOWMODE_DEFAULT;
 
     public SwerveSubsystem(
             GyroIO gyroIO,
@@ -182,6 +185,11 @@ public class SwerveSubsystem extends SubsystemBase {
      * @param speeds Speeds in meters/sec
      */
     public void runVelocity(ChassisSpeeds speeds) {
+        if (slowmode) {
+            speeds.vxMetersPerSecond *= Driving.SLOWMODE_MULTIPLIER;
+            speeds.vyMetersPerSecond *= Driving.SLOWMODE_MULTIPLIER;
+            speeds.omegaRadiansPerSecond *= Driving.SLOWMODE_MULTIPLIER;
+        }
         // Calculate module setpoints
         ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
         SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
@@ -202,6 +210,14 @@ public class SwerveSubsystem extends SubsystemBase {
     /** Stops the drive. */
     public void stop() {
         runVelocity(new ChassisSpeeds());
+    }
+
+    public void setSlowmode() {
+        slowmode = !Driving.SLOWMODE_DEFAULT;
+    }
+
+    public void unsetSlowmode() {
+        slowmode = Driving.SLOWMODE_DEFAULT;
     }
 
     /**
