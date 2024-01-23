@@ -93,7 +93,6 @@ public class Module {
     turnMotor.configureMotorBrake(false);
     turnMotor.configurePIDWrapping(true);
     turnMotor.configurePID(Modules.ControlParams.TURN_P, Modules.ControlParams.TURN_I, Modules.ControlParams.TURN_D);
-    driveMotor.configureFeedForward(0, driveMotor.getNominalVoltage() / MAX_MOVE_SPEED, 0); // TODO: Tune
     turnMotor.configureEncoder(360 / Modules.TURN_GEAR_RATIO);
     turnMotor.configureAbsoluteEncoder(turnEncoder, 360);
     turnMotor.configureInverted(true);

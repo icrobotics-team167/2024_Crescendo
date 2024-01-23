@@ -28,6 +28,8 @@ public class Pivot {
         motor = leaderMotor;
     }
 
+    // TODO: Figure out the design of the pivot to finalize methods
+
     public void setDesiredAngle(Rotation2d desired) {
         Telemetry.sendNumber("Pivot/desiredAngle", desired.getDegrees(), Verbosity.HIGH);
         motor.setTurnReference(desired);
