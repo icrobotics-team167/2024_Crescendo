@@ -69,6 +69,10 @@ public class ShooterSubsystem extends SubsystemBase {
         return shooter.getVelocity();
     }
 
+    public double getShooterTargetVelocity() {
+        return shooter.getTargetVelocity();
+    }
+
     public double getShooterPosition() {
         return shooter.getPosition();
     }

@@ -48,4 +48,8 @@ public class Shooter {
     public double getVelocity() {
         return motor.getVelocity();
     }
+
+    public double getTargetVelocity() {
+        return motor.getMaxRPM() * Units.inchesToMeters(4.0 * Math.PI);
+    }
 }

@@ -18,6 +18,9 @@ public class AimAtSpeaker extends Command {
     PIDController rotationalOverridePID = new PIDController(1.0 / 20, 0, 1 / 40);
     PIDController pivotPID = new PIDController(0.9, 0, 0);
 
+    double rotError;
+    double pivotError;
+
     public AimAtSpeaker(ShooterSubsystem shooter, DoubleConsumer rotationalOverrideConsumer,
             Runnable rotationalOverrideDisabler) {
         this.shooter = shooter;
@@ -35,8 +38,7 @@ public class AimAtSpeaker extends Command {
 
     @Override
     public void execute() {
-        double rotError;
-        double pivotError;
+        shooter.runShooter();
         if (LimelightHelpers.getTV(LimeLight.APRILTAG_DETECTOR)
                 && (LimelightHelpers.getFiducialID(LimeLight.APRILTAG_DETECTOR) == 8
                         || LimelightHelpers.getFiducialID(LimeLight.APRILTAG_DETECTOR) == 4)) {
@@ -49,6 +51,10 @@ public class AimAtSpeaker extends Command {
 
         rotationalOverrideConsumer.accept(rotationalOverridePID.calculate(rotError, 0));
         shooter.runPivot(pivotPID.calculate(pivotError, 0));
+
+        if (isOkToShoot()) {
+            shooter.runFeedOut();
+        }
     }
 
     @Override
@@ -59,5 +65,16 @@ public class AimAtSpeaker extends Command {
     @Override
     public void end(boolean interrupted) {
         rotationalOverrideDisabler.run();
+        shooter.stopShooter();
+        shooter.stopFeed();
+    }
+
+    private boolean isOkToShoot() {
+        // If rotational error is within tolerance
+        return Math.abs(rotError) < 1
+                // And pivot error is within tolerance
+                && Math.abs(pivotError) < 1
+                // And the shooter is spinning fast enough
+                && shooter.getShooterVelocity() >= shooter.getShooterTargetVelocity() * 0.8;
     }
 }
