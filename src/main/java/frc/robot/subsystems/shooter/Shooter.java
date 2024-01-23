@@ -1,6 +1,5 @@
 package frc.robot.subsystems.shooter;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.abstraction.motors.AbstractMotor;
 
@@ -9,8 +8,8 @@ public class Shooter {
     double targetSpeed;
 
     public Shooter(AbstractMotor leaderMotor, AbstractMotor followerMotor, double targetSpeed) {
-        leaderMotor.configureCurrentLimits(leaderMotor.getNominalVoltage(), 150, 200);
-        followerMotor.configureCurrentLimits(followerMotor.getNominalVoltage(), 150, 200);
+        leaderMotor.configureCurrentLimits(leaderMotor.getNominalVoltage(), 80, 90);
+        followerMotor.configureCurrentLimits(followerMotor.getNominalVoltage(), 80, 90);
         leaderMotor.configureMotorBrake(false);
         followerMotor.configureMotorBrake(false);
 

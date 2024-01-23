@@ -4,10 +4,7 @@ import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.swing.text.html.Option;
-
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -43,7 +40,6 @@ import frc.robot.Constants.Robot.SwerveDrive;
 import frc.robot.Constants.Robot.SwerveDrive.Modules;
 import frc.robot.Constants.Vision;
 import frc.robot.subsystems.swerve.Module;
-import frc.robot.commands.AbsoluteFieldDrive;
 
 /**
  * A SubsystemBase class to implement the swerve drive.

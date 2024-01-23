@@ -2,8 +2,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.abstraction.motors.AbstractMotor;
-import frc.robot.abstraction.motors.AbstractMotor;
-import frc.robot.abstraction.motors.RevNEO500;
 
 public class ClimbSubsystem extends SubsystemBase {
         AbstractMotor motor;
