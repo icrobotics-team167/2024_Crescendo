@@ -146,19 +146,19 @@ public class RobotContainer {
     primaryLeftStick.button(1) // Trigger on the primary driver's left stick
         .whileTrue(new StartEndCommand(driveBase::setSlowMode, driveBase::unsetSlowMode)); // Press and hold for slow
                                                                                            // mode
-    primaryRightStick.button(1) // Trigger on the primary driver's right stick
+    primaryRightStick.trigger() // Trigger on the primary driver's right stick
         .whileTrue(new StartEndCommand(driveBase::lockMotion, driveBase::unlockMotion)); // Press and hold to lock
                                                                                          // the drivebase
     primaryRightStick.button(2) // Button #2 on the primary driver's right stick
         .onTrue(new InstantCommand(driveBase::resetRotation)); // Resets which way the robot thinks is forward, used
                                                                // when the robot wasn't facing away from the driver
                                                                // station on boot
-    secondaryLeftStick.button(1)
+    secondaryLeftStick.trigger()
         .whileTrue(shooterSysID.getIDRoutine());
     secondaryRightStick.button(2) // Button #2 on the secondary driver's right stick
         .whileTrue(intakeCommand); // Intake a note while the button is held down. Automatically stops once a note
                                    // is loaded.
-    secondaryRightStick.button(1) // Trigger on the secondary driver's right stick
+    secondaryRightStick.trigger() // Trigger on the secondary driver's right stick
         .whileTrue(aimAtSpeakerCommand); // Aim and shoot the note at the speaker.
 
     // primaryLeftStick.button(3).whileTrue(new StartEndCommand(driveBase::trackTag,
