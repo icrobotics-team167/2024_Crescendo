@@ -146,7 +146,6 @@ public final class Constants {
           private static final double moduleSideDistanceFromCenter = Units
               .inchesToMeters((robotWidth - (2 * moduleCenterOfRotationDistanceFromEdge)) / 2.0);
 
-          // TODO: Figure out which way positive x and positive y goes
           /**
            * A Translation2d object, representing the position of the front left swerve
            * module relative to the center of the robot.
@@ -436,7 +435,6 @@ public final class Constants {
 
       /**
        * Controller deadbands.
-       * TODO: Figure out if deadbands or deadzones feel better to use
        */
       public static final class Deadbands {
         /**

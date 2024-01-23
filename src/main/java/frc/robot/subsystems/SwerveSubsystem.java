@@ -75,15 +75,13 @@ public class SwerveSubsystem extends SubsystemBase {
     private final SwerveDrivePoseEstimator poseEstimator;
     /**
      * Trustworthiness of the internal model of how motors should be moving.
-     * Measured
-     * in expected standard deviation
-     * (meters of position and degrees of rotation)
+     * Measured in expected standard deviation (meters of position and degrees of
+     * rotation)
      */
     public Matrix<N3, N1> stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
     /**
      * Trustworthiness of the vision system. Measured in expected standard deviation
-     * (meters of position and degrees of
-     * rotation)
+     * (meters of position and degrees of rotation)
      */
     public Matrix<N3, N1> visionMeasurementStdDevs = VecBuilder.fill(0.4, 0.4, 0.5);
     /**
@@ -221,7 +219,6 @@ public class SwerveSubsystem extends SubsystemBase {
             return;
         }
         // For some reason if we don't do this it's CW+ instead of CCW+
-        // TODO: Fix root cause to not have to do this
         velocityCommand.omegaRadiansPerSecond *= -1;
         // If the velocity command is field relative, convert it to robot relative
         // speeds.
@@ -489,14 +486,29 @@ public class SwerveSubsystem extends SubsystemBase {
         slowMode = Driving.SLOWMODE_DEFAULT;
     }
 
+    /**
+     * The overriding rotational velocity.
+     */
     private double rotVelOverride = 0;
+    /**
+     * If the rotational velocity is overridden or not.
+     */
     private boolean rotationOverridden = false;
 
+    /**
+     * Overrides the rotational velocity of the robot, so that the rotational
+     * component of the commanded drive velocities are ignored.
+     * 
+     * @param rotationalVelocity The overriding rotational velocity.
+     */
     public void overrideRotation(double rotationalVelocity) {
         rotationOverridden = true;
         rotVelOverride = rotationalVelocity;
     }
 
+    /**
+     * Disables the rotational override.
+     */
     public void disableRotOverride() {
         rotationOverridden = false;
         rotVelOverride = 0;
