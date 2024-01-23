@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Driving;
+import frc.robot.subsystems.vision.VisionPoseEstimator;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -70,6 +71,7 @@ public class SwerveSubsystem extends SubsystemBase {
             };
     private SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation,
             lastModulePositions, new Pose2d());
+    private VisionPoseEstimator visionPoseEstimator = new VisionPoseEstimator(this::addVisionMeasurement);
 
     private boolean slowmode = Driving.SLOWMODE_DEFAULT;
 
@@ -180,6 +182,7 @@ public class SwerveSubsystem extends SubsystemBase {
             // Apply update
             poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
         }
+        visionPoseEstimator.updateEstimation();
     }
 
     /**
