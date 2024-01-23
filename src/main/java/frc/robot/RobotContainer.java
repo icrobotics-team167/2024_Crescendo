@@ -71,23 +71,29 @@ public class RobotContainer {
    */
   public RobotContainer() {
     // Create commands
-    aimAtSpeakerCommand = new AimAtSpeaker(shooter, driveBase::getPose);
+    aimAtSpeakerCommand = new AimAtSpeaker(shooter, driveBase::overrideRotation, driveBase::disableRotOverride);
     aimManualOverrideCommand = new AimManualOverride(() -> MathUtil
         .applyDeadband(-secondaryRightStick.getY(), Constants.Driving.Controllers.Deadbands.SECONDARY_RIGHT),
         secondaryRightStick.button(2), shooter);
     intakeCommand = new Intake(shooter);
     // driveControllerCommand = new AbsoluteFieldDrive(
-    //     driveBase,
-    //     () -> MathUtil.applyDeadband(-primaryLeftStick.getY(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
-    //     () -> MathUtil.applyDeadband(-primaryLeftStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
-    //     () -> MathUtil.applyDeadband(-primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
+    // driveBase,
+    // () -> MathUtil.applyDeadband(-primaryLeftStick.getY(),
+    // Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
+    // () -> MathUtil.applyDeadband(-primaryLeftStick.getX(),
+    // Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
+    // () -> MathUtil.applyDeadband(-primaryRightStick.getX(),
+    // Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
 
-    // this is a system to test the auto tracking of target by removing control from driver, it is a toggled switch. TODO: Make a better toggle function for buttons that doesn't force use of commands.
-        driveControllerCommand = new AbsoluteFieldDrive(
+    // this is a system to test the auto tracking of target by removing control from
+    // driver, it is a toggled switch. TODO: Make a better toggle function for
+    // buttons that doesn't force use of commands.
+    driveControllerCommand = new AbsoluteFieldDrive(
         driveBase,
         () -> MathUtil.applyDeadband(-primaryLeftStick.getY(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
         () -> MathUtil.applyDeadband(-primaryLeftStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
-        () -> primaryLeftStick.button(3).getAsBoolean() ? (LimelightHelpers.getTX("limelight") / -75) : MathUtil.applyDeadband(-primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
+        () -> primaryLeftStick.button(3).getAsBoolean() ? (LimelightHelpers.getTX("limelight") / -75)
+            : MathUtil.applyDeadband(-primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
 
     shooterSysID = new SysID(shooter, shooter::runShooterRaw,
         log -> {
@@ -155,7 +161,8 @@ public class RobotContainer {
     secondaryRightStick.button(1) // Trigger on the secondary driver's right stick
         .whileTrue(aimAtSpeakerCommand); // Aim and shoot the note at the speaker.
 
-    //primaryLeftStick.button(3).whileTrue(new StartEndCommand(driveBase::trackTag, driveBase::setSlowMode));
+    // primaryLeftStick.button(3).whileTrue(new StartEndCommand(driveBase::trackTag,
+    // driveBase::setSlowMode));
   }
 
   public void robotPeriodic() {

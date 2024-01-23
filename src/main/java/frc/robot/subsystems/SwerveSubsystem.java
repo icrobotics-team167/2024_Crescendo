@@ -1,9 +1,14 @@
 package frc.robot.subsystems;
 
+import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.swing.text.html.Option;
+
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 
@@ -24,6 +29,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.abstraction.encoders.AnalogAbsoluteEncoder;
 import frc.robot.abstraction.imus.AbstractIMU;
@@ -233,6 +239,13 @@ public class SwerveSubsystem extends SubsystemBase {
                     velocityCommand.vxMetersPerSecond * Driving.SLOWMODE_MULT,
                     velocityCommand.vyMetersPerSecond * Driving.SLOWMODE_MULT,
                     velocityCommand.omegaRadiansPerSecond * Driving.SLOWMODE_MULT);
+        }
+
+        if (rotationOverridden) {
+            velocityCommand.omegaRadiansPerSecond = rotVelOverride;
+            PPHolonomicDriveController.setRotationTargetOverride(() -> {
+                return Optional.of(new Rotation2d(getYaw().getRadians() + (rotVelOverride * Robot.kDefaultPeriod)));
+            });
         }
 
         // Due to how converting continous velocity inputs into discrete module speeds
@@ -480,6 +493,22 @@ public class SwerveSubsystem extends SubsystemBase {
         slowMode = Driving.SLOWMODE_DEFAULT;
     }
 
+    private double rotVelOverride = 0;
+    private boolean rotationOverridden = false;
+
+    public void overrideRotation(double rotationalVelocity) {
+        rotationOverridden = true;
+        rotVelOverride = rotationalVelocity;
+    }
+
+    public void disableRotOverride() {
+        rotationOverridden = false;
+        rotVelOverride = 0;
+        PPHolonomicDriveController.setRotationTargetOverride(() -> {
+            return Optional.empty();
+        });
+    }
+
     /**
      * Resets the rotation of the robot to be forwards.
      */
@@ -559,7 +588,8 @@ public class SwerveSubsystem extends SubsystemBase {
         Telemetry.sendNumber("SwerveDriverbase/robotYaw", getYaw().getDegrees(), Verbosity.MEDIUM);
         Telemetry.sendBoolean("SwerveDrivebase/slowMode", slowMode, Verbosity.LOW);
         Telemetry.sendBoolean("SwerveDrivebase/motionLocked", motionLocked, Verbosity.LOW);
-        Telemetry.sendNumber("TX + yaw", (LimelightHelpers.getTX("limelight") + getYaw().getDegrees()), Verbosity.MEDIUM);
+        Telemetry.sendNumber("TX + yaw", (LimelightHelpers.getTX("limelight") + getYaw().getDegrees()),
+                Verbosity.MEDIUM);
         Telemetry.sendNumber("Tx", LimelightHelpers.getTX("limelight"), Verbosity.MEDIUM);
 
         for (Module module : modules) {
