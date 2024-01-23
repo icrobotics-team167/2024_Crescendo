@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.Vision.LimeLight;
 import frc.robot.helpers.LimelightHelpers;
@@ -21,6 +22,8 @@ public class AimAtSpeaker extends Command {
     double rotError;
     double pivotError;
 
+    Timer shotTimer;
+
     public AimAtSpeaker(ShooterSubsystem shooter, DoubleConsumer rotationalOverrideConsumer,
             Runnable rotationalOverrideDisabler) {
         this.shooter = shooter;
@@ -33,7 +36,7 @@ public class AimAtSpeaker extends Command {
 
     @Override
     public void initialize() {
-
+        shotTimer.reset();
     }
 
     @Override
@@ -54,12 +57,13 @@ public class AimAtSpeaker extends Command {
 
         if (isOkToShoot()) {
             shooter.runFeedOut();
+            shotTimer.start();
         }
     }
 
     @Override
     public boolean isFinished() {
-        return false;
+        return shotTimer.hasElapsed(2);
     }
 
     @Override
@@ -67,9 +71,11 @@ public class AimAtSpeaker extends Command {
         rotationalOverrideDisabler.run();
         shooter.stopShooter();
         shooter.stopFeed();
+        shotTimer.stop();
     }
 
     private boolean isOkToShoot() {
+        // return false;
         // If rotational error is within tolerance
         return Math.abs(rotError) < 1
                 // And pivot error is within tolerance
