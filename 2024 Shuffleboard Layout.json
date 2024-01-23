@@ -278,9 +278,9 @@
         "vgap": 0.0,
         "titleType": 1,
         "tiles": {
-          "49,0": {
+          "47,0": {
             "size": [
-              11,
+              13,
               5
             ],
             "content": {
@@ -293,7 +293,7 @@
           },
           "0,0": {
             "size": [
-              49,
+              47,
               28
             ],
             "content": {
@@ -307,10 +307,10 @@
               "Visuals/Show Outside Circles": false
             }
           },
-          "49,5": {
+          "47,5": {
             "size": [
-              11,
-              2
+              13,
+              3
             ],
             "content": {
               "_type": "ComboBox Chooser",
@@ -318,6 +318,27 @@
               "_title": "Auto Chooser",
               "_glyph": 148,
               "_showGlyph": false
+            }
+          },
+          "47,8": {
+            "size": [
+              13,
+              11
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://limelight",
+              "_title": "limelight",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Crosshair/Show crosshair": false,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": false,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
             }
           }
         }
