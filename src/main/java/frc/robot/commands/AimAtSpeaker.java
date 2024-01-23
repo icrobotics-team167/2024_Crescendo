@@ -15,7 +15,7 @@ public class AimAtSpeaker extends Command {
     DoubleConsumer rotationalOverrideConsumer;
     Runnable rotationalOverrideDisabler;
 
-    PIDController rotationalOverridePID = new PIDController(1.0 / 75.0, 0, 0);
+    PIDController rotationalOverridePID = new PIDController(1.0 / 20, 0, 1 / 40);
     PIDController pivotPID = new PIDController(0.9, 0, 0);
 
     public AimAtSpeaker(ShooterSubsystem shooter, DoubleConsumer rotationalOverrideConsumer,
@@ -35,11 +35,17 @@ public class AimAtSpeaker extends Command {
 
     @Override
     public void execute() {
-        if (!LimelightHelpers.getTV(LimeLight.APRILTAG_DETECTOR)) {
-            return;
+        double rotError;
+        double pivotError;
+        if (LimelightHelpers.getTV(LimeLight.APRILTAG_DETECTOR)
+                && (LimelightHelpers.getFiducialID(LimeLight.APRILTAG_DETECTOR) == 8
+                        || LimelightHelpers.getFiducialID(LimeLight.APRILTAG_DETECTOR) == 4)) {
+            rotError = -LimelightHelpers.getTX(LimeLight.APRILTAG_DETECTOR);
+            pivotError = LimelightHelpers.getTY(LimeLight.APRILTAG_DETECTOR);
+        } else {
+            rotError = 0;
+            pivotError = 0;
         }
-        double rotError = LimelightHelpers.getTX(LimeLight.APRILTAG_DETECTOR);
-        double pivotError = LimelightHelpers.getTY(LimeLight.APRILTAG_DETECTOR);
 
         rotationalOverrideConsumer.accept(rotationalOverridePID.calculate(rotError, 0));
         shooter.runPivot(pivotPID.calculate(pivotError, 0));
