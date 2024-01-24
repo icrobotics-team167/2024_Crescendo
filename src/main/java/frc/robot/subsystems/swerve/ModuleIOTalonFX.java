@@ -23,6 +23,7 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -84,25 +85,25 @@ public class ModuleIOTalonFX implements ModuleIO {
                 driveTalon = new TalonFX(0, "drivebase");
                 turnTalon = new TalonFX(1, "drivebase");
                 cancoder = new CANcoder(2, "drivebase");
-                absoluteEncoderOffset = new Rotation2d(0.0); // TODO: Calibrate
+                absoluteEncoderOffset = Rotation2d.fromDegrees(0); // TODO: Calibrate
                 break;
             case 1:
                 driveTalon = new TalonFX(3, "drivebase");
                 turnTalon = new TalonFX(4, "drivebase");
                 cancoder = new CANcoder(5, "drivebase");
-                absoluteEncoderOffset = new Rotation2d(0.0); // TODO: Calibrate
+                absoluteEncoderOffset = Rotation2d.fromDegrees(0); // TODO: Calibrate
                 break;
             case 2:
                 driveTalon = new TalonFX(6, "drivebase");
                 turnTalon = new TalonFX(7, "drivebase");
                 cancoder = new CANcoder(8, "drivebase");
-                absoluteEncoderOffset = new Rotation2d(0.0); // TODO: Calibrate
+                absoluteEncoderOffset = Rotation2d.fromDegrees(0); // TODO: Calibrate
                 break;
             case 3:
                 driveTalon = new TalonFX(9, "drivebase");
                 turnTalon = new TalonFX(10, "drivebase");
                 cancoder = new CANcoder(11, "drivebase");
-                absoluteEncoderOffset = new Rotation2d(0.0); // TODO: Calibrate
+                absoluteEncoderOffset = Rotation2d.fromDegrees(0); // TODO: Calibrate
                 break;
             default:
                 throw new RuntimeException("Invalid module index");
@@ -142,7 +143,10 @@ public class ModuleIOTalonFX implements ModuleIO {
         turnTalon.getConfigurator().apply(turnConfig);
         setTurnBrakeMode(true);
 
-        cancoder.getConfigurator().apply(new CANcoderConfiguration());
+        var cancoderConfig = new CANcoderConfiguration();
+        cancoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
+        cancoderConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset.getRotations();
+        cancoder.getConfigurator().apply(cancoderConfig);
 
         timestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
 
@@ -199,8 +203,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         inputs.driveAppliedDutyCycle = driveClosedLoopOutput.getValueAsDouble();
         inputs.driveCurrentAmps = new double[] { driveCurrent.getValueAsDouble() };
 
-        inputs.turnAbsolutePosition = Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble())
-                .minus(absoluteEncoderOffset);
+        inputs.turnAbsolutePosition = Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble());
         inputs.turnPosition = Rotation2d.fromRotations(turnPosition.getValueAsDouble() / TURN_GEAR_RATIO);
         inputs.turnVelocityRadPerSec = Units.rotationsToRadians(turnVelocity.getValueAsDouble()) / TURN_GEAR_RATIO;
         inputs.turnAppliedVolts = turnAppliedVolts.getValueAsDouble();
