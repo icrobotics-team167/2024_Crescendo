@@ -9,6 +9,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.Constants.Mode;
 
 public class VisionPoseEstimator extends SubsystemBase {
     private BiConsumer<Pose2d, Double> estimationConsumer;
@@ -16,13 +18,21 @@ public class VisionPoseEstimator extends SubsystemBase {
     private VisionIO[] cameras;
     private VisionIOInputsAutoLogged[] cameraData;
 
-    public VisionPoseEstimator(BiConsumer<Pose2d, Double> estimationConsumer, Supplier<Pose2d> currentEstimateSupplier) {
+    public VisionPoseEstimator(BiConsumer<Pose2d, Double> estimationConsumer,
+            Supplier<Pose2d> currentEstimateSupplier) {
         this.estimationConsumer = estimationConsumer;
         this.currentEstimateSupplier = currentEstimateSupplier;
 
-        cameras = new VisionIO[] {
-                new PhotonVisionIO("AprilTagLL", new Transform3d())
-        };
+        if (Constants.currentMode == Mode.SIM) {
+            cameras = new VisionIO[] {
+                    new VisionIO() {
+                    }
+            };
+        } else {
+            cameras = new VisionIO[] {
+                    new PhotonVisionIO("AprilTagLL", new Transform3d())
+            };
+        }
 
         cameraData = new VisionIOInputsAutoLogged[cameras.length];
         for (int i = 0; i < cameraData.length; i++) {

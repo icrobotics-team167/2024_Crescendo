@@ -4,16 +4,20 @@
 
 package frc.robot;
 
+import frc.robot.Constants.Mode;
 import frc.robot.commands.FieldRelativeDrive;
 import frc.robot.subsystems.swerve.GyroIO;
 import frc.robot.subsystems.swerve.GyroIOPigeon2;
 import frc.robot.subsystems.swerve.ModuleIO;
+import frc.robot.subsystems.swerve.ModuleIOSim;
 import frc.robot.subsystems.swerve.ModuleIOTalonFX;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.PPLibTelemetry;
+import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -45,16 +49,24 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    autoSelector = new LoggedDashboardChooser<>("", AutoBuilder.buildAutoChooser());
-
     switch (Constants.currentMode) {
       case REAL:
+      case REPLAY:
         drivebase = new SwerveSubsystem(
             new GyroIOPigeon2(),
             new ModuleIOTalonFX(0),
             new ModuleIOTalonFX(1),
             new ModuleIOTalonFX(2),
             new ModuleIOTalonFX(3));
+        break;
+      case SIM:
+        drivebase = new SwerveSubsystem(
+            new GyroIO() {
+            },
+            new ModuleIOSim(),
+            new ModuleIOSim(),
+            new ModuleIOSim(),
+            new ModuleIOSim());
         break;
       default:
         drivebase = new SwerveSubsystem(new GyroIO() {
@@ -66,6 +78,7 @@ public class RobotContainer {
     }
     // Configure the trigger bindings
     configureBindings();
+    autoSelector = new LoggedDashboardChooser<>("", AutoBuilder.buildAutoChooser());
   }
 
   /**

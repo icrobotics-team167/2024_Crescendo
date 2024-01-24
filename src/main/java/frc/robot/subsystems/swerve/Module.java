@@ -27,9 +27,8 @@ public class Module {
     private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
     private final int index;
 
-    private Rotation2d angleSetpoint = null; // Setpoint for closed loop control, null for open loop
-    private Double speedSetpoint = null; // Setpoint for closed loop control, null for open loop
-    private Rotation2d turnRelativeOffset = null; // Relative + Offset = Absolute
+    private Rotation2d angleSetpoint = new Rotation2d(); // Setpoint for closed loop control, null for open loop
+    private double speedSetpoint = 0; // Setpoint for closed loop control, null for open loop
     private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
 
     public Module(ModuleIO io, int index) {
@@ -50,38 +49,22 @@ public class Module {
     public void periodic() {
         Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
 
-        // On first cycle, reset relative turn encoder
-        // Wait until absolute angle is nonzero in case it wasn't initialized yet
-        if (turnRelativeOffset == null && inputs.turnAbsolutePosition.getRadians() != 0.0) {
-            turnRelativeOffset = inputs.turnAbsolutePosition.minus(inputs.turnPosition);
-        }
-
         // Run closed loop turn control
-        if (angleSetpoint != null) {
-            io.setTurnPosition(angleSetpoint);
-
-            // Run closed loop drive control
-            // Only allowed if closed loop turn control is running
-            if (speedSetpoint != null) {
-                // Scale velocity based on turn error
-                //
-                // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
-                // towards the setpoint, its velocity should increase. This is achieved by
-                // taking the component of the velocity in the direction of the setpoint.
-                double adjustedSpeedSetpoint = speedSetpoint
-                        * Math.cos(inputs.turnAbsolutePosition.getRadians() - angleSetpoint.getRadians());
-
-                io.setDriveVelocity(adjustedSpeedSetpoint);
-            }
-        }
+        io.setTurnPosition(angleSetpoint);
+        // Scale velocity based on turn error
+        // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
+        // towards the setpoint, its velocity should increase. This is achieved by
+        // taking the component of the velocity in the direction of the setpoint.
+        double adjustedSpeedSetpoint = speedSetpoint
+                * Math.cos(inputs.turnAbsolutePosition.getRadians() - angleSetpoint.getRadians());
+        io.setDriveVelocity(adjustedSpeedSetpoint);
 
         // Calculate positions for odometry
         int sampleCount = inputs.odometryTimestamps.length; // All signals are sampled together
         odometryPositions = new SwerveModulePosition[sampleCount];
         for (int i = 0; i < sampleCount; i++) {
-            double positionMeters = inputs.odometryDrivePositionsRad[i] * WHEEL_RADIUS;
-            Rotation2d angle = inputs.odometryTurnPositions[i].plus(
-                    turnRelativeOffset != null ? turnRelativeOffset : new Rotation2d());
+            double positionMeters = inputs.odometryDrivePositionsMeters[i] * WHEEL_RADIUS;
+            Rotation2d angle = inputs.odometryTurnPositions[i];
             odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
         }
     }
@@ -102,26 +85,9 @@ public class Module {
         return optimizedState;
     }
 
-    /**
-     * Runs the module with the specified voltage while controlling to zero degrees.
-     */
-    public void runCharacterization(double volts) {
-        // Closed loop turn control
-        angleSetpoint = new Rotation2d();
-
-        // Open loop drive control
-        io.setDriveVoltage(volts);
-        speedSetpoint = null;
-    }
-
     /** Disables all outputs to motors. */
     public void stop() {
-        io.setTurnVoltage(0.0);
-        io.setDriveVoltage(0.0);
-
-        // Disable closed loop control for turn and drive
-        angleSetpoint = null;
-        speedSetpoint = null;
+        io.stop();
     }
 
     /** Sets whether brake mode is enabled. */
@@ -132,11 +98,7 @@ public class Module {
 
     /** Returns the current turn angle of the module. */
     public Rotation2d getAngle() {
-        if (turnRelativeOffset == null) {
-            return new Rotation2d();
-        } else {
-            return inputs.turnPosition.plus(turnRelativeOffset);
-        }
+        return inputs.turnAbsolutePosition;
     }
 
     /** Returns the current drive position of the module in meters. */
