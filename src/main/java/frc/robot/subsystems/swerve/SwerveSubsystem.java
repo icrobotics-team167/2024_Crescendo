@@ -63,7 +63,7 @@ public class SwerveSubsystem extends SubsystemBase {
             };
     private SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation,
             lastModulePositions, new Pose2d());
-    private VisionPoseEstimator visionPoseEstimator = new VisionPoseEstimator(this::addVisionMeasurement);
+    private VisionPoseEstimator visionPoseEstimator = new VisionPoseEstimator(this::addVisionMeasurement, this::getPose);
 
     private boolean slowmode = Driving.SLOWMODE_DEFAULT;
 

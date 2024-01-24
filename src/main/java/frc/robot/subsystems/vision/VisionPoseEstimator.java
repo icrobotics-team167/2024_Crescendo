@@ -1,6 +1,7 @@
 package frc.robot.subsystems.vision;
 
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -11,11 +12,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class VisionPoseEstimator extends SubsystemBase {
     private BiConsumer<Pose2d, Double> estimationConsumer;
+    private Supplier<Pose2d> currentEstimateSupplier;
     private VisionIO[] cameras;
     private VisionIOInputsAutoLogged[] cameraData;
 
-    public VisionPoseEstimator(BiConsumer<Pose2d, Double> estimationConsumer) {
+    public VisionPoseEstimator(BiConsumer<Pose2d, Double> estimationConsumer, Supplier<Pose2d> currentEstimateSupplier) {
         this.estimationConsumer = estimationConsumer;
+        this.currentEstimateSupplier = currentEstimateSupplier;
 
         cameras = new VisionIO[] {
                 new PhotonVisionIO("AprilTagLL", new Transform3d())
@@ -30,7 +33,7 @@ public class VisionPoseEstimator extends SubsystemBase {
     @Override
     public void periodic() {
         for (int i = 0; i < cameraData.length; i++) {
-            cameras[i].updateInputs(cameraData[i]);
+            cameras[i].updateInputs(cameraData[i], currentEstimateSupplier.get());
             Logger.processInputs("VisionPoseEstimator/" + cameras[i].getName(), cameraData[i]);
         }
     }
