@@ -8,7 +8,6 @@ import frc.robot.commands.FieldRelativeDrive;
 import frc.robot.subsystems.swerve.GyroIO;
 import frc.robot.subsystems.swerve.GyroIOPigeon2;
 import frc.robot.subsystems.swerve.ModuleIO;
-import frc.robot.subsystems.swerve.ModuleIOSim;
 import frc.robot.subsystems.swerve.ModuleIOTalonFX;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
@@ -56,15 +55,6 @@ public class RobotContainer {
             new ModuleIOTalonFX(1),
             new ModuleIOTalonFX(2),
             new ModuleIOTalonFX(3));
-        break;
-      case SIM:
-        drivebase = new SwerveSubsystem(
-            new GyroIO() {
-            },
-            new ModuleIOSim(),
-            new ModuleIOSim(),
-            new ModuleIOSim(),
-            new ModuleIOSim());
         break;
       default:
         drivebase = new SwerveSubsystem(new GyroIO() {

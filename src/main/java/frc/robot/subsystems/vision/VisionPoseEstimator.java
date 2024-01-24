@@ -2,15 +2,17 @@ package frc.robot.subsystems.vision;
 
 import java.util.function.BiConsumer;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class VisionPoseEstimator {
+public class VisionPoseEstimator extends SubsystemBase {
     private BiConsumer<Pose2d, Double> estimationConsumer;
     private VisionIO[] cameras;
-    private VisionIOInputs[] cameraData;
+    private VisionIOInputsAutoLogged[] cameraData;
 
     public VisionPoseEstimator(BiConsumer<Pose2d, Double> estimationConsumer) {
         this.estimationConsumer = estimationConsumer;
@@ -19,15 +21,22 @@ public class VisionPoseEstimator {
                 new PhotonVisionIO("AprilTagLL", new Transform3d())
         };
 
-        cameraData = new VisionIOInputs[cameras.length];
+        cameraData = new VisionIOInputsAutoLogged[cameras.length];
         for (int i = 0; i < cameraData.length; i++) {
             cameraData[i] = new VisionIOInputsAutoLogged();
         }
     }
 
-    public void updateEstimation() {
+    @Override
+    public void periodic() {
         for (int i = 0; i < cameraData.length; i++) {
             cameras[i].updateInputs(cameraData[i]);
+            Logger.processInputs("VisionPoseEstimator/" + cameras[i].getName(), cameraData[i]);
+        }
+    }
+
+    public void updateEstimation() {
+        for (int i = 0; i < cameraData.length; i++) {
             estimationConsumer.accept(
                     new Pose2d(cameraData[i].x, cameraData[i].y, new Rotation2d(cameraData[i].rot)),
                     cameraData[i].timestamp);

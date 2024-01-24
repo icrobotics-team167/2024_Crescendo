@@ -7,6 +7,8 @@ package frc.robot;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.SignalLogger;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -34,6 +36,7 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("Git SHA", BuildConstants.GIT_SHA);
     Logger.recordMetadata("Uncommitted Changes?", BuildConstants.DIRTY == 1 ? "True" : "False");
     Logger.start();
+    SignalLogger.start();
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
     // autonomous chooser on the dashboard.

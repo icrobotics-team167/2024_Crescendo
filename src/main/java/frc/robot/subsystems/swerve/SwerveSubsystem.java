@@ -13,8 +13,6 @@
 
 package frc.robot.subsystems.swerve;
 
-import static edu.wpi.first.units.Units.*;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -32,12 +30,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Driving;
 import frc.robot.subsystems.vision.VisionPoseEstimator;
 import frc.robot.util.LocalADStarAK;
@@ -58,7 +51,6 @@ public class SwerveSubsystem extends SubsystemBase {
     private final GyroIO gyroIO;
     private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
     private final Module[] modules = new Module[4]; // FL, FR, BL, BR
-    private final SysIdRoutine sysId;
 
     private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
     private Rotation2d rawGyroRotation = new Rotation2d();
@@ -111,22 +103,6 @@ public class SwerveSubsystem extends SubsystemBase {
                 (targetPose) -> {
                     Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
                 });
-
-        // Configure SysId
-        sysId = new SysIdRoutine(
-                new SysIdRoutine.Config(
-                        null,
-                        null,
-                        null,
-                        (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
-                new SysIdRoutine.Mechanism(
-                        (voltage) -> {
-                            for (int i = 0; i < 4; i++) {
-                                modules[i].runCharacterization(voltage.in(Volts));
-                            }
-                        },
-                        null,
-                        this));
     }
 
     public void periodic() {
@@ -239,18 +215,6 @@ public class SwerveSubsystem extends SubsystemBase {
         }
         kinematics.resetHeadings(headings);
         stop();
-    }
-
-    /** Returns a command to run a sysid test. */
-    public Command sysId() {
-        return Commands.sequence(
-                sysId.quasistatic(Direction.kForward),
-                new WaitCommand(2),
-                sysId.quasistatic(Direction.kReverse),
-                new WaitCommand(2),
-                sysId.dynamic(Direction.kForward),
-                new WaitCommand(2),
-                sysId.dynamic(Direction.kReverse));
     }
 
     /**

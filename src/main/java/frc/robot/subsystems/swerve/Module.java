@@ -13,13 +13,10 @@
 
 package frc.robot.subsystems.swerve;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -30,9 +27,6 @@ public class Module {
     private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
     private final int index;
 
-    private final SimpleMotorFeedforward driveFeedforward;
-    private final PIDController driveFeedback;
-    private final PIDController turnFeedback;
     private Rotation2d angleSetpoint = null; // Setpoint for closed loop control, null for open loop
     private Double speedSetpoint = null; // Setpoint for closed loop control, null for open loop
     private Rotation2d turnRelativeOffset = null; // Relative + Offset = Absolute
@@ -41,29 +35,6 @@ public class Module {
     public Module(ModuleIO io, int index) {
         this.io = io;
         this.index = index;
-
-        // Switch constants based on mode (the physics simulator is treated as a
-        // separate robot with different tuning)
-        switch (Constants.currentMode) {
-            case REAL:
-            case REPLAY:
-                driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13);
-                driveFeedback = new PIDController(0.05, 0.0, 0.0);
-                turnFeedback = new PIDController(7.0, 0.0, 0.0);
-                break;
-            case SIM:
-                driveFeedforward = new SimpleMotorFeedforward(0.0, 0.13);
-                driveFeedback = new PIDController(0.1, 0.0, 0.0);
-                turnFeedback = new PIDController(10.0, 0.0, 0.0);
-                break;
-            default:
-                driveFeedforward = new SimpleMotorFeedforward(0.0, 0.0);
-                driveFeedback = new PIDController(0.0, 0.0, 0.0);
-                turnFeedback = new PIDController(0.0, 0.0, 0.0);
-                break;
-        }
-
-        turnFeedback.enableContinuousInput(-Math.PI, Math.PI);
         setBrakeMode(true);
     }
 
@@ -87,8 +58,7 @@ public class Module {
 
         // Run closed loop turn control
         if (angleSetpoint != null) {
-            io.setTurnVoltage(
-                    turnFeedback.calculate(getAngle().getRadians(), angleSetpoint.getRadians()));
+            io.setTurnPosition(angleSetpoint);
 
             // Run closed loop drive control
             // Only allowed if closed loop turn control is running
@@ -98,13 +68,10 @@ public class Module {
                 // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
                 // towards the setpoint, its velocity should increase. This is achieved by
                 // taking the component of the velocity in the direction of the setpoint.
-                double adjustSpeedSetpoint = speedSetpoint * Math.cos(turnFeedback.getPositionError());
+                double adjustedSpeedSetpoint = speedSetpoint
+                        * Math.cos(inputs.turnAbsolutePosition.getRadians() - angleSetpoint.getRadians());
 
-                // Run drive controller
-                double velocityRadPerSec = adjustSpeedSetpoint / WHEEL_RADIUS;
-                io.setDriveVoltage(
-                        driveFeedforward.calculate(velocityRadPerSec)
-                                + driveFeedback.calculate(inputs.driveVelocityRadPerSec, velocityRadPerSec));
+                io.setDriveVelocity(adjustedSpeedSetpoint);
             }
         }
 
@@ -174,12 +141,12 @@ public class Module {
 
     /** Returns the current drive position of the module in meters. */
     public double getPositionMeters() {
-        return inputs.drivePositionRad * WHEEL_RADIUS;
+        return inputs.drivePositionMeters;
     }
 
     /** Returns the current drive velocity of the module in meters per second. */
     public double getVelocityMetersPerSec() {
-        return inputs.driveVelocityRadPerSec * WHEEL_RADIUS;
+        return inputs.driveVelocityMetersPerSec;
     }
 
     /** Returns the module position (turn angle and drive position). */
@@ -204,6 +171,6 @@ public class Module {
 
     /** Returns the drive velocity in radians/sec. */
     public double getCharacterizationVelocity() {
-        return inputs.driveVelocityRadPerSec;
+        return inputs.driveVelocityMetersPerSec;
     }
 }
