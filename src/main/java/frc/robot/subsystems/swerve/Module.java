@@ -16,11 +16,9 @@ package frc.robot.subsystems.swerve;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
-    private static final double WHEEL_RADIUS = Units.inchesToMeters(2.0);
     static final double ODOMETRY_FREQUENCY = 250.0;
 
     private final ModuleIO io;
@@ -63,7 +61,7 @@ public class Module {
         int sampleCount = inputs.odometryTimestamps.length; // All signals are sampled together
         odometryPositions = new SwerveModulePosition[sampleCount];
         for (int i = 0; i < sampleCount; i++) {
-            double positionMeters = inputs.odometryDrivePositionsMeters[i] * WHEEL_RADIUS;
+            double positionMeters = inputs.odometryDrivePositionsMeters[i];
             Rotation2d angle = inputs.odometryTurnPositions[i];
             odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
         }

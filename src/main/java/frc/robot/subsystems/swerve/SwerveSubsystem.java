@@ -41,7 +41,9 @@ import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends SubsystemBase {
     // TODO: Measure
-    private static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5);
+    private static final double DRIVE_MAX_RPM = 5800;
+    private static final double DRIVE_WHEEL_CIRCUMFERENCE = Units.inchesToMeters(4) * Math.PI;
+    private static final double MAX_LINEAR_SPEED = ((DRIVE_MAX_RPM / 60) / 6.75) * DRIVE_WHEEL_CIRCUMFERENCE;
     private static final double TRACK_WIDTH_X = Units.inchesToMeters(25.0);
     private static final double TRACK_WIDTH_Y = Units.inchesToMeters(25.0);
     private static final double DRIVE_BASE_RADIUS = Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
@@ -63,7 +65,8 @@ public class SwerveSubsystem extends SubsystemBase {
             };
     private SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation,
             lastModulePositions, new Pose2d());
-    private VisionPoseEstimator visionPoseEstimator = new VisionPoseEstimator(this::addVisionMeasurement, this::getPose);
+    private VisionPoseEstimator visionPoseEstimator = new VisionPoseEstimator(this::addVisionMeasurement,
+            this::getPose);
 
     private boolean slowmode = Driving.SLOWMODE_DEFAULT;
 
@@ -175,7 +178,8 @@ public class SwerveSubsystem extends SubsystemBase {
         // Calculate module setpoints
         ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
         SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, MAX_LINEAR_SPEED);
+        SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, speeds, MAX_LINEAR_SPEED,
+                MAX_LINEAR_SPEED, MAX_ANGULAR_SPEED);
 
         // Send setpoints to modules
         SwerveModuleState[] optimizedSetpointStates = new SwerveModuleState[4];
