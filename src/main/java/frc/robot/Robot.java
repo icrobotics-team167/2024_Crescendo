@@ -43,6 +43,8 @@ public class Robot extends LoggedRobot {
    * initialization code.
    */
   @Override
+  @SuppressWarnings("all") // Suppress the "Dead code" warning for line 50.
+  // TODO: Find out how to suppress just the "Dead code" warning instead of "all"
   public void robotInit() {
     Logger.recordMetadata("Git SHA", BuildConstants.GIT_SHA);
     Logger.recordMetadata("Uncommitted Changes?", BuildConstants.DIRTY == 1 ? "True" : "False");
