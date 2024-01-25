@@ -139,7 +139,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         turnConfig.Slot0.kV = 0; // Amps of additional current per rot/s of velocity
         turnConfig.Slot0.kA = 0; // Amps of additional current per rot/s^2 of acceleration
         turnConfig.MotionMagic.MotionMagicAcceleration = 5; // Max allowed acceleration, in rot/s^2
-        turnConfig.MotionMagic.MotionMagicJerk = 50; // Max allowed jerk, in m/s^3
+        turnConfig.MotionMagic.MotionMagicJerk = 50; // Max allowed jerk, in rot/s^3
         turnConfig.ClosedLoopGeneral.ContinuousWrap = true;
         turnTalon.getConfigurator().apply(turnConfig);
         setTurnBrakeMode(true);
