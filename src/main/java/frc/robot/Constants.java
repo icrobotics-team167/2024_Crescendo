@@ -19,20 +19,6 @@ import org.littletonrobotics.junction.Logger;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode currentMode = Logger.hasReplaySource() ? Mode.REPLAY
-      : (Robot.isReal() ? Mode.REAL : Mode.SIM);
-
-  public static enum Mode {
-    /** Running on a real robot. */
-    REAL,
-
-    /** Running a physics simulator. */
-    SIM,
-
-    /** Replaying from a log file. */
-    REPLAY
-  }
-
   public static final class Driving {
     public static final boolean SLOWMODE_DEFAULT = true;
     public static final double SLOWMODE_MULTIPLIER = 0.2;

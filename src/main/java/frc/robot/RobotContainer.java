@@ -45,7 +45,7 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    switch (Constants.currentMode) {
+    switch (Robot.currentMode) {
       case REAL:
       case REPLAY:
         drivebase = new SwerveSubsystem(

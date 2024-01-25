@@ -9,8 +9,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.Constants.Mode;
+import frc.robot.Robot;
+import frc.robot.Robot.Mode;
 
 public class VisionPoseEstimator extends SubsystemBase {
     private BiConsumer<Pose2d, Double> estimationConsumer;
@@ -23,7 +23,7 @@ public class VisionPoseEstimator extends SubsystemBase {
         this.estimationConsumer = estimationConsumer;
         this.currentEstimateSupplier = currentEstimateSupplier;
 
-        if (Constants.currentMode == Mode.SIM) {
+        if (Robot.currentMode == Mode.SIM) {
             cameras = new VisionIO[] {
                     new VisionIO() {
                     }

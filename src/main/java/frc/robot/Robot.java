@@ -24,6 +24,19 @@ public class Robot extends LoggedRobot {
 
   private RobotContainer m_robotContainer;
 
+  public static Mode currentMode;
+
+  public static enum Mode {
+    /** Running on a real robot. */
+    REAL,
+
+    /** Running a physics simulator. */
+    SIM,
+
+    /** Replaying from a log file. */
+    REPLAY
+  }
+
   /**
    * This function is run when the robot is first started up and should be used
    * for any
@@ -33,6 +46,8 @@ public class Robot extends LoggedRobot {
   public void robotInit() {
     Logger.recordMetadata("Git SHA", BuildConstants.GIT_SHA);
     Logger.recordMetadata("Uncommitted Changes?", BuildConstants.DIRTY == 1 ? "True" : "False");
+    currentMode = Logger.hasReplaySource() ? Mode.REPLAY
+        : (Robot.isReal() ? Mode.REAL : Mode.SIM);
     Logger.start();
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
