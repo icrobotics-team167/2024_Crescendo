@@ -111,7 +111,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         }
 
         var driveConfig = new TalonFXConfiguration();
-        driveConfig.CurrentLimits.StatorCurrentLimit = 40.0;
+        driveConfig.CurrentLimits.StatorCurrentLimit = 100.0;
         driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         driveConfig.Feedback.SensorToMechanismRatio = DRIVE_GEAR_RATIO * Units.inchesToMeters(4 * Math.PI);
         driveConfig.Slot0.kP = 0.05; // % output per m/s of error
@@ -120,13 +120,13 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveConfig.Slot0.kS = 0; // Amps of additional current needed to overcome friction
         driveConfig.Slot0.kV = 0; // Amps of additional current per m/s of velocity
         driveConfig.Slot0.kA = 0; // Amps of additional current per m/s^2 of acceleration
-        driveConfig.MotionMagic.MotionMagicAcceleration = 10; // Max allowed acceleration, in m/s^2
-        driveConfig.MotionMagic.MotionMagicJerk = 100; // Max allowed jerk, in m/s^3
+        driveConfig.MotionMagic.MotionMagicAcceleration = 14; // Max allowed acceleration, in m/s^2
+        driveConfig.MotionMagic.MotionMagicJerk = 140; // Max allowed jerk, in m/s^3
         driveTalon.getConfigurator().apply(driveConfig);
         setDriveBrakeMode(true);
 
         var turnConfig = new TalonFXConfiguration();
-        turnConfig.CurrentLimits.StatorCurrentLimit = 30.0;
+        turnConfig.CurrentLimits.StatorCurrentLimit = 40.0;
         turnConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         turnConfig.Feedback.SensorToMechanismRatio = 1;
         turnConfig.Feedback.RotorToSensorRatio = TURN_GEAR_RATIO;
