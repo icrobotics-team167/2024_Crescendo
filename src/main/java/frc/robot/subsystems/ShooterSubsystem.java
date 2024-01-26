@@ -77,7 +77,7 @@ public class ShooterSubsystem extends SubsystemBase {
         return shooter.getPosition();
     }
 
-    public Rotation2d shooterAngle() {
+    public Rotation2d getShooterAngle() {
         // return pivot.getAngle();
         return new Rotation2d();
     }
