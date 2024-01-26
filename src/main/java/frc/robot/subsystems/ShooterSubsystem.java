@@ -50,7 +50,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void runShooter() {
-        shooter.run();
+        // shooter.run();
     }
 
     public void runShooterRaw(Measure<Voltage> volts) {

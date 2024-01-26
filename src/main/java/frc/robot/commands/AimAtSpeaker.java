@@ -35,6 +35,7 @@ public class AimAtSpeaker extends Command {
         this.rotationalOverrideConsumer = rotationalOverrideConsumer;
         this.rotationalOverrideDisabler = rotationalOverrideDisabler;
         this.botPoseSupplier = botPoseSupplier;
+        shotTimer = new Timer();
 
         addRequirements(shooter);
         setName("Aim At Speaker");
