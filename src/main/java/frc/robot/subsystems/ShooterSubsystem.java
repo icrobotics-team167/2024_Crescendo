@@ -13,19 +13,20 @@ public class ShooterSubsystem extends SubsystemBase {
     Pivot pivot;
     Intake intake;
     Shooter shooter;
+
     public ShooterSubsystem() {
         // TODO: Configure
-        // pivot = new Pivot(null, null, null);
+        pivot = new Pivot(new RevNEO500(10), new RevNEO500(11), null);
         // intake = new Intake(null);
-        shooter = new Shooter(new RevNEO500(10), new RevNEO500(11), 0.0);
+        // shooter = new Shooter(new RevNEO500(10), new RevNEO500(11), 0.0);
     }
 
     public void setPivot(Rotation2d angle) {
-        // pivot.setDesiredAngle(angle);
+        pivot.setDesiredAngle(angle);
     }
 
     public void runPivot(double setPoint) {
-        // pivot.move(setPoint);
+        pivot.move(setPoint);
     }
 
     public void runIntake() {
@@ -37,15 +38,15 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void runFeedIn() {
-        //intake.runFeedIn();
+        // intake.runFeedIn();
     }
 
-    public void runFeedOut() { 
-        //intake.runFeedOut();
+    public void runFeedOut() {
+        // intake.runFeedOut();
     }
 
     public void stopFeed() {
-        //intake.stopFeed();
+        // intake.stopFeed();
     }
 
     public void runShooter() {
@@ -53,11 +54,11 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void runShooterRaw(Measure<Voltage> volts) {
-        shooter.runVolts(volts.magnitude());
+        // shooter.runVolts(volts.magnitude());
     }
 
     public void stopShooter() {
-        shooter.stop();
+        // shooter.stop();
     }
 
     public boolean hasRing() {
@@ -66,19 +67,22 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public double getShooterVelocity() {
-        return shooter.getVelocity();
+        // return shooter.getVelocity();
+        return 0;
     }
 
     public double getShooterTargetVelocity() {
-        return shooter.getTargetVelocity();
+        // return shooter.getTargetVelocity();
+        return 0;
     }
 
     public double getShooterPosition() {
-        return shooter.getPosition();
+        // return shooter.getPosition();
+        return 0;
     }
 
     public Rotation2d getShooterAngle() {
-        // return pivot.getAngle();
-        return new Rotation2d();
+        return pivot.getAngle();
+        // return new Rotation2d();
     }
 }
