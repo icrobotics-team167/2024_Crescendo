@@ -13,11 +13,12 @@ public class Pivot {
     public Pivot(AbstractMotor leaderMotor, AbstractMotor followerMotor, AbstractAbsoluteEncoder encoder) {
         leaderMotor.configureCurrentLimits(leaderMotor.getNominalVoltage(), leaderMotor.getPrimaryCurrentLimit(),
                 leaderMotor.getSecondaryCurrentLimit());
-        leaderMotor.configureEncoder(360); // TODO: Configure
+        leaderMotor.configureEncoder(0.9); // TODO: Configure
         leaderMotor.configureAbsoluteEncoder(encoder, 360);
-        leaderMotor.setPosition(encoder.getAbsolutePosition().getDegrees());
+        // leaderMotor.setPosition(encoder.getAbsolutePosition().getDegrees());
+        leaderMotor.setPosition(60);
         leaderMotor.configureMotorBrake(true);
-        leaderMotor.configurePID(0, 0, 0); // TODO: Configure
+        leaderMotor.configurePID(1.0 / 45.0, 0, 0); // TODO: Configure
         leaderMotor.configureFeedForward(0, 0, 0);
 
         followerMotor.configureCurrentLimits(followerMotor.getNominalVoltage(), followerMotor.getPrimaryCurrentLimit(),
