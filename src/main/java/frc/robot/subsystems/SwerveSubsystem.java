@@ -103,7 +103,7 @@ public class SwerveSubsystem extends SubsystemBase {
     public SwerveSubsystem() {
         // Initialize the intertial measurement unit.
         // Uses an abstraction layer so it's easy to swap out IMUs.
-        imu = new Pigeon2IMU(20);
+        imu = new Pigeon2IMU(14);
         this.imu.factoryDefault();
         this.imu.clearStickyFaults();
 
