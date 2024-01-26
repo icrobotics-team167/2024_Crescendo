@@ -92,7 +92,7 @@ public class SwerveDrivebase {
     public SwerveDrivebase() {
         // Initialize the intertial measurement unit.
         // Uses an abstraction layer so it's easy to swap out IMUs.
-        imu = new Pigeon2IMU(10);
+        imu = new Pigeon2IMU(14);
         this.imu.factoryDefault();
         this.imu.clearStickyFaults();
 
@@ -187,6 +187,8 @@ public class SwerveDrivebase {
         if (fieldRelative) {
             velocityCommand = ChassisSpeeds.fromFieldRelativeSpeeds(velocityCommand, getYaw());
         }
+
+        velocityCommand.omegaRadiansPerSecond *= -1;
 
         // If we're in slow mode, apply a velocity multiplier.
         if (slowMode) {

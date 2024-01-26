@@ -6,6 +6,8 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Robot;
@@ -38,6 +40,12 @@ public class SwerveSubsystem extends SubsystemBase {
                                                                                       // module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
                 ),
+                () -> {
+                    if (DriverStation.getAlliance().isEmpty()) {
+                        return false;
+                    }
+                    return DriverStation.getAlliance().get() == Alliance.Red;
+                },
                 this // Reference to this subsystem to set requirements
         );
     }

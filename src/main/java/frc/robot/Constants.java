@@ -368,7 +368,7 @@ public final class Constants {
       /**
        * PID values for rotational movement.
        */
-      public static final PIDConstants rotationalPIDs = new PIDConstants(-4.0, 0.0, -1);
+      public static final PIDConstants rotationalPIDs = new PIDConstants(4.0, 0.0, 1);
     }
 
     /**
@@ -503,19 +503,19 @@ public final class Constants {
         /**
          * Primary driver's left stick deadband.
          */
-        public static final double PRIMARY_LEFT = 0.05;
+        public static final double PRIMARY_LEFT = 0.075;
         /**
          * Primary driver's right stick deadband.
          */
-        public static final double PRIMARY_RIGHT = 0.05;
+        public static final double PRIMARY_RIGHT = 0.075;
         /**
          * Secondary driver's left stick deadband.
          */
-        public static final double SECONDARY_LEFT = 0.03;
+        public static final double SECONDARY_LEFT = 0.05;
         /**
          * Secondary driver's right stick deadband.
          */
-        public static final double SECONDARY_RIGHT = 0.03;
+        public static final double SECONDARY_RIGHT = 0.05;
       }
     }
 
