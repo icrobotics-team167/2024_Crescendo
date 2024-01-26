@@ -14,6 +14,7 @@ public class Pivot {
         leaderMotor.configureCurrentLimits(leaderMotor.getNominalVoltage(), leaderMotor.getPrimaryCurrentLimit(),
                 leaderMotor.getSecondaryCurrentLimit());
         leaderMotor.configureEncoder(0.9); // TODO: Configure
+        leaderMotor.configureInverted(true);
         // leaderMotor.configureAbsoluteEncoder(encoder, 360);
         // leaderMotor.setPosition(encoder.getAbsolutePosition().getDegrees());
         leaderMotor.setPosition(60);
