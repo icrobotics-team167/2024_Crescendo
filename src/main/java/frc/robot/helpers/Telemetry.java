@@ -95,9 +95,6 @@ public class Telemetry {
      */
     public static void setRobotPose(Pose2d robotPose) {
         field.setRobotPose(robotPose);
-        sendNumber("Robot/posX", robotPose.getX(), Verbosity.MEDIUM);
-        sendNumber("Robot/posY", robotPose.getY(), Verbosity.MEDIUM);
-        sendNumber("Robot/posRot", robotPose.getRotation().getDegrees(), Verbosity.MEDIUM);
     }
 
     /**
