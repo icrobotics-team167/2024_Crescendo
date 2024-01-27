@@ -1,39 +1,33 @@
 package frc.robot.commands;
 
-import java.util.function.DoubleConsumer;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.Vision.LimeLight;
-import frc.robot.helpers.LimelightHelpers;
 import frc.robot.helpers.MathUtils;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class AimAtSpeaker extends Command {
-    ShooterSubsystem shooter;
-    DoubleConsumer rotationalOverrideConsumer;
-    Runnable rotationalOverrideDisabler;
-    Supplier<Pose2d> botPoseSupplier;
+    private ShooterSubsystem shooter;
+    private Consumer<Rotation2d> rotationalOverrideConsumer;
+    private Supplier<Pose2d> botPoseSupplier;
 
-    PIDController rotationalOverridePID = new PIDController(1.0 / 20, 0, 1 / 40);
-    PIDController pivotPID = new PIDController(0.9, 0, 0);
+    private double rotError;
 
-    double rotError;
+    private Timer shotTimer;
 
-    Timer shotTimer;
-
-    public AimAtSpeaker(ShooterSubsystem shooter, DoubleConsumer rotationalOverrideConsumer,
-            Runnable rotationalOverrideDisabler, Supplier<Pose2d> botPoseSupplier) {
+    public AimAtSpeaker(ShooterSubsystem shooter, Consumer<Rotation2d> rotationalOverrideConsumer,
+            Supplier<Pose2d> botPoseSupplier) {
         this.shooter = shooter;
         this.rotationalOverrideConsumer = rotationalOverrideConsumer;
-        this.rotationalOverrideDisabler = rotationalOverrideDisabler;
         this.botPoseSupplier = botPoseSupplier;
         shotTimer = new Timer();
 
@@ -49,18 +43,11 @@ public class AimAtSpeaker extends Command {
     @Override
     public void execute() {
         shooter.runShooter();
-        if (LimelightHelpers.getTV(LimeLight.APRILTAG_DETECTOR) && isLookingAtRightTag()) {
-            rotError = -LimelightHelpers.getTX(LimeLight.APRILTAG_DETECTOR);
-        } else {
-            rotError = 0;
-        }
-
-        rotationalOverrideConsumer.accept(rotationalOverridePID.calculate(rotError, 0));
-        shooter.setPivot(getTargetAngle());
-
+        rotationalOverrideConsumer.accept(getTargetYaw());
+        shooter.setPivot(getTargetPivot());
         if (isOkToShoot()) {
-            shooter.runFeedOut();
-            shotTimer.start();
+            // shooter.runFeedOut();
+            // shotTimer.start();
         }
     }
 
@@ -71,7 +58,7 @@ public class AimAtSpeaker extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        rotationalOverrideDisabler.run();
+        rotationalOverrideConsumer.accept(null);
         shooter.stopShooter();
         shooter.stopFeed();
         shotTimer.stop();
@@ -82,26 +69,27 @@ public class AimAtSpeaker extends Command {
         // If rotational error is within tolerance
         return Math.abs(rotError) < 1
                 // And pivot error is within tolerance
-                && Math.abs(getTargetAngle().minus(shooter.getShooterAngle()).getDegrees()) < 1
+                && Math.abs(getTargetPivot().minus(shooter.getShooterAngle()).getDegrees()) < 1
                 // And the shooter is spinning fast enough
                 && shooter.getShooterVelocity() >= shooter.getShooterTargetVelocity() * 0.9;
     }
 
     private Translation2d speakerPos2d = MathUtils.adjustTranslation(new Translation2d(0, 5.55));
     private double speakerHeight = 2.0;
+    StructPublisher<Pose3d> speakerPosPublisher = NetworkTableInstance.getDefault()
+            .getStructTopic("AimAtSpeaker/SpeakerPos", Pose3d.struct).publish();
 
-    private Rotation2d getTargetAngle() {
+    private Rotation2d getTargetPivot() {
         Translation2d botTranslation = botPoseSupplier.get().getTranslation();
         double distanceFromSpeaker = botTranslation.getDistance(speakerPos2d);
         return new Rotation2d(distanceFromSpeaker, speakerHeight);
     }
 
-    private boolean isLookingAtRightTag() {
-        boolean isRed = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Blue;
-        if (isRed) {
-            return LimelightHelpers.getFiducialID(LimeLight.APRILTAG_DETECTOR) == 4;
-        } else {
-            return LimelightHelpers.getFiducialID(LimeLight.APRILTAG_DETECTOR) == 8;
-        }
+    private Rotation2d getTargetYaw() {
+        speakerPosPublisher
+                .accept(new Pose3d(speakerPos2d.getX(), speakerPos2d.getY(), speakerHeight, new Rotation3d()));
+        Translation2d botTranslation = botPoseSupplier.get().getTranslation();
+        Translation2d botRelativeToTarget = speakerPos2d.minus(botTranslation);
+        return botRelativeToTarget.getAngle();
     }
 }

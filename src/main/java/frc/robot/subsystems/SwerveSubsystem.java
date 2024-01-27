@@ -9,8 +9,10 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -24,11 +26,12 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.abstraction.encoders.AnalogAbsoluteEncoder;
 import frc.robot.abstraction.imus.AbstractIMU;
@@ -98,6 +101,10 @@ public class SwerveSubsystem extends SubsystemBase {
      * Thread lock to ensure thread safety.
      */
     private final Lock odometryLock = new ReentrantLock();
+
+    NetworkTableInstance defaultNT = NetworkTableInstance.getDefault();
+
+    private PIDController rotationalOverridePID = new PIDController((1.0 / 40) * (Math.PI / 180), 0, 0);
 
     /**
      * Constructs a new SwerveSubsystem.
@@ -220,12 +227,23 @@ public class SwerveSubsystem extends SubsystemBase {
         if (motionLocked) {
             return;
         }
-        // For some reason if we don't do this it's CW+ instead of CCW+
-        velocityCommand.omegaRadiansPerSecond *= -1;
         // If the velocity command is field relative, convert it to robot relative
         // speeds.
         if (fieldRelative) {
             velocityCommand = ChassisSpeeds.fromFieldRelativeSpeeds(velocityCommand, getYaw());
+        }
+
+        if (rotOverride != null) {
+            PPHolonomicDriveController.setRotationTargetOverride(() -> {
+                return Optional.of(rotOverride);
+            });
+            velocityCommand.omegaRadiansPerSecond = rotationalOverridePID.calculate(
+                    MathUtil.angleModulus(getPose().getRotation().getRadians()),
+                    MathUtil.angleModulus(rotOverride.getRadians()));
+        } else {
+            PPHolonomicDriveController.setRotationTargetOverride(() -> {
+                return Optional.empty();
+            });
         }
 
         // If we're in slow mode, apply a velocity multiplier.
@@ -235,13 +253,12 @@ public class SwerveSubsystem extends SubsystemBase {
                     velocityCommand.vyMetersPerSecond * Driving.SLOWMODE_MULT,
                     velocityCommand.omegaRadiansPerSecond * Driving.SLOWMODE_MULT);
         }
+        // For some reason if we don't do this it's CW+ instead of CCW+
+        velocityCommand.omegaRadiansPerSecond *= -1;
 
-        if (rotationOverridden) {
-            velocityCommand.omegaRadiansPerSecond = rotVelOverride;
-            PPHolonomicDriveController.setRotationTargetOverride(() -> {
-                return Optional.of(new Rotation2d(getYaw().getRadians() + (rotVelOverride * Robot.kDefaultPeriod)));
-            });
-        }
+        SmartDashboard.putNumber("Robot/CommandedSpeeds/x", velocityCommand.vxMetersPerSecond);
+        SmartDashboard.putNumber("Robot/CommandedSpeeds/y", velocityCommand.vyMetersPerSecond);
+        SmartDashboard.putNumber("Robot/CommandedSpeeds/rot", velocityCommand.omegaRadiansPerSecond);
 
         // Due to how converting continous velocity inputs into module speeds works,
         // sometimes the robot will drift when moving and turning at the same time. This
@@ -412,6 +429,9 @@ public class SwerveSubsystem extends SubsystemBase {
         Telemetry.sendField();
     }
 
+    StructPublisher<Pose2d> LLTrackingPublisher = defaultNT
+            .getStructTopic("Vision/LimeLight/EstimatedPose2d", Pose2d.struct).publish();
+
     /**
      * A method that gets called 25 times a second to update the robot's estimated
      * position using a LimeLight that's detecting AprilTags.
@@ -423,16 +443,12 @@ public class SwerveSubsystem extends SubsystemBase {
         if (robotPose == null
                 || (robotPose.getX() == 0 && robotPose.getY() == 0 && robotPose.getRotation().getDegrees() == 0)) {
             Telemetry.sendBoolean("LimeLight/hasTracking", false, Verbosity.LOW);
-            Telemetry.sendNumber("LimeLight/tagPosX", 0, Verbosity.HIGH);
-            Telemetry.sendNumber("LimeLight/tagPosY", 0, Verbosity.HIGH);
-            Telemetry.sendNumber("LimeLight/tagPosRot", 0, Verbosity.HIGH);
+            LLTrackingPublisher.set(new Pose2d());
             Telemetry.sendNumber("LimeLight/latencyMs", 0, Verbosity.HIGH);
             return;
         }
         Telemetry.sendBoolean("LimeLight/hasTracking", true, Verbosity.LOW);
-        Telemetry.sendNumber("LimeLight/tagPosX", robotPose.getX(), Verbosity.HIGH);
-        Telemetry.sendNumber("LimeLight/tagPosY", robotPose.getY(), Verbosity.HIGH);
-        Telemetry.sendNumber("LimeLight/tagPosRot", robotPose.getRotation().getDegrees(), Verbosity.HIGH);
+        LLTrackingPublisher.set(robotPose);
 
         // Calculate latency in seconds
         // The Limelight outputs in ms, we need it in seconds
@@ -489,41 +505,28 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     /**
-     * The overriding rotational velocity.
+     * The target rotation, if rotation is overridden.
      */
-    private double rotVelOverride = 0;
-    /**
-     * If the rotational velocity is overridden or not.
-     */
-    private boolean rotationOverridden = false;
+    private Rotation2d rotOverride = null;
 
     /**
      * Overrides the rotational velocity of the robot, so that the rotational
      * component of the commanded drive velocities are ignored.
      * 
-     * @param rotationalVelocity The overriding rotational velocity.
+     * @param targetRotation The target yaw rotation. Feed a null value to disable
+     *                       the override.
      */
-    public void overrideRotation(double rotationalVelocity) {
-        rotationOverridden = true;
-        rotVelOverride = rotationalVelocity;
-    }
-
-    /**
-     * Disables the rotational override.
-     */
-    public void disableRotOverride() {
-        rotationOverridden = false;
-        rotVelOverride = 0;
-        PPHolonomicDriveController.setRotationTargetOverride(() -> {
-            return Optional.empty();
-        });
+    public void overrideRotation(Rotation2d targetRotation) {
+        rotOverride = targetRotation;
     }
 
     /**
      * Resets the rotation of the robot to be forwards.
      */
     public void resetRotation() {
-        resetPose(new Pose2d(getPose().getTranslation(), new Rotation2d()));
+        imu.setOffset(new Rotation3d(imu.getOffset().getX(), imu.getOffset().getZ(),
+                imu.getOffset().getZ() + getYaw().getRadians()));
+        resetPose(poseEstimator.getEstimatedPosition());
     }
 
     /**
@@ -587,26 +590,19 @@ public class SwerveSubsystem extends SubsystemBase {
         return SwerveDrive.MAX_ROTATIONAL_VEL;
     }
 
+    StructPublisher<Pose2d> botPosePublisher = defaultNT.getStructTopic("Robot/pose2d", Pose2d.struct).publish();
     StructArrayPublisher<SwerveModuleState> desiredStatePublisher = NetworkTableInstance.getDefault()
-            .getStructArrayTopic("SwerveDrivebase/desiredStates", SwerveModuleState.struct).publish();
+            .getStructArrayTopic("SwerveDrivebase/DesiredStates", SwerveModuleState.struct).publish();
     StructArrayPublisher<SwerveModuleState> actualStatePublisher = NetworkTableInstance.getDefault()
-            .getStructArrayTopic("SwerveDrivebased/Actualstates", SwerveModuleState.struct).publish();
+            .getStructArrayTopic("SwerveDrivebase/Actualstates", SwerveModuleState.struct).publish();
 
     /**
      * Sends telemetry data.
      */
     public void sendTelemetry() {
-        ChassisSpeeds robotVelocity = getRobotVelocity();
-        Telemetry.sendNumber("SwerveDrivebase/robotVelX", robotVelocity.vxMetersPerSecond, Verbosity.MEDIUM);
-        Telemetry.sendNumber("SwerveDrivebase/robotVelY", robotVelocity.vyMetersPerSecond, Verbosity.MEDIUM);
-        Telemetry.sendNumber("SwerveDrivebase/robotVelRot", robotVelocity.omegaRadiansPerSecond, Verbosity.MEDIUM);
-        Telemetry.sendNumber("SwerveDriverbase/robotYaw", getYaw().getDegrees(), Verbosity.MEDIUM);
-        Telemetry.sendBoolean("SwerveDrivebase/slowMode", slowMode, Verbosity.LOW);
-        Telemetry.sendBoolean("SwerveDrivebase/motionLocked", motionLocked, Verbosity.LOW);
-        Telemetry.sendNumber("TX + yaw", (LimelightHelpers.getTX("limelight") + getYaw().getDegrees()),
-                Verbosity.MEDIUM);
-        Telemetry.sendNumber("Tx", LimelightHelpers.getTX("limelight"), Verbosity.MEDIUM);
-
+        botPosePublisher.set(getPose());
+        Telemetry.setRobotPose(getPose());
+        SmartDashboard.putNumber("SwerveDrivebase/GyroAngle", getYaw().getRadians());
         SwerveModuleState[] desiredStates = new SwerveModuleState[4];
         SwerveModuleState[] actualStates = new SwerveModuleState[4];
         for (int i = 0; i < 4; i++) {
