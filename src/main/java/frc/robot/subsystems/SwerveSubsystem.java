@@ -241,9 +241,9 @@ public class SwerveSubsystem extends SubsystemBase {
             });
         }
 
-        // Due to how converting continous velocity inputs into discrete module speeds
-        // works, sometimes the robot will drift when moving and turning at the same
-        // time. This compensates for that.
+        // Due to how converting continous velocity inputs into module speeds works,
+        // sometimes the robot will drift when moving and turning at the same time. This
+        // compensates for that.
         velocityCommand = ChassisSpeeds.discretize(velocityCommand, 0.02);
         // Calculate module states.
         SwerveModuleState[] moduleDesiredStates = kinematics.toSwerveModuleStates(velocityCommand);
