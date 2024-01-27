@@ -64,7 +64,7 @@ public class RobotContainer {
     // Create commands
     aimAtSpeakerCommand = new AimAtSpeaker(shooter, driveBase::overrideRotation, driveBase::disableRotOverride, driveBase::getPose);
     aimManualOverrideCommand = new AimManualOverride(() -> MathUtil
-        .applyDeadband(-secondaryRightStick.getY(), Constants.Driving.Controllers.Deadbands.SECONDARY_RIGHT),
+        .applyDeadband(secondaryRightStick.getY(), Constants.Driving.Controllers.Deadbands.SECONDARY_RIGHT),
         secondaryRightStick.button(2), shooter);
     intakeCommand = new Intake(shooter);
     // driveControllerCommand = new AbsoluteFieldDrive(
