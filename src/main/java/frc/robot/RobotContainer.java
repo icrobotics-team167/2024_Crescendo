@@ -74,7 +74,7 @@ public class RobotContainer {
     }
     // Configure the trigger bindings
     configureBindings();
-    autoSelector = new LoggedDashboardChooser<>("", AutoBuilder.buildAutoChooser());
+    autoSelector = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
   }
 
   /**
