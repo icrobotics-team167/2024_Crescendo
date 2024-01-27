@@ -24,7 +24,9 @@ public class Pivot {
 
         followerMotor.configureCurrentLimits(followerMotor.getNominalVoltage(), followerMotor.getPrimaryCurrentLimit(),
                 followerMotor.getSecondaryCurrentLimit());
-        followerMotor.configureFollow(followerMotor, true);
+        followerMotor.configureFollow(leaderMotor, true);
+        followerMotor.configureMotorBrake(true);
+        followerMotor.configureFeedForward(0, 0, 0);
 
         this.encoder = encoder;
         motor = leaderMotor;
