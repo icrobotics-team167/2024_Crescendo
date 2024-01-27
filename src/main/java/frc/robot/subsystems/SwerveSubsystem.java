@@ -22,6 +22,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -379,7 +381,7 @@ public class SwerveSubsystem extends SubsystemBase {
     public SwerveModuleState[] getStates() {
         SwerveModuleState[] states = new SwerveModuleState[4];
         for (Module module : modules) {
-            states[module.moduleNumber] = module.getState();
+            states[module.moduleNumber] = module.getActualState();
         }
         return states;
     }
@@ -585,6 +587,11 @@ public class SwerveSubsystem extends SubsystemBase {
         return SwerveDrive.MAX_ROTATIONAL_VEL;
     }
 
+    StructArrayPublisher<SwerveModuleState> desiredStatePublisher = NetworkTableInstance.getDefault()
+            .getStructArrayTopic("SwerveDrivebase/desiredStates", SwerveModuleState.struct).publish();
+    StructArrayPublisher<SwerveModuleState> actualStatePublisher = NetworkTableInstance.getDefault()
+            .getStructArrayTopic("SwerveDrivebased/Actualstates", SwerveModuleState.struct).publish();
+
     /**
      * Sends telemetry data.
      */
@@ -600,8 +607,13 @@ public class SwerveSubsystem extends SubsystemBase {
                 Verbosity.MEDIUM);
         Telemetry.sendNumber("Tx", LimelightHelpers.getTX("limelight"), Verbosity.MEDIUM);
 
-        for (Module module : modules) {
-            module.sendTelemetry();
+        SwerveModuleState[] desiredStates = new SwerveModuleState[4];
+        SwerveModuleState[] actualStates = new SwerveModuleState[4];
+        for (int i = 0; i < 4; i++) {
+            desiredStates[i] = modules[i].getDesiredState();
+            actualStates[i] = modules[i].getActualState();
         }
+        desiredStatePublisher.set(desiredStates);
+        actualStatePublisher.set(actualStates);
     }
 }
