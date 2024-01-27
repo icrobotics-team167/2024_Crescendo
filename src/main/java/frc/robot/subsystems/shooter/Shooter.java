@@ -14,7 +14,7 @@ public class Shooter {
         followerMotor.configureMotorBrake(false);
 
         leaderMotor.configureEncoder(Units.inchesToMeters(4.0 * Math.PI));
-        leaderMotor.configurePID(0, 0, 0); // TODO: Tune
+        leaderMotor.configurePID(0.25, 0, 0); // TODO: Tune
         leaderMotor.configureFeedForward(0, 0, 0);
 
         followerMotor.configureFollow(leaderMotor, true); // might need to make sure follower and leader are reversed
@@ -28,17 +28,18 @@ public class Shooter {
     // TODO: Figure out design of shooter to finalize methods
 
     public void runTest() {
-        motor.setVelocityReference(30);
+        // Bang Bang controller thing, this may implode
+        if (getVelocity() < targetSpeed) {
+            motor.set(1);
+        }
+        if (getVelocity() >= targetSpeed) {
+            motor.stop(); // make sure its coast mode like a coooooool dude
+        }
     }
 
     public void run() {
-        if (this.getVelocity() < targetSpeed) {
-            motor.set(1);
-        }
-        if (this.getVelocity() >= targetSpeed) {
-            motor.stop(); // make sure its coast mode like a coooooool dude
-        }
-    } // Bang Bang controller thing, this may implode
+        motor.setVelocityReference(targetSpeed);
+    }
 
     public void runVolts(double volts) {
         motor.setVolts(volts);

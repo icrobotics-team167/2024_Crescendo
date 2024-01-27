@@ -62,7 +62,8 @@ public class RobotContainer {
    */
   public RobotContainer() {
     // Create commands
-    // aimAtSpeakerCommand = new AimAtSpeaker(shooter, driveBase::overrideRotation, driveBase::disableRotOverride, driveBase::getPose);
+    // aimAtSpeakerCommand = new AimAtSpeaker(shooter, driveBase::overrideRotation,
+    // driveBase::disableRotOverride, driveBase::getPose);
     aimManualOverrideCommand = new AimManualOverride(() -> MathUtil
         .applyDeadband(-secondaryRightStick.getY(), Constants.Driving.Controllers.Deadbands.SECONDARY_RIGHT),
         secondaryRightStick.button(2), shooter);
@@ -80,11 +81,15 @@ public class RobotContainer {
     // driver, it is a toggled switch. TODO: Make a better toggle function for
     // buttons that doesn't force use of commands.
     // driveControllerCommand = new AbsoluteFieldDrive(
-    //     driveBase,
-    //     () -> MathUtil.applyDeadband(-primaryLeftStick.getY(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
-    //     () -> MathUtil.applyDeadband(-primaryLeftStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
-    //     () -> primaryLeftStick.button(3).getAsBoolean() ? (LimelightHelpers.getTX("limelight") / -75)
-    //         : MathUtil.applyDeadband(-primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
+    // driveBase,
+    // () -> MathUtil.applyDeadband(-primaryLeftStick.getY(),
+    // Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
+    // () -> MathUtil.applyDeadband(-primaryLeftStick.getX(),
+    // Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
+    // () -> primaryLeftStick.button(3).getAsBoolean() ?
+    // (LimelightHelpers.getTX("limelight") / -75)
+    // : MathUtil.applyDeadband(-primaryRightStick.getX(),
+    // Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
 
     shooterSysID = new SysID(shooter, shooter::runShooterRaw,
         log -> {
@@ -98,7 +103,8 @@ public class RobotContainer {
     // Auto selector configuring
     autoSelector = AutoBuilder.buildAutoChooser(); // Load all the pathplanner autos
     // Load non-pathplanner autos
-    // autoSelector.addOption("Test Auto (Module Actuation)", new TestWheels(driveBase));
+    // autoSelector.addOption("Test Auto (Module Actuation)", new
+    // TestWheels(driveBase));
     SmartDashboard.putData(autoSelector);
 
     // Configure the trigger bindings
@@ -126,22 +132,25 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // primaryLeftStick.button(1) // Trigger on the primary driver's left stick
-    //     .whileTrue(new StartEndCommand(driveBase::setSlowMode, driveBase::unsetSlowMode)); // Press and hold for slow
-    //                                                                                        // mode
+    // .whileTrue(new StartEndCommand(driveBase::setSlowMode,
+    // driveBase::unsetSlowMode)); // Press and hold for slow
+    // // mode
     // primaryRightStick.trigger() // Trigger on the primary driver's right stick
-    //     .whileTrue(new StartEndCommand(driveBase::lockMotion, driveBase::unlockMotion)); // Press and hold to lock
-    //                                                                                      // the drivebase
+    // .whileTrue(new StartEndCommand(driveBase::lockMotion,
+    // driveBase::unlockMotion)); // Press and hold to lock
+    // // the drivebase
     // primaryRightStick.button(2) // Button #2 on the primary driver's right stick
-    //     .onTrue(new InstantCommand(driveBase::resetRotation)); // Resets which way the robot thinks is forward, used
-    //                                                            // when the robot wasn't facing away from the driver
-    //                                                            // station on boot
+    // .onTrue(new InstantCommand(driveBase::resetRotation)); // Resets which way
+    // the robot thinks is forward, used
+    // // when the robot wasn't facing away from the driver
+    // // station on boot
     secondaryLeftStick.trigger()
         .whileTrue(shooterSysID.getIDRoutine());
     secondaryRightStick.button(2) // Button #2 on the secondary driver's right stick
         .whileTrue(intakeCommand); // Intake a note while the button is held down. Automatically stops once a note
                                    // is loaded.
     secondaryRightStick.trigger() // Trigger on the secondary driver's right stick
-        .whileTrue(aimAtSpeakerCommand); // Aim and shoot the note at the speaker.
+        .whileTrue(new StartEndCommand(shooter::runShooter, shooter::stopShooter, shooter));
 
     // primaryLeftStick.button(3).whileTrue(new StartEndCommand(driveBase::trackTag,
     // driveBase::setSlowMode));
@@ -198,8 +207,8 @@ public class RobotContainer {
    */
   public void endOfMatchPeriodic() {
     // if (disabledTimer.hasElapsed(Constants.END_OF_MATCH_LOCK)) {
-    //   driveBase.unlockMotion();
-    //   driveBase.setWheelBrake(false);
+    // driveBase.unlockMotion();
+    // driveBase.setWheelBrake(false);
     // }
   }
 

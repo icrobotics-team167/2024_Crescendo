@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.abstraction.motors.RevNEO500;
@@ -16,9 +17,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public ShooterSubsystem() {
         // TODO: Configure
-        pivot = new Pivot(new RevNEO500(10), new RevNEO500(11), null);
+        // pivot = new Pivot(new RevNEO500(10), new RevNEO500(11), null);
         // intake = new Intake(null);
-        // shooter = new Shooter(new RevNEO500(10), new RevNEO500(11), 0.0);
+        shooter = new Shooter(new RevNEO500(10), new RevNEO500(11), 0.0);
     }
 
     public void setPivot(Rotation2d angle) {
@@ -50,15 +51,15 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void runShooter() {
-        // shooter.run();
+        shooter.run();
     }
 
     public void runShooterRaw(Measure<Voltage> volts) {
-        // shooter.runVolts(volts.magnitude());
+        shooter.runVolts(volts.in(Units.Volts));
     }
 
     public void stopShooter() {
-        // shooter.stop();
+        shooter.stop();
     }
 
     public boolean hasRing() {
@@ -67,18 +68,18 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public double getShooterVelocity() {
-        // return shooter.getVelocity();
-        return 0;
+        return shooter.getVelocity();
+        // return 0;
     }
 
     public double getShooterTargetVelocity() {
-        // return shooter.getTargetVelocity();
-        return 0;
+        return shooter.getTargetVelocity();
+        // return 0;
     }
 
     public double getShooterPosition() {
-        // return shooter.getPosition();
-        return 0;
+        return shooter.getPosition();
+        // return 0;
     }
 
     public Rotation2d getShooterAngle() {
