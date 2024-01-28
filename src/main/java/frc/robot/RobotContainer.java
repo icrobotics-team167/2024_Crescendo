@@ -9,7 +9,7 @@ import frc.robot.subsystems.swerve.GyroIO;
 import frc.robot.subsystems.swerve.GyroIOPigeon2;
 import frc.robot.subsystems.swerve.ModuleIO;
 import frc.robot.subsystems.swerve.ModuleIOSim;
-import frc.robot.subsystems.swerve.ModuleIOTalonFX;
+import frc.robot.subsystems.swerve.ModuleIOSparkMax;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -47,13 +47,12 @@ public class RobotContainer {
   public RobotContainer() {
     switch (Robot.currentMode) {
       case REAL:
-      case REPLAY:
         drivebase = new SwerveSubsystem(
             new GyroIOPigeon2(),
-            new ModuleIOTalonFX(0),
-            new ModuleIOTalonFX(1),
-            new ModuleIOTalonFX(2),
-            new ModuleIOTalonFX(3));
+            new ModuleIOSparkMax(0),
+            new ModuleIOSparkMax(1),
+            new ModuleIOSparkMax(2),
+            new ModuleIOSparkMax(3));
         break;
       case SIM:
         drivebase = new SwerveSubsystem(

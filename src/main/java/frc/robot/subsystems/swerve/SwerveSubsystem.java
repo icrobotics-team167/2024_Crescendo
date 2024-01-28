@@ -42,11 +42,11 @@ import org.littletonrobotics.junction.Logger;
 public class SwerveSubsystem extends SubsystemBase {
     // TODO: Measure
     private static final double DRIVE_MAX_RPM = 5800;
-    private static final double DRIVE_WHEEL_CIRCUMFERENCE = Units.inchesToMeters(4) * Math.PI;
-    private static final double MAX_LINEAR_SPEED = ((DRIVE_MAX_RPM / 60) / 6.75) * DRIVE_WHEEL_CIRCUMFERENCE;
-    private static final double TRACK_WIDTH_X = Units.inchesToMeters(25.0);
-    private static final double TRACK_WIDTH_Y = Units.inchesToMeters(25.0);
-    private static final double DRIVE_BASE_RADIUS = Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
+    private static final double MAX_LINEAR_SPEED = ((DRIVE_MAX_RPM / 60) / Module.DRIVE_GEAR_RATIO)
+            * Module.DRIVE_WHEEL_CIRCUMFERENCE;
+    private static final double TRACK_LENGTH = Units.inchesToMeters(35.0); // Front-back length
+    private static final double TRACK_WIDTH = Units.inchesToMeters(34.0); // Left-right width
+    private static final double DRIVE_BASE_RADIUS = Math.hypot(TRACK_LENGTH / 2.0, TRACK_WIDTH / 2.0);
     private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
 
     static final Lock odometryLock = new ReentrantLock();
@@ -56,13 +56,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
     private Rotation2d rawGyroRotation = new Rotation2d();
-    private SwerveModulePosition[] lastModulePositions = // For delta tracking
-            new SwerveModulePosition[] {
-                    new SwerveModulePosition(),
-                    new SwerveModulePosition(),
-                    new SwerveModulePosition(),
-                    new SwerveModulePosition()
-            };
+    // For delta tracking
+    private SwerveModulePosition[] lastModulePositions = new SwerveModulePosition[4];
     private SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation,
             lastModulePositions, new Pose2d());
     private VisionPoseEstimator visionPoseEstimator = new VisionPoseEstimator(this::addVisionMeasurement,
@@ -286,10 +281,10 @@ public class SwerveSubsystem extends SubsystemBase {
     /** Returns an array of module translations. */
     public static Translation2d[] getModuleTranslations() {
         return new Translation2d[] {
-                new Translation2d(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
-                new Translation2d(TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0),
-                new Translation2d(-TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
-                new Translation2d(-TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0)
+                new Translation2d(TRACK_LENGTH / 2.0, TRACK_WIDTH / 2.0),
+                new Translation2d(TRACK_LENGTH / 2.0, -TRACK_WIDTH / 2.0),
+                new Translation2d(-TRACK_LENGTH / 2.0, TRACK_WIDTH / 2.0),
+                new Translation2d(-TRACK_LENGTH / 2.0, -TRACK_WIDTH / 2.0)
         };
     }
 }
