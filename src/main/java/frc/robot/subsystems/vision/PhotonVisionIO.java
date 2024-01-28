@@ -50,10 +50,7 @@ public class PhotonVisionIO implements VisionIO {
             return;
         }
         inputs.isNewData = true;
-        inputs.x = botPoseEstimate.estimatedPose.getX();
-        inputs.y = botPoseEstimate.estimatedPose.getY();
-        inputs.rot = botPoseEstimate.estimatedPose.getRotation().getAngle();
-        inputs.trackedTags = botPoseEstimate.targetsUsed.size();
+        inputs.poseEstimate = botPoseEstimate.estimatedPose.toPose2d();
         inputs.timestamp = botPoseEstimate.timestampSeconds;
     }
 

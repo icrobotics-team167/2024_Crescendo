@@ -7,11 +7,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 public interface VisionIO {
     @AutoLog
     public class VisionIOInputs {
-        public double x = 0;
-        public double y = 0;
-        public double rot = 0;
+        public Pose2d poseEstimate = new Pose2d();
         public double timestamp = 0;
-        public int trackedTags = 0;
         public boolean isNewData = false;
     }
 

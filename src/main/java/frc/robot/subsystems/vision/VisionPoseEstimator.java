@@ -6,7 +6,6 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
@@ -50,9 +49,11 @@ public class VisionPoseEstimator extends SubsystemBase {
 
     public void updateEstimation() {
         for (int i = 0; i < cameraData.length; i++) {
-            estimationConsumer.accept(
-                    new Pose2d(cameraData[i].x, cameraData[i].y, new Rotation2d(cameraData[i].rot)),
+            if (cameraData[i].isNewData) {
+                estimationConsumer.accept(
+                    cameraData[i].poseEstimate,
                     cameraData[i].timestamp);
+            }
         }
     }
 }
