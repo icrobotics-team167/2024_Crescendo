@@ -23,17 +23,15 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 
-public class PhotonVisionIO implements VisionIO {
+public class VisionIOPhoton implements VisionIO {
     private String name = "";
     private PhotonCamera camera;
     private PhotonPoseEstimator poseEstimator;
 
-    public PhotonVisionIO(String name, Transform3d robotToCameraTransform) {
+    public VisionIOPhoton(String name, Transform3d robotToCameraTransform) {
         this.name = name;
         camera = new PhotonCamera(name);
         try {
@@ -48,7 +46,7 @@ public class PhotonVisionIO implements VisionIO {
     }
 
     @Override
-    public void updateInputs(VisionIOInputs inputs, Pose2d currentPose) {
+    public void updateInputs(VisionIOInputs inputs) {
         inputs.isNewData = false;
         if (poseEstimator == null) {
             return;
@@ -60,9 +58,6 @@ public class PhotonVisionIO implements VisionIO {
         }
 
         EstimatedRobotPose botPoseEstimate = data.get();
-        if (distanceFromCurrentPose(currentPose, botPoseEstimate.estimatedPose) > 1) {
-            return;
-        }
         inputs.isNewData = true;
         inputs.poseEstimate = botPoseEstimate.estimatedPose.toPose2d();
         inputs.timestamp = botPoseEstimate.timestampSeconds;
@@ -71,10 +66,5 @@ public class PhotonVisionIO implements VisionIO {
     @Override
     public String getName() {
         return name;
-    }
-
-    private double distanceFromCurrentPose(Pose2d currentPose, Pose3d newPose) {
-        Pose2d newPose2d = newPose.toPose2d();
-        return currentPose.minus(newPose2d).getTranslation().getNorm();
     }
 }

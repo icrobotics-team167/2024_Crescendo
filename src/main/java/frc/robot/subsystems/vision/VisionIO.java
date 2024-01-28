@@ -26,7 +26,7 @@ public interface VisionIO {
         public boolean isNewData = false;
     }
 
-    public default void updateInputs(VisionIOInputs inputs, Pose2d currentPose) {
+    public default void updateInputs(VisionIOInputs inputs) {
     };
 
     public default String getName() {
