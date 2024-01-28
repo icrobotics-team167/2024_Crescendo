@@ -1,12 +1,12 @@
-# COTC_Template
+# Children of the Corn Advanced Robot Template
 
-Template code for FRC Team 167, Children of the Corn. This code is meant to be a starting-off point for programming an FRC robot.
+Template code written by [FIRST Robotics Competition Team 167, Children of the Corn](https://www.thebluealliance.com/team/167). This is intended to be a starting point for teams who have already gotten a fair bit of experience with writing code for FRC robots
 
-AdvantageKit's "log literally everything" approach is used here, to allow for extremely robust debugging and simulations.
+AdvantageKit's "log literally everything" approach is used here, to allow for extremely robust debugging and simulations. In addition, it also has capabilities for high frequency odometry and vision-based pose estimation, giving it high confidence in knowing where the robot is at on the field at all times.
 
 ## License
 
-This project uses the GNU-GPL v3 open-source license, meaning that you are free to do whatver you want with it, as long as your own project is also open-sourced under GNU-GPL v3. For example, you can take parts of this code and put it into your own project as long as that project is GNU-GPL v3. For more information, read the `LICENSE` file.
+This project uses the GNU-GPL v3 open-source license, meaning that you are free to do whatver you want with it, as long as your own project is also open-sourced under GNU-GPL v3. For example, you can take parts of this code and put it into your own project as long as that project is GNU-GPL v3. However, due to the nature of the GNU-GPL v3 license, we cannot *under any circumstances*, provide warranty for the function of this code. For more information, read the `LICENSE` file.
 
 ## Usage
 
