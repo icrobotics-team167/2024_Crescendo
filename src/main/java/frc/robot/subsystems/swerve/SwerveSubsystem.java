@@ -128,14 +128,11 @@ public class SwerveSubsystem extends SubsystemBase {
             for (var module : modules) {
                 module.stop();
             }
-        }
-        // Log empty setpoint states when disabled
-        if (DriverStation.isDisabled()) {
+            // Log empty setpoint states when disabled
             Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
             Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
         }
 
-        // Update odometry
         double[] sampleTimestamps = modules[0].getOdometryTimestamps(); // All signals are sampled together
         int sampleCount = sampleTimestamps.length;
         for (int i = 0; i < sampleCount; i++) {

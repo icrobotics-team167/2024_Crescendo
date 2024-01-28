@@ -248,8 +248,8 @@ public class ModuleIOTalonFX implements ModuleIO {
 
     @Override
     public void setTurnBrakeMode(boolean enable) {
-        var config = new MotorOutputConfigs().withInverted(
-                isTurnMotorInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive);
+        var config = new MotorOutputConfigs();
+        config.Inverted = isTurnMotorInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
         config.NeutralMode = enable ? NeutralModeValue.Brake : NeutralModeValue.Coast;
         turnTalon.getConfigurator().apply(config);
     }
