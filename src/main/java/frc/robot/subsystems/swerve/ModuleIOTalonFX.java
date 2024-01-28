@@ -130,7 +130,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         turnConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
         turnConfig.Slot0.kP = 1; // % output per rotation of error
         turnConfig.Slot0.kI = 0; // % output per rotation of integrated error
-        turnConfig.Slot0.kD = 0; // % output per rotations/s^2 of error derivative
+        turnConfig.Slot0.kD = 0; // % output per rotations/s of error derivative
         turnConfig.Slot0.kS = 0; // Amps of additional current needed to overcome friction
         turnConfig.Slot0.kV = 0; // Amps of additional current per rot/s of velocity
         turnConfig.Slot0.kA = 0; // Amps of additional current per rot/s^2 of acceleration
