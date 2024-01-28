@@ -73,10 +73,6 @@ public class ModuleIOTalonFX implements ModuleIO {
     private final StatusSignal<Double> turnClosedLoopOutput;
     private final StatusSignal<Double> turnCurrent;
 
-    // Gear ratios for SDS MK4i L2, adjust as necessary
-    private final double DRIVE_GEAR_RATIO = 6.75;
-    private final double TURN_GEAR_RATIO = 150.0 / 7.0;
-
     private final boolean isTurnMotorInverted = true;
     private final Rotation2d absoluteEncoderOffset;
 
@@ -113,7 +109,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         var driveConfig = new TalonFXConfiguration();
         driveConfig.CurrentLimits.StatorCurrentLimit = 100.0;
         driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-        driveConfig.Feedback.SensorToMechanismRatio = DRIVE_GEAR_RATIO * Units.inchesToMeters(4 * Math.PI);
+        driveConfig.Feedback.SensorToMechanismRatio = Module.DRIVE_GEAR_RATIO * Module.DRIVE_WHEEL_CIRCUMFERENCE;
         driveConfig.Slot0.kP = 0.05; // % output per m/s of error
         driveConfig.Slot0.kI = 0; // % output per m of integrated error
         driveConfig.Slot0.kD = 0; // % output per m/s^2 of error derivative
@@ -129,7 +125,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         turnConfig.CurrentLimits.StatorCurrentLimit = 40.0;
         turnConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         turnConfig.Feedback.SensorToMechanismRatio = 1;
-        turnConfig.Feedback.RotorToSensorRatio = TURN_GEAR_RATIO;
+        turnConfig.Feedback.RotorToSensorRatio = Module.TURN_GEAR_RATIO;
         turnConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
         turnConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
         turnConfig.Slot0.kP = 1; // % output per rotation of error
@@ -199,7 +195,7 @@ public class ModuleIOTalonFX implements ModuleIO {
                 turnClosedLoopOutput,
                 turnCurrent);
 
-        inputs.drivePositionMeters = Units.rotationsToRadians(drivePosition.getValueAsDouble()) / DRIVE_GEAR_RATIO;
+        inputs.drivePositionMeters = drivePosition.getValueAsDouble();
         inputs.driveVelocityMetersPerSec = driveVelocity.getValueAsDouble();
         inputs.driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
         inputs.driveAppliedDutyCycle = driveClosedLoopOutput.getValueAsDouble();
@@ -249,7 +245,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     @Override
     public void setTurnBrakeMode(boolean enable) {
         var config = new MotorOutputConfigs();
-        config.Inverted = isTurnMotorInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        config.Inverted = isTurnMotorInverted ? InvertedValue.Clockwise_Positive
+                : InvertedValue.CounterClockwise_Positive;
         config.NeutralMode = enable ? NeutralModeValue.Brake : NeutralModeValue.Coast;
         turnTalon.getConfigurator().apply(config);
     }

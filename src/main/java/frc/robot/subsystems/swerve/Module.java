@@ -16,10 +16,16 @@ package frc.robot.subsystems.swerve;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
     static final double ODOMETRY_FREQUENCY = 250.0;
+    // Gear ratios for SDS MK4i L2, adjust as necessary
+    static final double DRIVE_GEAR_RATIO = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
+    static final double TURN_GEAR_RATIO = 150.0 / 7.0;
+    static final double DRIVE_WHEEL_CIRCUMFERENCE = Units.inchesToMeters(4 * Math.PI);
 
     private final ModuleIO io;
     private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
