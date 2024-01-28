@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -20,8 +19,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.commands.*;
-import frc.robot.helpers.LimelightHelpers;
-import frc.robot.helpers.SysID;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -52,9 +49,6 @@ public class RobotContainer {
   Intake intakeCommand;
   TestShooter testShooterCommand;
 
-  SysID shooterSysID;
-  SysIdRoutineLog shooterSysIdLog;
-
   private Timer disabledTimer = new Timer();
 
   /**
@@ -62,9 +56,9 @@ public class RobotContainer {
    */
   public RobotContainer() {
     // Create commands
-    aimAtSpeakerCommand = new AimAtSpeaker(shooter, driveBase::overrideRotation, driveBase::disableRotOverride, driveBase::getPose);
+    aimAtSpeakerCommand = new AimAtSpeaker(shooter, driveBase::overrideRotation, driveBase::getPose);
     aimManualOverrideCommand = new AimManualOverride(() -> MathUtil
-        .applyDeadband(-secondaryRightStick.getY(), Constants.Driving.Controllers.Deadbands.SECONDARY_RIGHT),
+        .applyDeadband(secondaryRightStick.getY(), Constants.Driving.Controllers.Deadbands.SECONDARY_RIGHT),
         secondaryRightStick.button(2), shooter);
     intakeCommand = new Intake(shooter);
     // driveControllerCommand = new AbsoluteFieldDrive(
@@ -83,13 +77,7 @@ public class RobotContainer {
         driveBase,
         () -> MathUtil.applyDeadband(-primaryLeftStick.getY(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
         () -> MathUtil.applyDeadband(-primaryLeftStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
-        () -> primaryLeftStick.button(3).getAsBoolean() ? (LimelightHelpers.getTX("limelight") / -75)
-            : MathUtil.applyDeadband(-primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
-
-    shooterSysID = new SysID(shooter, shooter::runShooterRaw,
-        log -> {
-          shooterSysIdLog = log;
-        }, shooter::getShooterVelocity, shooter::getShooterPosition);
+        () -> MathUtil.applyDeadband(-primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
 
     // Register auto commands for PathPlanner
     NamedCommands.registerCommand("Intake", intakeCommand);
@@ -135,8 +123,6 @@ public class RobotContainer {
         .onTrue(new InstantCommand(driveBase::resetRotation)); // Resets which way the robot thinks is forward, used
                                                                // when the robot wasn't facing away from the driver
                                                                // station on boot
-    secondaryLeftStick.trigger()
-        .whileTrue(shooterSysID.getIDRoutine());
     secondaryRightStick.button(2) // Button #2 on the secondary driver's right stick
         .whileTrue(intakeCommand); // Intake a note while the button is held down. Automatically stops once a note
                                    // is loaded.

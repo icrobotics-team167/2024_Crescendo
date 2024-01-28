@@ -8,8 +8,6 @@ import frc.robot.abstraction.encoders.AbstractAbsoluteEncoder;
 import frc.robot.abstraction.motors.AbstractMotor;
 import frc.robot.Constants.Robot.SwerveDrive;
 import frc.robot.Constants.Robot.SwerveDrive.Modules;
-import frc.robot.helpers.Telemetry;
-import frc.robot.helpers.Telemetry.Verbosity;
 
 /**
  * A class representing a swerve module.
@@ -143,8 +141,12 @@ public class Module {
    * 
    * @return A SwerveModuleState object representing the current state.
    */
-  public SwerveModuleState getState() {
+  public SwerveModuleState getActualState() {
     return new SwerveModuleState(driveMotor.getVelocity(), getRotation());
+  }
+
+  public SwerveModuleState getDesiredState() {
+    return desiredState;
   }
 
   /**
@@ -188,21 +190,6 @@ public class Module {
    */
   public double getMetersPerRotation() {
     return Modules.WHEEL_CIRCUMFERENCE / Modules.DRIVE_GEAR_RATIO;
-  }
-
-  /**
-   * Sends telemetry data.
-   */
-  public void sendTelemetry() {
-    Telemetry.sendNumber("SwerveDrivebase/" + moduleName() + "/Desired move speed", desiredState.speedMetersPerSecond,
-        Verbosity.HIGH);
-    Telemetry.sendNumber("SwerveDrivebase/" + moduleName() + "/Actual move speed", driveMotor.getVelocity(),
-        Verbosity.HIGH);
-    Telemetry.sendNumber("SwerveDrivebase/" + moduleName() + "/Desired turn angle", desiredState.angle.getDegrees(),
-        Verbosity.HIGH);
-    Telemetry.sendNumber("SwerveDrivebase/" + moduleName() + "/Actual turn angle",
-        turnEncoder.getAbsolutePosition().getDegrees(),
-        Verbosity.HIGH);
   }
 
   /**

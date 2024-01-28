@@ -19,12 +19,14 @@ public class Pivot {
         // leaderMotor.setPosition(encoder.getAbsolutePosition().getDegrees());
         leaderMotor.setPosition(60);
         leaderMotor.configureMotorBrake(true);
-        leaderMotor.configurePID(1.0 / 45.0, 0, 0); // TODO: Configure
+        leaderMotor.configurePID(1.0 / 30, 0, 0); // TODO: Configure
         leaderMotor.configureFeedForward(0, 0, 0);
 
         followerMotor.configureCurrentLimits(followerMotor.getNominalVoltage(), followerMotor.getPrimaryCurrentLimit(),
                 followerMotor.getSecondaryCurrentLimit());
-        followerMotor.configureFollow(followerMotor, true);
+        followerMotor.configureFollow(leaderMotor, true);
+        followerMotor.configureMotorBrake(true);
+        followerMotor.configureFeedForward(0, 0, 0);
 
         this.encoder = encoder;
         motor = leaderMotor;
