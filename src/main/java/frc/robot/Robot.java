@@ -20,6 +20,10 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
+ *
+ * <p>Unlike most regular robot projects where Robot.java extends TimedRobot, this project extends
+ * LoggedRobot in order to take advantage of AdvantageKit's logging capabilities, named "Level 3
+ * Logging" by 6328.
  */
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
@@ -28,6 +32,7 @@ public class Robot extends LoggedRobot {
 
   public static Mode currentMode;
 
+  /** An enum representing which mode the robot is in. */
   public static enum Mode {
     /** Running on a real robot. */
     REAL,
@@ -44,15 +49,20 @@ public class Robot extends LoggedRobot {
    * initialization code.
    */
   @Override
-  @SuppressWarnings("all") // Suppress the "Dead code" warning for line 50.
-  // TODO: Find out how to suppress just the "Dead code" warning instead of "all"
+  @SuppressWarnings("all")
   public void robotInit() {
     Logger.recordMetadata("Git SHA", BuildConstants.GIT_SHA);
     Logger.recordMetadata("Uncommitted Changes?", BuildConstants.DIRTY == 1 ? "True" : "False");
 
+    // Comment this line out when not running AK log replays.
     currentMode = Robot.isReal() ? Mode.REAL : Mode.SIM;
+    // Uncomment this line when running AK log replays.
     // currentMode = Mode.REPLAY;
 
+    // The robot code will write a whole bunch of data to a log file.
+    // IT IS HEAVILY ADVISED THAT YOU PLUG IN A USB FLASH DRIVE TO THE RIO WHEN RUNNING THIS CODE,
+    // AS LOG FILES ARE VERY, VERY INTENSIVE ON STORAGE SPACE. THE RIO'S INTERNAL STORAGE WILL BE
+    // GONE PRACTICALLY INSTANTLY IF YOU DONT.
     switch (currentMode) {
       case REAL:
         Logger.addDataReceiver(new WPILOGWriter());
