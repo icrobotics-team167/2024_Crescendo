@@ -17,126 +17,123 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
-    static final double ODOMETRY_FREQUENCY = 250.0;
-    // Gear ratios for SDS MK4i L2, adjust as necessary
-    static final double DRIVE_GEAR_RATIO = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
-    static final double TURN_GEAR_RATIO = 150.0 / 7.0;
-    static final double DRIVE_WHEEL_CIRCUMFERENCE = Units.inchesToMeters(4 * Math.PI);
+  static final double ODOMETRY_FREQUENCY = 250.0;
+  // Gear ratios for SDS MK4i L2, adjust as necessary
+  static final double DRIVE_GEAR_RATIO = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
+  static final double TURN_GEAR_RATIO = 150.0 / 7.0;
+  static final double DRIVE_WHEEL_CIRCUMFERENCE = Units.inchesToMeters(4 * Math.PI);
 
-    private final ModuleIO io;
-    private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
-    private final int index;
+  private final ModuleIO io;
+  private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
+  private final int index;
 
-    private Rotation2d angleSetpoint = new Rotation2d(); // Setpoint for closed loop control, null for open loop
-    private double speedSetpoint = 0; // Setpoint for closed loop control, null for open loop
-    private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
+  private Rotation2d angleSetpoint =
+      new Rotation2d(); // Setpoint for closed loop control, null for open loop
+  private double speedSetpoint = 0; // Setpoint for closed loop control, null for open loop
+  private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
 
-    public Module(ModuleIO io, int index) {
-        this.io = io;
-        this.index = index;
-        setBrakeMode(true);
+  public Module(ModuleIO io, int index) {
+    this.io = io;
+    this.index = index;
+    setBrakeMode(true);
+  }
+
+  /**
+   * Update inputs without running the rest of the periodic logic. This is useful since these
+   * updates need to be properly thread-locked.
+   */
+  public void updateInputs() {
+    io.updateInputs(inputs);
+  }
+
+  public void periodic() {
+    Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
+
+    // Run closed loop turn control
+    io.setTurnPosition(angleSetpoint);
+    // Scale velocity based on turn error
+    // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
+    // towards the setpoint, its velocity should increase. This is achieved by
+    // taking the component of the velocity in the direction of the setpoint.
+    double adjustedSpeedSetpoint =
+        speedSetpoint
+            * Math.cos(inputs.turnAbsolutePosition.getRadians() - angleSetpoint.getRadians());
+    io.setDriveVelocity(adjustedSpeedSetpoint);
+
+    // Calculate positions for odometry
+    int sampleCount = inputs.odometryTimestamps.length; // All signals are sampled together
+    odometryPositions = new SwerveModulePosition[sampleCount];
+    for (int i = 0; i < sampleCount; i++) {
+      double positionMeters = inputs.odometryDrivePositionsMeters[i];
+      Rotation2d angle = inputs.odometryTurnPositions[i];
+      odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
     }
+  }
 
-    /**
-     * Update inputs without running the rest of the periodic logic. This is useful
-     * since these
-     * updates need to be properly thread-locked.
-     */
-    public void updateInputs() {
-        io.updateInputs(inputs);
-    }
+  /** Runs the module with the specified setpoint state. Returns the optimized state. */
+  public SwerveModuleState runSetpoint(SwerveModuleState state) {
+    // Optimize state based on current angle
+    // Controllers run in "periodic" when the setpoint is not null
+    var optimizedState = SwerveModuleState.optimize(state, getAngle());
 
-    public void periodic() {
-        Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
+    // Update setpoints, controllers run in "periodic"
+    angleSetpoint = optimizedState.angle;
+    speedSetpoint = optimizedState.speedMetersPerSecond;
 
-        // Run closed loop turn control
-        io.setTurnPosition(angleSetpoint);
-        // Scale velocity based on turn error
-        // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
-        // towards the setpoint, its velocity should increase. This is achieved by
-        // taking the component of the velocity in the direction of the setpoint.
-        double adjustedSpeedSetpoint = speedSetpoint
-                * Math.cos(inputs.turnAbsolutePosition.getRadians() - angleSetpoint.getRadians());
-        io.setDriveVelocity(adjustedSpeedSetpoint);
+    return optimizedState;
+  }
 
-        // Calculate positions for odometry
-        int sampleCount = inputs.odometryTimestamps.length; // All signals are sampled together
-        odometryPositions = new SwerveModulePosition[sampleCount];
-        for (int i = 0; i < sampleCount; i++) {
-            double positionMeters = inputs.odometryDrivePositionsMeters[i];
-            Rotation2d angle = inputs.odometryTurnPositions[i];
-            odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
-        }
-    }
+  /** Disables all outputs to motors. */
+  public void stop() {
+    io.stop();
+  }
 
-    /**
-     * Runs the module with the specified setpoint state. Returns the optimized
-     * state.
-     */
-    public SwerveModuleState runSetpoint(SwerveModuleState state) {
-        // Optimize state based on current angle
-        // Controllers run in "periodic" when the setpoint is not null
-        var optimizedState = SwerveModuleState.optimize(state, getAngle());
+  /** Sets whether brake mode is enabled. */
+  public void setBrakeMode(boolean enabled) {
+    io.setDriveBrakeMode(enabled);
+    io.setTurnBrakeMode(enabled);
+  }
 
-        // Update setpoints, controllers run in "periodic"
-        angleSetpoint = optimizedState.angle;
-        speedSetpoint = optimizedState.speedMetersPerSecond;
+  /** Returns the current turn angle of the module. */
+  public Rotation2d getAngle() {
+    return inputs.turnAbsolutePosition;
+  }
 
-        return optimizedState;
-    }
+  /** Returns the current drive position of the module in meters. */
+  public double getPositionMeters() {
+    return inputs.drivePositionMeters;
+  }
 
-    /** Disables all outputs to motors. */
-    public void stop() {
-        io.stop();
-    }
+  /** Returns the current drive velocity of the module in meters per second. */
+  public double getVelocityMetersPerSec() {
+    return inputs.driveVelocityMetersPerSec;
+  }
 
-    /** Sets whether brake mode is enabled. */
-    public void setBrakeMode(boolean enabled) {
-        io.setDriveBrakeMode(enabled);
-        io.setTurnBrakeMode(enabled);
-    }
+  /** Returns the module position (turn angle and drive position). */
+  public SwerveModulePosition getPosition() {
+    return new SwerveModulePosition(getPositionMeters(), getAngle());
+  }
 
-    /** Returns the current turn angle of the module. */
-    public Rotation2d getAngle() {
-        return inputs.turnAbsolutePosition;
-    }
+  /** Returns the module state (turn angle and drive velocity). */
+  public SwerveModuleState getState() {
+    return new SwerveModuleState(getVelocityMetersPerSec(), getAngle());
+  }
 
-    /** Returns the current drive position of the module in meters. */
-    public double getPositionMeters() {
-        return inputs.drivePositionMeters;
-    }
+  /** Returns the module positions received this cycle. */
+  public SwerveModulePosition[] getOdometryPositions() {
+    return odometryPositions;
+  }
 
-    /** Returns the current drive velocity of the module in meters per second. */
-    public double getVelocityMetersPerSec() {
-        return inputs.driveVelocityMetersPerSec;
-    }
+  /** Returns the timestamps of the samples received this cycle. */
+  public double[] getOdometryTimestamps() {
+    return inputs.odometryTimestamps;
+  }
 
-    /** Returns the module position (turn angle and drive position). */
-    public SwerveModulePosition getPosition() {
-        return new SwerveModulePosition(getPositionMeters(), getAngle());
-    }
-
-    /** Returns the module state (turn angle and drive velocity). */
-    public SwerveModuleState getState() {
-        return new SwerveModuleState(getVelocityMetersPerSec(), getAngle());
-    }
-
-    /** Returns the module positions received this cycle. */
-    public SwerveModulePosition[] getOdometryPositions() {
-        return odometryPositions;
-    }
-
-    /** Returns the timestamps of the samples received this cycle. */
-    public double[] getOdometryTimestamps() {
-        return inputs.odometryTimestamps;
-    }
-
-    /** Returns the drive velocity in radians/sec. */
-    public double getCharacterizationVelocity() {
-        return inputs.driveVelocityMetersPerSec;
-    }
+  /** Returns the drive velocity in radians/sec. */
+  public double getCharacterizationVelocity() {
+    return inputs.driveVelocityMetersPerSec;
+  }
 }

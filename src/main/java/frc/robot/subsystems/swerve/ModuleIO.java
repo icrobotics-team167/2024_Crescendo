@@ -16,46 +16,39 @@ package frc.robot.subsystems.swerve;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
-/**
- * The IO Interface for swerve modules.
- */
+/** The IO Interface for swerve modules. */
 public interface ModuleIO {
-    @AutoLog
-    public static class ModuleIOInputs {
-        public double drivePositionMeters = 0.0;
-        public double driveVelocityMetersPerSec = 0.0;
-        public double driveAppliedVolts = 0.0;
-        public double driveAppliedDutyCycle = 0.0;
-        public double[] driveCurrentAmps = new double[] {};
+  @AutoLog
+  public static class ModuleIOInputs {
+    public double drivePositionMeters = 0.0;
+    public double driveVelocityMetersPerSec = 0.0;
+    public double driveAppliedVolts = 0.0;
+    public double driveAppliedDutyCycle = 0.0;
+    public double[] driveCurrentAmps = new double[] {};
 
-        public Rotation2d turnAbsolutePosition = new Rotation2d();
-        public double turnVelocityRadPerSec = 0.0;
-        public double turnAppliedVolts = 0.0;
-        public double turnAppliedDutyCycle = 0.0;
-        public double[] turnCurrentAmps = new double[] {};
+    public Rotation2d turnAbsolutePosition = new Rotation2d();
+    public double turnVelocityRadPerSec = 0.0;
+    public double turnAppliedVolts = 0.0;
+    public double turnAppliedDutyCycle = 0.0;
+    public double[] turnCurrentAmps = new double[] {};
 
-        public double[] odometryTimestamps = new double[] {};
-        public double[] odometryDrivePositionsMeters = new double[] {};
-        public Rotation2d[] odometryTurnPositions = new Rotation2d[] {};
-    }
+    public double[] odometryTimestamps = new double[] {};
+    public double[] odometryDrivePositionsMeters = new double[] {};
+    public Rotation2d[] odometryTurnPositions = new Rotation2d[] {};
+  }
 
-    /** Updates the set of loggable inputs. */
-    public default void updateInputs(ModuleIOInputs inputs) {
-    }
+  /** Updates the set of loggable inputs. */
+  public default void updateInputs(ModuleIOInputs inputs) {}
 
-    public default void setDriveVelocity(double velocity) {
-    }
+  public default void setDriveVelocity(double velocity) {}
 
-    public default void setTurnPosition(Rotation2d position) {
-    }
+  public default void setTurnPosition(Rotation2d position) {}
 
-    public default void stop() {}
+  public default void stop() {}
 
-    /** Enable or disable brake mode on the drive motor. */
-    public default void setDriveBrakeMode(boolean enable) {
-    }
+  /** Enable or disable brake mode on the drive motor. */
+  public default void setDriveBrakeMode(boolean enable) {}
 
-    /** Enable or disable brake mode on the turn motor. */
-    public default void setTurnBrakeMode(boolean enable) {
-    }
+  /** Enable or disable brake mode on the turn motor. */
+  public default void setTurnBrakeMode(boolean enable) {}
 }

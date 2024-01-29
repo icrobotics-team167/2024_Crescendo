@@ -17,22 +17,24 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.wpilibj.Timer;
 
 public class VisionIOLimelight implements VisionIO {
-    private String name = "";
+  private String name = "";
 
-    public VisionIOLimelight(String name) {
-        this.name = name;
-    }
+  public VisionIOLimelight(String name) {
+    this.name = name;
+  }
 
-    @Override
-    public void updateInputs(VisionIOInputs inputs) {
-        if (!LimelightHelpers.getTV(name)) {
-            inputs.isNewData = false;
-            return;
-        }
-        inputs.isNewData = true;
-        inputs.poseEstimate = LimelightHelpers.getBotPose2d_wpiBlue(name);
-        inputs.timestamp = Timer.getFPGATimestamp()
-                - ((LimelightHelpers.getLatency_Capture(name) + LimelightHelpers.getLatency_Pipeline(name))
-                        / 1000);
+  @Override
+  public void updateInputs(VisionIOInputs inputs) {
+    if (!LimelightHelpers.getTV(name)) {
+      inputs.isNewData = false;
+      return;
     }
+    inputs.isNewData = true;
+    inputs.poseEstimate = LimelightHelpers.getBotPose2d_wpiBlue(name);
+    inputs.timestamp =
+        Timer.getFPGATimestamp()
+            - ((LimelightHelpers.getLatency_Capture(name)
+                    + LimelightHelpers.getLatency_Pipeline(name))
+                / 1000);
+  }
 }

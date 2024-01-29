@@ -14,55 +14,46 @@
 
 package frc.robot.subsystems.vision;
 
-import java.util.function.BiConsumer;
-
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.Robot.Mode;
+import java.util.function.BiConsumer;
+import org.littletonrobotics.junction.Logger;
 
 public class VisionPoseEstimator extends SubsystemBase {
-    private BiConsumer<Pose2d, Double> estimationConsumer;
-    private VisionIO[] cameras;
-    private VisionIOInputsAutoLogged[] cameraData;
+  private BiConsumer<Pose2d, Double> estimationConsumer;
+  private VisionIO[] cameras;
+  private VisionIOInputsAutoLogged[] cameraData;
 
-    public VisionPoseEstimator(BiConsumer<Pose2d, Double> estimationConsumer) {
-        this.estimationConsumer = estimationConsumer;
+  public VisionPoseEstimator(BiConsumer<Pose2d, Double> estimationConsumer) {
+    this.estimationConsumer = estimationConsumer;
 
-        if (Robot.currentMode == Mode.SIM) {
-            cameras = new VisionIO[] {
-                    new VisionIO() {
-                    }
-            };
-        } else {
-            cameras = new VisionIO[] {
-                    new VisionIOLimelight("limelight")
-            };
-        }
-
-        cameraData = new VisionIOInputsAutoLogged[cameras.length];
-        for (int i = 0; i < cameraData.length; i++) {
-            cameraData[i] = new VisionIOInputsAutoLogged();
-        }
+    if (Robot.currentMode == Mode.SIM) {
+      cameras = new VisionIO[] {new VisionIO() {}};
+    } else {
+      cameras = new VisionIO[] {new VisionIOLimelight("limelight")};
     }
 
-    @Override
-    public void periodic() {
-        for (int i = 0; i < cameraData.length; i++) {
-            cameras[i].updateInputs(cameraData[i]);
-            Logger.processInputs("VisionPoseEstimator/" + cameras[i].getName(), cameraData[i]);
-        }
+    cameraData = new VisionIOInputsAutoLogged[cameras.length];
+    for (int i = 0; i < cameraData.length; i++) {
+      cameraData[i] = new VisionIOInputsAutoLogged();
     }
+  }
 
-    public void updateEstimation() {
-        for (int i = 0; i < cameraData.length; i++) {
-            if (cameraData[i].isNewData) {
-                estimationConsumer.accept(
-                        cameraData[i].poseEstimate,
-                        cameraData[i].timestamp);
-            }
-        }
+  @Override
+  public void periodic() {
+    for (int i = 0; i < cameraData.length; i++) {
+      cameras[i].updateInputs(cameraData[i]);
+      Logger.processInputs("VisionPoseEstimator/" + cameras[i].getName(), cameraData[i]);
     }
+  }
+
+  public void updateEstimation() {
+    for (int i = 0; i < cameraData.length; i++) {
+      if (cameraData[i].isNewData) {
+        estimationConsumer.accept(cameraData[i].poseEstimate, cameraData[i].timestamp);
+      }
+    }
+  }
 }
