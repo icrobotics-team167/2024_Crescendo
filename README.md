@@ -6,7 +6,7 @@ AdvantageKit's "log literally everything" approach is used here, to allow for ex
 
 ## License
 
-This project uses the GNU-GPL v3 open-source license, meaning that you are free to do whatver you want with it, as long as your own project is also open-sourced under GNU-GPL v3. For example, you can take parts of this code and put it into your own project as long as that project is GNU-GPL v3. However, due to the nature of the GNU-GPL v3 license, we cannot *under any circumstances*, provide warranty for the function of this code. For more information, read the `LICENSE` file.
+This project uses the GNU-GPL v3 open-source license. Due to the nature of the GNU-GPL v3 license, we cannot *under any circumstances*, provide warranty for the function of this code. For more information, read the `LICENSE` file or read a summary of the license [here](https://choosealicense.com/licenses/gpl-3.0/).
 
 ## General Usage
 
