@@ -14,6 +14,7 @@
 
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
 
 public class VisionIOLimelight implements VisionIO {
@@ -25,12 +26,16 @@ public class VisionIOLimelight implements VisionIO {
 
   @Override
   public void updateInputs(VisionIOInputs inputs) {
+    inputs.isNewData = false;
     if (!LimelightHelpers.getTV(name)) {
-      inputs.isNewData = false;
       return;
     }
+    Pose2d poseEstimate = LimelightHelpers.getBotPose2d_wpiBlue(name);
+    if (poseEstimate.equals(new Pose2d())) {
+      return;
+    }
+    inputs.poseEstimate = poseEstimate;
     inputs.isNewData = true;
-    inputs.poseEstimate = LimelightHelpers.getBotPose2d_wpiBlue(name);
     inputs.timestamp =
         Timer.getFPGATimestamp()
             - ((LimelightHelpers.getLatency_Capture(name)
