@@ -11,6 +11,7 @@ This project uses the GNU-GPL v3 open-source license, meaning that you are free 
 ## General Usage
 
 - Always commit any changes before deploying code to the robot. If at an event, use the [Event Deploy For WPILib](https://marketplace.visualstudio.com/items?itemName=Mechanical-Advantage.event-deploy-wpilib) VSCode extension so that any changes are auto-committed using the "Deploy Robot Code (Event)" option. Branches should be named "event_(eventName)" such as "event_IowaRegional" so that the extension works.
+- [The Google Java Style Guide](https://google.github.io/styleguide/javaguide.html) is enforced via the [Spotless](https://github.com/diffplug/spotless) plugin for gradle. It is recommended to use the [Spotless Gradle](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle) extension for VSCode as your default formatter so that the code style guidelines are always followed.
 - Programmers should use AdvantageScope for telemetry data, and drivers should use ShuffleBoard for match data.
 
 ## Credits
