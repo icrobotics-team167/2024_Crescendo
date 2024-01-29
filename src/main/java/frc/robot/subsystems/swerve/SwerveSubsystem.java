@@ -13,6 +13,7 @@
 
 package frc.robot.subsystems.swerve;
 
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -58,8 +59,7 @@ public class SwerveSubsystem extends SubsystemBase {
     private Rotation2d rawGyroRotation = new Rotation2d();
     // For delta tracking
     private SwerveModulePosition[] lastModulePositions = new SwerveModulePosition[4];
-    private SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation,
-            lastModulePositions, new Pose2d());
+    private SwerveDrivePoseEstimator poseEstimator;
     private VisionPoseEstimator visionPoseEstimator = new VisionPoseEstimator(this::addVisionMeasurement);
 
     private boolean slowmode = Driving.SLOWMODE_DEFAULT;
@@ -78,6 +78,7 @@ public class SwerveSubsystem extends SubsystemBase {
         for (int i = 0; i < 4; i++) {
             lastModulePositions[i] = modules[i].getPosition();
         }
+        poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
         // Start threads (no-op for each if no signals have been created)
         PhoenixOdometryThread.getInstance().start();

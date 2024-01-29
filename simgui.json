@@ -2,7 +2,8 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
-      "/SmartDashboard/": "String Chooser"
+      "/SmartDashboard/": "String Chooser",
+      "/SmartDashboard/Auto Chooser": "String Chooser"
     }
   },
   "NetworkTables": {
