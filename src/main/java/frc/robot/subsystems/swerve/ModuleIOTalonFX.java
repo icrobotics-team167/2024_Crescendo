@@ -107,8 +107,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveConfig.Slot0.kI = 0; // % output per m of integrated error
     driveConfig.Slot0.kD = 0; // % output per m/s^2 of error derivative
     driveConfig.Slot0.kS = 0; // Amps of additional current needed to overcome friction
-    driveConfig.Slot0.kV = 0; // Amps of additional current per m/s of velocity
-    driveConfig.Slot0.kA = 0; // Amps of additional current per m/s^2 of acceleration
+    driveConfig.Slot0.kV = 0; // Amps of additional current per m/s of velocity setpoint
+    driveConfig.Slot0.kA = 0; // Amps of additional current per m/s^2 of acceleration setpoint
     driveConfig.MotionMagic.MotionMagicAcceleration = 14; // Max allowed acceleration, in m/s^2
     driveConfig.MotionMagic.MotionMagicJerk = 140; // Max allowed jerk, in m/s^3
     driveTalon.getConfigurator().apply(driveConfig);
@@ -125,8 +125,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnConfig.Slot0.kI = 0; // % output per rotation of integrated error
     turnConfig.Slot0.kD = 0; // % output per rotations/s of error derivative
     turnConfig.Slot0.kS = 0; // Amps of additional current needed to overcome friction
-    turnConfig.Slot0.kV = 0; // Amps of additional current per rot/s of velocity
-    turnConfig.Slot0.kA = 0; // Amps of additional current per rot/s^2 of acceleration
+    turnConfig.Slot0.kV = 0; // Amps of additional current per rot/s of velocity setpoint
+    turnConfig.Slot0.kA = 0; // Amps of additional current per rot/s^2 of acceleration setpoint
     turnConfig.MotionMagic.MotionMagicAcceleration = 5; // Max allowed acceleration, in rot/s^2
     turnConfig.MotionMagic.MotionMagicJerk = 50; // Max allowed jerk, in rot/s^3
     turnConfig.ClosedLoopGeneral.ContinuousWrap = true;
