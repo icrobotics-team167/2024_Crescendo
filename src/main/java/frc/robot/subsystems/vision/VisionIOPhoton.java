@@ -49,16 +49,24 @@ public class VisionIOPhoton implements VisionIO {
   @Override
   public void updateInputs(VisionIOInputs inputs) {
     inputs.isNewData = false;
+    // If the camera didn't load properly, stop.
     if (poseEstimator == null) {
       return;
     }
 
     Optional<EstimatedRobotPose> data = poseEstimator.update();
+    // If the pose estimator doesn't have any data, stop.
     if (data.isEmpty()) {
       return;
     }
 
     EstimatedRobotPose botPoseEstimate = data.get();
+    // If multi-tag tracking fails and the pose ambiguity score of the single tag
+    // tracking is too large, stop.
+    if (botPoseEstimate.targetsUsed.size() == 1
+        && botPoseEstimate.targetsUsed.get(0).getPoseAmbiguity() > 0.2) {
+      return;
+    }
     inputs.isNewData = true;
     inputs.poseEstimate = botPoseEstimate.estimatedPose.toPose2d();
     inputs.timestamp = botPoseEstimate.timestampSeconds;

@@ -27,10 +27,13 @@ public class VisionIOLimelight implements VisionIO {
   @Override
   public void updateInputs(VisionIOInputs inputs) {
     inputs.isNewData = false;
+    // If the Limelight doesn't see any tags to track, stop.
     if (!LimelightHelpers.getTV(name)) {
       return;
     }
     Pose2d poseEstimate = LimelightHelpers.getBotPose2d_wpiBlue(name);
+    // If the Limelight returns a blank pose, stop.
+    // TODO: This might be redundant?
     if (poseEstimate.equals(new Pose2d())) {
       return;
     }
