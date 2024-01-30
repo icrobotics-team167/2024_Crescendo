@@ -130,7 +130,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     turnPIDController.setP(1); // % Output per rotation of error
     turnPIDController.setI(0); // % Output per rotation of integrated error
     turnPIDController.setD(0); // % Output per rotations/s of error derivative
-    turnPIDController.setFF(0); // Volts of additional voltage per m/s of velocity setpoint
+    turnPIDController.setFF(0); // Volts of additional voltage per rot/s of velocity
     turnPIDController.setPositionPIDWrappingEnabled(true);
     turnPIDController.setPositionPIDWrappingMaxInput(0.5);
     turnPIDController.setPositionPIDWrappingMinInput(-0.5);
