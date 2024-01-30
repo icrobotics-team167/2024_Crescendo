@@ -23,5 +23,5 @@ Contributors:
 Code taken from the following places:
 
 - [AdvantageKit Advanced Swerve Example](https://github.com/Mechanical-Advantage/AdvantageKit/tree/main/example_projects)
-  - Modified to offload unit conversion math to the motor controller, improving code readability and marginally improving performance.
+  - Modified to offload unit conversion math and closed-loop feedback control to motor controllers instead of running them on the RIO, improving readability and performance.
 - [LimeLight Lib](https://github.com/LimelightVision/limelightlib-wpijava/blob/main/LimelightHelpers.java)
