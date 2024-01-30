@@ -160,13 +160,6 @@ spotless {
         trimTrailingWhitespace()
         endWithNewline()
     }
-    json {
-        target fileTree(".") {
-            include "**/*.json"
-            exclude "**/build/**", "**/build-*/**", ".vscode/**", ".wpilib/**", "ctre_sim/**", "vendordeps/**", "AdvantageScope Layout.json", "networktables.json", "simgui-ds.json", "simgui-window.json", "simgui.json"
-        }
-        gson().indentWithSpaces(2)
-    }
     format "misc", {
         target fileTree(".") {
             include "**/*.md", "**/.gitignore"
