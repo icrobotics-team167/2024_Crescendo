@@ -20,6 +20,7 @@ import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -46,6 +47,7 @@ public class ModuleIOSparkMax implements ModuleIO {
   private final RelativeEncoder driveEncoder;
   private final RelativeEncoder turnRelativeEncoder;
   private final SparkPIDController drivePIDController;
+  private final SimpleMotorFeedforward driveFF;
   private final SparkPIDController turnPIDController;
   private final AnalogInput turnAbsoluteEncoder;
   private final Queue<Double> timestampQueue;
@@ -119,14 +121,16 @@ public class ModuleIOSparkMax implements ModuleIO {
     drivePIDController.setP(0.05); // % Output per m/s of error
     drivePIDController.setI(0); // % Output per m of integrated error
     drivePIDController.setD(0); // % Output per m/s^2 of error derivative
-    drivePIDController.setFF(0); // Volts of additional voltage needed to overcome friction
-    // Why does REV not have kV and kA FF, they only have kS
+    driveFF =
+        new SimpleMotorFeedforward(
+            0, // Volts of additional voltage needed to overcome friction
+            0); // Volts of additional voltage per m/s of velocity setpoint
 
     turnPIDController = turnSparkMax.getPIDController();
     turnPIDController.setP(1); // % Output per rotation of error
     turnPIDController.setI(0); // % Output per rotation of integrated error
-    turnPIDController.setD(0); // % Output per rotation/s of error derivative
-    turnPIDController.setFF(0); // Volts of additional voltage needed to overcome friction
+    turnPIDController.setD(0); // % Output per rotations/s of error derivative
+    turnPIDController.setFF(0); // Volts of additional voltage per m/s of velocity setpoint
     turnPIDController.setPositionPIDWrappingEnabled(true);
     turnPIDController.setPositionPIDWrappingMaxInput(0.5);
     turnPIDController.setPositionPIDWrappingMinInput(-0.5);
@@ -181,7 +185,8 @@ public class ModuleIOSparkMax implements ModuleIO {
 
   @Override
   public void setDriveVelocity(double velocity) {
-    drivePIDController.setReference(velocity, ControlType.kVelocity);
+    drivePIDController.setReference(
+        velocity, ControlType.kVelocity, 0, driveFF.calculate(velocity));
   }
 
   @Override
