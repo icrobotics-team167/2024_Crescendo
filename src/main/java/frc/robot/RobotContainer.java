@@ -131,7 +131,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    primaryLeftStick.button(1) // Trigger on the primary driver's left stick
+    primaryLeftStick.trigger() // Trigger on the primary driver's left stick
         .whileTrue(new StartEndCommand(driveBase::setSlowMode, driveBase::unsetSlowMode)); // Press and hold for slow
                                                                                            // mode
     primaryRightStick.trigger() // Trigger on the primary driver's right stick
