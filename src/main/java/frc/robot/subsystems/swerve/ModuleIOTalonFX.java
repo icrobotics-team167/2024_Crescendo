@@ -42,7 +42,7 @@ import java.util.Queue;
  * <p>To calibrate the absolute encoder offsets, point the modules straight (such that forward
  * motion on the drive motor will propel the robot forward) and copy the reported values from the
  * absolute encoders using AdvantageScope. These values are logged under
- * "/Drive/ModuleX/TurnAbsolutePositionRad"
+ * "/Drive/ModuleX/TurnAbsolutePosition"
  */
 public class ModuleIOTalonFX implements ModuleIO {
   private final TalonFX driveTalon;

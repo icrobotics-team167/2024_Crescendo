@@ -31,7 +31,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  *
- * <p>Unlike most regular robot projects where Robot.java extends TimedRobot, this project extends
+ * <p>Unlike regular robot projects where Robot.java extends TimedRobot, this project extends
  * LoggedRobot in order to take advantage of AdvantageKit's logging capabilities, named "Level 3
  * Logging" by 6328.
  */
