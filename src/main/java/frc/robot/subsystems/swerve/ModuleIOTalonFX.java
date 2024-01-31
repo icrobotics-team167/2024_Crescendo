@@ -21,6 +21,8 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.StaticBrake;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
@@ -34,7 +36,7 @@ import java.util.Queue;
 
 /**
  * Module IO implementation for Talon FX drive motor controller, Talon FX turn motor controller, and
- * CANcoder
+ * CANcoder. Assumes all devices used are Phoenix Pro licensed.
  *
  * <p>NOTE: This implementation should be used as a starting point and adapted to different hardware
  * configurations (e.g. If using an analog encoder, copy from "ModuleIOSparkMax")
@@ -45,79 +47,271 @@ import java.util.Queue;
  * "/Drive/ModuleX/TurnAbsolutePosition"
  */
 public class ModuleIOTalonFX implements ModuleIO {
+  /**
+   * The TalonFX motor controller for the drive motor.
+   */
   private final TalonFX driveTalon;
+  /**
+   * The TalonFX motor controller for the turn motor.
+   */
   private final TalonFX turnTalon;
+  /**
+   * The CANcoder for the azimuth.
+   */
   private final CANcoder cancoder;
 
+  /**
+   * A {@link Queue} holding all the timestamps that the async odometry thread captures.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Seconds
+   *       </ul>
+   * </ul>
+   */
   private final Queue<Double> timestampQueue;
-
+  /**
+   * The current distance that the module has driven so far.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Meters
+   *       </ul>
+   * </ul>
+   */
   private final StatusSignal<Double> drivePosition;
+  /**
+   * A {@link Queue} holding all the drive positions that the async odometry thread captures.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Meters
+   *       </ul>
+   * </ul>
+   */
   private final Queue<Double> drivePositionQueue;
+  /**
+   * The current drive velocity of the module.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Meters per second
+   *       </ul>
+   * </ul>
+   */
   private final StatusSignal<Double> driveVelocity;
+  /**
+   * The voltage applied to the motor by the motor controller.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Volts
+   *       </ul>
+   * </ul>
+   */
   private final StatusSignal<Double> driveAppliedVolts;
+  /**
+   * The current applied to the motor by the motor controller.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Amps
+   *       </ul>
+   * </ul>
+   */
+  private final StatusSignal<Double> driveAppliedCurrent;
+  /**
+   * The total output applied to the motor by the closed loop control.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Percentage
+   *       </ul>
+   * </ul>
+   */
   private final StatusSignal<Double> driveClosedLoopOutput;
-  private final StatusSignal<Double> driveCurrent;
-
+  /**
+   * The absolute position of the module azimuth, as measured by an absolute encoder. 0 should mean
+   * the module is facing forwards. Wraps [-0.5, 0.5)
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Rotations
+   *       </ul>
+   * </ul>
+   */
   private final StatusSignal<Double> turnAbsolutePosition;
+  /**
+   * The position of the module azimuth, as measured by the turn motor's internal encoder. Is
+   * periodically synchronized with the absolute position.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Rotations
+   *       </ul>
+   * </ul>
+   */
   private final StatusSignal<Double> turnPosition;
+  /**
+   * A {@link Queue} holding all the azimuth positions that the async odometry thread captures.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Rotations
+   *       </ul>
+   * </ul>
+   */
   private final Queue<Double> turnPositionQueue;
+  /**
+   * The current velocity of the azimuth.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Rotations per second
+   *       </ul>
+   * </ul>
+   */
   private final StatusSignal<Double> turnVelocity;
+  /**
+   * The voltage applied to the motor by the motor controller.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Volts
+   *       </ul>
+   * </ul>
+   */
   private final StatusSignal<Double> turnAppliedVolts;
+  /**
+   * The current applied to the motor by the motor controller.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Amps
+   *       </ul>
+   * </ul>
+   */
+  private final StatusSignal<Double> turnAppliedCurrent;
+  /**
+   * The total output applied to the motor by the closed loop control.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Percentage
+   *       </ul>
+   * </ul>
+   */
   private final StatusSignal<Double> turnClosedLoopOutput;
-  private final StatusSignal<Double> turnCurrent;
-
+  /**
+   * If the turn motor should be inverted or not. A positive control input should mean that the
+   * azimuth should rotate counterclockwise, so if the turn motor needs to rotate clockwise to
+   * achieve that, set this to true.
+   */
   private final boolean isTurnMotorInverted = true;
+  /**
+   * Due to the nature of mounting magnets for absolute encoders, it is practically impossible to
+   * line up magnetic north with forwards on the module. This value is subtracted from the raw
+   * detected position, such that 0 is actually forwards on the azimuth.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Rotations
+   *       </ul>
+   * </ul>
+   */
   private final Rotation2d absoluteEncoderOffset;
 
+  /**
+   * Constructs a new TalonFX-based swerve module IO interface.
+   *
+   * @param index The index of the module.
+   *     <ul>
+   *       <li><b>Position of module from index</b>
+   *           <ul>
+   *             <li>0: Front Left
+   *             <li>1: Front Right
+   *             <li>2: Back Left
+   *             <li>3: Back Right
+   *           </ul>
+   *     </ul>
+   */
   public ModuleIOTalonFX(int index) {
     switch (index) {
-      case 0:
+      case 0: // Front Left module
         driveTalon = new TalonFX(0, "drivebase");
         turnTalon = new TalonFX(1, "drivebase");
         cancoder = new CANcoder(2, "drivebase");
         absoluteEncoderOffset = Rotation2d.fromDegrees(0); // TODO: Calibrate
         break;
-      case 1:
+      case 1: // Front Right modules
         driveTalon = new TalonFX(3, "drivebase");
         turnTalon = new TalonFX(4, "drivebase");
         cancoder = new CANcoder(5, "drivebase");
         absoluteEncoderOffset = Rotation2d.fromDegrees(0); // TODO: Calibrate
         break;
-      case 2:
+      case 2: // Back Left modules
         driveTalon = new TalonFX(6, "drivebase");
         turnTalon = new TalonFX(7, "drivebase");
         cancoder = new CANcoder(8, "drivebase");
         absoluteEncoderOffset = Rotation2d.fromDegrees(0); // TODO: Calibrate
         break;
-      case 3:
+      case 3: // Back Right modules
         driveTalon = new TalonFX(9, "drivebase");
         turnTalon = new TalonFX(10, "drivebase");
         cancoder = new CANcoder(11, "drivebase");
         absoluteEncoderOffset = Rotation2d.fromDegrees(0); // TODO: Calibrate
         break;
-      default:
+      default: // If somehow a 5th module is constructed, error
         throw new RuntimeException("Invalid module index");
     }
 
     var driveConfig = new TalonFXConfiguration();
-    driveConfig.CurrentLimits.StatorCurrentLimit = 100.0;
-    driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    // The rotations output of the motor encoder will be divided by this value.
     driveConfig.Feedback.SensorToMechanismRatio =
         Module.DRIVE_GEAR_RATIO / Module.DRIVE_WHEEL_CIRCUMFERENCE;
+    // PIDF tuning values. NONE OF THESE VALUES SHOULD BE NEGATIVE, IF THEY ARE YOU DONE GOOFED
+    // SOMEWHERE
     driveConfig.Slot0.kP = 0.05; // % output per m/s of error
+    // kI is typically unnecesary for driving as there's no significant factors that can prevent a
+    // PID controller from hitting its target, such as gravity for an arm. Factors like friction and
+    // inertia can be accounted for using kS and kA.
     driveConfig.Slot0.kI = 0; // % output per m of integrated error
     driveConfig.Slot0.kD = 0; // % output per m/s^2 of error derivative
     driveConfig.Slot0.kS = 0; // Amps of additional current needed to overcome friction
+    // kV should be at/near 0 due to TalonFX torqueControlFOC commutation making this unnecesary.
+    // See
+    // https://pro.docs.ctr-electronics.com/en/latest/docs/api-reference/device-specific/talonfx/closed-loop-requests.html#choosing-output-type
     driveConfig.Slot0.kV = 0; // Amps of additional current per m/s of velocity setpoint
+    // kA can be tuned independently of all over control parameters. If the actual acceleration is
+    // below requested acceleration, bump this up, if it's above requested acceleration, bump this
+    // down.
     driveConfig.Slot0.kA = 0; // Amps of additional current per m/s^2 of acceleration setpoint
+    // MotionMagicAcceleration should be close to the maximum acceleration you can handle given your
+    // robot's mass and moment of inertia. Choreo has a tool to approximate this.
     driveConfig.MotionMagic.MotionMagicAcceleration = 14; // Max allowed acceleration, in m/s^2
+    // MotionMagicJerk should be ~10-20x the acceleration value, meaning roughly 0.05-0.1 to max
+    // acceleration. Is mainly used to smooth out motion profiles.
     driveConfig.MotionMagic.MotionMagicJerk = 140; // Max allowed jerk, in m/s^3
     driveTalon.getConfigurator().apply(driveConfig);
     setDriveBrakeMode(true);
 
+    // See drive config for comments on these, similar concepts apply for turning.
     var turnConfig = new TalonFXConfiguration();
-    turnConfig.CurrentLimits.StatorCurrentLimit = 40.0;
-    turnConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     turnConfig.Feedback.SensorToMechanismRatio = 1;
     turnConfig.Feedback.RotorToSensorRatio = Module.TURN_GEAR_RATIO;
     turnConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
@@ -140,6 +334,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     cancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
     cancoder.getConfigurator().apply(cancoderConfig);
 
+    // Set up the StatusSignals for getting values.
     timestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
 
     drivePosition = driveTalon.getPosition();
@@ -148,7 +343,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveVelocity = driveTalon.getVelocity();
     driveAppliedVolts = driveTalon.getMotorVoltage();
     driveClosedLoopOutput = driveTalon.getClosedLoopOutput();
-    driveCurrent = driveTalon.getStatorCurrent();
+    driveAppliedCurrent = driveTalon.getStatorCurrent();
 
     turnAbsolutePosition = cancoder.getAbsolutePosition();
     turnPosition = turnTalon.getPosition();
@@ -157,21 +352,25 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnVelocity = turnTalon.getVelocity();
     turnAppliedVolts = turnTalon.getMotorVoltage();
     turnClosedLoopOutput = turnTalon.getClosedLoopOutput();
-    turnCurrent = turnTalon.getStatorCurrent();
+    turnAppliedCurrent = turnTalon.getStatorCurrent();
 
+    // Boost the rate at which drive position and turn position are sent over CAN for async
+    // odometry.
     BaseStatusSignal.setUpdateFrequencyForAll(
         Module.ODOMETRY_FREQUENCY, drivePosition, turnPosition);
+    // Lower the rate at which everything else we need is send over CAN to reduce CAN bus usage.
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         driveVelocity,
         driveAppliedVolts,
         driveClosedLoopOutput,
-        driveCurrent,
+        driveAppliedCurrent,
         turnAbsolutePosition,
         turnVelocity,
         turnAppliedVolts,
         turnClosedLoopOutput,
-        turnCurrent);
+        turnAppliedCurrent);
+    // Completely disable sending of any data we don't need to further reduce CAN bus usage.
     driveTalon.optimizeBusUtilization();
     turnTalon.optimizeBusUtilization();
   }
@@ -183,25 +382,25 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveVelocity,
         driveAppliedVolts,
         driveClosedLoopOutput,
-        driveCurrent,
+        driveAppliedCurrent,
         turnAbsolutePosition,
         turnPosition,
         turnVelocity,
         turnAppliedVolts,
         turnClosedLoopOutput,
-        turnCurrent);
+        turnAppliedCurrent);
 
     inputs.drivePositionMeters = drivePosition.getValueAsDouble();
     inputs.driveVelocityMetersPerSec = driveVelocity.getValueAsDouble();
     inputs.driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
     inputs.driveAppliedDutyCycle = driveClosedLoopOutput.getValueAsDouble();
-    inputs.driveCurrentAmps = new double[] {driveCurrent.getValueAsDouble()};
+    inputs.driveAppliedCurrentAmps = new double[] {driveAppliedCurrent.getValueAsDouble()};
 
     inputs.turnAbsolutePosition = Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble());
     inputs.turnVelocityRadPerSec = Units.rotationsToRadians(turnVelocity.getValueAsDouble());
     inputs.turnAppliedVolts = turnAppliedVolts.getValueAsDouble();
-    inputs.turnAppliedDutyCycle = turnClosedLoopOutput.getValueAsDouble();
-    inputs.turnCurrentAmps = new double[] {turnCurrent.getValueAsDouble()};
+    inputs.turnAppliedOutput = turnClosedLoopOutput.getValueAsDouble();
+    inputs.turnAppliedCurrentAmps = new double[] {turnAppliedCurrent.getValueAsDouble()};
 
     inputs.odometryTimestamps =
         timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
@@ -216,20 +415,32 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnPositionQueue.clear();
   }
 
+  /**
+   * The control request for accelerating the drive motor up to a specified wheel velocity. Is
+   * mutable.
+   */
+  MotionMagicVelocityTorqueCurrentFOC driveControlRequest =
+      new MotionMagicVelocityTorqueCurrentFOC(0);
+
   @Override
   public void setDriveVelocity(double velocity) {
-    driveTalon.setControl(new MotionMagicVelocityTorqueCurrentFOC(velocity));
+    driveControlRequest.Velocity = velocity;
+    driveTalon.setControl(driveControlRequest);
   }
+
+  /** The control request for moving the turn motor to a specified position. Is mutable. */
+  MotionMagicTorqueCurrentFOC turnControlRequest = new MotionMagicTorqueCurrentFOC(0);
 
   @Override
   public void setTurnPosition(Rotation2d position) {
-    turnTalon.setControl(new MotionMagicTorqueCurrentFOC(position.getRotations()));
+    turnControlRequest.Position = position.getRotations();
+    turnTalon.setControl(turnControlRequest);
   }
 
   @Override
   public void stop() {
-    driveTalon.stopMotor();
-    turnTalon.stopMotor();
+    driveTalon.setControl(new StaticBrake());
+    driveTalon.setControl(new StaticBrake());
   }
 
   @Override
