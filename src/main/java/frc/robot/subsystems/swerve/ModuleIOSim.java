@@ -52,12 +52,12 @@ public class ModuleIOSim implements ModuleIO {
             -1,
             1);
     inputs.driveAppliedVolts = inputs.driveAppliedDutyCycle * 12;
-    inputs.driveCurrentAmps = new double[] {driveMotorSim.getCurrentDrawAmps()};
+    inputs.driveAppliedCurrentAmps = new double[] {driveMotorSim.getCurrentDrawAmps()};
 
-    inputs.turnAppliedDutyCycle =
+    inputs.turnAppliedOutput =
         MathUtil.clamp(turnPID.calculate(inputs.turnAbsolutePosition.getRotations()), -1, 1);
-    inputs.turnAppliedVolts = inputs.turnAppliedDutyCycle * 12;
-    inputs.turnCurrentAmps = new double[] {turnMotorSim.getCurrentDrawAmps()};
+    inputs.turnAppliedVolts = inputs.turnAppliedOutput * 12;
+    inputs.turnAppliedCurrentAmps = new double[] {turnMotorSim.getCurrentDrawAmps()};
 
     driveMotorSim.setInputVoltage(inputs.driveAppliedVolts);
     turnMotorSim.setInputVoltage(inputs.turnAppliedVolts);

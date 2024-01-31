@@ -25,13 +25,13 @@ public interface ModuleIO {
     public double driveVelocityMetersPerSec = 0.0;
     public double driveAppliedVolts = 0.0;
     public double driveAppliedDutyCycle = 0.0;
-    public double[] driveCurrentAmps = new double[] {};
+    public double[] driveAppliedCurrentAmps = new double[] {};
 
     public Rotation2d turnAbsolutePosition = new Rotation2d();
     public double turnVelocityRadPerSec = 0.0;
     public double turnAppliedVolts = 0.0;
-    public double turnAppliedDutyCycle = 0.0;
-    public double[] turnCurrentAmps = new double[] {};
+    public double turnAppliedOutput = 0.0;
+    public double[] turnAppliedCurrentAmps = new double[] {};
 
     public double[] odometryTimestamps = new double[] {};
     public double[] odometryDrivePositionsMeters = new double[] {};

@@ -41,7 +41,6 @@ import java.util.Queue;
  * "/Drive/ModuleX/TurnAbsolutePosition"
  */
 public class ModuleIOSparkMax implements ModuleIO {
-
   private final CANSparkMax driveSparkMax;
   private final CANSparkMax turnSparkMax;
 
@@ -160,16 +159,16 @@ public class ModuleIOSparkMax implements ModuleIO {
     inputs.driveAppliedDutyCycle = driveSparkMax.getAppliedOutput();
     // Why does REV not have a stator voltage getter
     inputs.driveAppliedVolts = inputs.driveAppliedDutyCycle * driveSparkMax.getBusVoltage();
-    inputs.driveCurrentAmps = new double[] {driveSparkMax.getOutputCurrent()};
+    inputs.driveAppliedCurrentAmps = new double[] {driveSparkMax.getOutputCurrent()};
     inputs.drivePositionMeters = driveEncoder.getPosition();
     inputs.driveVelocityMetersPerSec = driveEncoder.getVelocity();
 
     inputs.turnAbsolutePosition = getTurnAbsolutePosition();
     turnRelativeEncoder.setPosition(inputs.turnAbsolutePosition.getRotations());
     inputs.turnVelocityRadPerSec = Units.rotationsToRadians(turnRelativeEncoder.getVelocity());
-    inputs.turnAppliedDutyCycle = driveSparkMax.getAppliedOutput();
-    inputs.driveAppliedVolts = inputs.turnAppliedDutyCycle * driveSparkMax.getBusVoltage();
-    inputs.turnCurrentAmps = new double[] {turnSparkMax.getOutputCurrent()};
+    inputs.turnAppliedOutput = driveSparkMax.getAppliedOutput();
+    inputs.driveAppliedVolts = inputs.turnAppliedOutput * driveSparkMax.getBusVoltage();
+    inputs.turnAppliedCurrentAmps = new double[] {turnSparkMax.getOutputCurrent()};
 
     inputs.odometryTimestamps =
         timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
