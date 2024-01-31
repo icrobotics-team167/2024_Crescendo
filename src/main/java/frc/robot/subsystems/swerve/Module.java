@@ -21,21 +21,124 @@ import edu.wpi.first.math.util.Units;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
+  /**
+   * The rate at which module states are measured. If set too high, can cause saturation of the CAN
+   * network. CAN bus usage should never go above 80%, so lower this value if Driver Station reports
+   * too high of CAN utilization.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Hertz
+   *       </ul>
+   * </ul>
+   */
   static final double ODOMETRY_FREQUENCY = 250.0;
   // Gear ratios for SDS MK4i L2, adjust as necessary
+  /**
+   * The gear ratio between the drive motor and the module wheel.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Gear ratio
+   *       </ul>
+   * </ul>
+   */
   static final double DRIVE_GEAR_RATIO = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
+  /**
+   * The gear ratio between the turn motor and the module.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Gear ratio
+   *       </ul>
+   * </ul>
+   */
   static final double TURN_GEAR_RATIO = 150.0 / 7.0;
+  /**
+   * The circumference of the module wheel.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Meters
+   *       </ul>
+   * </ul>
+   */
   static final double DRIVE_WHEEL_CIRCUMFERENCE = Units.inchesToMeters(4 * Math.PI);
 
+  /** The module's IO interface, used to communicate with the actual hardware. */
   private final ModuleIO io;
+  /** The data inputs from the IO interface. */
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
+  /**
+   * The index of the module.
+   *
+   * <ul>
+   *   <li><b>Position of module from index</b>
+   *       <ul>
+   *         <li>0: Front Left
+   *         <li>1: Front Right
+   *         <li>2: Back Left
+   *         <li>3: Back Right
+   *       </ul>
+   * </ul>
+   */
   private final int index;
 
-  private Rotation2d angleSetpoint =
-      new Rotation2d(); // Setpoint for closed loop control, null for open loop
-  private double speedSetpoint = 0; // Setpoint for closed loop control, null for open loop
+  /**
+   * The module's target rotation.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>{@link Rotation2d}
+   *       </ul>
+   * </ul>
+   */
+  private Rotation2d angleSetpoint = new Rotation2d(); // Setpoint for closed loop control
+  /**
+   * The module's target velocity.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Meters per second
+   *       </ul>
+   * </ul>
+   */
+  private double speedSetpoint = 0; // Setpoint for closed loop control
+
+  /**
+   * The current states of the swerve modules.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Azimuth: {@link Rotation2d}
+   *         <li>Driving: Meters per second
+   *       </ul>
+   * </ul>
+   */
   private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
 
+  /**
+   * Constructs a new swerve module.
+   *
+   * @param io The module's IO interface.
+   * @param index The index of the module.
+   *     <ul>
+   *       <li><b>Position of module from index</b>
+   *           <ul>
+   *             <li>0: Front Left
+   *             <li>1: Front Right
+   *             <li>2: Back Left
+   *             <li>3: Back Right
+   *           </ul>
+   *     </ul>
+   */
   public Module(ModuleIO io, int index) {
     this.io = io;
     this.index = index;
@@ -50,6 +153,7 @@ public class Module {
     io.updateInputs(inputs);
   }
 
+  /** Set the desired positions of the modules every robot tick. */
   public void periodic() {
     Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
 
