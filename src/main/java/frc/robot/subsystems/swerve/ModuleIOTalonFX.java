@@ -103,7 +103,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveConfig.CurrentLimits.StatorCurrentLimit = 100.0;
     driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     driveConfig.Feedback.SensorToMechanismRatio =
-        Module.DRIVE_GEAR_RATIO * Module.DRIVE_WHEEL_CIRCUMFERENCE;
+        Module.DRIVE_GEAR_RATIO / Module.DRIVE_WHEEL_CIRCUMFERENCE;
     driveConfig.Slot0.kP = 0.05; // % output per m/s of error
     driveConfig.Slot0.kI = 0; // % output per m of integrated error
     driveConfig.Slot0.kD = 0; // % output per m/s^2 of error derivative
