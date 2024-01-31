@@ -98,7 +98,7 @@ public class Module {
    *       </ul>
    * </ul>
    */
-  private Rotation2d angleSetpoint = new Rotation2d(); // Setpoint for closed loop control
+  private Rotation2d angleSetpoint = new Rotation2d();
   /**
    * The module's target velocity.
    *
@@ -109,7 +109,9 @@ public class Module {
    *       </ul>
    * </ul>
    */
-  private double speedSetpoint = 0; // Setpoint for closed loop control
+  private double speedSetpoint = 0;
+
+  private boolean velocityControl = true;
 
   /**
    * The current states of the swerve modules.
@@ -159,14 +161,19 @@ public class Module {
 
     // Run closed loop turn control
     io.setTurnPosition(angleSetpoint);
-    // Scale velocity based on turn error
-    // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
-    // towards the setpoint, its velocity should increase. This is achieved by
-    // taking the component of the velocity in the direction of the setpoint.
-    double adjustedSpeedSetpoint =
-        speedSetpoint
-            * Math.cos(inputs.turnAbsolutePosition.getRadians() - angleSetpoint.getRadians());
-    io.setDriveVelocity(adjustedSpeedSetpoint);
+
+    if (velocityControl) {
+      // Scale velocity based on turn error
+      // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
+      // towards the setpoint, its velocity should increase. This is achieved by
+      // taking the component of the velocity in the direction of the setpoint.
+      double adjustedSpeedSetpoint =
+          speedSetpoint
+              * Math.cos(inputs.turnAbsolutePosition.getRadians() - angleSetpoint.getRadians());
+      io.setDriveVelocity(adjustedSpeedSetpoint);
+    } else {
+      io.setRawDrive(speedSetpoint);
+    }
 
     // Calculate positions for odometry
     int sampleCount = inputs.odometryTimestamps.length; // All signals are sampled together
@@ -180,6 +187,7 @@ public class Module {
 
   /** Runs the module with the specified setpoint state. Returns the optimized state. */
   public SwerveModuleState runSetpoint(SwerveModuleState state) {
+    velocityControl = true;
     // Optimize state based on current angle
     // Controllers run in "periodic" when the setpoint is not null
     var optimizedState = SwerveModuleState.optimize(state, getAngle());
@@ -189,6 +197,12 @@ public class Module {
     speedSetpoint = optimizedState.speedMetersPerSecond;
 
     return optimizedState;
+  }
+
+  public void runCharacterization(double voltage) {
+    angleSetpoint = new Rotation2d();
+    velocityControl = false;
+    speedSetpoint = voltage;
   }
 
   /** Disables all outputs to motors. */
@@ -235,10 +249,5 @@ public class Module {
   /** Returns the timestamps of the samples received this cycle. */
   public double[] getOdometryTimestamps() {
     return inputs.odometryTimestamps;
-  }
-
-  /** Returns the drive velocity in radians/sec. */
-  public double getCharacterizationVelocity() {
-    return inputs.driveVelocityMetersPerSec;
   }
 }

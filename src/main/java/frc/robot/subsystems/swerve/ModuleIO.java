@@ -43,6 +43,8 @@ public interface ModuleIO {
 
   public default void setDriveVelocity(double velocity) {}
 
+  public default void setRawDrive(double rawUnits) {}
+
   public default void setTurnPosition(Rotation2d position) {}
 
   public default void stop() {}

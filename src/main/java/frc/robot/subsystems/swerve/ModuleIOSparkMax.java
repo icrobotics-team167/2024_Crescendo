@@ -190,6 +190,11 @@ public class ModuleIOSparkMax implements ModuleIO {
   }
 
   @Override
+  public void setRawDrive(double voltage) {
+    driveSparkMax.setVoltage(voltage);
+  }
+
+  @Override
   public void setTurnPosition(Rotation2d position) {
     turnPIDController.setReference(position.getRotations(), ControlType.kPosition);
   }

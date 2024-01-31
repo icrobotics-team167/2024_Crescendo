@@ -47,17 +47,11 @@ import java.util.Queue;
  * "/Drive/ModuleX/TurnAbsolutePosition"
  */
 public class ModuleIOTalonFX implements ModuleIO {
-  /**
-   * The TalonFX motor controller for the drive motor.
-   */
+  /** The TalonFX motor controller for the drive motor. */
   private final TalonFX driveTalon;
-  /**
-   * The TalonFX motor controller for the turn motor.
-   */
+  /** The TalonFX motor controller for the turn motor. */
   private final TalonFX turnTalon;
-  /**
-   * The CANcoder for the azimuth.
-   */
+  /** The CANcoder for the azimuth. */
   private final CANcoder cancoder;
 
   /**
@@ -304,8 +298,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     // MotionMagicAcceleration should be close to the maximum acceleration you can handle given your
     // robot's mass and moment of inertia. Choreo has a tool to approximate this.
     driveConfig.MotionMagic.MotionMagicAcceleration = 14; // Max allowed acceleration, in m/s^2
-    // MotionMagicJerk should be ~10-20x the acceleration value, meaning roughly 0.05-0.1 to max
-    // acceleration. Is mainly used to smooth out motion profiles.
+    // MotionMagicJerk should be ~10-20x the acceleration value, meaning roughly 0.05-0.1 seconds to
+    // max acceleration. Is mainly used to smooth out motion profiles.
     driveConfig.MotionMagic.MotionMagicJerk = 140; // Max allowed jerk, in m/s^3
     driveTalon.getConfigurator().apply(driveConfig);
     setDriveBrakeMode(true);
@@ -426,6 +420,17 @@ public class ModuleIOTalonFX implements ModuleIO {
   public void setDriveVelocity(double velocity) {
     driveControlRequest.Velocity = velocity;
     driveTalon.setControl(driveControlRequest);
+  }
+
+  /**
+   * The control request for accelerating the drive motor using a raw amperage value. Is mutable.
+   */
+  TorqueCurrentFOC rawCurrentControlRequest = new TorqueCurrentFOC(0);
+
+  @Override
+  public void setRawDrive(double rawUnits) {
+    rawCurrentControlRequest.Output = rawUnits;
+    driveTalon.setControl(rawCurrentControlRequest);
   }
 
   /** The control request for moving the turn motor to a specified position. Is mutable. */

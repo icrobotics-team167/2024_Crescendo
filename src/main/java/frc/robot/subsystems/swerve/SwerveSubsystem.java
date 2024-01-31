@@ -29,9 +29,15 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism;
 import frc.robot.Constants.Driving;
 import frc.robot.subsystems.vision.VisionPoseEstimator;
 import frc.robot.util.LocalADStarAK;
@@ -196,7 +202,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
   /** Stops the drive. */
   public void stop() {
-    runVelocity(new ChassisSpeeds());
+    for (int i = 0; i < 4; i++) {
+      modules[i].stop();
+    }
   }
 
   public void setSlowmode() {
@@ -284,5 +292,57 @@ public class SwerveSubsystem extends SubsystemBase {
       new Translation2d(-TRACK_LENGTH / 2.0, TRACK_WIDTH / 2.0),
       new Translation2d(-TRACK_LENGTH / 2.0, -TRACK_WIDTH / 2.0)
     };
+  }
+
+  SysIdRoutine driveSysIDRoutine;
+
+  /**
+   * Returns a command to run system identification.
+   *
+   * <p>NOTE FOR CTRE USERS: Using sysid with TorqueControlFOC is a little jank, since
+   * torque-control commutation is not officially supported by the sysid tool. When running sysid
+   * with TorqueControlFOC, although everything in the tool says "voltage," you have to pretend it's
+   * amperage. Velocity will also be wacky. In standard voltage control, voltage is directly
+   * controlling velocity, so quasistatic tests will have a stable velocity and dynamic tests will
+   * have a linearly increasing velocity. However, in TorqueControlFOC, amperage controls
+   * acceleration, so quasistatic tests will be linear and dynamic tests will be quadratic in their
+   * velocities.
+   *
+   * @return The sysid command.
+   */
+  public Command getSysID() {
+    return Commands.sequence(
+        Commands.runOnce(
+            () ->
+                driveSysIDRoutine =
+                    new SysIdRoutine(
+                        new Config(
+                            null,
+                            null,
+                            null,
+                            (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
+                        new Mechanism((voltage) -> runSysID(voltage), null, this))),
+        driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
+        Commands.runOnce(() -> stop()),
+        Commands.waitSeconds(2),
+        driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kReverse),
+        Commands.runOnce(() -> stop()),
+        Commands.waitSeconds(2),
+        driveSysIDRoutine.dynamic(SysIdRoutine.Direction.kForward),
+        Commands.runOnce(() -> stop()),
+        Commands.waitSeconds(2),
+        driveSysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse),
+        Commands.runOnce(() -> stop()));
+  }
+
+  /**
+   * Tells the modules to run on raw voltage (or amperage) for characterization purposes.
+   *
+   * @param voltage The commanded voltage.
+   */
+  private void runSysID(Measure<Voltage> voltage) {
+    for (int i = 0; i < 4; i++) {
+      modules[i].runCharacterization(voltage.baseUnitMagnitude());
+    }
   }
 }
