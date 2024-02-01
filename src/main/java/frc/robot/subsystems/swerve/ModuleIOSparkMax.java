@@ -155,9 +155,11 @@ public class ModuleIOSparkMax implements ModuleIO {
     driveSparkMax.restoreFactoryDefaults();
     turnSparkMax.restoreFactoryDefaults();
 
+    // Set up a timeout for applying settings.
     driveSparkMax.setCANTimeout(250);
     turnSparkMax.setCANTimeout(250);
 
+    // Initialize encoders
     driveEncoder = driveSparkMax.getEncoder();
     turnRelativeEncoder = turnSparkMax.getEncoder();
 
@@ -167,6 +169,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     driveSparkMax.enableVoltageCompensation(12.0);
     turnSparkMax.enableVoltageCompensation(12.0);
 
+    // The motor output in rotations is multiplied by this factor.
     driveEncoder.setPositionConversionFactor(
         Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters) / Module.DRIVE_GEAR_RATIO);
     driveEncoder.setVelocityConversionFactor(
@@ -182,7 +185,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     turnRelativeEncoder.setMeasurementPeriod(10);
     turnRelativeEncoder.setAverageDepth(2);
 
-    // PIDF tuning values. NONE OF THESE VALUES SHOULD BE NEGATIVE, IF THEY ARE YOU DONE GOOFED
+    // PIDF tuning values. NONE OF THESE VALUES SHOULD BE NEGATIVE, IF THEY ARE YA DONE GOOFED
     // SOMEWHERE
     drivePIDController = driveSparkMax.getPIDController();
     drivePIDController.setP(0.05); // % Output per m/s of error

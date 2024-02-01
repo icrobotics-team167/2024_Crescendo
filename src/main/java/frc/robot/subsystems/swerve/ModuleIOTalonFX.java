@@ -273,7 +273,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     // The rotations output of the motor encoder will be divided by this value.
     driveConfig.Feedback.SensorToMechanismRatio =
         Module.DRIVE_GEAR_RATIO / Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters);
-    // PIDF tuning values. NONE OF THESE VALUES SHOULD BE NEGATIVE, IF THEY ARE YOU DONE GOOFED
+    // PIDF tuning values. NONE OF THESE VALUES SHOULD BE NEGATIVE, IF THEY ARE YA DONE GOOFED
     // SOMEWHERE
     driveConfig.Slot0.kP = 0.05; // % output per m/s of error
     // kI is typically unnecesary for driving as there's no significant factors that can prevent a
@@ -336,7 +336,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveVelocity = driveTalon.getVelocity();
     driveAppliedVolts = driveTalon.getMotorVoltage();
     driveClosedLoopOutput = driveTalon.getClosedLoopOutput();
-    driveAppliedCurrent = driveTalon.getStatorCurrent();
+    driveAppliedCurrent = driveTalon.getTorqueCurrent();
 
     turnAbsolutePosition = cancoder.getAbsolutePosition();
     turnPosition = turnTalon.getPosition();
@@ -345,7 +345,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnVelocity = turnTalon.getVelocity();
     turnAppliedVolts = turnTalon.getMotorVoltage();
     turnClosedLoopOutput = turnTalon.getClosedLoopOutput();
-    turnAppliedCurrent = turnTalon.getStatorCurrent();
+    turnAppliedCurrent = turnTalon.getTorqueCurrent();
 
     // Boost the rate at which drive position and turn position are sent over CAN for async
     // odometry.

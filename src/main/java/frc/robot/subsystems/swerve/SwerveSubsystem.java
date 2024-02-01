@@ -118,7 +118,10 @@ public class SwerveSubsystem extends SubsystemBase {
             DriverStation.getAlliance().isPresent()
                 && DriverStation.getAlliance().get() == Alliance.Red,
         this);
+    // Replace the default pathfinder with an AdvantageKit-compatible version
     Pathfinding.setPathfinder(new LocalADStarAK());
+
+    // Tell PathPlanner that it should log data to AdvantageKit
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
           Logger.recordOutput(
@@ -221,10 +224,12 @@ public class SwerveSubsystem extends SubsystemBase {
     }
   }
 
+  /** Sets the slowmode state. */
   public void setSlowmode() {
     slowmode = !Driving.SLOWMODE_DEFAULT;
   }
 
+  /** Resets slowmode back to its default state. */
   public void unsetSlowmode() {
     slowmode = Driving.SLOWMODE_DEFAULT;
   }
