@@ -14,10 +14,12 @@
 
 package frc.robot.subsystems.swerve;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.*;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -46,17 +48,8 @@ public class Module {
    * </ul>
    */
   static final double DRIVE_GEAR_RATIO = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
-  /**
-   * The max free speed of the motor.
-   * 
-   * <ul>
-   *   <li><b>Units:</b>
-   *       <ul>
-   *         <li>Rotations per minute
-   *       </ul>
-   * </ul>
-   */
-  static final double DRIVE_MAX_RPM = 5800;
+  /** The max free speed of the motor. */
+  static final Measure<Velocity<Angle>> DRIVE_MOTOR_MAX_VEL = RPM.of(5800);
   /**
    * The gear ratio between the turn motor and the module.
    *
@@ -74,17 +67,8 @@ public class Module {
    * achieve that, set this to true.
    */
   static final boolean TURN_MOTOR_INVERTED = true;
-  /**
-   * The circumference of the module wheel.
-   *
-   * <ul>
-   *   <li><b>Units:</b>
-   *       <ul>
-   *         <li>Meters
-   *       </ul>
-   * </ul>
-   */
-  static final double DRIVE_WHEEL_CIRCUMFERENCE = Units.inchesToMeters(4 * Math.PI);
+  /** The circumference of the module wheel. */
+  static final Measure<Distance> DRIVE_WHEEL_CIRCUMFERENCE = Inches.of(4 * Math.PI);
 
   /** The module's IO interface, used to communicate with the actual hardware. */
   private final ModuleIO io;
@@ -187,7 +171,7 @@ public class Module {
       double adjustedSpeedSetpoint =
           speedSetpoint
               * Math.cos(inputs.turnAbsolutePosition.getRadians() - angleSetpoint.getRadians());
-      io.setDriveVelocity(adjustedSpeedSetpoint);
+      io.setDriveVelocity(MetersPerSecond.of(adjustedSpeedSetpoint));
     } else {
       io.setRawDrive(speedSetpoint);
     }
@@ -238,14 +222,14 @@ public class Module {
     return inputs.turnAbsolutePosition;
   }
 
-  /** Returns the current drive position of the module in meters. */
-  public double getPositionMeters() {
-    return inputs.drivePositionMeters;
+  /** Returns the current drive position of the module. */
+  public Measure<Distance> getPositionMeters() {
+    return inputs.drivePosition;
   }
 
-  /** Returns the current drive velocity of the module in meters per second. */
-  public double getVelocityMetersPerSec() {
-    return inputs.driveVelocityMetersPerSec;
+  /** Returns the current drive velocity of the module. */
+  public Measure<Velocity<Distance>> getVelocityMetersPerSec() {
+    return inputs.driveVelocity;
   }
 
   /** Returns the module position (turn angle and drive position). */

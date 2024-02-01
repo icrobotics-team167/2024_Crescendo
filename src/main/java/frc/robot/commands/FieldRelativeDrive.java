@@ -14,6 +14,8 @@
 
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -60,9 +62,9 @@ public class FieldRelativeDrive extends Command {
 
     drivebase.runVelocity(
         ChassisSpeeds.fromFieldRelativeSpeeds(
-            x * drivebase.getMaxLinearSpeedMetersPerSec(),
-            y * drivebase.getMaxLinearSpeedMetersPerSec(),
-            rot * drivebase.getMaxAngularSpeedRadPerSec(),
+            x * drivebase.getMaxLinearVelocity().in(MetersPerSecond),
+            y * drivebase.getMaxLinearVelocity().in(MetersPerSecond),
+            rot * drivebase.getMaxAngularVelocity().in(RadiansPerSecond),
             isFlipped
                 ? drivebase.getRotation().plus(new Rotation2d(Math.PI))
                 : drivebase.getRotation()));

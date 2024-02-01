@@ -14,6 +14,8 @@
 
 package frc.robot.subsystems.swerve;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -28,7 +30,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -47,62 +48,23 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends SubsystemBase {
-  /**
-   * The max linear speed of the robot.
-   *
-   * <ul>
-   *   <li><b>Units:</b>
-   *       <ul>
-   *         <li>Meters per second
-   *       </ul>
-   * </ul>
-   */
-  private static final double MAX_LINEAR_SPEED =
-      ((Module.DRIVE_MAX_RPM / 60) / Module.DRIVE_GEAR_RATIO) * Module.DRIVE_WHEEL_CIRCUMFERENCE;
-  /**
-   * The distance between the front modules and the back modules.
-   *
-   * <ul>
-   *   <li><b>Units:</b>
-   *       <ul>
-   *         <li>Meters
-   *       </ul>
-   * </ul>
-   */
-  private static final double TRACK_LENGTH = Units.inchesToMeters(35.0); // Front-back length
-  /**
-   * The distance between the left modules and the right modules.
-   *
-   * <ul>
-   *   <li><b>Units:</b>
-   *       <ul>
-   *         <li>Meters
-   *       </ul>
-   * </ul>
-   */
-  private static final double TRACK_WIDTH = Units.inchesToMeters(34.0); // Left-right width
+  /** The max linear speed of the robot. */
+  private static final Measure<Velocity<Distance>> MAX_LINEAR_SPEED =
+      MetersPerSecond.of(
+          (Module.DRIVE_MOTOR_MAX_VEL.in(RotationsPerSecond) / Module.DRIVE_GEAR_RATIO)
+              * Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters));
+  /** The distance between the front modules and the back modules. */
+  private static final Measure<Distance> TRACK_LENGTH = Inches.of(35);
+  /** The distance between the left modules and the right modules. */
+  private static final Measure<Distance> TRACK_WIDTH = Inches.of(35);
   /**
    * The radius of the drivebase, as measured from the center of the robot to one of the modules.
-   *
-   * <ul>
-   *   <li><b>Units:</b>
-   *       <ul>
-   *         <li>Meters
-   *       </ul>
-   * </ul>
    */
-  private static final double DRIVE_BASE_RADIUS = Math.hypot(TRACK_LENGTH / 2.0, TRACK_WIDTH / 2.0);
-  /**
-   * The max angular velocity of the drivebase.
-   *
-   * <ul>
-   *   <li><b>Units:</b>
-   *       <ul>
-   *         <li>Radians per second
-   *       </ul>
-   * </ul>
-   */
-  private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
+  private static final Measure<Distance> DRIVE_BASE_RADIUS =
+      Meters.of(Math.hypot(TRACK_LENGTH.in(Meters) / 2.0, TRACK_WIDTH.in(Meters) / 2.0));
+  /** The max angular velocity of the drivebase. */
+  private static final Measure<Velocity<Angle>> MAX_ANGULAR_SPEED =
+      RadiansPerSecond.of(MAX_LINEAR_SPEED.in(MetersPerSecond) / DRIVE_BASE_RADIUS.in(Meters));
 
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
@@ -149,7 +111,9 @@ public class SwerveSubsystem extends SubsystemBase {
         () -> kinematics.toChassisSpeeds(getModuleStates()),
         this::runVelocity,
         new HolonomicPathFollowerConfig(
-            MAX_LINEAR_SPEED, DRIVE_BASE_RADIUS, new ReplanningConfig()),
+            MAX_LINEAR_SPEED.in(MetersPerSecond),
+            DRIVE_BASE_RADIUS.in(Meters),
+            new ReplanningConfig()),
         () ->
             DriverStation.getAlliance().isPresent()
                 && DriverStation.getAlliance().get() == Alliance.Red,
@@ -289,7 +253,6 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   /** Returns the module positions (turn angles and drive velocities) for all of the modules. */
-  @AutoLogOutput(key = "SwerveStates/Measured")
   private SwerveModulePosition[] getModulePositions() {
     SwerveModulePosition[] states = new SwerveModulePosition[4];
     for (int i = 0; i < 4; i++) {
@@ -324,23 +287,23 @@ public class SwerveSubsystem extends SubsystemBase {
     poseEstimator.addVisionMeasurement(visionPose, timestamp);
   }
 
-  /** Returns the maximum linear speed in meters per sec. */
-  public double getMaxLinearSpeedMetersPerSec() {
+  /** Returns the maximum linear speed of the drivebase. */
+  public Measure<Velocity<Distance>> getMaxLinearVelocity() {
     return MAX_LINEAR_SPEED;
   }
 
-  /** Returns the maximum angular speed in radians per sec. */
-  public double getMaxAngularSpeedRadPerSec() {
+  /** Returns the maximum angular velocity of the drivebase. */
+  public Measure<Velocity<Angle>> getMaxAngularVelocity() {
     return MAX_ANGULAR_SPEED;
   }
 
   /** Returns an array of module translations. */
   public static Translation2d[] getModuleTranslations() {
     return new Translation2d[] {
-      new Translation2d(TRACK_LENGTH / 2.0, TRACK_WIDTH / 2.0),
-      new Translation2d(TRACK_LENGTH / 2.0, -TRACK_WIDTH / 2.0),
-      new Translation2d(-TRACK_LENGTH / 2.0, TRACK_WIDTH / 2.0),
-      new Translation2d(-TRACK_LENGTH / 2.0, -TRACK_WIDTH / 2.0)
+      new Translation2d(TRACK_LENGTH.in(Meters) / 2.0, TRACK_WIDTH.in(Meters) / 2.0),
+      new Translation2d(TRACK_LENGTH.in(Meters) / 2.0, -TRACK_WIDTH.in(Meters) / 2.0),
+      new Translation2d(-TRACK_LENGTH.in(Meters) / 2.0, TRACK_WIDTH.in(Meters) / 2.0),
+      new Translation2d(-TRACK_LENGTH.in(Meters) / 2.0, -TRACK_WIDTH.in(Meters) / 2.0)
     };
   }
 
@@ -371,7 +334,7 @@ public class SwerveSubsystem extends SubsystemBase {
                             null,
                             null,
                             (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
-                        new Mechanism((voltage) -> runSysID(voltage), null, this))),
+                        new Mechanism((voltage) -> runCharacterization(voltage), null, this))),
         driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
         Commands.runOnce(() -> stop()),
         Commands.waitSeconds(2),
@@ -390,7 +353,7 @@ public class SwerveSubsystem extends SubsystemBase {
    *
    * @param voltage The commanded voltage.
    */
-  private void runSysID(Measure<Voltage> voltage) {
+  private void runCharacterization(Measure<Voltage> voltage) {
     for (int i = 0; i < 4; i++) {
       modules[i].runCharacterization(voltage.baseUnitMagnitude());
     }

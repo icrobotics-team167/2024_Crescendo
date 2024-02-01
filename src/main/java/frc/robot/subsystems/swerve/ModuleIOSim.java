@@ -14,11 +14,13 @@
 
 package frc.robot.subsystems.swerve;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.*;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Robot;
@@ -46,30 +48,34 @@ public class ModuleIOSim implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    inputs.driveAppliedDutyCycle =
+    inputs.driveAppliedOutput =
         MathUtil.clamp(
-            drivePID.calculate(getMetersPerSec(driveMotorSim.getAngularVelocityRadPerSec())),
+            drivePID.calculate(
+                getDistancePerRadian(driveMotorSim.getAngularVelocityRadPerSec())
+                    .per(Second)
+                    .in(MetersPerSecond)),
             -1,
             1);
-    inputs.driveAppliedVolts = inputs.driveAppliedDutyCycle * 12;
+    inputs.driveAppliedVoltage = Volts.of(inputs.driveAppliedOutput * 12);
     inputs.driveAppliedCurrentAmps = new double[] {driveMotorSim.getCurrentDrawAmps()};
 
     inputs.turnAppliedOutput =
         MathUtil.clamp(turnPID.calculate(inputs.turnAbsolutePosition.getRotations()), -1, 1);
-    inputs.turnAppliedVolts = inputs.turnAppliedOutput * 12;
+    inputs.turnAppliedVoltage = Volts.of(inputs.turnAppliedOutput * 12);
     inputs.turnAppliedCurrentAmps = new double[] {turnMotorSim.getCurrentDrawAmps()};
 
-    driveMotorSim.setInputVoltage(inputs.driveAppliedVolts);
-    turnMotorSim.setInputVoltage(inputs.turnAppliedVolts);
+    driveMotorSim.setInputVoltage(inputs.driveAppliedVoltage.in(Volts));
+    turnMotorSim.setInputVoltage(inputs.turnAppliedVoltage.in(Volts));
 
     driveMotorSim.update(Robot.defaultPeriodSecs);
     turnMotorSim.update(Robot.defaultPeriodSecs);
 
-    inputs.driveVelocityMetersPerSec = getMetersPerSec(driveMotorSim.getAngularVelocityRadPerSec());
+    inputs.driveVelocity =
+        getDistancePerRadian(driveMotorSim.getAngularVelocityRadPerSec()).per(Second);
     double driveAngleDiffRad = turnMotorSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs;
-    inputs.drivePositionMeters += getMetersPerSec(driveAngleDiffRad);
+    inputs.drivePosition.plus(getDistancePerRadian(driveAngleDiffRad));
 
-    inputs.turnVelocityRadPerSec = turnMotorSim.getAngularVelocityRadPerSec();
+    inputs.turnVelocity = RadiansPerSecond.of(turnMotorSim.getAngularVelocityRadPerSec());
     double turnAngleDiffRad = turnMotorSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs;
     turnAbsolutePosition =
         new Rotation2d(
@@ -77,14 +83,14 @@ public class ModuleIOSim implements ModuleIO {
                 turnAbsolutePosition.getRadians() + turnAngleDiffRad, -Math.PI, Math.PI));
     inputs.turnAbsolutePosition = turnAbsolutePosition;
 
-    inputs.odometryDrivePositionsMeters = new double[] {inputs.drivePositionMeters};
+    inputs.odometryDrivePositionsMeters = new double[] {inputs.drivePosition.in(Meters)};
     inputs.odometryTurnPositions = new Rotation2d[] {inputs.turnAbsolutePosition};
     inputs.odometryTimestamps = new double[] {Timer.getFPGATimestamp()};
   }
 
   @Override
-  public void setDriveVelocity(double velocity) {
-    drivePID.setSetpoint(velocity);
+  public void setDriveVelocity(Measure<Velocity<Distance>> velocity) {
+    drivePID.setSetpoint(velocity.in(MetersPerSecond));
   }
 
   @Override
@@ -92,7 +98,7 @@ public class ModuleIOSim implements ModuleIO {
     turnPID.setSetpoint(position.getRotations());
   }
 
-  private double getMetersPerSec(double radiansPerSec) {
-    return radiansPerSec * 2 * Units.inchesToMeters(2 * Math.PI);
+  private Measure<Distance> getDistancePerRadian(double radians) {
+    return Inches.of(4 * Math.PI * radians);
   }
 }

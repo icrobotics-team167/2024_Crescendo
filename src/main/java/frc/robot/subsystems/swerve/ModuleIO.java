@@ -14,22 +14,30 @@
 
 package frc.robot.subsystems.swerve;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.*;
 import org.littletonrobotics.junction.AutoLog;
 
 /** The IO Interface for swerve modules. */
 public interface ModuleIO {
   @AutoLog
   public static class ModuleIOInputs {
-    public double drivePositionMeters = 0.0;
-    public double driveVelocityMetersPerSec = 0.0;
-    public double driveAppliedVolts = 0.0;
-    public double driveAppliedDutyCycle = 0.0;
+    /** The current distance that the module has driven so far. */
+    public Measure<Distance> drivePosition = Meters.of(0);
+    /** The current drive velocity of the module. */
+    public Measure<Velocity<Distance>> driveVelocity = MetersPerSecond.of(0);
+    /** The voltage applied to the motor by the motor controller. */
+    public Measure<Voltage> driveAppliedVoltage = Volts.of(0);
+    /** The total output applied to the motor by the closed loop control. */
+    public double driveAppliedOutput = 0.0;
+
     public double[] driveAppliedCurrentAmps = new double[] {};
 
     public Rotation2d turnAbsolutePosition = new Rotation2d();
-    public double turnVelocityRadPerSec = 0.0;
-    public double turnAppliedVolts = 0.0;
+    public Measure<Velocity<Angle>> turnVelocity = RadiansPerSecond.of(0);
+    public Measure<Voltage> turnAppliedVoltage = Volts.of(0);
     public double turnAppliedOutput = 0.0;
     public double[] turnAppliedCurrentAmps = new double[] {};
 
@@ -41,12 +49,32 @@ public interface ModuleIO {
   /** Updates the set of loggable inputs. */
   public default void updateInputs(ModuleIOInputs inputs) {}
 
-  public default void setDriveVelocity(double velocity) {}
+  /**
+   * Sets the target velocity of the drive motor's closed-loop control.
+   *
+   * @param velocity The target velocity.
+   */
+  public default void setDriveVelocity(Measure<Velocity<Distance>> velocity) {}
 
+  /**
+   * Sets the raw open-loop output of the drive motor for system characterization purposes.
+   *
+   * <p>NOTE: Normally the units here would be volts, but when using TorqueControlFOC on TalonFX
+   * modules, the units are in amps.
+   *
+   * @param rawUnits The raw output, in the units used by the control scheme.
+   * @see SwerveSubsystem#getSysID
+   */
   public default void setRawDrive(double rawUnits) {}
 
+  /**
+   * Sets the target position of the azimuth's closed-loop control.
+   *
+   * @param position The target position.
+   */
   public default void setTurnPosition(Rotation2d position) {}
 
+  /** Stops all motor control input. */
   public default void stop() {}
 
   /** Enable or disable brake mode on the drive motor. */

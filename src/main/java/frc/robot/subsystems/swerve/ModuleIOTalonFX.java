@@ -14,6 +14,8 @@
 
 package frc.robot.subsystems.swerve;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -21,7 +23,6 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -31,7 +32,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.*;
 import java.util.Queue;
 
 /**
@@ -271,7 +272,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     var driveConfig = new TalonFXConfiguration();
     // The rotations output of the motor encoder will be divided by this value.
     driveConfig.Feedback.SensorToMechanismRatio =
-        Module.DRIVE_GEAR_RATIO / Module.DRIVE_WHEEL_CIRCUMFERENCE;
+        Module.DRIVE_GEAR_RATIO / Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters);
     // PIDF tuning values. NONE OF THESE VALUES SHOULD BE NEGATIVE, IF THEY ARE YOU DONE GOOFED
     // SOMEWHERE
     driveConfig.Slot0.kP = 0.05; // % output per m/s of error
@@ -382,15 +383,15 @@ public class ModuleIOTalonFX implements ModuleIO {
         turnClosedLoopOutput,
         turnAppliedCurrent);
 
-    inputs.drivePositionMeters = drivePosition.getValueAsDouble();
-    inputs.driveVelocityMetersPerSec = driveVelocity.getValueAsDouble();
-    inputs.driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
-    inputs.driveAppliedDutyCycle = driveClosedLoopOutput.getValueAsDouble();
+    inputs.drivePosition = Meters.of(drivePosition.getValueAsDouble());
+    inputs.driveVelocity = MetersPerSecond.of(driveVelocity.getValueAsDouble());
+    inputs.driveAppliedVoltage = Volts.of(driveAppliedVolts.getValueAsDouble());
+    inputs.driveAppliedOutput = driveClosedLoopOutput.getValueAsDouble();
     inputs.driveAppliedCurrentAmps = new double[] {driveAppliedCurrent.getValueAsDouble()};
 
     inputs.turnAbsolutePosition = Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble());
-    inputs.turnVelocityRadPerSec = Units.rotationsToRadians(turnVelocity.getValueAsDouble());
-    inputs.turnAppliedVolts = turnAppliedVolts.getValueAsDouble();
+    inputs.turnVelocity = RotationsPerSecond.of(turnVelocity.getValueAsDouble());
+    inputs.turnAppliedVoltage = Volts.of(turnAppliedVolts.getValueAsDouble());
     inputs.turnAppliedOutput = turnClosedLoopOutput.getValueAsDouble();
     inputs.turnAppliedCurrentAmps = new double[] {turnAppliedCurrent.getValueAsDouble()};
 
@@ -415,8 +416,8 @@ public class ModuleIOTalonFX implements ModuleIO {
       new MotionMagicVelocityTorqueCurrentFOC(0);
 
   @Override
-  public void setDriveVelocity(double velocity) {
-    driveControlRequest.Velocity = velocity;
+  public void setDriveVelocity(Measure<Velocity<Distance>> velocity) {
+    driveControlRequest.Velocity = velocity.in(MetersPerSecond);
     driveTalon.setControl(driveControlRequest);
   }
 
@@ -442,8 +443,8 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void stop() {
-    driveTalon.setControl(new StaticBrake());
-    driveTalon.setControl(new StaticBrake());
+    driveTalon.stopMotor();
+    driveTalon.stopMotor();
   }
 
   @Override
