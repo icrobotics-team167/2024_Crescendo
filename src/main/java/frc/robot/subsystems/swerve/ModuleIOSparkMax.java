@@ -41,42 +41,105 @@ import java.util.Queue;
  * "/Drive/ModuleX/TurnAbsolutePosition"
  */
 public class ModuleIOSparkMax implements ModuleIO {
+  /** The Spark Max motor controller for the drive motor. */
   private final CANSparkMax driveSparkMax;
+  /** The Spark Max motor controller for the turn motor. */
   private final CANSparkMax turnSparkMax;
 
+  /** The internal encoder of the drive motor. */
   private final RelativeEncoder driveEncoder;
+  /** The internal encoder of the turn motor. */
   private final RelativeEncoder turnRelativeEncoder;
+  /** The PID controller for the drive motor. */
   private final SparkPIDController drivePIDController;
+  /** The FF constants of the drive motor. */
   private final SimpleMotorFeedforward driveFF;
+  /** The PID controller for the turn motor. */
   private final SparkPIDController turnPIDController;
+  /** The absolute encoder for azimuth. */
   private final AnalogInput turnAbsoluteEncoder;
+  /**
+   * A {@link Queue} holding all the timestamps that the async odometry thread captures.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Seconds
+   *       </ul>
+   * </ul>
+   */
   private final Queue<Double> timestampQueue;
+  /**
+   * A {@link Queue} holding all the drive positions that the async odometry thread captures.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Meters
+   *       </ul>
+   * </ul>
+   */
   private final Queue<Double> drivePositionQueue;
+  /**
+   * A {@link Queue} holding all the azimuth positions that the async odometry thread captures.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Rotations
+   *       </ul>
+   * </ul>
+   */
   private final Queue<Double> turnPositionQueue;
-
+  /**
+   * Due to the nature of mounting magnets for absolute encoders, it is practically impossible to
+   * line up magnetic north with forwards on the module. This value is subtracted from the raw
+   * detected position, such that 0 is actually forwards on the azimuth.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Rotations
+   *       </ul>
+   * </ul>
+   */
   private final Rotation2d absoluteEncoderOffset;
 
+  /**
+   * Constructs a new Spark Max-based swerve module IO interface.
+   *
+   * @param index The index of the module.
+   *     <ul>
+   *       <li><b>Position of module from index</b>
+   *           <ul>
+   *             <li>0: Front Left
+   *             <li>1: Front Right
+   *             <li>2: Back Left
+   *             <li>3: Back Right
+   *           </ul>
+   *     </ul>
+   */
   public ModuleIOSparkMax(int index) {
     switch (index) {
-      case 0:
+      case 0: // Front Left
         driveSparkMax = new CANSparkMax(1, MotorType.kBrushless);
         turnSparkMax = new CANSparkMax(2, MotorType.kBrushless);
         turnAbsoluteEncoder = new AnalogInput(0);
         absoluteEncoderOffset = new Rotation2d(0.0); // TODO: Calibrate
         break;
-      case 1:
+      case 1: // Front Right
         driveSparkMax = new CANSparkMax(3, MotorType.kBrushless);
         turnSparkMax = new CANSparkMax(4, MotorType.kBrushless);
         turnAbsoluteEncoder = new AnalogInput(1);
         absoluteEncoderOffset = new Rotation2d(0.0); // TODO: Calibrate
         break;
-      case 2:
+      case 2: // Back Left
         driveSparkMax = new CANSparkMax(5, MotorType.kBrushless);
         turnSparkMax = new CANSparkMax(6, MotorType.kBrushless);
         turnAbsoluteEncoder = new AnalogInput(2);
         absoluteEncoderOffset = new Rotation2d(0.0); // TODO: Calibrate
         break;
-      case 3:
+      case 3: // Back Right
         driveSparkMax = new CANSparkMax(7, MotorType.kBrushless);
         turnSparkMax = new CANSparkMax(8, MotorType.kBrushless);
         turnAbsoluteEncoder = new AnalogInput(3);
@@ -86,6 +149,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         throw new RuntimeException("Invalid module index");
     }
 
+    // Configure motors
     driveSparkMax.restoreFactoryDefaults();
     turnSparkMax.restoreFactoryDefaults();
 
@@ -96,7 +160,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     turnRelativeEncoder = turnSparkMax.getEncoder();
 
     turnSparkMax.setInverted(Module.TURN_MOTOR_INVERTED);
-    driveSparkMax.setSmartCurrentLimit(40);
+    driveSparkMax.setSmartCurrentLimit(80);
     turnSparkMax.setSmartCurrentLimit(30);
     driveSparkMax.enableVoltageCompensation(12.0);
     turnSparkMax.enableVoltageCompensation(12.0);
@@ -116,8 +180,13 @@ public class ModuleIOSparkMax implements ModuleIO {
     turnRelativeEncoder.setMeasurementPeriod(10);
     turnRelativeEncoder.setAverageDepth(2);
 
+    // PIDF tuning values. NONE OF THESE VALUES SHOULD BE NEGATIVE, IF THEY ARE YOU DONE GOOFED
+    // SOMEWHERE
     drivePIDController = driveSparkMax.getPIDController();
     drivePIDController.setP(0.05); // % Output per m/s of error
+    // kI is typically unnecesary for driving as there's no significant factors that can prevent a
+    // PID controller from hitting its target, such as gravity for an arm. Factors like friction and
+    // inertia can be accounted for using kS and kV.
     drivePIDController.setI(0); // % Output per m of integrated error
     drivePIDController.setD(0); // % Output per m/s^2 of error derivative
     driveFF =
@@ -139,6 +208,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     driveSparkMax.setCANTimeout(0);
     turnSparkMax.setCANTimeout(0);
 
+    // Set up high frequency odometry
     driveSparkMax.setPeriodicFramePeriod(
         PeriodicFrame.kStatus2, (int) (1000.0 / Module.ODOMETRY_FREQUENCY));
     turnSparkMax.setPeriodicFramePeriod(
