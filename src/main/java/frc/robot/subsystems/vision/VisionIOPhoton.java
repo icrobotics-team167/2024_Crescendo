@@ -41,7 +41,7 @@ public class VisionIOPhoton implements VisionIO {
               robotToCameraTransform);
       poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     } catch (Exception e) {
-      DriverStation.reportError("PhotonVision failed to load the AprilTag map!", false);
+      DriverStation.reportError("PhotonVision failed to load camera " + name + "!", false);
       poseEstimator = null;
     }
   }
@@ -63,7 +63,7 @@ public class VisionIOPhoton implements VisionIO {
     EstimatedRobotPose botPoseEstimate = data.get();
     // If multi-tag tracking fails and the pose ambiguity score of the single tag
     // tracking is too large, stop.
-    if (botPoseEstimate.targetsUsed.size() == 1
+    if (botPoseEstimate.strategy != PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
         && botPoseEstimate.targetsUsed.get(0).getPoseAmbiguity() > 0.2) {
       return;
     }
