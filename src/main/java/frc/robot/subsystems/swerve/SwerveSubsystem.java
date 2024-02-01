@@ -48,6 +48,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends SubsystemBase {
+  // Constants
   /** The max linear speed of the robot. */
   private static final Measure<Velocity<Distance>> MAX_LINEAR_SPEED =
       MetersPerSecond.of(
@@ -66,21 +67,32 @@ public class SwerveSubsystem extends SubsystemBase {
   private static final Measure<Velocity<Angle>> MAX_ANGULAR_SPEED =
       RadiansPerSecond.of(MAX_LINEAR_SPEED.in(MetersPerSecond) / DRIVE_BASE_RADIUS.in(Meters));
 
-  static final Lock odometryLock = new ReentrantLock();
+  // IO layers
+  /** The IO interface layer for the gyroscope. */
   private final GyroIO gyroIO;
+  /** The inputs from the gyro. */
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
+  /** The list of modules on the drivebase. */
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
 
+  // Drive kinematics
+  /** The drivebase kinematics calculator. */
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
+  /** The raw gyro rotation. 0 degrees is away from the driver station. */
   private Rotation2d rawGyroRotation = new Rotation2d();
-  // For delta tracking
+  /** The previously logged module positions, used to calculate deltas. */
   private SwerveModulePosition[] lastModulePositions = new SwerveModulePosition[4];
 
   // Pose estimation
+  /** A thread lock to prevent read/write conflicts on odometry/pose estimation. */
+  static final Lock odometryLock = new ReentrantLock();
+  /** The pose estimator, used to fuse odometry data and vision data together. */
   private SwerveDrivePoseEstimator poseEstimator;
+  /** The vision-based pose estimator. */
   private VisionPoseEstimator visionPoseEstimator =
       new VisionPoseEstimator(this::addVisionMeasurement);
 
+  /** If slowmode should be enabled or not. */
   private boolean slowmode = Driving.SLOWMODE_DEFAULT;
 
   public SwerveSubsystem(

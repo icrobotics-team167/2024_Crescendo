@@ -14,4 +14,9 @@
 
 package frc.robot.util;
 
-public class MathUtils {}
+/** A class containing various math-related utilities. */
+public class MathUtils {
+  private MathUtils() {
+    throw new UnsupportedOperationException("This is a utility class!");
+  }
+}
