@@ -51,7 +51,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final TalonFX driveTalon;
   /** The TalonFX motor controller for the turn motor. */
   private final TalonFX turnTalon;
-  /** The CANcoder for the azimuth. */
+  /** The CANcoder for azimuth. */
   private final CANcoder cancoder;
 
   /**
@@ -211,12 +211,6 @@ public class ModuleIOTalonFX implements ModuleIO {
    */
   private final StatusSignal<Double> turnClosedLoopOutput;
   /**
-   * If the turn motor should be inverted or not. A positive control input should mean that the
-   * azimuth should rotate counterclockwise, so if the turn motor needs to rotate clockwise to
-   * achieve that, set this to true.
-   */
-  private final boolean isTurnMotorInverted = true;
-  /**
    * Due to the nature of mounting magnets for absolute encoders, it is practically impossible to
    * line up magnetic north with forwards on the module. This value is subtracted from the raw
    * detected position, such that 0 is actually forwards on the azimuth.
@@ -310,6 +304,10 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnConfig.Feedback.RotorToSensorRatio = Module.TURN_GEAR_RATIO;
     turnConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
     turnConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
+    turnConfig.MotorOutput.Inverted =
+        Module.TURN_MOTOR_INVERTED
+            ? InvertedValue.Clockwise_Positive
+            : InvertedValue.CounterClockwise_Positive;
     turnConfig.Slot0.kP = 1; // % output per rotation of error
     turnConfig.Slot0.kI = 0; // % output per rotation of integrated error
     turnConfig.Slot0.kD = 0; // % output per rotations/s of error derivative
@@ -460,7 +458,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   public void setTurnBrakeMode(boolean enable) {
     var config = new MotorOutputConfigs();
     config.Inverted =
-        isTurnMotorInverted
+        Module.TURN_MOTOR_INVERTED
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
     config.NeutralMode = enable ? NeutralModeValue.Brake : NeutralModeValue.Coast;

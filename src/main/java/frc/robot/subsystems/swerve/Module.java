@@ -58,6 +58,12 @@ public class Module {
    */
   static final double TURN_GEAR_RATIO = 150.0 / 7.0;
   /**
+   * If the turn motor should be inverted or not. A positive control input should mean that the
+   * azimuth should rotate counterclockwise, so if the turn motor needs to rotate clockwise to
+   * achieve that, set this to true.
+   */
+  static final boolean TURN_MOTOR_INVERTED = true;
+  /**
    * The circumference of the module wheel.
    *
    * <ul>
