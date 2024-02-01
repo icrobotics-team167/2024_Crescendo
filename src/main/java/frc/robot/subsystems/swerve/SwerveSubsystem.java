@@ -316,7 +316,7 @@ public class SwerveSubsystem extends SubsystemBase {
   SysIdRoutine driveSysIDRoutine;
 
   /**
-   * Returns a command to run system identification.
+   * Command factory for running system identification.
    *
    * <p>NOTE FOR CTRE USERS: Using sysid with TorqueControlFOC is a little jank, since
    * torque-control commutation is not officially supported by the sysid tool. When running sysid
