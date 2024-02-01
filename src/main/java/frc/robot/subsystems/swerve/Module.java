@@ -47,6 +47,17 @@ public class Module {
    */
   static final double DRIVE_GEAR_RATIO = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
   /**
+   * The max free speed of the motor.
+   * 
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Rotations per minute
+   *       </ul>
+   * </ul>
+   */
+  static final double DRIVE_MAX_RPM = 5800;
+  /**
    * The gear ratio between the turn motor and the module.
    *
    * <ul>

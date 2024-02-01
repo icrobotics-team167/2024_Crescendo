@@ -47,13 +47,61 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends SubsystemBase {
-  // TODO: Measure
-  private static final double DRIVE_MAX_RPM = 5800;
+  /**
+   * The max linear speed of the robot.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Meters per second
+   *       </ul>
+   * </ul>
+   */
   private static final double MAX_LINEAR_SPEED =
-      ((DRIVE_MAX_RPM / 60) / Module.DRIVE_GEAR_RATIO) * Module.DRIVE_WHEEL_CIRCUMFERENCE;
+      ((Module.DRIVE_MAX_RPM / 60) / Module.DRIVE_GEAR_RATIO) * Module.DRIVE_WHEEL_CIRCUMFERENCE;
+  /**
+   * The distance between the front modules and the back modules.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Meters
+   *       </ul>
+   * </ul>
+   */
   private static final double TRACK_LENGTH = Units.inchesToMeters(35.0); // Front-back length
+  /**
+   * The distance between the left modules and the right modules.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Meters
+   *       </ul>
+   * </ul>
+   */
   private static final double TRACK_WIDTH = Units.inchesToMeters(34.0); // Left-right width
+  /**
+   * The radius of the drivebase, as measured from the center of the robot to one of the modules.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Meters
+   *       </ul>
+   * </ul>
+   */
   private static final double DRIVE_BASE_RADIUS = Math.hypot(TRACK_LENGTH / 2.0, TRACK_WIDTH / 2.0);
+  /**
+   * The max angular velocity of the drivebase.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Radians per second
+   *       </ul>
+   * </ul>
+   */
   private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
 
   static final Lock odometryLock = new ReentrantLock();
@@ -65,6 +113,8 @@ public class SwerveSubsystem extends SubsystemBase {
   private Rotation2d rawGyroRotation = new Rotation2d();
   // For delta tracking
   private SwerveModulePosition[] lastModulePositions = new SwerveModulePosition[4];
+
+  // Pose estimation
   private SwerveDrivePoseEstimator poseEstimator;
   private VisionPoseEstimator visionPoseEstimator =
       new VisionPoseEstimator(this::addVisionMeasurement);
