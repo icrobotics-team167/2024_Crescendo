@@ -14,6 +14,9 @@
 
 package frc.robot.util;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.Constants;
+
 /** A class containing various math-related utilities. */
 public class MathUtils {
   private MathUtils() {
@@ -47,5 +50,17 @@ public class MathUtils {
     }
     return Math.pow(
         (value - innerDeadband) / (1 - (innerDeadband + outerDeadband)), outputExponent);
+  }
+
+  /**
+   * If the robot is on the Red Alliance, flips the rotation to account for that. Does nothing if
+   * the robot is on the Blue Alliance.
+   */
+  public static Rotation2d adjustRotation(Rotation2d rawRotation) {
+    if (Constants.IS_ON_RED) {
+      return new Rotation2d(Math.PI - rawRotation.getRadians());
+    } else {
+      return rawRotation;
+    }
   }
 }

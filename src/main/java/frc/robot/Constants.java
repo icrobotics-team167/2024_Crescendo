@@ -14,6 +14,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -23,6 +26,11 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static boolean IS_ON_RED =
+      DriverStation.getAlliance().isPresent()
+          ? DriverStation.getAlliance().get() == Alliance.Red
+          : false;
+
   public static final class Driving {
     public static final boolean SLOWMODE_DEFAULT = true;
     public static final double SLOWMODE_MULTIPLIER = 0.2;

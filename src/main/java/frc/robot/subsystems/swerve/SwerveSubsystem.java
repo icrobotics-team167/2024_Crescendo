@@ -120,7 +120,7 @@ public class SwerveSubsystem extends SubsystemBase {
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configureHolonomic(
         this::getPose,
-        this::setPose,
+        this::setPoseAndGyro,
         () -> kinematics.toChassisSpeeds(getModuleStates()),
         this::runVelocity,
         new HolonomicPathFollowerConfig(
@@ -288,6 +288,12 @@ public class SwerveSubsystem extends SubsystemBase {
   /** Returns the current odometry rotation. */
   public Rotation2d getRotation() {
     return getPose().getRotation();
+  }
+
+  /** Resets the current odometry pose and also sets the gyro angle. */
+  public void setPoseAndGyro(Pose2d pose) {
+    gyroIO.setYaw(pose.getRotation());
+    setPose(pose);
   }
 
   /** Resets the current odometry pose. */
