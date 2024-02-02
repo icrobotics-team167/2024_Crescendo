@@ -16,14 +16,12 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.*;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.Driving;
 import frc.robot.Constants.Driving.Deadbands;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.util.MathUtils;
 import java.util.function.DoubleSupplier;
 
 public class FieldRelativeDrive extends Command {
@@ -48,25 +46,34 @@ public class FieldRelativeDrive extends Command {
 
   @Override
   public void execute() {
-    double x = MathUtil.applyDeadband(xInput.getAsDouble(), Deadbands.PRIMARY_LEFT);
-    double y = MathUtil.applyDeadband(yInput.getAsDouble(), Deadbands.PRIMARY_LEFT);
-    double rot = MathUtil.applyDeadband(rotInput.getAsDouble(), Deadbands.PRIMARY_RIGHT);
+    double x =
+        MathUtils.inOutDeadband(
+            xInput.getAsDouble(),
+            Deadbands.PRIMARY_LEFT_INNER,
+            Deadbands.PRIMARY_LEFT_OUTER,
+            Driving.PRIMARY_DRIVER_EXPONENT);
+    double y =
+        MathUtils.inOutDeadband(
+            yInput.getAsDouble(),
+            Deadbands.PRIMARY_LEFT_INNER,
+            Deadbands.PRIMARY_LEFT_OUTER,
+            Driving.PRIMARY_DRIVER_EXPONENT);
+    double rot =
+        MathUtils.inOutDeadband(
+            rotInput.getAsDouble(),
+            Deadbands.PRIMARY_RIGHT_INNER,
+            Deadbands.PRIMARY_RIGHT_OUTER,
+            Driving.PRIMARY_DRIVER_EXPONENT);
 
     double controlMagnitude = Math.hypot(x, y);
     x /= Math.max(controlMagnitude, 1);
     x /= Math.max(controlMagnitude, 1);
-
-    boolean isFlipped =
-        DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == Alliance.Red;
 
     drivebase.runVelocity(
         ChassisSpeeds.fromFieldRelativeSpeeds(
             x * drivebase.getMaxLinearVelocity().in(MetersPerSecond),
             y * drivebase.getMaxLinearVelocity().in(MetersPerSecond),
             rot * drivebase.getMaxAngularVelocity().in(RadiansPerSecond),
-            isFlipped
-                ? drivebase.getRotation().plus(new Rotation2d(Math.PI))
-                : drivebase.getRotation()));
+            drivebase.getRotation()));
   }
 }

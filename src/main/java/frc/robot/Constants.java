@@ -26,12 +26,18 @@ public final class Constants {
   public static final class Driving {
     public static final boolean SLOWMODE_DEFAULT = true;
     public static final double SLOWMODE_MULTIPLIER = 0.2;
+    public static final double PRIMARY_DRIVER_EXPONENT = 1.5;
+    public static final double SECONDARY_DRIVER_EXPONENT = 1;
 
     public static final class Deadbands {
-      public static final double PRIMARY_LEFT = 0.05;
-      public static final double PRIMARY_RIGHT = 0.05;
-      public static final double SECONDARY_LEFT = 0.05;
-      public static final double SECONDARY_RIGHT = 0.05;
+      public static final double PRIMARY_LEFT_INNER = 0.05;
+      public static final double PRIMARY_RIGHT_INNER = 0.05;
+      public static final double SECONDARY_LEFT_INNER = 0.05;
+      public static final double SECONDARY_RIGHT_INNER = 0.05;
+      public static final double PRIMARY_LEFT_OUTER = 0.01;
+      public static final double PRIMARY_RIGHT_OUTER = 0.01;
+      public static final double SECONDARY_LEFT_OUTER = 0.01;
+      public static final double SECONDARY_RIGHT_OUTER = 0.01;
     }
   }
 }

@@ -19,4 +19,33 @@ public class MathUtils {
   private MathUtils() {
     throw new UnsupportedOperationException("This is a utility class!");
   }
+
+  /**
+   * Applies an inner deadband, to account for stick drift, and an outer deadband, to account for
+   * insufficient stick saturation. Values in between are linearly interpolated to provide a
+   * continuous output.
+   */
+  public static double inOutDeadband(double value, double innerDeadband, double outerDeadband) {
+    return inOutDeadband(value, innerDeadband, outerDeadband, 1);
+  }
+
+  /**
+   * Applies an inner deadband, to account for stick drift, and an outer deadband, to account for
+   * insufficient stick saturation. Values in between are interpolated to provide a continuous
+   * output, with an exponent applied.
+   */
+  public static double inOutDeadband(
+      double value, double innerDeadband, double outerDeadband, double outputExponent) {
+    if (value < 0) {
+      return -inOutDeadband(-value, innerDeadband, outerDeadband, outputExponent);
+    }
+    if (value < innerDeadband) {
+      return 0;
+    }
+    if (value > outerDeadband) {
+      return 1;
+    }
+    return Math.pow(
+        (value - innerDeadband) / (1 - (innerDeadband + outerDeadband)), outputExponent);
+  }
 }
