@@ -15,7 +15,7 @@ public class Intake extends Command {
     @Override
     public void execute() {
         // TODO: Configure
-        shooter.setPivot(new Rotation2d());
+        //shooter.setPivot(new Rotation2d());
         shooter.runIntake();
     }
 
