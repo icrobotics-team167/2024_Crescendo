@@ -6,6 +6,9 @@ import frc.robot.helpers.MathUtils;
 import com.playingwithfusion.TimeOfFlight;
 //import com.playingwithfusion.TimeOfFlight.RangingMode;
 
+import frc.robot.helpers.Telemetry;
+import frc.robot.helpers.Telemetry.Verbosity;
+
 
 public class Intake {
     AbstractMotor feedMotor;
@@ -58,7 +61,9 @@ public class Intake {
 
     public boolean hasNote() {
         // TODO make not suck
-        return (sensor.getRange() * MathUtils.mm_TO_INCHES) < DISTANCE_TO_WALL;
+        Telemetry.sendNumber("pidGet", sensor.pidGet(), Verbosity.MEDIUM);
+        Telemetry.sendNumber("getRange", sensor.getRange(), Verbosity.MEDIUM); //double check these are the same, they should be but who knows.
+        return (sensor.pidGet() * MathUtils.mm_TO_INCHES) < DISTANCE_TO_WALL;
     }
 
 }
