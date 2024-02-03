@@ -4,7 +4,6 @@ import frc.robot.abstraction.motors.AbstractMotor;
 import frc.robot.helpers.MathUtils;
 
 import com.playingwithfusion.TimeOfFlight;
-//import com.playingwithfusion.TimeOfFlight.RangingMode;
 
 import frc.robot.helpers.Telemetry;
 import frc.robot.helpers.Telemetry.Verbosity;
@@ -37,6 +36,7 @@ public class Intake {
     }
 
     public void stopIntake() {
+        intakeMotor.stop();
     }
 
     public void run() {

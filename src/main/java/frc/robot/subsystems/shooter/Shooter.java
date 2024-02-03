@@ -6,6 +6,7 @@ import frc.robot.abstraction.motors.AbstractMotor;
 public class Shooter {
     AbstractMotor motor;
     double targetSpeed;
+    double ampSpeed; //might not be needed
 
     public Shooter(AbstractMotor leaderMotor, AbstractMotor followerMotor, double targetSpeed) {
         leaderMotor.configureCurrentLimits(leaderMotor.getNominalVoltage(), 80, 90);
