@@ -10,6 +10,7 @@ import frc.robot.helpers.Telemetry.Verbosity;
 import frc.robot.subsystems.shooter.Intake;
 import frc.robot.subsystems.shooter.Pivot;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.Constants;
 
 public class ShooterSubsystem extends SubsystemBase {
     Pivot pivot;
@@ -18,9 +19,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public ShooterSubsystem() {
         // TODO: Configure
-        pivot = new Pivot(new RevNEO500(11), new RevNEO500(10), null);
-        // intake = new Intake(null);  //Needs 2 motor IDs, then a sensor ID
-        // shooter = new Shooter(new RevNEO500(10), new RevNEO500(11), 0.0);
+         pivot = new Pivot(new RevNEO500(Constants.Robot.Shooter.IDs.PIVOT_LEADER), new RevNEO500(Constants.Robot.Shooter.IDs.PIVOT_SLAVE), null);
+         intake = new Intake(new RevNEO500(Constants.Robot.Shooter.IDs.INTAKE_MOTOR), new RevNEO500(Constants.Robot.Shooter.IDs.FEED_MOTOR), Constants.Robot.Shooter.IDs.FEED_SENSOR);  //Needs 2 motor IDs, then a sensor ID
+         shooter = new Shooter(new RevNEO500(Constants.Robot.Shooter.IDs.SHOOTER_LEADER), new RevNEO500(Constants.Robot.Shooter.IDs.SHOOTER_SLAVE), 0.0);
     }
 
     @Override
