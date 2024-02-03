@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.FieldRelativeDrive;
 import frc.robot.subsystems.swerve.GyroIO;
 import frc.robot.subsystems.swerve.GyroIOPigeon2;
 import frc.robot.subsystems.swerve.ModuleIO;
@@ -92,8 +91,7 @@ public class RobotContainer {
    */
   private void configureBindings() {
     drivebase.setDefaultCommand(
-        new FieldRelativeDrive(
-            drivebase,
+        drivebase.getDriveCommand(
             () -> primaryLeftStick.getX(),
             () -> primaryLeftStick.getY(),
             () -> primaryRightStick.getX()));

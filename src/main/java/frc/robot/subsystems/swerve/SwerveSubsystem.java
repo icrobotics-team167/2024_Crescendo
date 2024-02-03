@@ -15,6 +15,7 @@
 package frc.robot.subsystems.swerve;
 
 import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -34,7 +35,6 @@ import edu.wpi.first.units.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
@@ -42,8 +42,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism;
 import frc.robot.Constants.Driving;
 import frc.robot.subsystems.vision.VisionPoseEstimator;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.util.MathUtils;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -332,6 +334,43 @@ public class SwerveSubsystem extends SubsystemBase {
     };
   }
 
+  public Command getDriveCommand(
+      DoubleSupplier xInput, DoubleSupplier yInput, DoubleSupplier rotInput) {
+    return run(
+        () -> {
+          // Get control inputs and apply deadbands
+          double xIn =
+              MathUtils.inOutDeadband(
+                  xInput.getAsDouble(),
+                  Driving.Deadbands.PRIMARY_LEFT_INNER,
+                  Driving.Deadbands.PRIMARY_LEFT_OUTER,
+                  2);
+          double yIn =
+              MathUtils.inOutDeadband(
+                  yInput.getAsDouble(),
+                  Driving.Deadbands.PRIMARY_LEFT_INNER,
+                  Driving.Deadbands.PRIMARY_LEFT_OUTER,
+                  2);
+          double rotIn =
+              MathUtils.inOutDeadband(
+                  rotInput.getAsDouble(),
+                  Driving.Deadbands.PRIMARY_RIGHT_INNER,
+                  Driving.Deadbands.PRIMARY_RIGHT_OUTER,
+                  2);
+
+          double controlMagnitude = Math.hypot(xIn, yIn);
+          xIn /= Math.max(controlMagnitude, 1);
+          yIn /= Math.max(controlMagnitude, 1);
+
+          runVelocity(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  MAX_LINEAR_SPEED.times(xIn),
+                  MAX_LINEAR_SPEED.times(yIn),
+                  MAX_ANGULAR_SPEED.times(rotIn),
+                  gyroInputs.yawPosition));
+        });
+  }
+
   SysIdRoutine driveSysIDRoutine;
 
   /**
@@ -349,8 +388,8 @@ public class SwerveSubsystem extends SubsystemBase {
    * @return The sysid command.
    */
   public Command getSysID() {
-    return Commands.sequence(
-        Commands.runOnce(
+    return sequence(
+        runOnce(
             () ->
                 driveSysIDRoutine =
                     new SysIdRoutine(
@@ -361,16 +400,16 @@ public class SwerveSubsystem extends SubsystemBase {
                             (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
                         new Mechanism((voltage) -> runCharacterization(voltage), null, this))),
         driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
-        Commands.runOnce(() -> stop()),
-        Commands.waitSeconds(2),
+        runOnce(() -> stop()),
+        waitSeconds(2),
         driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kReverse),
-        Commands.runOnce(() -> stop()),
-        Commands.waitSeconds(2),
+        runOnce(() -> stop()),
+        waitSeconds(2),
         driveSysIDRoutine.dynamic(SysIdRoutine.Direction.kForward),
-        Commands.runOnce(() -> stop()),
-        Commands.waitSeconds(2),
+        runOnce(() -> stop()),
+        waitSeconds(2),
         driveSysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse),
-        Commands.runOnce(() -> stop()));
+        runOnce(() -> stop()));
   }
 
   /**
