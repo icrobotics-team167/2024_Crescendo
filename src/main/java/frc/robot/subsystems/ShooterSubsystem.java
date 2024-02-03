@@ -19,7 +19,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public ShooterSubsystem() {
         // TODO: Configure
         pivot = new Pivot(new RevNEO500(11), new RevNEO500(10), null);
-        // intake = new Intake(null);
+        // intake = new Intake(null);  //Needs 2 motor IDs, then a sensor ID
         // shooter = new Shooter(new RevNEO500(10), new RevNEO500(11), 0.0);
     }
 
@@ -72,9 +72,9 @@ public class ShooterSubsystem extends SubsystemBase {
         // shooter.stop();
     }
 
-    public boolean hasRing() {
+    public boolean hasNote() {
         // TODO: Implement
-        return false;
+        return intake.hasNote();
     }
 
     public double getShooterVelocity() {

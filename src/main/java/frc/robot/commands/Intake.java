@@ -21,7 +21,7 @@ public class Intake extends Command {
 
     @Override
     public boolean isFinished() {
-        return shooter.hasRing();
+        return shooter.hasNote();
     }
 
     @Override

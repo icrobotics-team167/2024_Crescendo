@@ -1,12 +1,20 @@
 package frc.robot.subsystems.shooter;
 
 import frc.robot.abstraction.motors.AbstractMotor;
+import frc.robot.helpers.MathUtils;
+
+import com.playingwithfusion.TimeOfFlight;
+//import com.playingwithfusion.TimeOfFlight.RangingMode;
+
 
 public class Intake {
     AbstractMotor feedMotor;
     AbstractMotor intakeMotor;
+    TimeOfFlight sensor;
 
-    public Intake(AbstractMotor motor, AbstractMotor feed) {
+    private static final int DISTANCE_TO_WALL = 0; //probably not 0 NEEDS TO BE IN MILLIMETERS
+
+    public Intake(AbstractMotor motor, AbstractMotor feed, int sensorID) {
         motor.configureCurrentLimits(motor.getNominalVoltage(), motor.getPrimaryCurrentLimit(),
                 motor.getSecondaryCurrentLimit());
         this.intakeMotor = motor;
@@ -14,6 +22,9 @@ public class Intake {
         feed.configureCurrentLimits(feed.getNominalVoltage(), feed.getPrimaryCurrentLimit(),
                 feed.getSecondaryCurrentLimit());
         this.feedMotor = feed;
+        
+        this.sensor = new TimeOfFlight(sensorID);
+        this.sensor.setRangingMode(TimeOfFlight.RangingMode.Short,30);
     }
 
     // TODO: Figure out the design of the intake so that we can finalize methods
@@ -45,4 +56,18 @@ public class Intake {
         feedMotor.stop();
     }
 
+    public boolean hasNote() {
+        // TODO make not suck
+        return (sensor.getRange() * MathUtils.mm_TO_INCHES) < DISTANCE_TO_WALL;
+    }
+
 }
+;
+;
+;
+;
+;
+;
+;
+;
+//we did it - Tom Kalman (circa 2024)

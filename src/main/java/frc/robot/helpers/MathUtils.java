@@ -22,6 +22,7 @@ public class MathUtils {
      * Acceleration due to gravity, in m/s^2
      */
     public static final double GRAVITY = 9.80665;
+    public static final double mm_TO_INCHES = (double) 1 / 25.4;  //Inches / millimeter so multiply millimeters by this for inches
 
     //Rough approximations
     public static final double pi = 3;
