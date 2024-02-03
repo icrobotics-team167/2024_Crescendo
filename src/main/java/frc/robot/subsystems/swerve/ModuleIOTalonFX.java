@@ -299,6 +299,9 @@ public class ModuleIOTalonFX implements ModuleIO {
     // MotionMagicJerk should be ~10-20x the acceleration value, meaning roughly 0.05-0.1 seconds to
     // max acceleration. Is mainly used to smooth out motion profiles.
     driveConfig.MotionMagic.MotionMagicJerk = 140; // Max allowed jerk, in m/s^3
+    // Limit the current draw of the motors.
+    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 100;
+    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = 100;
     driveTalon.getConfigurator().apply(driveConfig);
     setDriveBrakeMode(true);
 
@@ -321,6 +324,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnConfig.MotionMagic.MotionMagicAcceleration = 5; // Max allowed acceleration, in rot/s^2
     turnConfig.MotionMagic.MotionMagicJerk = 50; // Max allowed jerk, in rot/s^3
     turnConfig.ClosedLoopGeneral.ContinuousWrap = true;
+    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 40;
+    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = 40;
     turnTalon.getConfigurator().apply(turnConfig);
     setTurnBrakeMode(true);
 
