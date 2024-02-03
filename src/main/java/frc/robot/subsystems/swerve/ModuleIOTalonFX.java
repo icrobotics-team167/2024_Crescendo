@@ -270,11 +270,11 @@ public class ModuleIOTalonFX implements ModuleIO {
     }
 
     var driveConfig = new TalonFXConfiguration();
-    // The rotations output of the motor encoder will be divided by this value.
-    // This shouldn't really be used for unit conversions, as getVelocity has a max value of +-512,
-    // but since we're unit converting to meters instead of something like degrees, the max value
-    // we're expecting to see when this is applied is +-4.5, so this is probably fine.
-    driveConfig.Feedback.SensorToMechanismRatio =
+    // The rotations output of the motor encoder will be divided by this value. This shouldn't
+    // really be used for unit conversions, as getVelocity has a max value of +-512, but since we're
+    // unit converting to meters instead of something like degrees, the max value we're expecting to
+    // see when this is applied is +-4.5, so this is probably fine.
+    driveConfig.Feedback.SensorToMechanismRatio = // Gear ratio between the motor and the wheel
         Module.DRIVE_GEAR_RATIO / Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters);
     // PIDF tuning values. NONE OF THESE VALUES SHOULD BE NEGATIVE, IF THEY ARE YA DONE GOOFED
     // SOMEWHERE
@@ -285,8 +285,9 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveConfig.Slot0.kI = 0; // % output per m of integrated error
     driveConfig.Slot0.kD = 0; // % output per m/s^2 of error derivative
     driveConfig.Slot0.kS = 0; // Amps of additional current needed to overcome friction
-    // kV should be at/near 0 due to TalonFX torqueControlFOC commutation making this unnecesary.
-    // See
+    // kV should be at/near 0, as kV is usually used to fight against back-EMF and TorqueControlFOC
+    // commutation eliminates that issue. However, if the mechanism has a non-negligible amount of
+    // viscous friction, ie from grease, then you may need it to counter the friction. See
     // https://pro.docs.ctr-electronics.com/en/latest/docs/api-reference/device-specific/talonfx/closed-loop-requests.html#choosing-output-type
     driveConfig.Slot0.kV = 0; // Amps of additional current per m/s of velocity setpoint
     // kA can be tuned independently of all over control parameters. If the actual acceleration is
