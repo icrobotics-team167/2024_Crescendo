@@ -257,6 +257,27 @@ public final class Constants {
       }
     }
 
+    public static final class Shooter {
+
+      public static final class IDs{
+
+        public static final int INTAKE_MOTOR = 10;
+        //CAN ID for intake motor
+        public static final int FEED_MOTOR = 11;
+        //CAN ID for feed motor for intake
+        public static final int FEED_SENSOR = 16;
+        //CAN ID for feed sensor for feed
+        public static final int PIVOT_LEADER = 12;
+        //CAN ID for main pivot motor
+        public static final int PIVOT_SLAVE = 13;
+        //CAN ID for follower pivot motor
+        public static final int SHOOTER_LEADER = 14;
+        //CAN ID for main shooter motor
+        public static final int SHOOTER_SLAVE = 15;
+        //CAN ID for follower shooter motor
+      }
+    }
+
     /**
      * Autonomous period configurations.
      */
