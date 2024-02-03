@@ -158,7 +158,7 @@ public class Module {
 
   /** Set the desired positions of the modules every robot tick. */
   public void periodic() {
-    Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
+    Logger.processInputs("Drive/" + getNameFromIndex(index) + " Module", inputs);
 
     // Run closed loop turn control
     io.setTurnPosition(angleSetpoint);
@@ -250,5 +250,21 @@ public class Module {
   /** Returns the timestamps of the samples received this cycle. */
   public double[] getOdometryTimestamps() {
     return inputs.odometryTimestamps;
+  }
+
+  /** Returns the name of a module from its index. */
+  protected static String getNameFromIndex(int index) {
+    switch (index) {
+      case 0:
+        return "Front Left";
+      case 1:
+        return "Front Right";
+      case 2:
+        return "Back Left";
+      case 3:
+        return "Back Right";
+      default:
+        throw new IndexOutOfBoundsException("Invalid module index");
+    }
   }
 }
