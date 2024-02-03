@@ -146,6 +146,7 @@ public class SwerveSubsystem extends SubsystemBase {
         });
   }
 
+  @Override
   public void periodic() {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
