@@ -17,6 +17,7 @@ package frc.robot.subsystems.swerve;
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -334,6 +335,7 @@ public class SwerveSubsystem extends SubsystemBase {
     };
   }
 
+  /** Command factory for teleop field-oriented drive. */
   public Command getDriveCommand(
       DoubleSupplier xInput, DoubleSupplier yInput, DoubleSupplier rotInput) {
     return run(
@@ -374,20 +376,10 @@ public class SwerveSubsystem extends SubsystemBase {
   SysIdRoutine driveSysIDRoutine;
 
   /**
-   * Command factory for running system identification.
-   *
-   * <p>NOTE FOR CTRE USERS: Using sysid with TorqueControlFOC is a little jank, since
-   * torque-control commutation is not officially supported by the sysid tool. When running sysid
-   * with TorqueControlFOC, although everything in the tool says "voltage," you have to pretend it's
-   * amperage. Velocity will also be wacky. In standard voltage control, voltage is directly
-   * controlling velocity, so quasistatic tests will have a stable velocity and dynamic tests will
-   * have a linearly increasing velocity. However, in TorqueControlFOC, amperage controls
-   * acceleration, so quasistatic tests will be linear and dynamic tests will be quadratic in their
-   * velocities.
-   *
-   * @return The sysid command.
+   * Command factory for running system identification using AdvantageKit logging. For non-CTRE
+   * users.
    */
-  public Command getSysID() {
+  public Command getSysIDAK() {
     return sequence(
         runOnce(
             () ->
@@ -398,6 +390,43 @@ public class SwerveSubsystem extends SubsystemBase {
                             null,
                             null,
                             (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
+                        new Mechanism((voltage) -> runCharacterization(voltage), null, this))),
+        driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
+        runOnce(() -> stop()),
+        waitSeconds(2),
+        driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kReverse),
+        runOnce(() -> stop()),
+        waitSeconds(2),
+        driveSysIDRoutine.dynamic(SysIdRoutine.Direction.kForward),
+        runOnce(() -> stop()),
+        waitSeconds(2),
+        driveSysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse),
+        runOnce(() -> stop()));
+  }
+
+  /**
+   * Command factory for running system identification using CTRE's SignalLogger. Recommended for
+   * CTRE users.
+   *
+   * <p>NOTE: Using sysid with TorqueControlFOC is a little jank, since torque-control commutation
+   * is not officially supported by the sysid tool. When running sysid with TorqueControlFOC,
+   * although everything in the tool says "voltage," you have to pretend it's amperage. Velocity
+   * will also be wacky. In standard voltage control, voltage is directly controlling velocity, so
+   * quasistatic tests will have a stable velocity and dynamic tests will have a linearly increasing
+   * velocity. However, in TorqueControlFOC, amperage controls acceleration, so quasistatic tests
+   * will be linear and dynamic tests will be quadratic in their velocities.
+   */
+  public Command getSysIDCTRE() {
+    return sequence(
+        runOnce(
+            () ->
+                driveSysIDRoutine =
+                    new SysIdRoutine(
+                        new Config(
+                            null,
+                            null,
+                            null,
+                            (state) -> SignalLogger.writeString("SysIDState", state.toString())),
                         new Mechanism((voltage) -> runCharacterization(voltage), null, this))),
         driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
         runOnce(() -> stop()),
