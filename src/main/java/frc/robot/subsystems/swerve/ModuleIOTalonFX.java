@@ -474,4 +474,16 @@ public class ModuleIOTalonFX implements ModuleIO {
     config.NeutralMode = enable ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     turnTalon.getConfigurator().apply(config);
   }
+
+  @Override
+  public void configureDriveSysID() {
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        Module.ODOMETRY_FREQUENCY, driveVelocity, drivePosition, driveAppliedCurrent);
+  }
+
+  @Override
+  public void configureTurnSysID() {
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        Module.ODOMETRY_FREQUENCY, turnVelocity, turnPosition, turnAppliedCurrent);
+  }
 }

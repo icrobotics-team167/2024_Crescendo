@@ -100,6 +100,8 @@ public class RobotContainer {
         .trigger()
         .whileTrue(new StartEndCommand(drivebase::setSlowmode, drivebase::unsetSlowmode));
     primaryRightStick.trigger().onTrue(new InstantCommand(drivebase::stopWithX));
+    // primaryLeftStick.button(1).whileTrue(drivebase.getSysIDURCL());
+    // primaryLeftStick.button(1).whileTrue(drivebase.getSysIDCTRE());
   }
 
   /**

@@ -89,6 +89,10 @@ public class Robot extends LoggedRobot {
         Logger.setReplaySource(new WPILOGReader(logPath));
         Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_replay")));
     }
+
+    
+    // Logger.registerURCL(URCL.startExternal()); // For REV users running sysid.
+    // SignalLogger.start(); // For CTRE users running sysid.
     Logger.start();
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our

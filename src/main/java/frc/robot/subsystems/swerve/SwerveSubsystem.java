@@ -375,11 +375,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
   SysIdRoutine driveSysIDRoutine;
 
-  /**
-   * Command factory for running system identification using AdvantageKit logging. For non-CTRE
-   * users.
-   */
-  public Command getSysIDAK() {
+  /** Command factory for running system identification using URCL logging. For REV users. */
+  public Command getSysIDURCL() {
     return sequence(
         runOnce(
             () ->
