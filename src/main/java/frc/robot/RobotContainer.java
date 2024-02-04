@@ -21,8 +21,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 // import frc.robot.commands.auto.*; // Compiler no likey because there's no autos in the auto folder
-import frc.robot.commands.auto.testAutos.*;
-import frc.robot.commands.teleop.*;
 import frc.robot.subsystems.LightSubsystem;
 import frc.robot.commands.*;
 import frc.robot.subsystems.ShooterSubsystem;
