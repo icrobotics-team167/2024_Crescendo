@@ -114,7 +114,7 @@ public class Module {
     this.desiredState = rawState;
     driveMotor.setVelocityReference(rawState.speedMetersPerSecond);
     // 0);
-    turnMotor.setPosition(turnEncoder.getAbsolutePosition().getDegrees());
+    //turnMotor.setPosition(turnEncoder.getAbsolutePosition().getDegrees());
     turnMotor.setTurnReference(rawState.angle);
   }
 

@@ -14,7 +14,7 @@ public class Intake {
     AbstractMotor intakeMotor;
     TimeOfFlight sensor;
 
-    private static final int DISTANCE_TO_WALL = 0; //probably not 0 NEEDS TO BE IN MILLIMETERS
+    private static final int DISTANCE_TO_WALL = 12; //probably not 0
 
     public Intake(AbstractMotor motor, AbstractMotor feed, int sensorID) {
         motor.configureCurrentLimits(motor.getNominalVoltage(), motor.getPrimaryCurrentLimit(),
@@ -60,19 +60,10 @@ public class Intake {
     }
 
     public boolean hasNote() {
-        // TODO make not suck
+        // // TODO make not suck
         Telemetry.sendNumber("pidGet", sensor.pidGet(), Verbosity.MEDIUM);
         Telemetry.sendNumber("getRange", sensor.getRange(), Verbosity.MEDIUM); //double check these are the same, they should be but who knows.
         return (sensor.pidGet() * MathUtils.mm_TO_INCHES) < DISTANCE_TO_WALL;
     }
 
-}
-;
-;
-;
-;
-;
-;
-;
-;
-//we did it - Tom Kalman (circa 2024)
+}  //we did it - Tom Kalman (circa 2024)

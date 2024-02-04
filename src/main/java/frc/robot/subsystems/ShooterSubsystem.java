@@ -19,9 +19,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public ShooterSubsystem() {
         // TODO: Configure
-         pivot = new Pivot(new RevNEO500(Constants.Robot.Shooter.IDs.PIVOT_LEADER), new RevNEO500(Constants.Robot.Shooter.IDs.PIVOT_SLAVE), null);
+        // pivot = new Pivot(new RevNEO500(Constants.Robot.Shooter.IDs.PIVOT_LEADER), new RevNEO500(Constants.Robot.Shooter.IDs.PIVOT_SLAVE), null);
          intake = new Intake(new RevNEO500(Constants.Robot.Shooter.IDs.INTAKE_MOTOR), new RevNEO500(Constants.Robot.Shooter.IDs.FEED_MOTOR), Constants.Robot.Shooter.IDs.FEED_SENSOR);  //Needs 2 motor IDs, then a sensor ID
-         shooter = new Shooter(new RevNEO500(Constants.Robot.Shooter.IDs.SHOOTER_LEADER), new RevNEO500(Constants.Robot.Shooter.IDs.SHOOTER_SLAVE), 0.0);
+         //shooter = new Shooter(new RevNEO500(Constants.Robot.Shooter.IDs.SHOOTER_LEADER), new RevNEO500(Constants.Robot.Shooter.IDs.SHOOTER_SLAVE), 0.0);
     }
 
     @Override
@@ -30,35 +30,36 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setPivot(Rotation2d angle) {
-        pivot.setDesiredAngle(angle);
+        // pivot.setDesiredAngle(angle);
     }
 
     public void runPivot(double setPoint) {
-        pivot.move(setPoint);
+        // pivot.move(setPoint);
     }
 
     public Rotation2d getPivotAngle() {
-        return pivot.getAngle();
+        // return pivot.getAngle();
+        return new Rotation2d();
     }
 
     public void runIntake() {
-        // intake.run();
+        intake.run();
     }
 
     public void stopIntake() {
-        // intake.stop();
+        intake.stop();
     }
 
     public void runFeedIn() {
-        // intake.runFeedIn();
+        intake.runFeedIn();
     }
 
     public void runFeedOut() {
-        // intake.runFeedOut();
+        intake.runFeedOut();
     }
 
     public void stopFeed() {
-        // intake.stopFeed();
+        intake.stopFeed();
     }
 
     public void runShooter() {
@@ -94,7 +95,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public Rotation2d getShooterAngle() {
-        return pivot.getAngle();
-        // return new Rotation2d();
+        // return pivot.getAngle();
+        return new Rotation2d();
     }
 }
