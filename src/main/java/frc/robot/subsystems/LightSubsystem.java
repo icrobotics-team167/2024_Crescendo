@@ -7,10 +7,14 @@ import frc.robot.misc.Lights.Colours;
 public class LightSubsystem extends SubsystemBase {
     Lights lights;
     public LightSubsystem() {
-        lights = new Lights(0); // TODO: Configure ID
+        lights = new Lights(8); // TODO: Configure ID
     }
 
     public void setColour(Colours colour) {
         lights.setColour(colour);
+    }
+
+    public void setColorValue(int num) {
+        lights.setColorValue(num);
     }
 }

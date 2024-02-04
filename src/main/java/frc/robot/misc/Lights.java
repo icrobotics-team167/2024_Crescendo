@@ -22,7 +22,31 @@ public class Lights {
         SINELON_RAINBOX_PALETTE(1105),
         SINELON_LAVA_PALETTE(1135),
         BPM_OCEAN_PALETTE(1175),
-        FIRE_LARGE(1215);
+        FIRE_LARGE(1215),
+        //SOLID COLORS
+        HOT_PINK(1785),
+        DARK_RED(1795),
+        RED(1805),
+        RED_ORANGE(1815),
+        ORANGE(1825),
+        GOLD(1835),
+        YELLOW(1845),
+        LAWN_GREEN(1855),
+        LIME(1865),
+        DARK_GREEN(1875),
+        GREEN(1885),
+        BLUE_GREEN(1895),
+        AQUA(1905),
+        SKY_BLUE(1915),
+        DARK_BLUE(1925),
+        BLUE(1935),
+        BLUE_VIOLET(1945),
+        VIOLET(1955),
+        WHITE(1965),
+        GRAY(1975),
+        DARK_GREY(1985),
+        BLACK(1995);
+
 
         int colourValue;
         /**
@@ -39,7 +63,7 @@ public class Lights {
      * @param PWMID the PWMID of the blinky blinky light module (Spark motor)
      */ 
     public Lights(int PWMID) {
-        colourSpark = new PWM(0);
+        colourSpark = new PWM(PWMID);
     }
 
     /**
@@ -50,5 +74,8 @@ public class Lights {
         // set colour to set colourValue bruv
         colourSpark.setPulseTimeMicroseconds(colour.colourValue);
         Telemetry.sendNumber("Lights.colourValue", colourSpark.getPulseTimeMicroseconds(), Verbosity.HIGH);
+    }
+    public void setColorValue(int colorValue) {
+        colourSpark.setPulseTimeMicroseconds(colorValue);
     }
 }

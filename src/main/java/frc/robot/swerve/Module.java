@@ -123,7 +123,7 @@ public class Module {
     driveMotor.setDriveReference(rawState.speedMetersPerSecond,
         DRIVE_FEEDFORWARD.calculate(rawState.speedMetersPerSecond));
     // 0);
-    turnMotor.setPosition(turnEncoder.getAbsolutePosition().getDegrees());
+    //turnMotor.setPosition(turnEncoder.getAbsolutePosition().getDegrees());
     turnMotor.setTurnReference(rawState.angle);
   }
 

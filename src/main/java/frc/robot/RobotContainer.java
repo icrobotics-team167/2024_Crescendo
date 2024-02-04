@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.awt.Color;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands; // Keep this around so that we don't have to reimport when we add named commands
 import edu.wpi.first.math.MathUtil;
@@ -108,11 +110,33 @@ public class RobotContainer {
                                                                // when the robot wasn't facing away from the driver
                                                                // station on boot and can't get an AprilTag lock to
                                                                // calculate its orientation
+
+
   }
 
   public void robotPeriodic() {
-    lights.setColour(colourSelector.getSelected());
-  }
+    if(secondaryRightStick.button(3).getAsBoolean()) {
+      lights.setColour(Colours.RAINBOW_PALETTE);
+    } else if (secondaryRightStick.button(4).getAsBoolean()) {
+      lights.setColour(Colours.RAINBOW_GLITTER);
+    } else if (secondaryRightStick.button(5).getAsBoolean()) {
+      lights.setColour(Colours.CONFETTI);
+    } else if (secondaryRightStick.button(6).getAsBoolean()) {
+      lights.setColour(Colours.SHOT_RED);
+    } else if (secondaryRightStick.button(7).getAsBoolean()) {
+      lights.setColour(Colours.SINELON_RAINBOX_PALETTE);
+    } else if (secondaryRightStick.button(8).getAsBoolean()) {
+      lights.setColour(Colours.SINELON_LAVA_PALETTE);
+    } else if (secondaryRightStick.button(9).getAsBoolean()) {
+      lights.setColour(Colours.BPM_OCEAN_PALETTE);
+    } else if (secondaryRightStick.button(10).getAsBoolean()) {
+      lights.setColour(Colours.FIRE_LARGE);
+    } else if (secondaryLeftStick.button(2).getAsBoolean()) {
+      lights.setColorValue(1935);
+    } else if (secondaryLeftStick.button(3).getAsBoolean()) {
+      lights.setColorValue(1875);
+    }
+   }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
