@@ -42,7 +42,7 @@ public class RobotContainer {
   public SendableChooser<Colours> colourSelector = new SendableChooser<Colours>();
 
   private final SwerveSubsystem driveBase = new SwerveSubsystem();
-  private final LightSubsystem lights = new LightSubsystem();
+  // private final LightSubsystem lights = new LightSubsystem();
   private final ShooterSubsystem shooter = new ShooterSubsystem();
 
   CommandJoystick primaryLeftStick = new CommandJoystick(Constants.Driving.Controllers.IDs.PRIMARY_LEFT);
@@ -150,27 +150,7 @@ public class RobotContainer {
   }
 
   public void robotPeriodic() {
-    if(secondaryRightStick.button(3).getAsBoolean()) {
-      lights.setColour(Colours.RAINBOW_PALETTE);
-    } else if (secondaryRightStick.button(4).getAsBoolean()) {
-      lights.setColour(Colours.RAINBOW_GLITTER);
-    } else if (secondaryRightStick.button(5).getAsBoolean()) {
-      lights.setColour(Colours.CONFETTI);
-    } else if (secondaryRightStick.button(6).getAsBoolean()) {
-      lights.setColour(Colours.SHOT_RED);
-    } else if (secondaryRightStick.button(7).getAsBoolean()) {
-      lights.setColour(Colours.SINELON_RAINBOX_PALETTE);
-    } else if (secondaryRightStick.button(8).getAsBoolean()) {
-      lights.setColour(Colours.SINELON_LAVA_PALETTE);
-    } else if (secondaryRightStick.button(9).getAsBoolean()) {
-      lights.setColour(Colours.BPM_OCEAN_PALETTE);
-    } else if (secondaryRightStick.button(10).getAsBoolean()) {
-      lights.setColour(Colours.FIRE_LARGE);
-    } else if (secondaryLeftStick.button(2).getAsBoolean()) {
-      lights.setColorValue(1935);
-    } else if (secondaryLeftStick.button(3).getAsBoolean()) {
-      lights.setColorValue(1875);
-    }
+    
    }
 
   /**

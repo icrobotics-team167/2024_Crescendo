@@ -9,7 +9,6 @@ import frc.robot.helpers.Telemetry;
 import frc.robot.helpers.Telemetry.Verbosity;
 
 import frc.robot.subsystems.LightSubsystem;
-import frc.robot.misc.Lights;
 import frc.robot.misc.Lights.Colours;
 
 
@@ -17,7 +16,7 @@ public class Intake {
     AbstractMotor feedMotor;
     AbstractMotor intakeMotor;
     TimeOfFlight sensor;
-    LightSubsystem lights;
+    private static final LightSubsystem lights =  new LightSubsystem();
 
     private static final int DISTANCE_TO_WALL = 12; //probably not 0
 
@@ -33,7 +32,6 @@ public class Intake {
         this.sensor = new TimeOfFlight(sensorID);
         this.sensor.setRangingMode(TimeOfFlight.RangingMode.Short,30);
 
-        this.lights = new LightSubsystem();
     }
 
     // TODO: Figure out the design of the intake so that we can finalize methods
