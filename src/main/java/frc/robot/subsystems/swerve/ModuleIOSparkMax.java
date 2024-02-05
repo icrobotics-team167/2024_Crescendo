@@ -28,6 +28,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.*;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;
+import frc.robot.Robot;
 import java.util.Queue;
 
 /**
@@ -260,6 +261,14 @@ public class ModuleIOSparkMax implements ModuleIO {
 
   @Override
   public void setDriveVelocity(Measure<Velocity<Distance>> velocity) {
+    // Compensate for the drive wheel turning slightly when the azimuth turns.
+    double driveTurnCompensation =
+        Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters)
+            * Module.DRIVE_TURN_COMPENSATION_RATIO
+            * driveEncoder.getVelocity();
+    velocity = velocity.plus(MetersPerSecond.of(driveTurnCompensation));
+    driveEncoder.setPosition(
+        driveEncoder.getPosition() + (driveTurnCompensation * Robot.defaultPeriodSecs));
     drivePIDController.setReference(
         velocity.in(MetersPerSecond),
         ControlType.kVelocity,

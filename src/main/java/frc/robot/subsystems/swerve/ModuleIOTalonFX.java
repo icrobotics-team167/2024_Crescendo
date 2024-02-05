@@ -33,6 +33,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.*;
+import frc.robot.Robot;
 import java.util.Queue;
 
 /**
@@ -426,7 +427,15 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void setDriveVelocity(Measure<Velocity<Distance>> velocity) {
-    driveControlRequest.Velocity = velocity.in(MetersPerSecond);
+    // Compensate for the drive wheel turning slightly when the azimuth turns.
+    double driveTurnCompensation =
+        Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters)
+            * Module.DRIVE_TURN_COMPENSATION_RATIO
+            * turnVelocity.getValueAsDouble();
+    driveControlRequest.Velocity = velocity.in(MetersPerSecond) + driveTurnCompensation;
+    driveTalon.setPosition(
+        drivePosition.getValueAsDouble() + (driveTurnCompensation * Robot.defaultPeriodSecs));
+    
     driveTalon.setControl(driveControlRequest);
   }
 
