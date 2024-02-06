@@ -12,7 +12,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.swerve;
+package frc.robot.subsystems.swerve.interfaceLayers;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -34,6 +34,8 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.*;
 import frc.robot.Robot;
+import frc.robot.subsystems.swerve.Module;
+import frc.robot.subsystems.swerve.PhoenixOdometryThread;
 import java.util.Queue;
 
 /**
@@ -435,7 +437,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveControlRequest.Velocity = velocity.in(MetersPerSecond) + driveTurnCompensation;
     driveTalon.setPosition(
         drivePosition.getValueAsDouble() + (driveTurnCompensation * Robot.defaultPeriodSecs));
-    
+
     driveTalon.setControl(driveControlRequest);
   }
 

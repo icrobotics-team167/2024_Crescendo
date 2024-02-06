@@ -90,7 +90,6 @@ public class Robot extends LoggedRobot {
         Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_replay")));
     }
 
-    
     // Logger.registerURCL(URCL.startExternal()); // For REV users running sysid.
     // SignalLogger.start(); // For CTRE users running sysid.
     Logger.start();

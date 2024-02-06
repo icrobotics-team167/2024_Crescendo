@@ -21,12 +21,12 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.subsystems.swerve.GyroIO;
-import frc.robot.subsystems.swerve.GyroIOPigeon2;
-import frc.robot.subsystems.swerve.ModuleIO;
-import frc.robot.subsystems.swerve.ModuleIOSim;
-import frc.robot.subsystems.swerve.ModuleIOSparkMax;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.subsystems.swerve.interfaceLayers.GyroIO;
+import frc.robot.subsystems.swerve.interfaceLayers.GyroIOPigeon2;
+import frc.robot.subsystems.swerve.interfaceLayers.ModuleIO;
+import frc.robot.subsystems.swerve.interfaceLayers.ModuleIOSim;
+import frc.robot.subsystems.swerve.interfaceLayers.ModuleIOSparkMax;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**

@@ -20,6 +20,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.*;
+import frc.robot.subsystems.swerve.interfaceLayers.ModuleIO;
+import frc.robot.subsystems.swerve.interfaceLayers.ModuleIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -35,7 +37,7 @@ public class Module {
    *       </ul>
    * </ul>
    */
-  static final double ODOMETRY_FREQUENCY = 250.0;
+  public static final double ODOMETRY_FREQUENCY = 250.0;
   // Gear ratios for SDS MK4i L2, adjust as necessary
   /**
    * The gear ratio between the drive motor and the module wheel.
@@ -47,9 +49,9 @@ public class Module {
    *       </ul>
    * </ul>
    */
-  static final double DRIVE_GEAR_RATIO = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
+  public static final double DRIVE_GEAR_RATIO = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
   /** The max free speed of the motor. */
-  static final Measure<Velocity<Angle>> DRIVE_MOTOR_MAX_VEL = RPM.of(5800);
+  public static final Measure<Velocity<Angle>> DRIVE_MOTOR_MAX_VEL = RPM.of(5800);
   /**
    * The gear ratio between the turn motor and the module.
    *
@@ -60,7 +62,7 @@ public class Module {
    *       </ul>
    * </ul>
    */
-  static final double TURN_GEAR_RATIO = 150.0 / 7.0;
+  public static final double TURN_GEAR_RATIO = 150.0 / 7.0;
   /**
    * How many rotations the drive wheel moves when the drive motor is locked and the azimuth does
    * one full rotation. Used to compensate for gear shenanigans. Leave 0 to disable compensation.
@@ -73,16 +75,16 @@ public class Module {
    * </ul>
    */
   // TODO: Might need to stick a minus sign in here?
-  static final double DRIVE_TURN_COMPENSATION_RATIO = 50.0 / 14.0;
-  // static final double DRIVE_TURN_COMPENSATION_RATIO = 0;
+  public static final double DRIVE_TURN_COMPENSATION_RATIO = 50.0 / 14.0;
+  // public static final double DRIVE_TURN_COMPENSATION_RATIO = 0;
   /**
    * If the turn motor should be inverted or not. A positive control input should mean that the
    * azimuth should rotate counterclockwise, so if the turn motor needs to rotate clockwise to
    * achieve that, set this to true.
    */
-  static final boolean TURN_MOTOR_INVERTED = true;
+  public static final boolean TURN_MOTOR_INVERTED = true;
   /** The circumference of the module wheel. */
-  static final Measure<Distance> DRIVE_WHEEL_CIRCUMFERENCE = Inches.of(4 * Math.PI);
+  public static final Measure<Distance> DRIVE_WHEEL_CIRCUMFERENCE = Inches.of(4 * Math.PI);
 
   /** The module's IO interface, used to communicate with the actual hardware. */
   private final ModuleIO io;
