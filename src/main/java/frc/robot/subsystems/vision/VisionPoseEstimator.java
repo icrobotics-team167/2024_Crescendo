@@ -19,8 +19,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.Robot.Mode;
 import frc.robot.subsystems.vision.interfaceLayers.VisionIO;
+import frc.robot.subsystems.vision.interfaceLayers.VisionIOInputsAutoLogged;
 import frc.robot.subsystems.vision.interfaceLayers.VisionIOLimelight;
-
 import java.util.function.BiConsumer;
 import org.littletonrobotics.junction.Logger;
 
