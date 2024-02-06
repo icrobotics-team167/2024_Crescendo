@@ -8,11 +8,15 @@ import com.playingwithfusion.TimeOfFlight;
 import frc.robot.helpers.Telemetry;
 import frc.robot.helpers.Telemetry.Verbosity;
 
+import frc.robot.subsystems.LightSubsystem;
+import frc.robot.misc.Lights.Colours;
+
 
 public class Intake {
     AbstractMotor feedMotor;
     AbstractMotor intakeMotor;
     TimeOfFlight sensor;
+    private static final LightSubsystem lights =  new LightSubsystem();
 
     private static final int DISTANCE_TO_WALL = 12; //probably not 0
 
@@ -27,6 +31,7 @@ public class Intake {
         
         this.sensor = new TimeOfFlight(sensorID);
         this.sensor.setRangingMode(TimeOfFlight.RangingMode.Short,30);
+
     }
 
     // TODO: Figure out the design of the intake so that we can finalize methods
@@ -63,6 +68,9 @@ public class Intake {
         // // TODO make not suck
         Telemetry.sendNumber("pidGet", sensor.pidGet(), Verbosity.MEDIUM);
         Telemetry.sendNumber("getRange", sensor.getRange(), Verbosity.MEDIUM); //double check these are the same, they should be but who knows.
+        if((sensor.pidGet() * MathUtils.mm_TO_INCHES) < DISTANCE_TO_WALL) {
+            lights.setColour(Colours.GREEN);
+        }
         return (sensor.pidGet() * MathUtils.mm_TO_INCHES) < DISTANCE_TO_WALL;
     }
 

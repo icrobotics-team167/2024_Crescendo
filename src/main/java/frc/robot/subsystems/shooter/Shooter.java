@@ -41,10 +41,6 @@ public class Shooter {
         }
     } // Bang Bang controller thing, this may implode
 
-    public void runVolts(double volts) {
-        motor.setVolts(volts);
-    }
-
     public double getPosition() {
         return motor.getPosition();
     }

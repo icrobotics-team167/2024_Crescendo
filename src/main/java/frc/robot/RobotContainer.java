@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.awt.Color;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands; // Keep this around so that we don't have to reimport when we add named commands
 import edu.wpi.first.math.MathUtil;
@@ -18,9 +20,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+// import frc.robot.commands.auto.*; // Compiler no likey because there's no autos in the auto folder
+import frc.robot.subsystems.LightSubsystem;
 import frc.robot.commands.*;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.misc.Lights.Colours;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -34,8 +39,10 @@ import frc.robot.subsystems.SwerveSubsystem;
 public class RobotContainer {
 
   public SendableChooser<Command> autoSelector = new SendableChooser<Command>();
+  public SendableChooser<Colours> colourSelector = new SendableChooser<Colours>();
 
   private final SwerveSubsystem driveBase = new SwerveSubsystem();
+  // private final LightSubsystem lights = new LightSubsystem();
   private final ShooterSubsystem shooter = new ShooterSubsystem();
 
   CommandJoystick primaryLeftStick = new CommandJoystick(Constants.Driving.Controllers.IDs.PRIMARY_LEFT);
@@ -89,6 +96,15 @@ public class RobotContainer {
     autoSelector.addOption("Test Auto (Module Actuation)", new TestWheels(driveBase));
     SmartDashboard.putData(autoSelector);
 
+    for (Colours colour : Colours.values()) {
+      if (colour == Colours.SHOT_RED) {
+        colourSelector.setDefaultOption(colour.name(), colour);
+      } else {
+        colourSelector.addOption(colour.name(), colour);
+      }
+    }
+    SmartDashboard.putData(colourSelector);
+
     // Configure the trigger bindings
     configureBindings();
 
@@ -132,6 +148,10 @@ public class RobotContainer {
     // primaryLeftStick.button(3).whileTrue(new StartEndCommand(driveBase::trackTag,
     // driveBase::setSlowMode));
   }
+
+  public void robotPeriodic() {
+    
+   }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
