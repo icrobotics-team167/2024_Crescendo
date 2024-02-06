@@ -12,9 +12,11 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.swerve;
+package frc.robot.subsystems.swerve.interfaceLayers;
 
 import edu.wpi.first.wpilibj.Notifier;
+import frc.robot.subsystems.swerve.Module;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;

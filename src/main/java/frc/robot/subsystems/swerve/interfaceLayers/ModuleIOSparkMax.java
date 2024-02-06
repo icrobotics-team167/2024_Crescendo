@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Robot;
 import frc.robot.subsystems.swerve.Module;
-import frc.robot.subsystems.swerve.SparkMaxOdometryThread;
 import java.util.Queue;
 
 /**
