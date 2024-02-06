@@ -31,8 +31,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.*;
 import frc.robot.Robot;
 import frc.robot.subsystems.swerve.Module;
-import frc.robot.subsystems.swerve.SparkMaxOdometryThread;
+import frc.robot.util.SparkUtils;
 import java.util.Queue;
+import java.util.Set;
 
 /**
  * Module IO implementation for SparkMax drive motor controller, SparkMax turn motor controller (NEO
@@ -163,15 +164,13 @@ public class ModuleIOSparkMax implements ModuleIO {
     driveSparkMax.setCANTimeout(250);
     turnSparkMax.setCANTimeout(250);
 
+    SparkUtils.configureSettings(false, IdleMode.kBrake, Amps.of(100), driveSparkMax);
+    SparkUtils.configureSettings(
+        Module.TURN_MOTOR_INVERTED, IdleMode.kBrake, Amps.of(40), turnSparkMax);
+
     // Initialize encoders
     driveEncoder = driveSparkMax.getEncoder();
     turnRelativeEncoder = turnSparkMax.getEncoder();
-
-    turnSparkMax.setInverted(Module.TURN_MOTOR_INVERTED);
-    driveSparkMax.setSmartCurrentLimit(80);
-    turnSparkMax.setSmartCurrentLimit(30);
-    driveSparkMax.enableVoltageCompensation(12.0);
-    turnSparkMax.enableVoltageCompensation(12.0);
 
     // The motor output in rotations is multiplied by this factor.
     driveEncoder.setPositionConversionFactor(
@@ -185,7 +184,6 @@ public class ModuleIOSparkMax implements ModuleIO {
     turnRelativeEncoder.setPositionConversionFactor(1.0 / Module.TURN_GEAR_RATIO);
     turnRelativeEncoder.setVelocityConversionFactor((1.0 / Module.TURN_GEAR_RATIO) / 60);
     turnRelativeEncoder.setPosition(turnCANcoder.getAbsolutePosition().getValueAsDouble());
-    turnRelativeEncoder.setInverted(Module.TURN_MOTOR_INVERTED);
     turnRelativeEncoder.setMeasurementPeriod(10);
     turnRelativeEncoder.setAverageDepth(2);
 
@@ -221,6 +219,18 @@ public class ModuleIOSparkMax implements ModuleIO {
     cancoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
     cancoderConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset.getRotations();
     turnCANcoder.getConfigurator().apply(cancoderConfig);
+
+    // Configure CAN frame usage, and disable any unused CAN frames.
+    SparkUtils.configureFrameStrategy(
+        driveSparkMax,
+        Set.of(SparkUtils.Data.VELOCITY, SparkUtils.Data.VOLTAGE, SparkUtils.Data.CURRENT),
+        Set.of(SparkUtils.Sensor.INTEGRATED),
+        false);
+    SparkUtils.configureFrameStrategy(
+        turnSparkMax,
+        Set.of(SparkUtils.Data.VELOCITY, SparkUtils.Data.VOLTAGE, SparkUtils.Data.CURRENT),
+        Set.of(SparkUtils.Sensor.INTEGRATED),
+        false);
 
     // Set up high frequency odometry
     driveSparkMax.setPeriodicFramePeriod(

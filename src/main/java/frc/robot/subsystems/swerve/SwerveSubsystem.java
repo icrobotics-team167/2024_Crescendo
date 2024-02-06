@@ -44,6 +44,8 @@ import frc.robot.Constants.Driving;
 import frc.robot.subsystems.swerve.interfaceLayers.GyroIO;
 import frc.robot.subsystems.swerve.interfaceLayers.GyroIOInputsAutoLogged;
 import frc.robot.subsystems.swerve.interfaceLayers.ModuleIO;
+import frc.robot.subsystems.swerve.interfaceLayers.PhoenixOdometryThread;
+import frc.robot.subsystems.swerve.interfaceLayers.SparkMaxOdometryThread;
 import frc.robot.subsystems.vision.VisionPoseEstimator;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.MathUtils;
@@ -91,7 +93,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   // Pose estimation
   /** A thread lock to prevent read/write conflicts on odometry/pose estimation. */
-  static final Lock odometryLock = new ReentrantLock();
+  public static final Lock odometryLock = new ReentrantLock();
   /** The pose estimator, used to fuse odometry data and vision data together. */
   private SwerveDrivePoseEstimator poseEstimator;
   /** The vision-based pose estimator. */
