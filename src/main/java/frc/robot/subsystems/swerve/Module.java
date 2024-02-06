@@ -125,7 +125,7 @@ public class Module {
    * </ul>
    */
   private double speedSetpoint = 0;
-
+  /** If the drive motor's control mode is in closed-loop velocity control, or open loop control. */
   private boolean velocityControl = true;
 
   /**
