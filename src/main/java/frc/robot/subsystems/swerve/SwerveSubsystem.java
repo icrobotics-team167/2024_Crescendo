@@ -48,7 +48,6 @@ import frc.robot.subsystems.swerve.interfaceLayers.PhoenixOdometryThread;
 import frc.robot.subsystems.swerve.interfaceLayers.SparkMaxOdometryThread;
 import frc.robot.subsystems.vision.VisionPoseEstimator;
 import frc.robot.util.LocalADStarAK;
-import frc.robot.util.MathUtils;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.DoubleSupplier;
@@ -340,30 +339,18 @@ public class SwerveSubsystem extends SubsystemBase {
     };
   }
 
-  /** Command factory for teleop field-oriented drive. */
+  /**
+   * Command factory for teleop field-oriented drive. Control input suppliers should already have
+   * deadbands applied.
+   */
   public Command getDriveCommand(
       DoubleSupplier xInput, DoubleSupplier yInput, DoubleSupplier rotInput) {
     return run(
         () -> {
           // Get control inputs and apply deadbands
-          double xIn =
-              MathUtils.inOutDeadband(
-                  xInput.getAsDouble(),
-                  Driving.Deadbands.PRIMARY_LEFT_INNER,
-                  Driving.Deadbands.PRIMARY_LEFT_OUTER,
-                  2);
-          double yIn =
-              MathUtils.inOutDeadband(
-                  yInput.getAsDouble(),
-                  Driving.Deadbands.PRIMARY_LEFT_INNER,
-                  Driving.Deadbands.PRIMARY_LEFT_OUTER,
-                  2);
-          double rotIn =
-              MathUtils.inOutDeadband(
-                  rotInput.getAsDouble(),
-                  Driving.Deadbands.PRIMARY_RIGHT_INNER,
-                  Driving.Deadbands.PRIMARY_RIGHT_OUTER,
-                  2);
+          double xIn = xInput.getAsDouble();
+          double yIn = yInput.getAsDouble();
+          double rotIn = rotInput.getAsDouble();
 
           double controlMagnitude = Math.hypot(xIn, yIn);
           xIn /= Math.max(controlMagnitude, 1);
