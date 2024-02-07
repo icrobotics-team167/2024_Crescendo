@@ -62,7 +62,7 @@ public class Module {
    *       </ul>
    * </ul>
    */
-  public static final double TURN_GEAR_RATIO = 150.0 / 7.0;
+  public static final double AZIMUTH_GEAR_RATIO = 150.0 / 7.0;
   /**
    * How many rotations the drive wheel moves when the drive motor is locked and the azimuth does
    * one full rotation. Used to compensate for gear shenanigans. Leave 0 to disable compensation.
@@ -82,7 +82,7 @@ public class Module {
    * azimuth should rotate counterclockwise, so if the turn motor needs to rotate clockwise to
    * achieve that, set this to true.
    */
-  public static final boolean TURN_MOTOR_INVERTED = true;
+  public static final boolean AZIMUTH_MOTOR_INVERTED = true;
   /** The circumference of the module wheel. */
   public static final Measure<Distance> DRIVE_WHEEL_CIRCUMFERENCE = Inches.of(4 * Math.PI);
 
@@ -177,7 +177,7 @@ public class Module {
     Logger.processInputs("Drive/" + getNameFromIndex(index) + " Module", inputs);
 
     // Run closed loop turn control
-    io.setTurnPosition(angleSetpoint);
+    io.setAzimuthPosition(angleSetpoint);
 
     if (velocityControl) {
       // Scale velocity based on turn error
@@ -186,7 +186,7 @@ public class Module {
       // taking the component of the velocity in the direction of the setpoint.
       double adjustedSpeedSetpoint =
           speedSetpoint
-              * Math.cos(inputs.turnAbsolutePosition.getRadians() - angleSetpoint.getRadians());
+              * Math.cos(inputs.azimuthAbsolutePosition.getRadians() - angleSetpoint.getRadians());
       io.setDriveVelocity(MetersPerSecond.of(adjustedSpeedSetpoint));
     } else {
       io.setRawDrive(speedSetpoint);
@@ -197,7 +197,7 @@ public class Module {
     odometryPositions = new SwerveModulePosition[sampleCount];
     for (int i = 0; i < sampleCount; i++) {
       double positionMeters = inputs.odometryDrivePositionsMeters[i];
-      Rotation2d angle = inputs.odometryTurnPositions[i];
+      Rotation2d angle = inputs.odometryAzimuthPositions[i];
       odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
     }
   }
@@ -230,12 +230,12 @@ public class Module {
   /** Sets whether brake mode is enabled. */
   public void setBrakeMode(boolean enabled) {
     io.setDriveBrakeMode(enabled);
-    io.setTurnBrakeMode(enabled);
+    io.setAzimuthBrakeMode(enabled);
   }
 
   /** Returns the current turn angle of the module. */
   public Rotation2d getAngle() {
-    return inputs.turnAbsolutePosition;
+    return inputs.azimuthAbsolutePosition;
   }
 
   /** Returns the current drive position of the module. */

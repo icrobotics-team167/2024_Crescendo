@@ -25,26 +25,34 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ModuleIO {
   @AutoLog
   public static class ModuleIOInputs {
-    /** The current distance that the module has driven so far. */
+    /** The distance that the module has driven so far. */
     public Measure<Distance> drivePosition = Meters.of(0);
-    /** The current drive velocity of the module. */
+    /** The linear drive velocity of the module. */
     public Measure<Velocity<Distance>> driveVelocity = MetersPerSecond.of(0);
     /** The voltage applied to the motor by the motor controller. */
     public Measure<Voltage> driveAppliedVoltage = Volts.of(0);
+    /** The current applied to the motor by the motor controller. */
+    public double[] driveAppliedCurrentAmps = new double[] {};
     /** The total output applied to the motor by the closed loop control. */
     public double driveAppliedOutput = 0.0;
 
-    public double[] driveAppliedCurrentAmps = new double[] {};
+    /** The absolute position of the module's azimuth. 0 degrees is forwards, CCW+. */
+    public Rotation2d azimuthAbsolutePosition = new Rotation2d();
+    /** The rotational velocity of the azimuth. CCW+. */
+    public Measure<Velocity<Angle>> azimuthVelocity = RadiansPerSecond.of(0);
+    /** The voltage applied to the motor by the motor controller. */
+    public Measure<Voltage> azimuthAppliedVoltage = Volts.of(0);
+    /** The current applied to the motor by the motor controller. */
+    public Measure<Current> azimuthAppliedCurrentAmps = Amps.of(0);
+    /** The total output applied to the motor by the closed loop control. */
+    public double azimuthAppliedOutput = 0.0;
 
-    public Rotation2d turnAbsolutePosition = new Rotation2d();
-    public Measure<Velocity<Angle>> turnVelocity = RadiansPerSecond.of(0);
-    public Measure<Voltage> turnAppliedVoltage = Volts.of(0);
-    public double turnAppliedOutput = 0.0;
-    public double[] turnAppliedCurrentAmps = new double[] {};
-
+    /** The timestamps for the measurements that the high frequency odometry thread captured. */
     public double[] odometryTimestamps = new double[] {};
+    /** The drive position measurements that the high frequency odometry thread captured. */
     public double[] odometryDrivePositionsMeters = new double[] {};
-    public Rotation2d[] odometryTurnPositions = new Rotation2d[] {};
+    /** The azimuth position measurements that the high frequency odometry thread captured. */
+    public Rotation2d[] odometryAzimuthPositions = new Rotation2d[] {};
   }
 
   /** Updates the set of loggable inputs. */
@@ -73,7 +81,7 @@ public interface ModuleIO {
    *
    * @param position The target position.
    */
-  public default void setTurnPosition(Rotation2d position) {}
+  public default void setAzimuthPosition(Rotation2d position) {}
 
   /** Stops all motor control input. */
   public default void stop() {}
@@ -82,9 +90,9 @@ public interface ModuleIO {
   public default void setDriveBrakeMode(boolean enable) {}
 
   /** Enable or disable brake mode on the turn motor. */
-  public default void setTurnBrakeMode(boolean enable) {}
+  public default void setAzimuthBrakeMode(boolean enable) {}
 
   public default void configureDriveSysID() {}
 
-  public default void configureTurnSysID() {}
+  public default void configureAzimuthSysID() {}
 }

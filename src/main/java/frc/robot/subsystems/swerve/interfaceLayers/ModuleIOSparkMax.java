@@ -36,8 +36,8 @@ import java.util.Queue;
 import java.util.Set;
 
 /**
- * Module IO implementation for SparkMax drive motor controller, SparkMax turn motor controller (NEO
- * or NEO 550), and analog absolute encoder connected to the RIO
+ * Module IO implementation for SparkMax drive motor controller, SparkMax azimuth motor controller
+ * (NEO or NEO 550), and analog absolute encoder connected to the RIO
  *
  * <p>NOTE: This implementation should be used as a starting point and adapted to different hardware
  * configurations (e.g. If using a CANcoder, copy from "ModuleIOTalonFX")
@@ -45,26 +45,26 @@ import java.util.Set;
  * <p>To calibrate the absolute encoder offsets, point the modules straight (such that forward
  * motion on the drive motor will propel the robot forward) and copy the reported values from the
  * absolute encoders using AdvantageScope. These values are logged under
- * "/Drive/ModuleX/TurnAbsolutePosition"
+ * "/Drive/ModuleX/AzimuthAbsolutePosition"
  */
 public class ModuleIOSparkMax implements ModuleIO {
   /** The Spark Max motor controller for the drive motor. */
   private final CANSparkMax driveSparkMax;
-  /** The Spark Max motor controller for the turn motor. */
-  private final CANSparkMax turnSparkMax;
+  /** The Spark Max motor controller for the Azimuth motor. */
+  private final CANSparkMax azimuthSparkMax;
 
   /** The internal encoder of the drive motor. */
   private final RelativeEncoder driveEncoder;
-  /** The internal encoder of the turn motor. */
-  private final RelativeEncoder turnRelativeEncoder;
+  /** The internal encoder of the azimuth motor. */
+  private final RelativeEncoder azimuthRelativeEncoder;
   /** The PID controller for the drive motor. */
   private final SparkPIDController drivePIDController;
   /** The FF constants of the drive motor. */
   private final SimpleMotorFeedforward driveFF;
-  /** The PID controller for the turn motor. */
-  private final SparkPIDController turnPIDController;
+  /** The PID controller for the azimuth motor. */
+  private final SparkPIDController azimuthPIDController;
   /** The absolute encoder for azimuth. */
-  private final CANcoder turnCANcoder;
+  private final CANcoder azimuthCANcoder;
   /**
    * A {@link Queue} holding all the timestamps that the async odometry thread captures.
    *
@@ -97,7 +97,7 @@ public class ModuleIOSparkMax implements ModuleIO {
    *       </ul>
    * </ul>
    */
-  private final Queue<Double> turnPositionQueue;
+  private final Queue<Double> azimuthPositionQueue;
   /**
    * Due to the nature of mounting magnets for absolute encoders, it is practically impossible to
    * line up magnetic north with forwards on the module. This value is subtracted from the raw
@@ -130,26 +130,26 @@ public class ModuleIOSparkMax implements ModuleIO {
     switch (index) {
       case 0: // Front Left
         driveSparkMax = new CANSparkMax(1, MotorType.kBrushless);
-        turnSparkMax = new CANSparkMax(2, MotorType.kBrushless);
-        turnCANcoder = new CANcoder(15);
+        azimuthSparkMax = new CANSparkMax(2, MotorType.kBrushless);
+        azimuthCANcoder = new CANcoder(15);
         absoluteEncoderOffset = new Rotation2d(0.0); // TODO: Calibrate
         break;
       case 1: // Front Right
         driveSparkMax = new CANSparkMax(3, MotorType.kBrushless);
-        turnSparkMax = new CANSparkMax(4, MotorType.kBrushless);
-        turnCANcoder = new CANcoder(16);
+        azimuthSparkMax = new CANSparkMax(4, MotorType.kBrushless);
+        azimuthCANcoder = new CANcoder(16);
         absoluteEncoderOffset = new Rotation2d(0.0); // TODO: Calibrate
         break;
       case 2: // Back Left
         driveSparkMax = new CANSparkMax(5, MotorType.kBrushless);
-        turnSparkMax = new CANSparkMax(6, MotorType.kBrushless);
-        turnCANcoder = new CANcoder(17);
+        azimuthSparkMax = new CANSparkMax(6, MotorType.kBrushless);
+        azimuthCANcoder = new CANcoder(17);
         absoluteEncoderOffset = new Rotation2d(0.0); // TODO: Calibrate
         break;
       case 3: // Back Right
         driveSparkMax = new CANSparkMax(7, MotorType.kBrushless);
-        turnSparkMax = new CANSparkMax(8, MotorType.kBrushless);
-        turnCANcoder = new CANcoder(18);
+        azimuthSparkMax = new CANSparkMax(8, MotorType.kBrushless);
+        azimuthCANcoder = new CANcoder(18);
         absoluteEncoderOffset = new Rotation2d(0.0); // TODO: Calibrate
         break;
       default:
@@ -158,19 +158,19 @@ public class ModuleIOSparkMax implements ModuleIO {
 
     // Configure motors
     driveSparkMax.restoreFactoryDefaults();
-    turnSparkMax.restoreFactoryDefaults();
+    azimuthSparkMax.restoreFactoryDefaults();
 
     // Set up a timeout for applying settings.
     driveSparkMax.setCANTimeout(250);
-    turnSparkMax.setCANTimeout(250);
+    azimuthSparkMax.setCANTimeout(250);
 
     SparkUtils.configureSettings(false, IdleMode.kBrake, Amps.of(100), driveSparkMax);
     SparkUtils.configureSettings(
-        Module.TURN_MOTOR_INVERTED, IdleMode.kBrake, Amps.of(40), turnSparkMax);
+        Module.AZIMUTH_MOTOR_INVERTED, IdleMode.kBrake, Amps.of(40), azimuthSparkMax);
 
     // Initialize encoders
     driveEncoder = driveSparkMax.getEncoder();
-    turnRelativeEncoder = turnSparkMax.getEncoder();
+    azimuthRelativeEncoder = azimuthSparkMax.getEncoder();
 
     // The motor output in rotations is multiplied by this factor.
     driveEncoder.setPositionConversionFactor(
@@ -181,11 +181,11 @@ public class ModuleIOSparkMax implements ModuleIO {
     driveEncoder.setMeasurementPeriod(10);
     driveEncoder.setAverageDepth(2);
 
-    turnRelativeEncoder.setPositionConversionFactor(1.0 / Module.TURN_GEAR_RATIO);
-    turnRelativeEncoder.setVelocityConversionFactor((1.0 / Module.TURN_GEAR_RATIO) / 60);
-    turnRelativeEncoder.setPosition(turnCANcoder.getAbsolutePosition().getValueAsDouble());
-    turnRelativeEncoder.setMeasurementPeriod(10);
-    turnRelativeEncoder.setAverageDepth(2);
+    azimuthRelativeEncoder.setPositionConversionFactor(1.0 / Module.AZIMUTH_GEAR_RATIO);
+    azimuthRelativeEncoder.setVelocityConversionFactor((1.0 / Module.AZIMUTH_GEAR_RATIO) / 60);
+    azimuthRelativeEncoder.setPosition(azimuthCANcoder.getAbsolutePosition().getValueAsDouble());
+    azimuthRelativeEncoder.setMeasurementPeriod(10);
+    azimuthRelativeEncoder.setAverageDepth(2);
 
     // PIDF tuning values. NONE OF THESE VALUES SHOULD BE NEGATIVE, IF THEY ARE YA DONE GOOFED
     // SOMEWHERE
@@ -201,24 +201,24 @@ public class ModuleIOSparkMax implements ModuleIO {
             0, // Volts of additional voltage needed to overcome friction
             0); // Volts of additional voltage per m/s of velocity setpoint
 
-    turnPIDController = turnSparkMax.getPIDController();
-    turnPIDController.setP(1); // % Output per rotation of error
-    turnPIDController.setI(0); // % Output per rotation of integrated error
-    turnPIDController.setD(0); // % Output per rotations/s of error derivative
-    turnPIDController.setFF(0); // Volts of additional voltage per rot/s of velocity
-    turnPIDController.setPositionPIDWrappingEnabled(true);
-    turnPIDController.setPositionPIDWrappingMaxInput(0.5);
-    turnPIDController.setPositionPIDWrappingMinInput(-0.5);
+    azimuthPIDController = azimuthSparkMax.getPIDController();
+    azimuthPIDController.setP(1); // % Output per rotation of error
+    azimuthPIDController.setI(0); // % Output per rotation of integrated error
+    azimuthPIDController.setD(0); // % Output per rotations/s of error derivative
+    azimuthPIDController.setFF(0); // Volts of additional voltage per rot/s of velocity
+    azimuthPIDController.setPositionPIDWrappingEnabled(true);
+    azimuthPIDController.setPositionPIDWrappingMaxInput(0.5);
+    azimuthPIDController.setPositionPIDWrappingMinInput(-0.5);
 
     driveSparkMax.burnFlash();
-    turnSparkMax.burnFlash();
+    azimuthSparkMax.burnFlash();
     driveSparkMax.setCANTimeout(0);
-    turnSparkMax.setCANTimeout(0);
+    azimuthSparkMax.setCANTimeout(0);
 
     var cancoderConfig = new CANcoderConfiguration();
     cancoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
     cancoderConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset.getRotations();
-    turnCANcoder.getConfigurator().apply(cancoderConfig);
+    azimuthCANcoder.getConfigurator().apply(cancoderConfig);
 
     // Configure CAN frame usage, and disable any unused CAN frames.
     SparkUtils.configureFrameStrategy(
@@ -227,7 +227,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         Set.of(SparkUtils.Sensor.INTEGRATED),
         false);
     SparkUtils.configureFrameStrategy(
-        turnSparkMax,
+        azimuthSparkMax,
         Set.of(SparkUtils.Data.VELOCITY, SparkUtils.Data.VOLTAGE, SparkUtils.Data.CURRENT),
         Set.of(SparkUtils.Sensor.INTEGRATED),
         false);
@@ -235,16 +235,16 @@ public class ModuleIOSparkMax implements ModuleIO {
     // Set up high frequency odometry
     driveSparkMax.setPeriodicFramePeriod(
         PeriodicFrame.kStatus2, (int) (1000.0 / Module.ODOMETRY_FREQUENCY));
-    turnSparkMax.setPeriodicFramePeriod(
+    azimuthSparkMax.setPeriodicFramePeriod(
         PeriodicFrame.kStatus2, (int) (1000.0 / Module.ODOMETRY_FREQUENCY));
     timestampQueue = SparkMaxOdometryThread.getInstance().makeTimestampQueue();
     drivePositionQueue =
         SparkMaxOdometryThread.getInstance().registerSignal(driveEncoder::getPosition);
-    turnPositionQueue =
-        SparkMaxOdometryThread.getInstance().registerSignal(turnRelativeEncoder::getPosition);
+    azimuthPositionQueue =
+        SparkMaxOdometryThread.getInstance().registerSignal(azimuthRelativeEncoder::getPosition);
 
     driveSparkMax.burnFlash();
-    turnSparkMax.burnFlash();
+    azimuthSparkMax.burnFlash();
   }
 
   @Override
@@ -257,25 +257,26 @@ public class ModuleIOSparkMax implements ModuleIO {
     inputs.drivePosition = Meters.of(driveEncoder.getPosition());
     inputs.driveVelocity = MetersPerSecond.of(driveEncoder.getVelocity());
 
-    inputs.turnAbsolutePosition =
-        Rotation2d.fromRotations(turnCANcoder.getAbsolutePosition().getValueAsDouble());
-    turnRelativeEncoder.setPosition(inputs.turnAbsolutePosition.getRotations());
-    inputs.turnVelocity = RotationsPerSecond.of(turnRelativeEncoder.getVelocity());
-    inputs.turnAppliedOutput = driveSparkMax.getAppliedOutput();
-    inputs.turnAppliedVoltage = Volts.of(inputs.turnAppliedOutput * driveSparkMax.getBusVoltage());
-    inputs.turnAppliedCurrentAmps = new double[] {turnSparkMax.getOutputCurrent()};
+    inputs.azimuthAbsolutePosition =
+        Rotation2d.fromRotations(azimuthCANcoder.getAbsolutePosition().getValueAsDouble());
+    azimuthRelativeEncoder.setPosition(inputs.azimuthAbsolutePosition.getRotations());
+    inputs.azimuthVelocity = RotationsPerSecond.of(azimuthRelativeEncoder.getVelocity());
+    inputs.azimuthAppliedOutput = driveSparkMax.getAppliedOutput();
+    inputs.azimuthAppliedVoltage =
+        Volts.of(inputs.azimuthAppliedOutput * driveSparkMax.getBusVoltage());
+    inputs.azimuthAppliedCurrentAmps = Amps.of(azimuthSparkMax.getOutputCurrent());
 
     inputs.odometryTimestamps =
         timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
     inputs.odometryDrivePositionsMeters =
         drivePositionQueue.stream().mapToDouble((Double value) -> value).toArray();
-    inputs.odometryTurnPositions =
-        turnPositionQueue.stream()
+    inputs.odometryAzimuthPositions =
+        azimuthPositionQueue.stream()
             .map((Double value) -> Rotation2d.fromRotations(value))
             .toArray(Rotation2d[]::new);
     timestampQueue.clear();
     drivePositionQueue.clear();
-    turnPositionQueue.clear();
+    azimuthPositionQueue.clear();
   }
 
   @Override
@@ -301,14 +302,14 @@ public class ModuleIOSparkMax implements ModuleIO {
   }
 
   @Override
-  public void setTurnPosition(Rotation2d position) {
-    turnPIDController.setReference(position.getRotations(), ControlType.kPosition);
+  public void setAzimuthPosition(Rotation2d position) {
+    azimuthPIDController.setReference(position.getRotations(), ControlType.kPosition);
   }
 
   @Override
   public void stop() {
     driveSparkMax.stopMotor();
-    turnSparkMax.stopMotor();
+    azimuthSparkMax.stopMotor();
   }
 
   @Override
@@ -317,7 +318,7 @@ public class ModuleIOSparkMax implements ModuleIO {
   }
 
   @Override
-  public void setTurnBrakeMode(boolean enable) {
-    turnSparkMax.setIdleMode(enable ? IdleMode.kBrake : IdleMode.kCoast);
+  public void setAzimuthBrakeMode(boolean enable) {
+    azimuthSparkMax.setIdleMode(enable ? IdleMode.kBrake : IdleMode.kCoast);
   }
 }
