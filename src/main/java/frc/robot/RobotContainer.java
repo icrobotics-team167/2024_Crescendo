@@ -21,12 +21,15 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.Driving;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.swerve.interfaceLayers.GyroIO;
 import frc.robot.subsystems.swerve.interfaceLayers.GyroIOPigeon2;
 import frc.robot.subsystems.swerve.interfaceLayers.ModuleIO;
 import frc.robot.subsystems.swerve.interfaceLayers.ModuleIOSim;
 import frc.robot.subsystems.swerve.interfaceLayers.ModuleIOSparkMax;
+import frc.robot.util.MathUtils;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -92,9 +95,24 @@ public class RobotContainer {
   private void configureBindings() {
     drivebase.setDefaultCommand(
         drivebase.getDriveCommand(
-            () -> primaryLeftStick.getX(),
-            () -> primaryLeftStick.getY(),
-            () -> primaryRightStick.getX()));
+            () ->
+                MathUtils.inOutDeadband(
+                    primaryLeftStick.getX(),
+                    Driving.Deadbands.PRIMARY_LEFT_INNER,
+                    Driving.Deadbands.PRIMARY_LEFT_OUTER,
+                    Driving.PRIMARY_DRIVER_EXPONENT),
+            () ->
+                MathUtils.inOutDeadband(
+                    primaryLeftStick.getY(),
+                    Driving.Deadbands.PRIMARY_LEFT_INNER,
+                    Driving.Deadbands.PRIMARY_LEFT_OUTER,
+                    Driving.PRIMARY_DRIVER_EXPONENT),
+            () ->
+                MathUtils.inOutDeadband(
+                    primaryRightStick.getY(),
+                    Driving.Deadbands.PRIMARY_RIGHT_INNER,
+                    Driving.Deadbands.PRIMARY_RIGHT_OUTER,
+                    Driving.PRIMARY_DRIVER_EXPONENT)));
 
     primaryLeftStick
         .trigger()
