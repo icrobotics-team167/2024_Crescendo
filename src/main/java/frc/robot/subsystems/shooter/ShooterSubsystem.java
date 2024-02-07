@@ -16,14 +16,16 @@ package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.*;
 
-import org.littletonrobotics.junction.Logger;
-
-import edu.wpi.first.units.*;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIO;
+import frc.robot.subsystems.shooter.interfaceLayers.NoteDetectorIO;
+import frc.robot.subsystems.shooter.interfaceLayers.NoteDetectorIOInputsAutoLogged;
 import frc.robot.subsystems.shooter.interfaceLayers.PivotIO;
 import frc.robot.subsystems.shooter.interfaceLayers.PivotIOInputsAutoLogged;
-import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIO;
 import frc.robot.subsystems.shooter.interfaceLayers.ShooterIOInputsAutoLogged;
+import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.Logger;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final PivotIO pivot;
@@ -32,9 +34,14 @@ public class ShooterSubsystem extends SubsystemBase {
   private final FlywheelIO flywheel;
   private ShooterIOInputsAutoLogged shooterInputs;
 
-  public ShooterSubsystem(PivotIO pivot, FlywheelIO flywheel) {
+  private final NoteDetectorIO noteDetector;
+  private NoteDetectorIOInputsAutoLogged noteDetectorInputs;
+
+  public ShooterSubsystem(PivotIO pivot, FlywheelIO flywheel, NoteDetectorIO noteDetector) {
     this.pivot = pivot;
     this.flywheel = flywheel;
+    this.noteDetector = noteDetector;
+    setDefaultCommand(getNeutralPositionCommand());
   }
 
   @Override
@@ -43,5 +50,23 @@ public class ShooterSubsystem extends SubsystemBase {
     Logger.processInputs("Shooter/pivot", pivotInputs);
     flywheel.updateInputs(shooterInputs);
     Logger.processInputs("Shooter/flywheel", shooterInputs);
+    noteDetector.updateInputs(noteDetectorInputs);
+    Logger.processInputs("Shooter/noteDetector", noteDetectorInputs);
+  }
+
+  public Command getNeutralPositionCommand() {
+    return run(
+        () -> {
+          flywheel.stop();
+          pivot.setTargetAngle(Degrees.of(30)); // TODO: Figure out lowest angle
+        });
+  }
+
+  /**
+   * Gets the command to manually control the shooter. Joystick input suppliers should already have
+   * deadbands applied.
+   */
+  public Command getManualAimCommand(DoubleSupplier pivotInput) {
+    return run(() -> pivot.setPivotControl(Volts.of(pivotInput.getAsDouble() * 12)));
   }
 }

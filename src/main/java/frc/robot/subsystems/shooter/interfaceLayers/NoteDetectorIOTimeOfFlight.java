@@ -14,4 +14,23 @@
 
 package frc.robot.subsystems.shooter.interfaceLayers;
 
-public interface BeamBreakIO {}
+import com.playingwithfusion.TimeOfFlight;
+
+public class NoteDetectorIOTimeOfFlight implements NoteDetectorIO {
+  private final TimeOfFlight sensor;
+
+  public NoteDetectorIOTimeOfFlight() {
+    sensor = new TimeOfFlight(19);
+  }
+
+  @Override
+  public void updateInputs(NoteDetectorIOInputs inputs) {
+    if (sensor.isRangeValid()) {
+      inputs.detectedDistance = sensor.getRange();
+      inputs.hasNote = inputs.detectedDistance < 50; // TODO: Tune
+    } else {
+      inputs.detectedDistance = -1;
+      inputs.hasNote = false;
+    }
+  }
+}

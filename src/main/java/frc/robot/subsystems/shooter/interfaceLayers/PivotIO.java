@@ -40,6 +40,9 @@ public interface PivotIO {
   /** Sets the target angle for the pivot mechanism. 0 degrees is parallel to the ground. */
   public default void setTargetAngle(Measure<Angle> angle) {}
 
+  /** Sets the open-loop control for the pivot mechanism. */
+  public default void setPivotControl(Measure<Voltage> rawVolts) {}
+
   /** Gets the current angle of the pivot mechanism. */
   public default Measure<Angle> getCurrentAngle() {
     return Degrees.of(0);

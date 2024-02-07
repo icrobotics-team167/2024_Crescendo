@@ -17,7 +17,6 @@ package frc.robot.subsystems.shooter.interfaceLayers;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.units.*;
-
 import org.littletonrobotics.junction.AutoLog;
 
 public interface FlywheelIO {
