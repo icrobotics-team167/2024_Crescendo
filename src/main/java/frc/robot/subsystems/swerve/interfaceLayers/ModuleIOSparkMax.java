@@ -35,8 +35,8 @@ import java.util.Queue;
 import java.util.Set;
 
 /**
- * Module IO implementation for a Spark Max drive motor controller, Spark Max azimuth motor controller (NEO
- * or NEO 550), and an analog absolute encoder connected to the RIO
+ * Module IO implementation for a Spark Max drive motor controller, Spark Max azimuth motor
+ * controller (NEO or NEO 550), and an analog absolute encoder connected to the RIO
  *
  * <p>NOTE: This implementation should be used as a starting point and adapted to different hardware
  * configurations (e.g. If using a CANcoder, copy from "ModuleIOTalonFX")
@@ -246,7 +246,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     // Why does REV not have a stator voltage getter
     inputs.driveAppliedVoltage =
         Volts.of(inputs.driveAppliedOutput * driveSparkMax.getBusVoltage());
-    inputs.driveAppliedCurrentAmps = new double[] {driveSparkMax.getOutputCurrent()};
+    inputs.driveAppliedCurrentAmps = Amps.of(driveSparkMax.getOutputCurrent());
     inputs.drivePosition = Meters.of(driveEncoder.getPosition());
     inputs.driveVelocity = MetersPerSecond.of(driveEncoder.getVelocity());
 
@@ -254,8 +254,9 @@ public class ModuleIOSparkMax implements ModuleIO {
     azimuthRelativeEncoder.setPosition(inputs.azimuthAbsolutePosition.getRotations());
     inputs.azimuthVelocity = RotationsPerSecond.of(azimuthRelativeEncoder.getVelocity());
     inputs.azimuthAppliedOutput = driveSparkMax.getAppliedOutput();
-    inputs.azimuthAppliedVoltage = Volts.of(inputs.azimuthAppliedOutput * driveSparkMax.getBusVoltage());
-    inputs.azimuthAppliedCurrentAmps = new double[] {azimuthSparkMax.getOutputCurrent()};
+    inputs.azimuthAppliedVoltage =
+        Volts.of(inputs.azimuthAppliedOutput * driveSparkMax.getBusVoltage());
+    inputs.azimuthAppliedCurrentAmps = Amps.of(azimuthSparkMax.getOutputCurrent());
 
     inputs.odometryTimestamps =
         timestampQueue.stream().mapToDouble((Double value) -> value).toArray();

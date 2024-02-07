@@ -28,9 +28,9 @@ import frc.robot.Robot;
 /**
  * Physics sim implementation of module IO.
  *
- * <p>Uses two flywheel sims for the drive and azimuth motors, with the absolute position initialized
- * to a random value. The flywheel sims are not physically accurate, but provide a decent
- * approximation for the behavior of the module.
+ * <p>Uses two flywheel sims for the drive and azimuth motors, with the absolute position
+ * initialized to a random value. The flywheel sims are not physically accurate, but provide a
+ * decent approximation for the behavior of the module.
  */
 public class ModuleIOSim implements ModuleIO {
   private FlywheelSim driveMotorSim;
@@ -39,7 +39,8 @@ public class ModuleIOSim implements ModuleIO {
   private FlywheelSim azimuthMotorSim;
   private PIDController azimuthPID = new PIDController(1.0, 0, 0);
 
-  private Rotation2d azimuthAbsolutePosition = new Rotation2d((Math.random() * 2.0 - 1.0) * Math.PI);
+  private Rotation2d azimuthAbsolutePosition =
+      new Rotation2d((Math.random() * 2.0 - 1.0) * Math.PI);
 
   public ModuleIOSim() {
     driveMotorSim = new FlywheelSim(DCMotor.getKrakenX60Foc(1), 6.75, 0.025);
@@ -57,12 +58,12 @@ public class ModuleIOSim implements ModuleIO {
             -1,
             1);
     inputs.driveAppliedVoltage = Volts.of(inputs.driveAppliedOutput * 12);
-    inputs.driveAppliedCurrentAmps = new double[] {driveMotorSim.getCurrentDrawAmps()};
+    inputs.driveAppliedCurrentAmps = Amps.of(driveMotorSim.getCurrentDrawAmps());
 
     inputs.azimuthAppliedOutput =
         MathUtil.clamp(azimuthPID.calculate(inputs.azimuthAbsolutePosition.getRotations()), -1, 1);
     inputs.azimuthAppliedVoltage = Volts.of(inputs.azimuthAppliedOutput * 12);
-    inputs.azimuthAppliedCurrentAmps = new double[] {azimuthMotorSim.getCurrentDrawAmps()};
+    inputs.azimuthAppliedCurrentAmps = Amps.of(azimuthMotorSim.getCurrentDrawAmps());
 
     driveMotorSim.setInputVoltage(inputs.driveAppliedVoltage.in(Volts));
     azimuthMotorSim.setInputVoltage(inputs.azimuthAppliedVoltage.in(Volts));
@@ -72,11 +73,13 @@ public class ModuleIOSim implements ModuleIO {
 
     inputs.driveVelocity =
         getDistancePerRadian(driveMotorSim.getAngularVelocityRadPerSec()).per(Second);
-    double driveAngleDiffRad = azimuthMotorSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs;
+    double driveAngleDiffRad =
+        azimuthMotorSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs;
     inputs.drivePosition.plus(getDistancePerRadian(driveAngleDiffRad));
 
     inputs.azimuthVelocity = RadiansPerSecond.of(azimuthMotorSim.getAngularVelocityRadPerSec());
-    double azimuthDeltaRad = azimuthMotorSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs;
+    double azimuthDeltaRad =
+        azimuthMotorSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs;
     azimuthAbsolutePosition =
         new Rotation2d(
             MathUtil.inputModulus(
