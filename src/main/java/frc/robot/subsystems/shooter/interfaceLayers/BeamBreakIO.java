@@ -14,4 +14,4 @@
 
 package frc.robot.subsystems.shooter.interfaceLayers;
 
-public class BeamBreakIO {}
+public interface BeamBreakIO {}

@@ -14,4 +14,4 @@
 
 package frc.robot.subsystems.shooter.interfaceLayers;
 
-public class FeederIO {}
+public interface FeederIO {}

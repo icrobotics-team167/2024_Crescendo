@@ -14,6 +14,34 @@
 
 package frc.robot.subsystems.shooter;
 
-public class ShooterSubsystem {
-  public ShooterSubsystem() {}
+import static edu.wpi.first.units.Units.*;
+
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.units.*;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.shooter.interfaceLayers.PivotIO;
+import frc.robot.subsystems.shooter.interfaceLayers.PivotIOInputsAutoLogged;
+import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIO;
+import frc.robot.subsystems.shooter.interfaceLayers.ShooterIOInputsAutoLogged;
+
+public class ShooterSubsystem extends SubsystemBase {
+  private final PivotIO pivot;
+  private PivotIOInputsAutoLogged pivotInputs;
+
+  private final FlywheelIO flywheel;
+  private ShooterIOInputsAutoLogged shooterInputs;
+
+  public ShooterSubsystem(PivotIO pivot, FlywheelIO flywheel) {
+    this.pivot = pivot;
+    this.flywheel = flywheel;
+  }
+
+  @Override
+  public void periodic() {
+    pivot.updateInputs(pivotInputs);
+    Logger.processInputs("Shooter/pivot", pivotInputs);
+    flywheel.updateInputs(shooterInputs);
+    Logger.processInputs("Shooter/flywheel", shooterInputs);
+  }
 }
