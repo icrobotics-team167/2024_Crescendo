@@ -39,7 +39,8 @@ public class ModuleIOSim implements ModuleIO {
   private FlywheelSim azimuthMotorSim;
   private PIDController azimuthPID = new PIDController(1.0, 0, 0);
 
-  private Rotation2d azimuthAbsolutePosition = new Rotation2d((Math.random() * 2.0 - 1.0) * Math.PI);
+  private Rotation2d azimuthAbsolutePosition =
+      new Rotation2d((Math.random() * 2.0 - 1.0) * Math.PI);
 
   public ModuleIOSim() {
     driveMotorSim = new FlywheelSim(DCMotor.getKrakenX60Foc(1), 6.75, 0.025);
@@ -72,11 +73,13 @@ public class ModuleIOSim implements ModuleIO {
 
     inputs.driveVelocity =
         getDistancePerRadian(driveMotorSim.getAngularVelocityRadPerSec()).per(Second);
-    double driveAngleDiffRad = azimuthMotorSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs;
+    double driveAngleDiffRad =
+        azimuthMotorSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs;
     inputs.drivePosition.plus(getDistancePerRadian(driveAngleDiffRad));
 
     inputs.azimuthVelocity = RadiansPerSecond.of(azimuthMotorSim.getAngularVelocityRadPerSec());
-    double turnAngleDiffRad = azimuthMotorSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs;
+    double turnAngleDiffRad =
+        azimuthMotorSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs;
     azimuthAbsolutePosition =
         new Rotation2d(
             MathUtil.inputModulus(

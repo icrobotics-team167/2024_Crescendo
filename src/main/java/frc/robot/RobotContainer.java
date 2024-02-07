@@ -100,12 +100,14 @@ public class RobotContainer {
                     Driving.Deadbands.PRIMARY_LEFT_INNER,
                     Driving.Deadbands.PRIMARY_LEFT_OUTER,
                     Driving.PRIMARY_DRIVER_EXPONENT),
-            () -> MathUtils.inOutDeadband(
+            () ->
+                MathUtils.inOutDeadband(
                     primaryLeftStick.getY(),
                     Driving.Deadbands.PRIMARY_LEFT_INNER,
                     Driving.Deadbands.PRIMARY_LEFT_OUTER,
                     Driving.PRIMARY_DRIVER_EXPONENT),
-            () -> MathUtils.inOutDeadband(
+            () ->
+                MathUtils.inOutDeadband(
                     primaryRightStick.getY(),
                     Driving.Deadbands.PRIMARY_RIGHT_INNER,
                     Driving.Deadbands.PRIMARY_RIGHT_OUTER,
