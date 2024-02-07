@@ -45,7 +45,7 @@ public class MathUtils {
     if (value < innerDeadband) {
       return 0;
     }
-    if (value > outerDeadband) {
+    if (value > (1 - outerDeadband)) {
       return 1;
     }
     return Math.pow(
