@@ -28,9 +28,9 @@ import frc.robot.Robot;
 /**
  * Physics sim implementation of module IO.
  *
- * <p>Uses two flywheel sims for the drive and turn motors, with the absolute position initialized
- * to a random value. The flywheel sims are not physically accurate, but provide a decent
- * approximation for the behavior of the module.
+ * <p>Uses two flywheel sims for the drive and azimuth motors, with the absolute position
+ * initialized to a random value. The flywheel sims are not physically accurate, but provide a
+ * decent approximation for the behavior of the module.
  */
 public class ModuleIOSim implements ModuleIO {
   private FlywheelSim driveMotorSim;
@@ -58,7 +58,7 @@ public class ModuleIOSim implements ModuleIO {
             -1,
             1);
     inputs.driveAppliedVoltage = Volts.of(inputs.driveAppliedOutput * 12);
-    inputs.driveAppliedCurrentAmps = new double[] {driveMotorSim.getCurrentDrawAmps()};
+    inputs.driveAppliedCurrentAmps = Amps.of(driveMotorSim.getCurrentDrawAmps());
 
     inputs.azimuthAppliedOutput =
         MathUtil.clamp(azimuthPID.calculate(inputs.azimuthAbsolutePosition.getRotations()), -1, 1);
@@ -78,12 +78,12 @@ public class ModuleIOSim implements ModuleIO {
     inputs.drivePosition.plus(getDistancePerRadian(driveAngleDiffRad));
 
     inputs.azimuthVelocity = RadiansPerSecond.of(azimuthMotorSim.getAngularVelocityRadPerSec());
-    double turnAngleDiffRad =
+    double azimuthDeltaRad =
         azimuthMotorSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs;
     azimuthAbsolutePosition =
         new Rotation2d(
             MathUtil.inputModulus(
-                azimuthAbsolutePosition.getRadians() + turnAngleDiffRad, -Math.PI, Math.PI));
+                azimuthAbsolutePosition.getRadians() + azimuthDeltaRad, -Math.PI, Math.PI));
     inputs.azimuthAbsolutePosition = azimuthAbsolutePosition;
 
     inputs.odometryDrivePositionsMeters = new double[] {inputs.drivePosition.in(Meters)};

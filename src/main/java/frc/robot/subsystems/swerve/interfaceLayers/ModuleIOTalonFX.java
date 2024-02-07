@@ -39,15 +39,14 @@ import java.util.Queue;
 
 /**
  * Module IO implementation for a Talon FX drive motor controller, a Talon FX azimuth motor
- * controller, and a CANcoder. Assumes all devices used are Phoenix Pro licensed.
+ * controller, and CANcoder. Assumes all devices used are Phoenix Pro licensed.
  *
  * <p>NOTE: This implementation should be used as a starting point and adapted to different hardware
  * configurations (e.g. If using an analog encoder, copy from "ModuleIOSparkMax")
  *
  * <p>To calibrate the absolute encoder offsets, point the modules straight (such that forward
  * motion on the drive motor will propel the robot forward) and copy the reported values from the
- * absolute encoders using AdvantageScope. These values are logged under
- * "/Drive/ModuleX/AzimuthAbsolutePosition"
+ * absolute encoders using AdvantageScope.
  */
 public class ModuleIOTalonFX implements ModuleIO {
   /** The TalonFX motor controller for the drive motor. */
@@ -359,8 +358,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     azimuthClosedLoopOutput = azimuthTalon.getClosedLoopOutput();
     azimuthAppliedCurrent = azimuthTalon.getTorqueCurrent();
 
-    // Boost the rate at which position and velocity data for the drive motor and the azimuth motor
-    // are sent over CAN for async odometry.
+    // Boost the rate at which position and velocity data for the drive motor and azimuth motor are
+    // sent over CAN for async odometry.
     BaseStatusSignal.setUpdateFrequencyForAll(
         Module.ODOMETRY_FREQUENCY, drivePosition, azimuthPosition);
     // Lower the rate at which everything else we need is send over CAN to reduce CAN bus usage.
@@ -399,7 +398,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     inputs.driveVelocity = MetersPerSecond.of(driveVelocity.getValueAsDouble());
     inputs.driveAppliedVoltage = Volts.of(driveAppliedVolts.getValueAsDouble());
     inputs.driveAppliedOutput = driveClosedLoopOutput.getValueAsDouble();
-    inputs.driveAppliedCurrentAmps = new double[] {driveAppliedCurrent.getValueAsDouble()};
+    inputs.driveAppliedCurrentAmps = Amps.of(driveAppliedCurrent.getValueAsDouble());
 
     inputs.azimuthAbsolutePosition =
         Rotation2d.fromRotations(azimuthAbsolutePosition.getValueAsDouble());

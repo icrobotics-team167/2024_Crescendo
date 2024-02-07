@@ -32,11 +32,11 @@ public interface ModuleIO {
     /** The voltage applied to the motor by the motor controller. */
     public Measure<Voltage> driveAppliedVoltage = Volts.of(0);
     /** The current applied to the motor by the motor controller. */
-    public double[] driveAppliedCurrentAmps = new double[] {};
+    public Measure<Current> driveAppliedCurrentAmps = Amps.of(0);
     /** The total output applied to the motor by the closed loop control. */
     public double driveAppliedOutput = 0.0;
 
-    /** The absolute position of the module's azimuth. 0 degrees is forwards, CCW+. */
+    /** The absolute position of the azimuth. 0 degrees is forwards, CCW+. */
     public Rotation2d azimuthAbsolutePosition = new Rotation2d();
     /** The rotational velocity of the azimuth. CCW+. */
     public Measure<Velocity<Angle>> azimuthVelocity = RadiansPerSecond.of(0);
@@ -47,11 +47,11 @@ public interface ModuleIO {
     /** The total output applied to the motor by the closed loop control. */
     public double azimuthAppliedOutput = 0.0;
 
-    /** The timestamps for the measurements that the high frequency odometry thread captured. */
+    /** The timestamps of the measurements captured by the async odometry thread. */
     public double[] odometryTimestamps = new double[] {};
-    /** The drive position measurements that the high frequency odometry thread captured. */
+    /** The drive positions of the measurements captured by the async odometry thread. */
     public double[] odometryDrivePositionsMeters = new double[] {};
-    /** The azimuth position measurements that the high frequency odometry thread captured. */
+    /** The azimuth positions of the measurements captured by the async odometry thread. */
     public Rotation2d[] odometryAzimuthPositions = new Rotation2d[] {};
   }
 
@@ -89,10 +89,12 @@ public interface ModuleIO {
   /** Enable or disable brake mode on the drive motor. */
   public default void setDriveBrakeMode(boolean enable) {}
 
-  /** Enable or disable brake mode on the turn motor. */
+  /** Enable or disable brake mode on the azimuth motor. */
   public default void setAzimuthBrakeMode(boolean enable) {}
 
+  /** Configures data capture rates for drive system identification. */
   public default void configureDriveSysID() {}
 
+  /** Configures data capture rates for azimuth system identification. */
   public default void configureAzimuthSysID() {}
 }

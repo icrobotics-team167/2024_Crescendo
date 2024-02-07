@@ -53,7 +53,7 @@ public class Module {
   /** The max free speed of the motor. */
   public static final Measure<Velocity<Angle>> DRIVE_MOTOR_MAX_VEL = RPM.of(5800);
   /**
-   * The gear ratio between the turn motor and the module.
+   * The gear ratio between the azimuth motor and the module.
    *
    * <ul>
    *   <li><b>Units:</b>
@@ -78,8 +78,8 @@ public class Module {
   public static final double DRIVE_TURN_COMPENSATION_RATIO = 50.0 / 14.0;
   // public static final double DRIVE_TURN_COMPENSATION_RATIO = 0;
   /**
-   * If the turn motor should be inverted or not. A positive control input should mean that the
-   * azimuth should rotate counterclockwise, so if the turn motor needs to rotate clockwise to
+   * If the azimuth motor should be inverted or not. A positive control input should mean that the
+   * azimuth should rotate counterclockwise, so if the azimuth motor needs to rotate clockwise to
    * achieve that, set this to true.
    */
   public static final boolean AZIMUTH_MOTOR_INVERTED = true;
@@ -180,7 +180,7 @@ public class Module {
     io.setAzimuthPosition(angleSetpoint);
 
     if (velocityControl) {
-      // Scale velocity based on turn error
+      // Scale velocity based on azimuth error
       // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
       // towards the setpoint, its velocity should increase. This is achieved by
       // taking the component of the velocity in the direction of the setpoint.
@@ -233,7 +233,7 @@ public class Module {
     io.setAzimuthBrakeMode(enabled);
   }
 
-  /** Returns the current turn angle of the module. */
+  /** Returns the current azimuth of the module. */
   public Rotation2d getAngle() {
     return inputs.azimuthAbsolutePosition;
   }
@@ -248,12 +248,12 @@ public class Module {
     return inputs.driveVelocity;
   }
 
-  /** Returns the module position (turn angle and drive position). */
+  /** Returns the module position (azimuth and drive position). */
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(getPositionMeters(), getAngle());
   }
 
-  /** Returns the module state (turn angle and drive velocity). */
+  /** Returns the module state (azimuth and drive velocity). */
   public SwerveModuleState getState() {
     return new SwerveModuleState(getVelocityMetersPerSec(), getAngle());
   }
