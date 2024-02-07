@@ -38,22 +38,21 @@ import frc.robot.subsystems.swerve.Module;
 import java.util.Queue;
 
 /**
- * Module IO implementation for Talon FX drive motor controller, Talon FX turn motor controller, and
- * CANcoder. Assumes all devices used are Phoenix Pro licensed.
+ * Module IO implementation for a Talon FX drive motor controller, a Talon FX azimuth motor
+ * controller, and CANcoder. Assumes all devices used are Phoenix Pro licensed.
  *
  * <p>NOTE: This implementation should be used as a starting point and adapted to different hardware
  * configurations (e.g. If using an analog encoder, copy from "ModuleIOSparkMax")
  *
  * <p>To calibrate the absolute encoder offsets, point the modules straight (such that forward
  * motion on the drive motor will propel the robot forward) and copy the reported values from the
- * absolute encoders using AdvantageScope. These values are logged under
- * "/Drive/ModuleX/TurnAbsolutePosition"
+ * absolute encoders using AdvantageScope.
  */
 public class ModuleIOTalonFX implements ModuleIO {
   /** The TalonFX motor controller for the drive motor. */
   private final TalonFX driveTalon;
-  /** The TalonFX motor controller for the turn motor. */
-  private final TalonFX turnTalon;
+  /** The TalonFX motor controller for the azimuth motor. */
+  private final TalonFX azimuthTalon;
   /** The CANcoder for azimuth. */
   private final CANcoder cancoder;
 
@@ -145,9 +144,9 @@ public class ModuleIOTalonFX implements ModuleIO {
    *       </ul>
    * </ul>
    */
-  private final StatusSignal<Double> turnAbsolutePosition;
+  private final StatusSignal<Double> azimuthAbsolutePosition;
   /**
-   * The position of the module azimuth, as measured by the turn motor's internal encoder. Is
+   * The position of the module azimuth, as measured by the azimuth motor's internal encoder. Is
    * periodically synchronized with the absolute position.
    *
    * <ul>
@@ -157,7 +156,7 @@ public class ModuleIOTalonFX implements ModuleIO {
    *       </ul>
    * </ul>
    */
-  private final StatusSignal<Double> turnPosition;
+  private final StatusSignal<Double> azimuthPosition;
   /**
    * A {@link Queue} holding all the azimuth positions that the async odometry thread captures.
    *
@@ -168,7 +167,7 @@ public class ModuleIOTalonFX implements ModuleIO {
    *       </ul>
    * </ul>
    */
-  private final Queue<Double> turnPositionQueue;
+  private final Queue<Double> azimuthPositionQueue;
   /**
    * The current velocity of the azimuth.
    *
@@ -179,7 +178,7 @@ public class ModuleIOTalonFX implements ModuleIO {
    *       </ul>
    * </ul>
    */
-  private final StatusSignal<Double> turnVelocity;
+  private final StatusSignal<Double> azimuthVelocity;
   /**
    * The voltage applied to the motor by the motor controller.
    *
@@ -190,7 +189,7 @@ public class ModuleIOTalonFX implements ModuleIO {
    *       </ul>
    * </ul>
    */
-  private final StatusSignal<Double> turnAppliedVolts;
+  private final StatusSignal<Double> azimuthAppliedVolts;
   /**
    * The current applied to the motor by the motor controller.
    *
@@ -201,7 +200,7 @@ public class ModuleIOTalonFX implements ModuleIO {
    *       </ul>
    * </ul>
    */
-  private final StatusSignal<Double> turnAppliedCurrent;
+  private final StatusSignal<Double> azimuthAppliedCurrent;
   /**
    * The total output applied to the motor by the closed loop control.
    *
@@ -212,7 +211,7 @@ public class ModuleIOTalonFX implements ModuleIO {
    *       </ul>
    * </ul>
    */
-  private final StatusSignal<Double> turnClosedLoopOutput;
+  private final StatusSignal<Double> azimuthClosedLoopOutput;
   /**
    * Due to the nature of mounting magnets for absolute encoders, it is practically impossible to
    * line up magnetic north with forwards on the module. This value is subtracted from the raw
@@ -245,25 +244,25 @@ public class ModuleIOTalonFX implements ModuleIO {
     switch (index) {
       case 0: // Front Left module
         driveTalon = new TalonFX(0, "drivebase");
-        turnTalon = new TalonFX(1, "drivebase");
+        azimuthTalon = new TalonFX(1, "drivebase");
         cancoder = new CANcoder(2, "drivebase");
         absoluteEncoderOffset = Rotation2d.fromDegrees(0); // TODO: Calibrate
         break;
       case 1: // Front Right modules
         driveTalon = new TalonFX(3, "drivebase");
-        turnTalon = new TalonFX(4, "drivebase");
+        azimuthTalon = new TalonFX(4, "drivebase");
         cancoder = new CANcoder(5, "drivebase");
         absoluteEncoderOffset = Rotation2d.fromDegrees(0); // TODO: Calibrate
         break;
       case 2: // Back Left modules
         driveTalon = new TalonFX(6, "drivebase");
-        turnTalon = new TalonFX(7, "drivebase");
+        azimuthTalon = new TalonFX(7, "drivebase");
         cancoder = new CANcoder(8, "drivebase");
         absoluteEncoderOffset = Rotation2d.fromDegrees(0); // TODO: Calibrate
         break;
       case 3: // Back Right modules
         driveTalon = new TalonFX(9, "drivebase");
-        turnTalon = new TalonFX(10, "drivebase");
+        azimuthTalon = new TalonFX(10, "drivebase");
         cancoder = new CANcoder(11, "drivebase");
         absoluteEncoderOffset = Rotation2d.fromDegrees(0); // TODO: Calibrate
         break;
@@ -308,29 +307,29 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveTalon.getConfigurator().apply(driveConfig);
     setDriveBrakeMode(true);
 
-    // See drive config for comments on these, similar concepts apply for turning.
-    var turnConfig = new TalonFXConfiguration();
-    turnConfig.Feedback.SensorToMechanismRatio = 1;
-    turnConfig.Feedback.RotorToSensorRatio = Module.TURN_GEAR_RATIO;
-    turnConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-    turnConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
-    turnConfig.MotorOutput.Inverted =
-        Module.TURN_MOTOR_INVERTED
+    // See drive config for comments on these, similar concepts apply for azimuth.
+    var azimuthConfig = new TalonFXConfiguration();
+    azimuthConfig.Feedback.SensorToMechanismRatio = 1;
+    azimuthConfig.Feedback.RotorToSensorRatio = Module.AZIMUTH_GEAR_RATIO;
+    azimuthConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+    azimuthConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
+    azimuthConfig.MotorOutput.Inverted =
+        Module.AZIMUTH_MOTOR_INVERTED
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
-    turnConfig.Slot0.kP = 1; // % output per rotation of error
-    turnConfig.Slot0.kI = 0; // % output per rotation of integrated error
-    turnConfig.Slot0.kD = 0; // % output per rotations/s of error derivative
-    turnConfig.Slot0.kS = 0; // Amps of additional current needed to overcome friction
-    turnConfig.Slot0.kV = 0; // Amps of additional current per rot/s of velocity setpoint
-    turnConfig.Slot0.kA = 0; // Amps of additional current per rot/s^2 of acceleration setpoint
-    turnConfig.MotionMagic.MotionMagicAcceleration = 5; // Max allowed acceleration, in rot/s^2
-    turnConfig.MotionMagic.MotionMagicJerk = 50; // Max allowed jerk, in rot/s^3
-    turnConfig.ClosedLoopGeneral.ContinuousWrap = true;
+    azimuthConfig.Slot0.kP = 1; // % output per rotation of error
+    azimuthConfig.Slot0.kI = 0; // % output per rotation of integrated error
+    azimuthConfig.Slot0.kD = 0; // % output per rotations/s of error derivative
+    azimuthConfig.Slot0.kS = 0; // Amps of additional current needed to overcome friction
+    azimuthConfig.Slot0.kV = 0; // Amps of additional current per rot/s of velocity setpoint
+    azimuthConfig.Slot0.kA = 0; // Amps of additional current per rot/s^2 of acceleration setpoint
+    azimuthConfig.MotionMagic.MotionMagicAcceleration = 5; // Max allowed acceleration, in rot/s^2
+    azimuthConfig.MotionMagic.MotionMagicJerk = 50; // Max allowed jerk, in rot/s^3
+    azimuthConfig.ClosedLoopGeneral.ContinuousWrap = true;
     driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 40;
     driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = 40;
-    turnTalon.getConfigurator().apply(turnConfig);
-    setTurnBrakeMode(true);
+    azimuthTalon.getConfigurator().apply(azimuthConfig);
+    setAzimuthBrakeMode(true);
 
     var cancoderConfig = new CANcoderConfiguration();
     cancoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
@@ -349,19 +348,20 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveClosedLoopOutput = driveTalon.getClosedLoopOutput();
     driveAppliedCurrent = driveTalon.getTorqueCurrent();
 
-    turnAbsolutePosition = cancoder.getAbsolutePosition();
-    turnPosition = turnTalon.getPosition();
-    turnPositionQueue =
-        PhoenixOdometryThread.getInstance().registerSignal(turnTalon, turnTalon.getPosition());
-    turnVelocity = turnTalon.getVelocity();
-    turnAppliedVolts = turnTalon.getMotorVoltage();
-    turnClosedLoopOutput = turnTalon.getClosedLoopOutput();
-    turnAppliedCurrent = turnTalon.getTorqueCurrent();
+    azimuthAbsolutePosition = cancoder.getAbsolutePosition();
+    azimuthPosition = azimuthTalon.getPosition();
+    azimuthPositionQueue =
+        PhoenixOdometryThread.getInstance()
+            .registerSignal(azimuthTalon, azimuthTalon.getPosition());
+    azimuthVelocity = azimuthTalon.getVelocity();
+    azimuthAppliedVolts = azimuthTalon.getMotorVoltage();
+    azimuthClosedLoopOutput = azimuthTalon.getClosedLoopOutput();
+    azimuthAppliedCurrent = azimuthTalon.getTorqueCurrent();
 
-    // Boost the rate at which drive position and turn position are sent over CAN for async
-    // odometry.
+    // Boost the rate at which position and velocity data for the drive motor and azimuth motor are
+    // sent over CAN for async odometry.
     BaseStatusSignal.setUpdateFrequencyForAll(
-        Module.ODOMETRY_FREQUENCY, drivePosition, turnPosition);
+        Module.ODOMETRY_FREQUENCY, drivePosition, azimuthPosition);
     // Lower the rate at which everything else we need is send over CAN to reduce CAN bus usage.
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
@@ -369,14 +369,14 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveAppliedVolts,
         driveClosedLoopOutput,
         driveAppliedCurrent,
-        turnAbsolutePosition,
-        turnVelocity,
-        turnAppliedVolts,
-        turnClosedLoopOutput,
-        turnAppliedCurrent);
+        azimuthAbsolutePosition,
+        azimuthVelocity,
+        azimuthAppliedVolts,
+        azimuthClosedLoopOutput,
+        azimuthAppliedCurrent);
     // Completely disable sending of any data we don't need to further reduce CAN bus usage.
     driveTalon.optimizeBusUtilization();
-    turnTalon.optimizeBusUtilization();
+    azimuthTalon.optimizeBusUtilization();
   }
 
   @Override
@@ -387,12 +387,12 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveAppliedVolts,
         driveClosedLoopOutput,
         driveAppliedCurrent,
-        turnAbsolutePosition,
-        turnPosition,
-        turnVelocity,
-        turnAppliedVolts,
-        turnClosedLoopOutput,
-        turnAppliedCurrent);
+        azimuthAbsolutePosition,
+        azimuthPosition,
+        azimuthVelocity,
+        azimuthAppliedVolts,
+        azimuthClosedLoopOutput,
+        azimuthAppliedCurrent);
 
     inputs.drivePosition = Meters.of(drivePosition.getValueAsDouble());
     inputs.driveVelocity = MetersPerSecond.of(driveVelocity.getValueAsDouble());
@@ -400,23 +400,24 @@ public class ModuleIOTalonFX implements ModuleIO {
     inputs.driveAppliedOutput = driveClosedLoopOutput.getValueAsDouble();
     inputs.driveAppliedCurrentAmps = new double[] {driveAppliedCurrent.getValueAsDouble()};
 
-    inputs.turnAbsolutePosition = Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble());
-    inputs.turnVelocity = RotationsPerSecond.of(turnVelocity.getValueAsDouble());
-    inputs.turnAppliedVoltage = Volts.of(turnAppliedVolts.getValueAsDouble());
-    inputs.turnAppliedOutput = turnClosedLoopOutput.getValueAsDouble();
-    inputs.turnAppliedCurrentAmps = new double[] {turnAppliedCurrent.getValueAsDouble()};
+    inputs.azimuthAbsolutePosition =
+        Rotation2d.fromRotations(azimuthAbsolutePosition.getValueAsDouble());
+    inputs.azimuthVelocity = RotationsPerSecond.of(azimuthVelocity.getValueAsDouble());
+    inputs.azimuthAppliedVoltage = Volts.of(azimuthAppliedVolts.getValueAsDouble());
+    inputs.azimuthAppliedOutput = azimuthClosedLoopOutput.getValueAsDouble();
+    inputs.azimuthAppliedCurrentAmps = new double[] {azimuthAppliedCurrent.getValueAsDouble()};
 
     inputs.odometryTimestamps =
         timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
     inputs.odometryDrivePositionsMeters =
         drivePositionQueue.stream().mapToDouble((Double value) -> value).toArray();
-    inputs.odometryTurnPositions =
-        turnPositionQueue.stream()
+    inputs.odometryAzimuthPositions =
+        azimuthPositionQueue.stream()
             .map((Double value) -> Rotation2d.fromRotations(value))
             .toArray(Rotation2d[]::new);
     timestampQueue.clear();
     drivePositionQueue.clear();
-    turnPositionQueue.clear();
+    azimuthPositionQueue.clear();
   }
 
   /**
@@ -432,7 +433,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     double driveTurnCompensation =
         Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters)
             * Module.DRIVE_TURN_COMPENSATION_RATIO
-            * turnVelocity.getValueAsDouble();
+            * azimuthVelocity.getValueAsDouble();
     driveControlRequest.Velocity = velocity.in(MetersPerSecond) + driveTurnCompensation;
     driveTalon.setPosition(
         drivePosition.getValueAsDouble() + (driveTurnCompensation * Robot.defaultPeriodSecs));
@@ -451,13 +452,13 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveTalon.setControl(rawCurrentControlRequest);
   }
 
-  /** The control request for moving the turn motor to a specified position. Is mutable. */
-  MotionMagicTorqueCurrentFOC turnControlRequest = new MotionMagicTorqueCurrentFOC(0);
+  /** The control request for moving the azimuth motor to a specified position. Is mutable. */
+  MotionMagicTorqueCurrentFOC azimuthControlRequest = new MotionMagicTorqueCurrentFOC(0);
 
   @Override
-  public void setTurnPosition(Rotation2d position) {
-    turnControlRequest.Position = position.getRotations();
-    turnTalon.setControl(turnControlRequest);
+  public void setAzimuthPosition(Rotation2d position) {
+    azimuthControlRequest.Position = position.getRotations();
+    azimuthTalon.setControl(azimuthControlRequest);
   }
 
   @Override
@@ -475,14 +476,14 @@ public class ModuleIOTalonFX implements ModuleIO {
   }
 
   @Override
-  public void setTurnBrakeMode(boolean enable) {
+  public void setAzimuthBrakeMode(boolean enable) {
     var config = new MotorOutputConfigs();
     config.Inverted =
-        Module.TURN_MOTOR_INVERTED
+        Module.AZIMUTH_MOTOR_INVERTED
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
     config.NeutralMode = enable ? NeutralModeValue.Brake : NeutralModeValue.Coast;
-    turnTalon.getConfigurator().apply(config);
+    azimuthTalon.getConfigurator().apply(config);
   }
 
   @Override
@@ -492,8 +493,8 @@ public class ModuleIOTalonFX implements ModuleIO {
   }
 
   @Override
-  public void configureTurnSysID() {
+  public void configureAzimuthSysID() {
     BaseStatusSignal.setUpdateFrequencyForAll(
-        Module.ODOMETRY_FREQUENCY, turnVelocity, turnPosition, turnAppliedCurrent);
+        Module.ODOMETRY_FREQUENCY, azimuthVelocity, azimuthPosition, azimuthAppliedCurrent);
   }
 }

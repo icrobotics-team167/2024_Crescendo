@@ -36,15 +36,15 @@ public interface ModuleIO {
 
     public double[] driveAppliedCurrentAmps = new double[] {};
 
-    public Rotation2d turnAbsolutePosition = new Rotation2d();
-    public Measure<Velocity<Angle>> turnVelocity = RadiansPerSecond.of(0);
-    public Measure<Voltage> turnAppliedVoltage = Volts.of(0);
-    public double turnAppliedOutput = 0.0;
-    public double[] turnAppliedCurrentAmps = new double[] {};
+    public Rotation2d azimuthAbsolutePosition = new Rotation2d();
+    public Measure<Velocity<Angle>> azimuthVelocity = RadiansPerSecond.of(0);
+    public Measure<Voltage> azimuthAppliedVoltage = Volts.of(0);
+    public double azimuthAppliedOutput = 0.0;
+    public double[] azimuthAppliedCurrentAmps = new double[] {};
 
     public double[] odometryTimestamps = new double[] {};
     public double[] odometryDrivePositionsMeters = new double[] {};
-    public Rotation2d[] odometryTurnPositions = new Rotation2d[] {};
+    public Rotation2d[] odometryAzimuthPositions = new Rotation2d[] {};
   }
 
   /** Updates the set of loggable inputs. */
@@ -73,7 +73,7 @@ public interface ModuleIO {
    *
    * @param position The target position.
    */
-  public default void setTurnPosition(Rotation2d position) {}
+  public default void setAzimuthPosition(Rotation2d position) {}
 
   /** Stops all motor control input. */
   public default void stop() {}
@@ -81,10 +81,10 @@ public interface ModuleIO {
   /** Enable or disable brake mode on the drive motor. */
   public default void setDriveBrakeMode(boolean enable) {}
 
-  /** Enable or disable brake mode on the turn motor. */
-  public default void setTurnBrakeMode(boolean enable) {}
+  /** Enable or disable brake mode on the azimuth motor. */
+  public default void setAzimuthBrakeMode(boolean enable) {}
 
   public default void configureDriveSysID() {}
 
-  public default void configureTurnSysID() {}
+  public default void configureAzimuthSysID() {}
 }

@@ -28,7 +28,7 @@ import frc.robot.Robot;
 /**
  * Physics sim implementation of module IO.
  *
- * <p>Uses two flywheel sims for the drive and turn motors, with the absolute position initialized
+ * <p>Uses two flywheel sims for the drive and azimuth motors, with the absolute position initialized
  * to a random value. The flywheel sims are not physically accurate, but provide a decent
  * approximation for the behavior of the module.
  */
@@ -36,14 +36,14 @@ public class ModuleIOSim implements ModuleIO {
   private FlywheelSim driveMotorSim;
   private PIDController drivePID = new PIDController(1.0 / 4.5, 0, 0);
 
-  private FlywheelSim turnMotorSim;
-  private PIDController turnPID = new PIDController(1.0, 0, 0);
+  private FlywheelSim azimuthMotorSim;
+  private PIDController azimuthPID = new PIDController(1.0, 0, 0);
 
-  private Rotation2d turnAbsolutePosition = new Rotation2d((Math.random() * 2.0 - 1.0) * Math.PI);
+  private Rotation2d azimuthAbsolutePosition = new Rotation2d((Math.random() * 2.0 - 1.0) * Math.PI);
 
   public ModuleIOSim() {
     driveMotorSim = new FlywheelSim(DCMotor.getKrakenX60Foc(1), 6.75, 0.025);
-    turnMotorSim = new FlywheelSim(DCMotor.getKrakenX60Foc(1), 150.0 / 75.0, 0.004);
+    azimuthMotorSim = new FlywheelSim(DCMotor.getKrakenX60Foc(1), 150.0 / 75.0, 0.004);
   }
 
   @Override
@@ -59,32 +59,32 @@ public class ModuleIOSim implements ModuleIO {
     inputs.driveAppliedVoltage = Volts.of(inputs.driveAppliedOutput * 12);
     inputs.driveAppliedCurrentAmps = new double[] {driveMotorSim.getCurrentDrawAmps()};
 
-    inputs.turnAppliedOutput =
-        MathUtil.clamp(turnPID.calculate(inputs.turnAbsolutePosition.getRotations()), -1, 1);
-    inputs.turnAppliedVoltage = Volts.of(inputs.turnAppliedOutput * 12);
-    inputs.turnAppliedCurrentAmps = new double[] {turnMotorSim.getCurrentDrawAmps()};
+    inputs.azimuthAppliedOutput =
+        MathUtil.clamp(azimuthPID.calculate(inputs.azimuthAbsolutePosition.getRotations()), -1, 1);
+    inputs.azimuthAppliedVoltage = Volts.of(inputs.azimuthAppliedOutput * 12);
+    inputs.azimuthAppliedCurrentAmps = new double[] {azimuthMotorSim.getCurrentDrawAmps()};
 
     driveMotorSim.setInputVoltage(inputs.driveAppliedVoltage.in(Volts));
-    turnMotorSim.setInputVoltage(inputs.turnAppliedVoltage.in(Volts));
+    azimuthMotorSim.setInputVoltage(inputs.azimuthAppliedVoltage.in(Volts));
 
     driveMotorSim.update(Robot.defaultPeriodSecs);
-    turnMotorSim.update(Robot.defaultPeriodSecs);
+    azimuthMotorSim.update(Robot.defaultPeriodSecs);
 
     inputs.driveVelocity =
         getDistancePerRadian(driveMotorSim.getAngularVelocityRadPerSec()).per(Second);
-    double driveAngleDiffRad = turnMotorSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs;
+    double driveAngleDiffRad = azimuthMotorSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs;
     inputs.drivePosition.plus(getDistancePerRadian(driveAngleDiffRad));
 
-    inputs.turnVelocity = RadiansPerSecond.of(turnMotorSim.getAngularVelocityRadPerSec());
-    double turnAngleDiffRad = turnMotorSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs;
-    turnAbsolutePosition =
+    inputs.azimuthVelocity = RadiansPerSecond.of(azimuthMotorSim.getAngularVelocityRadPerSec());
+    double azimuthDeltaRad = azimuthMotorSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs;
+    azimuthAbsolutePosition =
         new Rotation2d(
             MathUtil.inputModulus(
-                turnAbsolutePosition.getRadians() + turnAngleDiffRad, -Math.PI, Math.PI));
-    inputs.turnAbsolutePosition = turnAbsolutePosition;
+                azimuthAbsolutePosition.getRadians() + azimuthDeltaRad, -Math.PI, Math.PI));
+    inputs.azimuthAbsolutePosition = azimuthAbsolutePosition;
 
     inputs.odometryDrivePositionsMeters = new double[] {inputs.drivePosition.in(Meters)};
-    inputs.odometryTurnPositions = new Rotation2d[] {inputs.turnAbsolutePosition};
+    inputs.odometryAzimuthPositions = new Rotation2d[] {inputs.azimuthAbsolutePosition};
     inputs.odometryTimestamps = new double[] {Timer.getFPGATimestamp()};
   }
 
@@ -94,8 +94,8 @@ public class ModuleIOSim implements ModuleIO {
   }
 
   @Override
-  public void setTurnPosition(Rotation2d position) {
-    turnPID.setSetpoint(position.getRotations());
+  public void setAzimuthPosition(Rotation2d position) {
+    azimuthPID.setSetpoint(position.getRotations());
   }
 
   private Measure<Distance> getDistancePerRadian(double radians) {
