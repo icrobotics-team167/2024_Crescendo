@@ -16,6 +16,7 @@ package frc.robot.subsystems.shooter.interfaceLayers;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.*;
 import org.littletonrobotics.junction.AutoLog;
 
@@ -23,7 +24,7 @@ public interface PivotIO {
   @AutoLog
   public class PivotIOInputs {
     /** The angle of the pivot mechanism. 0 degrees is parallel to the ground. */
-    public Measure<Angle> angle = Degrees.of(0);
+    public Rotation2d angle = new Rotation2d();
     /** The velocity of the pivot mechanism. */
     public Measure<Velocity<Angle>> velocity = DegreesPerSecond.of(0);
     /** The total output applied to the motor by the closed loop control. */
@@ -38,13 +39,23 @@ public interface PivotIO {
   public default void updateInputs(PivotIOInputs inputs) {}
 
   /** Sets the target angle for the pivot mechanism. 0 degrees is parallel to the ground. */
-  public default void setTargetAngle(Measure<Angle> angle) {}
+  public default void setTargetAngle(Rotation2d angle) {}
 
   /** Sets the open-loop control for the pivot mechanism. */
   public default void setPivotControl(Measure<Voltage> rawVolts) {}
 
+  public default void stop() {}
+
   /** Gets the current angle of the pivot mechanism. */
   public default Measure<Angle> getCurrentAngle() {
     return Degrees.of(0);
+  }
+
+  public default boolean isTooFarDown() {
+    return false;
+  }
+
+  public default boolean isTooFarUp() {
+    return false;
   }
 }

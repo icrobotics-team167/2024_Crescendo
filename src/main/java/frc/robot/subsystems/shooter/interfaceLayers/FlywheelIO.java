@@ -21,7 +21,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface FlywheelIO {
   @AutoLog
-  public class ShooterIOInputs {
+  public class FlywheelIOInputs {
     /** The position of the shooter flywheel. */
     public Measure<Angle> position = Rotations.of(0);
     /** The velocity of the shooter flywheel. */
@@ -35,7 +35,7 @@ public interface FlywheelIO {
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(ShooterIOInputs inputs) {}
+  public default void updateInputs(FlywheelIOInputs inputs) {}
 
   /** Spins the shooter flywheel up. */
   public default void run() {}
