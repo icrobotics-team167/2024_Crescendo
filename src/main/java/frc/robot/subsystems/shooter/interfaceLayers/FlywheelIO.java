@@ -40,16 +40,9 @@ public interface FlywheelIO {
   /** Spins the shooter flywheel up. */
   public default void run() {}
 
+  /** Spins the shooter flywheel with a raw voltage. */
+  public default void runVoltage(Measure<Voltage> volts) {}
+
   /** Stops the shooter flywheel. */
   public default void stop() {}
-
-  /** Gets the position of the shooter flywheel. */
-  public default Measure<Angle> getPosition() {
-    return Rotations.of(0);
-  }
-
-  /** Gets the velocity of the shooter flywheel. */
-  public default Measure<Velocity<Angle>> getVelocity() {
-    return RotationsPerSecond.of(0);
-  }
 }

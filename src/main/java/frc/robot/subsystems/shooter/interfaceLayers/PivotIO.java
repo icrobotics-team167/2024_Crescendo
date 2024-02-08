@@ -25,6 +25,10 @@ public interface PivotIO {
   public class PivotIOInputs {
     /** The angle of the pivot mechanism. 0 degrees is parallel to the ground. */
     public Rotation2d angle = new Rotation2d();
+    /** If the pivot mechanism has reached its absolute max pivot angle. */
+    public boolean isTooFarUp = false;
+    /** If the pivot mechanism has reached its absolute min pivot angle. */
+    public boolean isTooFarDown = false;
     /** The velocity of the pivot mechanism. */
     public Measure<Velocity<Angle>> velocity = DegreesPerSecond.of(0);
     /** The total output applied to the motor by the closed loop control. */
@@ -44,18 +48,6 @@ public interface PivotIO {
   /** Sets the open-loop control for the pivot mechanism. */
   public default void setPivotControl(Measure<Voltage> rawVolts) {}
 
+  /** Stops the pivot mechanism and keeps it at its current angle. */
   public default void stop() {}
-
-  /** Gets the current angle of the pivot mechanism. */
-  public default Measure<Angle> getCurrentAngle() {
-    return Degrees.of(0);
-  }
-
-  public default boolean isTooFarDown() {
-    return false;
-  }
-
-  public default boolean isTooFarUp() {
-    return false;
-  }
 }

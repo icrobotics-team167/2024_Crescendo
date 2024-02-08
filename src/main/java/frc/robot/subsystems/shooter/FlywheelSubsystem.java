@@ -14,12 +14,14 @@
 
 package frc.robot.subsystems.shooter;
 
-import org.littletonrobotics.junction.Logger;
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIO;
 import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIOInputsAutoLogged;
+import org.littletonrobotics.junction.Logger;
 
 public class FlywheelSubsystem extends SubsystemBase {
   private final FlywheelIO io;
@@ -38,5 +40,35 @@ public class FlywheelSubsystem extends SubsystemBase {
   /** Gets the command to spin up the flywheel. Stops spinning when the command ends. */
   public Command getSpinCommand() {
     return run(() -> io.run()).finallyDo(() -> io.stop());
+  }
+
+  /** The sysid routine generator. */
+  private SysIdRoutine sysIDRoutine;
+
+  /** Gets the command to run system identification on the pivot. */
+  public Command getSysID() {
+    return sequence(
+        runOnce(
+            () ->
+                sysIDRoutine =
+                    new SysIdRoutine(
+                        new SysIdRoutine.Config(
+                            null,
+                            null,
+                            null,
+                            (state) ->
+                                Logger.recordOutput("Shooter/pivot/SysIDState", state.toString())),
+                        new SysIdRoutine.Mechanism(
+                            (voltage) -> io.runVoltage(voltage), null, this))),
+        sysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
+        runOnce(io::stop),
+        waitSeconds(2),
+        sysIDRoutine.quasistatic(SysIdRoutine.Direction.kReverse),
+        runOnce(io::stop),
+        waitSeconds(2),
+        sysIDRoutine.dynamic(SysIdRoutine.Direction.kForward),
+        runOnce(io::stop),
+        waitSeconds(2),
+        sysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse));
   }
 }

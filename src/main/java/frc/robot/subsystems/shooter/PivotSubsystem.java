@@ -15,8 +15,7 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.*;
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -78,15 +77,23 @@ public class PivotSubsystem extends SubsystemBase {
                                 Logger.recordOutput("Shooter/pivot/SysIDState", state.toString())),
                         new SysIdRoutine.Mechanism(
                             (voltage) -> io.setPivotControl(voltage), null, this))),
-        sysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward).until(io::isTooFarUp),
+        sysIDRoutine
+            .quasistatic(SysIdRoutine.Direction.kForward)
+            .until(() -> inputs.isTooFarUp),
         runOnce(io::stop),
         waitSeconds(2),
-        sysIDRoutine.quasistatic(SysIdRoutine.Direction.kReverse).until(io::isTooFarDown),
+        sysIDRoutine
+            .quasistatic(SysIdRoutine.Direction.kReverse)
+            .until(() -> inputs.isTooFarDown),
         runOnce(io::stop),
         waitSeconds(2),
-        sysIDRoutine.dynamic(SysIdRoutine.Direction.kForward).until(io::isTooFarUp),
+        sysIDRoutine
+            .dynamic(SysIdRoutine.Direction.kForward)
+            .until(() -> inputs.isTooFarUp),
         runOnce(io::stop),
         waitSeconds(2),
-        sysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse).until(io::isTooFarDown));
+        sysIDRoutine
+            .dynamic(SysIdRoutine.Direction.kReverse)
+            .until(() -> inputs.isTooFarDown));
   }
 }

@@ -27,14 +27,4 @@ public interface NoteDetectorIO {
 
   /** Updates the set of loggable inputs. */
   public default void updateInputs(NoteDetectorIOInputs inputs) {}
-
-  /** If the detector sees a note or not. */
-  public default boolean hasNote() {
-    return false;
-  }
-
-  /** The distance from an object that the detector has measured. */
-  public default double getDetectedDistance() {
-    return 0;
-  }
 }
