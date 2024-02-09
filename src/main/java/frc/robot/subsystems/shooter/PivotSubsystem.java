@@ -77,23 +77,15 @@ public class PivotSubsystem extends SubsystemBase {
                                 Logger.recordOutput("Shooter/pivot/SysIDState", state.toString())),
                         new SysIdRoutine.Mechanism(
                             (voltage) -> io.setPivotControl(voltage), null, this))),
-        sysIDRoutine
-            .quasistatic(SysIdRoutine.Direction.kForward)
-            .until(() -> inputs.isTooFarUp),
+        sysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward).until(() -> inputs.isTooFarUp),
         runOnce(io::stop),
         waitSeconds(2),
-        sysIDRoutine
-            .quasistatic(SysIdRoutine.Direction.kReverse)
-            .until(() -> inputs.isTooFarDown),
+        sysIDRoutine.quasistatic(SysIdRoutine.Direction.kReverse).until(() -> inputs.isTooFarDown),
         runOnce(io::stop),
         waitSeconds(2),
-        sysIDRoutine
-            .dynamic(SysIdRoutine.Direction.kForward)
-            .until(() -> inputs.isTooFarUp),
+        sysIDRoutine.dynamic(SysIdRoutine.Direction.kForward).until(() -> inputs.isTooFarUp),
         runOnce(io::stop),
         waitSeconds(2),
-        sysIDRoutine
-            .dynamic(SysIdRoutine.Direction.kReverse)
-            .until(() -> inputs.isTooFarDown));
+        sysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse).until(() -> inputs.isTooFarDown));
   }
 }
