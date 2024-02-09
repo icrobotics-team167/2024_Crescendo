@@ -29,6 +29,7 @@ import edu.wpi.first.units.*;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.subsystems.swerve.Module;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.util.SparkUtils;
 import java.util.Queue;
 import java.util.Set;
@@ -97,8 +98,8 @@ public class ModuleIOSparkMax implements ModuleIO {
   private final Queue<Double> azimuthPositionQueue;
   /**
    * Due to the nature of mounting magnets for absolute encoders, it is practically impossible to
-   * line up magnetic north with forwards on the module. This value is subtracted from the raw
-   * detected position, such that 0 is actually forwards on the azimuth.
+   * line up magnetic north with forwards on the module. This value is added to the raw detected
+   * position, such that 0 is actually forwards on the azimuth.
    *
    * <ul>
    *   <li><b>Units:</b>
@@ -124,30 +125,74 @@ public class ModuleIOSparkMax implements ModuleIO {
    *     </ul>
    */
   public ModuleIOSparkMax(int index) {
+    // PIDF tuning values for this module. NONE OF THESE VALUES SHOULD BE NEGATIVE, IF THEY ARE
+    // YA DONE GOOFED SOMEWHERE
+    double drive_kS; // Volts of additional voltage needed to overcome friction
+    double drive_kV; // Volts of additional voltage per m/s of velocity setpoint
+    double drive_kP; // % Output per m/s of error
+    // kI is typically unnecesary for driving as there's no significant factors that can prevent
+    // a PID controller from hitting its target, such as gravity for an arm. Factors like friction
+    // and inertia can be accounted for using kS and kV.
+    double drive_kD; // % Output per m/s^2 of error derivative
+    double azimuth_kV; // Volts of additional voltage per rot/s of velocity
+    double azimuth_kP; // % Output per rotation of error
+    double azimuth_KD; // % Output per rotations/s of error derivative
     switch (index) {
       case 0: // Front Left
         driveSparkMax = new CANSparkMax(1, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(2, MotorType.kBrushless);
         azimuthAbsoluteEncoder = new AnalogInput(0);
-        absoluteEncoderOffset = new Rotation2d(0.0); // TODO: Calibrate
+        absoluteEncoderOffset = Rotation2d.fromRotations(0); // TODO: Calibrate
+
+        drive_kS = 0;
+        drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
+        drive_kP = 1;
+        drive_kD = 0;
+        azimuth_kV = 2;
+        azimuth_kP = 8;
+        azimuth_KD = 0;
         break;
       case 1: // Front Right
         driveSparkMax = new CANSparkMax(3, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(4, MotorType.kBrushless);
         azimuthAbsoluteEncoder = new AnalogInput(1);
-        absoluteEncoderOffset = new Rotation2d(0.0); // TODO: Calibrate
+        absoluteEncoderOffset = Rotation2d.fromRotations(0); // TODO: Calibrate
+
+        drive_kS = 0;
+        drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
+        drive_kP = 1;
+        drive_kD = 0;
+        azimuth_kV = 2;
+        azimuth_kP = 8;
+        azimuth_KD = 0;
         break;
       case 2: // Back Left
         driveSparkMax = new CANSparkMax(5, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(6, MotorType.kBrushless);
         azimuthAbsoluteEncoder = new AnalogInput(2);
-        absoluteEncoderOffset = new Rotation2d(0.0); // TODO: Calibrate
+        absoluteEncoderOffset = Rotation2d.fromRotations(0); // TODO: Calibrate
+
+        drive_kS = 0;
+        drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
+        drive_kP = 1;
+        drive_kD = 0;
+        azimuth_kV = 2;
+        azimuth_kP = 8;
+        azimuth_KD = 0;
         break;
       case 3: // Back Right
         driveSparkMax = new CANSparkMax(7, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(8, MotorType.kBrushless);
         azimuthAbsoluteEncoder = new AnalogInput(3);
-        absoluteEncoderOffset = new Rotation2d(0.0); // TODO: Calibrate
+        absoluteEncoderOffset = Rotation2d.fromRotations(0); // TODO: Calibrate
+
+        drive_kS = 0;
+        drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
+        drive_kP = 1;
+        drive_kD = 0;
+        azimuth_kV = 2;
+        azimuth_kP = 8;
+        azimuth_KD = 0;
         break;
       default:
         throw new RuntimeException("Invalid module index");
@@ -184,25 +229,15 @@ public class ModuleIOSparkMax implements ModuleIO {
     azimuthRelativeEncoder.setMeasurementPeriod(10);
     azimuthRelativeEncoder.setAverageDepth(2);
 
-    // PIDF tuning values. NONE OF THESE VALUES SHOULD BE NEGATIVE, IF THEY ARE YA DONE GOOFED
-    // SOMEWHERE
     drivePIDController = driveSparkMax.getPIDController();
-    drivePIDController.setP(0.05); // % Output per m/s of error
-    // kI is typically unnecesary for driving as there's no significant factors that can prevent a
-    // PID controller from hitting its target, such as gravity for an arm. Factors like friction and
-    // inertia can be accounted for using kS and kV.
-    drivePIDController.setI(0); // % Output per m of integrated error
-    drivePIDController.setD(0); // % Output per m/s^2 of error derivative
-    driveFF =
-        new SimpleMotorFeedforward(
-            0, // Volts of additional voltage needed to overcome friction
-            0); // Volts of additional voltage per m/s of velocity setpoint
+    drivePIDController.setP(drive_kP);
+    drivePIDController.setD(drive_kD);
+    driveFF = new SimpleMotorFeedforward(drive_kS, drive_kV);
 
     azimuthPIDController = azimuthSparkMax.getPIDController();
-    azimuthPIDController.setP(1); // % Output per rotation of error
-    azimuthPIDController.setI(0); // % Output per rotation of integrated error
-    azimuthPIDController.setD(0); // % Output per rotations/s of error derivative
-    azimuthPIDController.setFF(0); // Volts of additional voltage per rot/s of velocity
+    azimuthPIDController.setP(azimuth_kP);
+    azimuthPIDController.setD(azimuth_KD);
+    azimuthPIDController.setFF(azimuth_kV);
     azimuthPIDController.setPositionPIDWrappingEnabled(true);
     azimuthPIDController.setPositionPIDWrappingMaxInput(0.5);
     azimuthPIDController.setPositionPIDWrappingMinInput(-0.5);
@@ -308,6 +343,6 @@ public class ModuleIOSparkMax implements ModuleIO {
   private Rotation2d getAzimuthAbsolutePosition() {
     return Rotation2d.fromRotations(
             azimuthAbsoluteEncoder.getVoltage() / RobotController.getVoltage5V())
-        .minus(absoluteEncoderOffset);
+        .plus(absoluteEncoderOffset);
   }
 }
