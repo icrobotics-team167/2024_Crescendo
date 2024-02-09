@@ -40,7 +40,7 @@ import java.util.Set;
  * controller (NEO or NEO 550), and an analog absolute encoder connected to the RIO
  *
  * <p>NOTE: This implementation should be used as a starting point and adapted to different hardware
- * configurations (e.g. If using a CANcoder, copy from "ModuleIOTalonFX")
+ * configurations.
  *
  * <p>To calibrate the absolute encoder offsets, point the modules straight (such that forward
  * motion on the drive motor will propel the robot forward) and copy the reported values from the

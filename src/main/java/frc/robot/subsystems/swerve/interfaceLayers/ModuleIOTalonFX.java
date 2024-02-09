@@ -41,7 +41,7 @@ import java.util.Queue;
  * controller, and CANcoder. Assumes all devices used are Phoenix Pro licensed.
  *
  * <p>NOTE: This implementation should be used as a starting point and adapted to different hardware
- * configurations (e.g. If using an analog encoder, copy from "ModuleIOSparkMax")
+ * configurations.
  *
  * <p>To calibrate the absolute encoder offsets, point the modules straight (such that forward
  * motion on the drive motor will propel the robot forward) and copy the reported values from the
