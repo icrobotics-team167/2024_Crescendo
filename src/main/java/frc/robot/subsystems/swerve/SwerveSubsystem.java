@@ -381,16 +381,12 @@ public class SwerveSubsystem extends SubsystemBase {
                             (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
                         new Mechanism((voltage) -> runCharacterization(voltage), null, this))),
         driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
-        runOnce(() -> stop()),
         waitSeconds(2),
         driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kReverse),
-        runOnce(() -> stop()),
         waitSeconds(2),
         driveSysIDRoutine.dynamic(SysIdRoutine.Direction.kForward),
-        runOnce(() -> stop()),
         waitSeconds(2),
-        driveSysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse),
-        runOnce(() -> stop()));
+        driveSysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse));
   }
 
   /**

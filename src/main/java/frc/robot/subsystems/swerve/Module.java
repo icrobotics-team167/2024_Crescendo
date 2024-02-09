@@ -28,7 +28,9 @@ public class Module {
   /**
    * The rate at which module states are measured. If set too high, can cause saturation of the CAN
    * network. CAN bus usage should never go above 80%, so lower this value if Driver Station reports
-   * too high of CAN utilization.
+   * too high of CAN utilization. Do not set below 50.
+   *
+   * <p>Without a CANivore, anything above 50 can cause issues.
    *
    * <ul>
    *   <li><b>Units:</b>
@@ -37,7 +39,7 @@ public class Module {
    *       </ul>
    * </ul>
    */
-  public static final double ODOMETRY_FREQUENCY = 250.0;
+  public static final double ODOMETRY_FREQUENCY = 50;
   // Gear ratios for SDS MK4i L2, adjust as necessary
   /**
    * The gear ratio between the drive motor and the module wheel.

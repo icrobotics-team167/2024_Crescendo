@@ -99,8 +99,8 @@ public class ModuleIOSparkMax implements ModuleIO {
   private final Queue<Double> azimuthPositionQueue;
   /**
    * Due to the nature of mounting magnets for absolute encoders, it is practically impossible to
-   * line up magnetic north with forwards on the module. This value is subtracted from the raw
-   * detected position, such that 0 is actually forwards on the azimuth.
+   * line up magnetic north with forwards on the module. This value is added to the raw detected
+   * position, such that 0 is actually forwards on the azimuth.
    *
    * <ul>
    *   <li><b>Units:</b>
@@ -109,7 +109,7 @@ public class ModuleIOSparkMax implements ModuleIO {
    *       </ul>
    * </ul>
    */
-  private final Rotation2d absoluteEncoderOffset;
+  private final double absoluteEncoderOffset;
 
   /**
    * Constructs a new Spark Max-based swerve module IO interface.
@@ -130,46 +130,51 @@ public class ModuleIOSparkMax implements ModuleIO {
     double drive_kD;
     double drive_kS;
     double drive_kV;
+    boolean azimuth_inverted;
     switch (index) {
       case 0: // Front Left
         driveSparkMax = new CANSparkMax(2, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(3, MotorType.kBrushless);
-        azimuthCANcoder = new CANcoder(15);
-        absoluteEncoderOffset = Rotation2d.fromRotations(-0.478);
-        drive_kP = 0.02;
+        azimuthCANcoder = new CANcoder(18);
+        absoluteEncoderOffset = -0.270263671875;
+        drive_kP = 0.1;
         drive_kD = 0.00;
         drive_kS = 0.00;
-        drive_kV = 0.08;
+        drive_kV = 0.375;
+        azimuth_inverted = true;
         break;
       case 1: // Front Right
         driveSparkMax = new CANSparkMax(4, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(5, MotorType.kBrushless);
-        azimuthCANcoder = new CANcoder(16);
-        absoluteEncoderOffset = Rotation2d.fromRotations(0.182);
-        drive_kP = 0.02;
+        azimuthCANcoder = new CANcoder(17);
+        absoluteEncoderOffset = -0.106689453125;
+        drive_kP = 0.1;
         drive_kD = 0.00;
         drive_kS = 0.00;
-        drive_kV = 0.08;
+        drive_kV = 0.375;
+        azimuth_inverted = true;
         break;
       case 2: // Back Left
         driveSparkMax = new CANSparkMax(9, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(8, MotorType.kBrushless);
-        azimuthCANcoder = new CANcoder(17);
-        absoluteEncoderOffset = Rotation2d.fromRotations(0.114);
-        drive_kP = 0.02;
+        azimuthCANcoder = new CANcoder(16);
+        absoluteEncoderOffset = -0.1962890625;
+        drive_kP = 0.1;
         drive_kD = 0.00;
         drive_kS = 0.00;
-        drive_kV = 0.08;
+        drive_kV = 0.375;
+        azimuth_inverted = true;
         break;
       case 3: // Back Right
         driveSparkMax = new CANSparkMax(6, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(7, MotorType.kBrushless);
-        azimuthCANcoder = new CANcoder(18);
-        absoluteEncoderOffset = Rotation2d.fromRotations(0.278);
-        drive_kP = 0.02;
+        azimuthCANcoder = new CANcoder(15);
+        absoluteEncoderOffset = 0.481201171875;
+        drive_kP = 0.1;
         drive_kD = 0.00;
         drive_kS = 0.00;
-        drive_kV = 0.08;
+        drive_kV = 0.375;
+        azimuth_inverted = true;
         break;
       default:
         throw new RuntimeException("Invalid module index");
@@ -200,6 +205,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     driveEncoder.setMeasurementPeriod(10);
     driveEncoder.setAverageDepth(2);
 
+    azimuthSparkMax.setInverted(azimuth_inverted);
     azimuthRelativeEncoder.setPositionConversionFactor(1.0 / Module.AZIMUTH_GEAR_RATIO);
     azimuthRelativeEncoder.setVelocityConversionFactor((1.0 / Module.AZIMUTH_GEAR_RATIO) / 60);
     azimuthRelativeEncoder.setPosition(azimuthCANcoder.getAbsolutePosition().getValueAsDouble());
@@ -235,7 +241,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
     var cancoderConfig = new CANcoderConfiguration();
     cancoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
-    cancoderConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset.getRotations();
+    cancoderConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset;
     azimuthCANcoder.getConfigurator().apply(cancoderConfig);
 
     // Configure CAN frame usage, and disable any unused CAN frames.
@@ -263,6 +269,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
     driveSparkMax.burnFlash();
     azimuthSparkMax.burnFlash();
+    setAzimuthBrakeMode(false);
   }
 
   @Override
@@ -277,6 +284,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
     inputs.azimuthAbsolutePosition =
         Rotation2d.fromRotations(azimuthCANcoder.getAbsolutePosition().getValueAsDouble());
+    // Rotation2d.fromRotations(azimuthRelativeEncoder.getPosition());
     azimuthRelativeEncoder.setPosition(inputs.azimuthAbsolutePosition.getRotations());
     inputs.azimuthVelocity = RotationsPerSecond.of(azimuthRelativeEncoder.getVelocity());
     inputs.azimuthAppliedOutput = driveSparkMax.getAppliedOutput();

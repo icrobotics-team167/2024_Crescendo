@@ -96,19 +96,19 @@ public class RobotContainer {
         drivebase.getDriveCommand(
             () ->
                 MathUtils.inOutDeadband(
-                    primaryLeftStick.getX(),
+                    -primaryLeftStick.getY(),
                     Driving.Deadbands.PRIMARY_LEFT_INNER,
                     Driving.Deadbands.PRIMARY_LEFT_OUTER,
                     Driving.PRIMARY_DRIVER_EXPONENT),
             () ->
                 MathUtils.inOutDeadband(
-                    primaryLeftStick.getY(),
+                    -primaryLeftStick.getX(),
                     Driving.Deadbands.PRIMARY_LEFT_INNER,
                     Driving.Deadbands.PRIMARY_LEFT_OUTER,
                     Driving.PRIMARY_DRIVER_EXPONENT),
             () ->
                 MathUtils.inOutDeadband(
-                    primaryRightStick.getY(),
+                    -primaryRightStick.getX(),
                     Driving.Deadbands.PRIMARY_RIGHT_INNER,
                     Driving.Deadbands.PRIMARY_RIGHT_OUTER,
                     Driving.PRIMARY_DRIVER_EXPONENT)));
