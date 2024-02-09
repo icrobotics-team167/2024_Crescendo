@@ -126,30 +126,50 @@ public class ModuleIOSparkMax implements ModuleIO {
    *     </ul>
    */
   public ModuleIOSparkMax(int index) {
+    double drive_kP;
+    double drive_kD;
+    double drive_kS;
+    double drive_kV;
     switch (index) {
       case 0: // Front Left
         driveSparkMax = new CANSparkMax(2, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(3, MotorType.kBrushless);
         azimuthCANcoder = new CANcoder(15);
-        absoluteEncoderOffset = Rotation2d.fromRotations(-0.478); // TODO: Calibrate
+        absoluteEncoderOffset = Rotation2d.fromRotations(-0.478);
+        drive_kP = 0.02;
+        drive_kD = 0.00;
+        drive_kS = 0.00;
+        drive_kV = 0.08;
         break;
       case 1: // Front Right
         driveSparkMax = new CANSparkMax(4, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(5, MotorType.kBrushless);
         azimuthCANcoder = new CANcoder(16);
-        absoluteEncoderOffset = Rotation2d.fromRotations(0.182); // TODO: Calibrate
+        absoluteEncoderOffset = Rotation2d.fromRotations(0.182);
+        drive_kP = 0.02;
+        drive_kD = 0.00;
+        drive_kS = 0.00;
+        drive_kV = 0.08;
         break;
       case 2: // Back Left
         driveSparkMax = new CANSparkMax(9, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(8, MotorType.kBrushless);
         azimuthCANcoder = new CANcoder(17);
-        absoluteEncoderOffset = Rotation2d.fromRotations(0.114); // TODO: Calibrate
+        absoluteEncoderOffset = Rotation2d.fromRotations(0.114);
+        drive_kP = 0.02;
+        drive_kD = 0.00;
+        drive_kS = 0.00;
+        drive_kV = 0.08;
         break;
       case 3: // Back Right
         driveSparkMax = new CANSparkMax(6, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(7, MotorType.kBrushless);
         azimuthCANcoder = new CANcoder(18);
-        absoluteEncoderOffset = Rotation2d.fromRotations(0.278); // TODO: Calibrate
+        absoluteEncoderOffset = Rotation2d.fromRotations(0.278);
+        drive_kP = 0.02;
+        drive_kD = 0.00;
+        drive_kS = 0.00;
+        drive_kV = 0.08;
         break;
       default:
         throw new RuntimeException("Invalid module index");
@@ -189,22 +209,21 @@ public class ModuleIOSparkMax implements ModuleIO {
     // PIDF tuning values. NONE OF THESE VALUES SHOULD BE NEGATIVE, IF THEY ARE YA DONE GOOFED
     // SOMEWHERE
     drivePIDController = driveSparkMax.getPIDController();
-    drivePIDController.setP(0.05); // % Output per m/s of error
+    drivePIDController.setP(drive_kP); // % Output per m/s of error
     // kI is typically unnecesary for driving as there's no significant factors that can prevent a
     // PID controller from hitting its target, such as gravity for an arm. Factors like friction and
     // inertia can be accounted for using kS and kV.
-    drivePIDController.setI(0); // % Output per m of integrated error
-    drivePIDController.setD(0); // % Output per m/s^2 of error derivative
+    drivePIDController.setI(0); // DO NOT USE
+    drivePIDController.setD(drive_kD); // % Output per m/s^2 of error derivative
     driveFF =
         new SimpleMotorFeedforward(
-            0, // Volts of additional voltage needed to overcome friction
-            0); // Volts of additional voltage per m/s of velocity setpoint
+            drive_kS, // Volts of additional voltage needed to overcome friction
+            drive_kV); // Volts of additional voltage per m/s of velocity setpoint
 
     azimuthPIDController = azimuthSparkMax.getPIDController();
     azimuthPIDController.setP(1); // % Output per rotation of error
     azimuthPIDController.setI(0); // % Output per rotation of integrated error
     azimuthPIDController.setD(0); // % Output per rotations/s of error derivative
-    azimuthPIDController.setFF(0); // Volts of additional voltage per rot/s of velocity
     azimuthPIDController.setPositionPIDWrappingEnabled(true);
     azimuthPIDController.setPositionPIDWrappingMaxInput(0.5);
     azimuthPIDController.setPositionPIDWrappingMinInput(-0.5);
