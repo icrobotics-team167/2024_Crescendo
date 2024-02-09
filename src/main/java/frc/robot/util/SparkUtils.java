@@ -34,7 +34,7 @@ public class SparkUtils {
 
   public static final int FRAME_STRATEGY_DISABLED = 65535;
   public static final int FRAME_STRATEGY_SLOW = 400;
-  public static final int FRAME_STRATEGY_FAST = 15;
+  public static final int FRAME_STRATEGY_FAST = 20;
 
   public static final Angle ANGLE_UNIT = Units.Rotations;
   public static final Time TIME_UNIT = Units.Minutes;
@@ -72,7 +72,7 @@ public class SparkUtils {
    */
   public static void configureFrameStrategy(
       CANSparkBase spark, Set<Data> data, Set<Sensor> sensors, boolean withFollower) {
-    int status0 = 10; // output, faults
+    int status0 = FRAME_STRATEGY_FAST; // output, faults
     int status1 = FRAME_STRATEGY_DISABLED;
     // integrated velocity, temperature, input voltage, current | default 20
     int status2 = FRAME_STRATEGY_DISABLED; // integrated position | default 20
