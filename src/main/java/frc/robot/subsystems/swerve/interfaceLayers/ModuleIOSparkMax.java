@@ -128,28 +128,28 @@ public class ModuleIOSparkMax implements ModuleIO {
   public ModuleIOSparkMax(int index) {
     switch (index) {
       case 0: // Front Left
-        driveSparkMax = new CANSparkMax(1, MotorType.kBrushless);
-        azimuthSparkMax = new CANSparkMax(2, MotorType.kBrushless);
+        driveSparkMax = new CANSparkMax(2, MotorType.kBrushless);
+        azimuthSparkMax = new CANSparkMax(3, MotorType.kBrushless);
         azimuthCANcoder = new CANcoder(15);
-        absoluteEncoderOffset = new Rotation2d(0.0); // TODO: Calibrate
+        absoluteEncoderOffset = Rotation2d.fromRotations(-0.478); // TODO: Calibrate
         break;
       case 1: // Front Right
-        driveSparkMax = new CANSparkMax(3, MotorType.kBrushless);
-        azimuthSparkMax = new CANSparkMax(4, MotorType.kBrushless);
+        driveSparkMax = new CANSparkMax(4, MotorType.kBrushless);
+        azimuthSparkMax = new CANSparkMax(5, MotorType.kBrushless);
         azimuthCANcoder = new CANcoder(16);
-        absoluteEncoderOffset = new Rotation2d(0.0); // TODO: Calibrate
+        absoluteEncoderOffset = Rotation2d.fromRotations(0.182); // TODO: Calibrate
         break;
       case 2: // Back Left
-        driveSparkMax = new CANSparkMax(5, MotorType.kBrushless);
-        azimuthSparkMax = new CANSparkMax(6, MotorType.kBrushless);
+        driveSparkMax = new CANSparkMax(9, MotorType.kBrushless);
+        azimuthSparkMax = new CANSparkMax(8, MotorType.kBrushless);
         azimuthCANcoder = new CANcoder(17);
-        absoluteEncoderOffset = new Rotation2d(0.0); // TODO: Calibrate
+        absoluteEncoderOffset = Rotation2d.fromRotations(0.114); // TODO: Calibrate
         break;
       case 3: // Back Right
-        driveSparkMax = new CANSparkMax(7, MotorType.kBrushless);
-        azimuthSparkMax = new CANSparkMax(8, MotorType.kBrushless);
+        driveSparkMax = new CANSparkMax(6, MotorType.kBrushless);
+        azimuthSparkMax = new CANSparkMax(7, MotorType.kBrushless);
         azimuthCANcoder = new CANcoder(18);
-        absoluteEncoderOffset = new Rotation2d(0.0); // TODO: Calibrate
+        absoluteEncoderOffset = Rotation2d.fromRotations(0.278); // TODO: Calibrate
         break;
       default:
         throw new RuntimeException("Invalid module index");
