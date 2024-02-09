@@ -64,20 +64,6 @@ public class Module {
    */
   public static final double AZIMUTH_GEAR_RATIO = 150.0 / 7.0;
   /**
-   * How many rotations the drive wheel moves when the drive motor is locked and the azimuth does
-   * one full rotation. Used to compensate for gear shenanigans. Leave 0 to disable compensation.
-   *
-   * <ul>
-   *   <li><b>Units:</b>
-   *       <ul>
-   *         <li>Gear ratio
-   *       </ul>
-   * </ul>
-   */
-  // TODO: Might need to stick a minus sign in here?
-  public static final double DRIVE_TURN_COMPENSATION_RATIO = 50.0 / 14.0;
-  // public static final double DRIVE_TURN_COMPENSATION_RATIO = 0;
-  /**
    * If the azimuth motor should be inverted or not. A positive control input should mean that the
    * azimuth should rotate counterclockwise, so if the azimuth motor needs to rotate clockwise to
    * achieve that, set this to true.

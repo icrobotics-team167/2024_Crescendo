@@ -273,14 +273,6 @@ public class ModuleIOSparkMax implements ModuleIO {
 
   @Override
   public void setDriveVelocity(Measure<Velocity<Distance>> velocity) {
-    // Compensate for the drive wheel turning slightly when the azimuth turns.
-    double driveTurnCompensation =
-        Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters)
-            * Module.DRIVE_TURN_COMPENSATION_RATIO
-            * driveEncoder.getVelocity();
-    velocity = velocity.plus(MetersPerSecond.of(driveTurnCompensation));
-    driveEncoder.setPosition(
-        driveEncoder.getPosition() + (driveTurnCompensation * Robot.defaultPeriodSecs));
     drivePIDController.setReference(
         velocity.in(MetersPerSecond),
         ControlType.kVelocity,
