@@ -29,7 +29,6 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.*;
-import frc.robot.Robot;
 import frc.robot.subsystems.swerve.Module;
 import frc.robot.util.SparkUtils;
 import java.util.Queue;

@@ -33,7 +33,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.*;
-import frc.robot.Robot;
 import frc.robot.subsystems.swerve.Module;
 import java.util.Queue;
 
