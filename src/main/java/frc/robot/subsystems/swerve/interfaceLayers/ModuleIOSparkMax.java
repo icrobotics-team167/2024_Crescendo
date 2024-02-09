@@ -30,6 +30,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.*;
 import frc.robot.subsystems.swerve.Module;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.util.SparkUtils;
 import java.util.Queue;
 import java.util.Set;
@@ -125,55 +126,74 @@ public class ModuleIOSparkMax implements ModuleIO {
    *     </ul>
    */
   public ModuleIOSparkMax(int index) {
-    double drive_kP;
-    double drive_kD;
-    double drive_kS;
-    double drive_kV;
-    boolean azimuth_inverted;
+    // PIDF tuning values for this module. NONE OF THESE VALUES SHOULD BE NEGATIVE, IF THEY ARE
+    // YA DONE GOOFED SOMEWHERE
+    double drive_kS; // Volts of additional voltage needed to overcome friction
+    double drive_kV; // Volts of additional voltage per m/s of velocity setpoint
+    double drive_kP; // % Output per m/s of error
+    // kI is typically unnecesary for driving as there's no significant factors that can prevent
+    // a PID controller from hitting its target, such as gravity for an arm. Factors like friction
+    // and inertia can be accounted for using kS and kV.
+    double drive_kD; // % Output per m/s^2 of error derivative
+    double azimuth_kV; // Volts of additional voltage per rot/s of velocity
+    double azimuth_kP; // % Output per rotation of error
+    double azimuth_KD; // % Output per rotations/s of error derivative
     switch (index) {
       case 0: // Front Left
-        driveSparkMax = new CANSparkMax(2, MotorType.kBrushless);
-        azimuthSparkMax = new CANSparkMax(3, MotorType.kBrushless);
+        driveSparkMax = new CANSparkMax(1, MotorType.kBrushless);
+        azimuthSparkMax = new CANSparkMax(2, MotorType.kBrushless);
         azimuthCANcoder = new CANcoder(18);
         absoluteEncoderOffset = -0.270263671875;
-        drive_kP = 0.1;
-        drive_kD = 0.00;
-        drive_kS = 0.00;
-        drive_kV = 0.375;
-        azimuth_inverted = true;
+
+        drive_kS = 0;
+        drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
+        drive_kP = 1;
+        drive_kD = 0;
+        azimuth_kV = 2;
+        azimuth_kP = 8;
+        azimuth_KD = 0;
         break;
       case 1: // Front Right
         driveSparkMax = new CANSparkMax(4, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(5, MotorType.kBrushless);
         azimuthCANcoder = new CANcoder(17);
         absoluteEncoderOffset = -0.106689453125;
-        drive_kP = 0.1;
-        drive_kD = 0.00;
-        drive_kS = 0.00;
-        drive_kV = 0.375;
-        azimuth_inverted = true;
+
+        drive_kS = 0;
+        drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
+        drive_kP = 1;
+        drive_kD = 0;
+        azimuth_kV = 2;
+        azimuth_kP = 8;
+        azimuth_KD = 0;
         break;
       case 2: // Back Left
         driveSparkMax = new CANSparkMax(9, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(8, MotorType.kBrushless);
         azimuthCANcoder = new CANcoder(16);
         absoluteEncoderOffset = -0.1962890625;
-        drive_kP = 0.1;
-        drive_kD = 0.00;
-        drive_kS = 0.00;
-        drive_kV = 0.375;
-        azimuth_inverted = true;
+
+        drive_kS = 0;
+        drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
+        drive_kP = 1;
+        drive_kD = 0;
+        azimuth_kV = 2;
+        azimuth_kP = 8;
+        azimuth_KD = 0;
         break;
       case 3: // Back Right
         driveSparkMax = new CANSparkMax(6, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(7, MotorType.kBrushless);
         azimuthCANcoder = new CANcoder(15);
         absoluteEncoderOffset = 0.481201171875;
-        drive_kP = 0.1;
-        drive_kD = 0.00;
-        drive_kS = 0.00;
-        drive_kV = 0.375;
-        azimuth_inverted = true;
+
+        drive_kS = 0;
+        drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
+        drive_kP = 1;
+        drive_kD = 0;
+        azimuth_kV = 2;
+        azimuth_kP = 8;
+        azimuth_KD = 0;
         break;
       default:
         throw new RuntimeException("Invalid module index");
@@ -204,31 +224,22 @@ public class ModuleIOSparkMax implements ModuleIO {
     driveEncoder.setMeasurementPeriod(10);
     driveEncoder.setAverageDepth(2);
 
-    azimuthSparkMax.setInverted(azimuth_inverted);
+    azimuthSparkMax.setInverted(Module.AZIMUTH_MOTOR_INVERTED);
     azimuthRelativeEncoder.setPositionConversionFactor(1.0 / Module.AZIMUTH_GEAR_RATIO);
     azimuthRelativeEncoder.setVelocityConversionFactor((1.0 / Module.AZIMUTH_GEAR_RATIO) / 60);
     azimuthRelativeEncoder.setPosition(azimuthCANcoder.getAbsolutePosition().getValueAsDouble());
     azimuthRelativeEncoder.setMeasurementPeriod(10);
     azimuthRelativeEncoder.setAverageDepth(2);
 
-    // PIDF tuning values. NONE OF THESE VALUES SHOULD BE NEGATIVE, IF THEY ARE YA DONE GOOFED
-    // SOMEWHERE
     drivePIDController = driveSparkMax.getPIDController();
-    drivePIDController.setP(drive_kP); // % Output per m/s of error
-    // kI is typically unnecesary for driving as there's no significant factors that can prevent a
-    // PID controller from hitting its target, such as gravity for an arm. Factors like friction and
-    // inertia can be accounted for using kS and kV.
-    drivePIDController.setI(0); // DO NOT USE
-    drivePIDController.setD(drive_kD); // % Output per m/s^2 of error derivative
-    driveFF =
-        new SimpleMotorFeedforward(
-            drive_kS, // Volts of additional voltage needed to overcome friction
-            drive_kV); // Volts of additional voltage per m/s of velocity setpoint
+    drivePIDController.setP(drive_kP);
+    drivePIDController.setD(drive_kD);
+    driveFF = new SimpleMotorFeedforward(drive_kS, drive_kV);
 
     azimuthPIDController = azimuthSparkMax.getPIDController();
-    azimuthPIDController.setP(1); // % Output per rotation of error
-    azimuthPIDController.setI(0); // % Output per rotation of integrated error
-    azimuthPIDController.setD(0); // % Output per rotations/s of error derivative
+    azimuthPIDController.setP(azimuth_kP);
+    azimuthPIDController.setD(azimuth_KD);
+    azimuthPIDController.setFF(azimuth_kV);
     azimuthPIDController.setPositionPIDWrappingEnabled(true);
     azimuthPIDController.setPositionPIDWrappingMaxInput(0.5);
     azimuthPIDController.setPositionPIDWrappingMinInput(-0.5);

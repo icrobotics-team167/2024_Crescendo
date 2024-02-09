@@ -57,7 +57,7 @@ import org.littletonrobotics.junction.Logger;
 public class SwerveSubsystem extends SubsystemBase {
   // Constants
   /** The max linear speed of the robot. */
-  private static final Measure<Velocity<Distance>> MAX_LINEAR_SPEED =
+  public static final Measure<Velocity<Distance>> MAX_LINEAR_SPEED =
       MetersPerSecond.of(
           (Module.DRIVE_MOTOR_MAX_VEL.in(RotationsPerSecond) / Module.DRIVE_GEAR_RATIO)
               * Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters));

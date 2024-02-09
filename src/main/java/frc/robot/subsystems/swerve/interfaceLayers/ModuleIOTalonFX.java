@@ -240,30 +240,107 @@ public class ModuleIOTalonFX implements ModuleIO {
    *     </ul>
    */
   public ModuleIOTalonFX(int index) {
+    // PIDF tuning values. NONE OF THESE VALUES SHOULD BE NEGATIVE, IF THEY ARE YA DONE GOOFED
+    // SOMEWHERE
+    double drive_kS; // Amps of current needed to overcome friction
+    // kV should be at/near 0, as kV is usually used to fight against back-EMF and TorqueControlFOC
+    // commutation eliminates that issue. However, if the mechanism has a non-negligible amount of
+    // viscous friction, ie from grease, then you may need it to counter the friction.
+    double drive_kV; // Amps of additional current per m/s of velocity setpoint
+    // kA can be tuned independently of all other control parameters. If the actual acceleration is
+    // below requested acceleration, bump this up, if it's above requested acceleration, bump this
+    // down.
+    double drive_kA; // Amps of additional current per m/s^2 of acceleration setpoint
+    double drive_kP; // Amps of current per m/s of error
+    // kI is typically unnecesary for driving as there's no significant factors that can prevent a
+    // PID controller from hitting its target, such as gravity for an arm. Factors like friction and
+    // inertia can be accounted for using kS and kA.
+    double drive_kI; // Amps of current per m of integrated error
+    double drive_kD; // Amps of current per m/s^2 of error derivative
+    double azimuth_kS; // Amps of current needed to overcome friction
+    double azimuth_kV; // Amps of current per rot/s of velocity setpoint
+    double azimuth_kA; // Amps of additional current per rot/s^2 of acceleration setpoint
+    double azimuth_kP; // Amps of current per rotation of error
+    double azimuth_kI; // Amps of current per rotation of integrated error
+    double azimuth_kD; // Amps of current per rotations/s of error derivative
     switch (index) {
       case 0: // Front Left module
         driveTalon = new TalonFX(0, "drivebase");
         azimuthTalon = new TalonFX(1, "drivebase");
         cancoder = new CANcoder(2, "drivebase");
         absoluteEncoderOffset = Rotation2d.fromDegrees(0); // TODO: Calibrate
+        drive_kS = 0;
+        drive_kV = 0;
+        drive_kA = 2;
+        drive_kP = 1;
+        drive_kI = 0;
+        drive_kD = 0;
+        azimuth_kS = 0;
+        azimuth_kV = 0;
+        azimuth_kA = 2;
+        azimuth_kP = 4;
+        azimuth_kI = 0;
+        azimuth_kD = 0;
         break;
       case 1: // Front Right modules
         driveTalon = new TalonFX(3, "drivebase");
         azimuthTalon = new TalonFX(4, "drivebase");
         cancoder = new CANcoder(5, "drivebase");
         absoluteEncoderOffset = Rotation2d.fromDegrees(0); // TODO: Calibrate
+
+        drive_kS = 0;
+        drive_kV = 0;
+        drive_kA = 2;
+        drive_kP = 1;
+        drive_kI = 0;
+        drive_kD = 0;
+
+        azimuth_kS = 0;
+        azimuth_kV = 0;
+        azimuth_kA = 2;
+        azimuth_kP = 4;
+        azimuth_kI = 0;
+        azimuth_kD = 0;
         break;
       case 2: // Back Left modules
         driveTalon = new TalonFX(6, "drivebase");
         azimuthTalon = new TalonFX(7, "drivebase");
         cancoder = new CANcoder(8, "drivebase");
         absoluteEncoderOffset = Rotation2d.fromDegrees(0); // TODO: Calibrate
+
+        drive_kS = 0;
+        drive_kV = 0;
+        drive_kA = 2;
+        drive_kP = 1;
+        drive_kI = 0;
+        drive_kD = 0;
+
+        azimuth_kS = 0;
+        azimuth_kV = 0;
+        azimuth_kA = 2;
+        azimuth_kP = 4;
+        azimuth_kI = 0;
+        azimuth_kD = 0;
         break;
       case 3: // Back Right modules
         driveTalon = new TalonFX(9, "drivebase");
         azimuthTalon = new TalonFX(10, "drivebase");
         cancoder = new CANcoder(11, "drivebase");
         absoluteEncoderOffset = Rotation2d.fromDegrees(0); // TODO: Calibrate
+
+        drive_kS = 0;
+        drive_kV = 0;
+        drive_kA = 2;
+        drive_kP = 1;
+        drive_kI = 0;
+        drive_kD = 0;
+
+        azimuth_kS = 0;
+        azimuth_kV = 0;
+        azimuth_kA = 2;
+        azimuth_kP = 4;
+        azimuth_kI = 0;
+        azimuth_kD = 0;
         break;
       default: // If somehow a 5th module is constructed, error
         throw new RuntimeException("Invalid module index");
@@ -276,24 +353,12 @@ public class ModuleIOTalonFX implements ModuleIO {
     // see when this is applied is +-4.5, so this is probably fine.
     driveConfig.Feedback.SensorToMechanismRatio = // Gear ratio between the motor and the wheel
         Module.DRIVE_GEAR_RATIO / Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters);
-    // PIDF tuning values. NONE OF THESE VALUES SHOULD BE NEGATIVE, IF THEY ARE YA DONE GOOFED
-    // SOMEWHERE
-    driveConfig.Slot0.kP = 0.05; // % output per m/s of error
-    // kI is typically unnecesary for driving as there's no significant factors that can prevent a
-    // PID controller from hitting its target, such as gravity for an arm. Factors like friction and
-    // inertia can be accounted for using kS and kA.
-    driveConfig.Slot0.kI = 0; // % output per m of integrated error
-    driveConfig.Slot0.kD = 0; // % output per m/s^2 of error derivative
-    driveConfig.Slot0.kS = 0; // Amps of additional current needed to overcome friction
-    // kV should be at/near 0, as kV is usually used to fight against back-EMF and TorqueControlFOC
-    // commutation eliminates that issue. However, if the mechanism has a non-negligible amount of
-    // viscous friction, ie from grease, then you may need it to counter the friction. See
-    // https://pro.docs.ctr-electronics.com/en/latest/docs/api-reference/device-specific/talonfx/closed-loop-requests.html#choosing-output-type
-    driveConfig.Slot0.kV = 0; // Amps of additional current per m/s of velocity setpoint
-    // kA can be tuned independently of all over control parameters. If the actual acceleration is
-    // below requested acceleration, bump this up, if it's above requested acceleration, bump this
-    // down.
-    driveConfig.Slot0.kA = 0; // Amps of additional current per m/s^2 of acceleration setpoint
+    driveConfig.Slot0.kS = drive_kS;
+    driveConfig.Slot0.kV = drive_kV;
+    driveConfig.Slot0.kA = drive_kA;
+    driveConfig.Slot0.kP = drive_kP;
+    driveConfig.Slot0.kI = drive_kI;
+    driveConfig.Slot0.kD = drive_kD;
     // MotionMagicAcceleration should be close to the maximum acceleration you can handle given your
     // robot's mass and moment of inertia. Choreo has a tool to approximate this.
     driveConfig.MotionMagic.MotionMagicAcceleration = 14; // Max allowed acceleration, in m/s^2
@@ -316,13 +381,13 @@ public class ModuleIOTalonFX implements ModuleIO {
         Module.AZIMUTH_MOTOR_INVERTED
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
-    azimuthConfig.Slot0.kP = 1; // % output per rotation of error
-    azimuthConfig.Slot0.kI = 0; // % output per rotation of integrated error
-    azimuthConfig.Slot0.kD = 0; // % output per rotations/s of error derivative
-    azimuthConfig.Slot0.kS = 0; // Amps of additional current needed to overcome friction
-    azimuthConfig.Slot0.kV = 0; // Amps of additional current per rot/s of velocity setpoint
-    azimuthConfig.Slot0.kA = 0; // Amps of additional current per rot/s^2 of acceleration setpoint
-    azimuthConfig.MotionMagic.MotionMagicAcceleration = 5; // Max allowed acceleration, in rot/s^2
+    azimuthConfig.Slot0.kS = azimuth_kS;
+    azimuthConfig.Slot0.kV = azimuth_kV;
+    azimuthConfig.Slot0.kA = azimuth_kA;
+    azimuthConfig.Slot0.kP = azimuth_kP;
+    azimuthConfig.Slot0.kI = azimuth_kI;
+    azimuthConfig.Slot0.kD = azimuth_kD;
+    azimuthConfig.MotionMagic.MotionMagicAcceleration = 10; // Max allowed acceleration, in rot/s^2
     azimuthConfig.MotionMagic.MotionMagicJerk = 50; // Max allowed jerk, in rot/s^3
     azimuthConfig.ClosedLoopGeneral.ContinuousWrap = true;
     driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 40;
