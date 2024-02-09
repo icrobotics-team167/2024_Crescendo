@@ -28,7 +28,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.*;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;
-import frc.robot.Robot;
 import frc.robot.subsystems.swerve.Module;
 import frc.robot.util.SparkUtils;
 import java.util.Queue;
