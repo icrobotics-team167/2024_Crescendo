@@ -17,7 +17,6 @@ package frc.robot.subsystems.shooter;
 import com.revrobotics.CANSparkBase.*;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -35,7 +34,8 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command run() {
-    return run(() -> intake.set(1));
+    System.out.println("kill me");
+    return run(() -> intake.set(.5));
   }
 
   public Command stop() {
