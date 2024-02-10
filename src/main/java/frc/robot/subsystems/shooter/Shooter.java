@@ -14,18 +14,31 @@
 
 package frc.robot.subsystems.shooter;
 
-import frc.robot.subsystems.shooter.interfaceLayers.NoteDetectorIOTimeOfFlight;
+import com.revrobotics.CANSparkBase.*;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /** A class containing all the logic and commands to make the shooter mechanism work. */
-public class Shooter {
+public class Shooter extends SubsystemBase {
   // private final FlywheelSubsystem flywheel;
   // private final PivotSubsystem pivot;
-  private final NoteDetectorSubsystem noteDetector;
+  private static CANSparkMax intake;
 
   public Shooter() {
     // TODO: Implement flywheel and pivot interfaces
     // flywheel = new FlywheelSubsystem(null);
     // pivot = new PivotSubsystem(null);
-    noteDetector = new NoteDetectorSubsystem(new NoteDetectorIOTimeOfFlight());
+    intake = new CANSparkMax(10, MotorType.kBrushless);
+  }
+
+  public Command run() {
+    return run(() -> intake.set(1));
+  }
+
+  public Command stop() {
+    return run(() -> intake.stopMotor());
   }
 }

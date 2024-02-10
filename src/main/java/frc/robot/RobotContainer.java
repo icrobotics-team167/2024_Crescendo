@@ -15,6 +15,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -22,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Driving;
+import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.swerve.interfaceLayers.GyroIO;
 import frc.robot.subsystems.swerve.interfaceLayers.GyroIOPigeon2;
@@ -29,6 +32,9 @@ import frc.robot.subsystems.swerve.interfaceLayers.ModuleIO;
 import frc.robot.subsystems.swerve.interfaceLayers.ModuleIOSim;
 import frc.robot.subsystems.swerve.interfaceLayers.ModuleIOSparkMax;
 import frc.robot.util.MathUtils;
+
+import java.time.Instant;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -41,6 +47,10 @@ public class RobotContainer {
   private LoggedDashboardChooser<Command> autoSelector;
 
   private SwerveSubsystem drivebase;
+
+  //private CANSparkMax intake = new CANSparkMax(10, MotorType.kBrushless);
+
+  private Shooter shooter = new Shooter();
 
   private CommandJoystick primaryLeftStick = new CommandJoystick(0);
   private CommandJoystick primaryRightStick = new CommandJoystick(1);
@@ -119,6 +129,15 @@ public class RobotContainer {
     primaryRightStick.trigger().onTrue(new InstantCommand(drivebase::stopWithX));
     // primaryLeftStick.button(1).whileTrue(drivebase.getSysIDURCL());
     // primaryLeftStick.button(1).whileTrue(drivebase.getSysIDCTRE());
+    secondaryLeftStick.trigger().whileTrue(new InstantCommand(shooter::run));
+    secondaryRightStick.trigger().whileTrue(new InstantCommand(shooter::stop));
+
+    // while (secondaryLeftStick.trigger().getAsBoolean()) {
+    //   intake.set(1);
+    // }
+    // if (!secondaryLeftStick.trigger().getAsBoolean()) {
+    //   intake.set(0);
+    // }
   }
 
   /**
