@@ -277,7 +277,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     // Why does REV not have a stator voltage getter
     inputs.driveAppliedVoltage =
         Volts.of(inputs.driveAppliedOutput * driveSparkMax.getBusVoltage());
-    inputs.driveAppliedCurrentAmps = Amps.of(driveSparkMax.getOutputCurrent());
+    inputs.driveAppliedCurrent = Amps.of(driveSparkMax.getOutputCurrent());
     inputs.drivePosition = Meters.of(driveEncoder.getPosition());
     inputs.driveVelocity = MetersPerSecond.of(driveEncoder.getVelocity());
 
@@ -289,7 +289,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     inputs.azimuthAppliedOutput = driveSparkMax.getAppliedOutput();
     inputs.azimuthAppliedVoltage =
         Volts.of(inputs.azimuthAppliedOutput * driveSparkMax.getBusVoltage());
-    inputs.azimuthAppliedCurrentAmps = Amps.of(azimuthSparkMax.getOutputCurrent());
+    inputs.azimuthAppliedCurrent = Amps.of(azimuthSparkMax.getOutputCurrent());
 
     inputs.odometryTimestamps =
         timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
