@@ -226,7 +226,7 @@ public class ModuleIOSparkMax implements ModuleIO {
             drive_kV); // Volts of additional voltage per m/s of velocity setpoint
 
     azimuthPIDController = azimuthSparkMax.getPIDController();
-    azimuthPIDController.setP(1); // % Output per rotation of error
+    azimuthPIDController.setP(4); // % Output per rotation of error
     azimuthPIDController.setI(0); // % Output per rotation of integrated error
     azimuthPIDController.setD(0); // % Output per rotations/s of error derivative
     azimuthPIDController.setPositionPIDWrappingEnabled(true);
