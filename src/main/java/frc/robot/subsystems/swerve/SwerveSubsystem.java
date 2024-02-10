@@ -179,7 +179,7 @@ public class SwerveSubsystem extends SubsystemBase {
     double[] sampleTimestamps =
         modules[0].getOdometryTimestamps(); // All signals are sampled together
     int sampleCount = sampleTimestamps.length;
-    for (int i = 0; i < sampleCount; i++) {
+    for (int i = 0; i < sampleCount && i < gyroInputs.odometryYawPositions.length; i++) {
       // Read wheel positions and deltas from each module
       SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
       SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
