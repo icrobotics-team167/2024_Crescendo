@@ -20,7 +20,7 @@ public class NoteDetectorIOTimeOfFlight implements NoteDetectorIO {
   private final TimeOfFlight sensor;
 
   public NoteDetectorIOTimeOfFlight() {
-    sensor = new TimeOfFlight(19);
+    sensor = new TimeOfFlight(32);
   }
 
   @Override
