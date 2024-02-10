@@ -61,6 +61,9 @@ public class SwerveSubsystem extends SubsystemBase {
       MetersPerSecond.of(
           (Module.DRIVE_MOTOR_MAX_VEL.in(RotationsPerSecond) / Module.DRIVE_GEAR_RATIO)
               * Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters));
+  /** The max linear acceleration of the robot. */
+  public static final Measure<Velocity<Velocity<Distance>>> MAX_LINEAR_ACCELERATION =
+      MetersPerSecondPerSecond.of(14);
   /** The distance between the front modules and the back modules. */
   private static final Measure<Distance> TRACK_LENGTH = Inches.of(35);
   /** The distance between the left modules and the right modules. */

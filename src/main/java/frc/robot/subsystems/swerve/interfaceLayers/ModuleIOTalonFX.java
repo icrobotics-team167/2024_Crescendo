@@ -34,6 +34,7 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.*;
 import frc.robot.subsystems.swerve.Module;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Queue;
 
 /**
@@ -361,10 +362,13 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveConfig.Slot0.kD = drive_kD;
     // MotionMagicAcceleration should be close to the maximum acceleration you can handle given your
     // robot's mass and moment of inertia. Choreo has a tool to approximate this.
-    driveConfig.MotionMagic.MotionMagicAcceleration = 14; // Max allowed acceleration, in m/s^2
+    driveConfig.MotionMagic.MotionMagicAcceleration =
+        SwerveSubsystem.MAX_LINEAR_ACCELERATION.in(
+            MetersPerSecondPerSecond); // Max allowed acceleration, in m/s^2
     // MotionMagicJerk should be ~10-20x the acceleration value, meaning roughly 0.05-0.1 seconds to
     // max acceleration. Is mainly used to smooth out motion profiles.
-    driveConfig.MotionMagic.MotionMagicJerk = 140; // Max allowed jerk, in m/s^3
+    driveConfig.MotionMagic.MotionMagicJerk =
+        driveConfig.MotionMagic.MotionMagicAcceleration * 10; // Max allowed jerk, in m/s^3
     // Limit the current draw of the motors.
     driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 100;
     driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = 100;
