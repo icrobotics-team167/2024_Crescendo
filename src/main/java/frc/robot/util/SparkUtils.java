@@ -33,7 +33,7 @@ import java.util.Set;
 public class SparkUtils {
 
   public static final int FRAME_STRATEGY_DISABLED = 65535;
-  public static final int FRAME_STRATEGY_SLOW = 400;
+  public static final int FRAME_STRATEGY_SLOW = 500;
   public static final int FRAME_STRATEGY_FAST = 20;
 
   public static final Angle ANGLE_UNIT = Units.Rotations;

@@ -253,6 +253,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     cancoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
     cancoderConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset;
     azimuthCANcoder.getConfigurator().apply(cancoderConfig);
+    azimuthCANcoder.getAbsolutePosition().setUpdateFrequency(50);
 
     // Configure CAN frame usage, and disable any unused CAN frames.
     SparkUtils.configureFrameStrategy(
