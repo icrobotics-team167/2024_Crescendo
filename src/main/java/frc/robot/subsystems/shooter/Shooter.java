@@ -14,26 +14,35 @@
 
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.wpilibj2.command.Commands.*;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.shooter.interfaceLayers.IntakeIO;
 import frc.robot.subsystems.shooter.interfaceLayers.NoteDetectorIO;
+import frc.robot.subsystems.shooter.interfaceLayers.PivotIO;
+import frc.robot.subsystems.shooter.interfaceLayers.PivotIOSparkFlex;
+import java.util.function.DoubleSupplier;
 
 /** A class containing all the logic and commands to make the shooter mechanism work. */
 public class Shooter {
   // private final FlywheelSubsystem flywheel;
-  // private final PivotSubsystem pivot;
+  private final PivotSubsystem pivot;
   private final NoteDetectorSubsystem noteDetector;
   private final IntakeSubsystem intake;
 
-  public Shooter(NoteDetectorIO noteDetectorIO, IntakeIO intakeIO) {
+  public Shooter(PivotIO pivotIO, NoteDetectorIO noteDetectorIO, IntakeIO intakeIO) {
     // TODO: Implement flywheel and pivot interfaces
     // flywheel = new FlywheelSubsystem(null);
-    // pivot = new PivotSubsystem(null);
+    pivot = new PivotSubsystem(new PivotIOSparkFlex());
     noteDetector = new NoteDetectorSubsystem(noteDetectorIO);
     intake = new IntakeSubsystem(intakeIO);
   }
 
   public Command intake() {
     return intake.getIntakeCommand();
+  }
+
+  public Command getManualControlCommand(DoubleSupplier pivotSupplier) {
+    return pivot.getManualOverrideCommand(pivotSupplier);
   }
 }

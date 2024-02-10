@@ -52,28 +52,28 @@ public class PivotIOSparkFlex implements PivotIO {
 
   @Override
   public void updateInputs(PivotIOInputs inputs) {
-    inputs.angle = Rotation2d.fromRotations(encoder.getAbsolutePosition());
-    inputs.isTooFarDown = encoder.getAbsolutePosition() <= 15; // TODO: Tune
-    inputs.isTooFarUp = encoder.getAbsolutePosition() >= 90; // TODO: Tune
-    double outputVoltage;
+    inputs.angle = getAngle();
+    inputs.isTooFarDown = getAngle().getDegrees() <= 15; // TODO: Tune
+    inputs.isTooFarUp = getAngle().getDegrees() >= 90; // TODO: Tune
 
+    double outputVoltage;
     if (pidControl) {
       // Possibly wack motion profile code...
       // TODO: Check if this works
       State motionProfileState =
           motionProfiler.calculate(
               Robot.defaultPeriodSecs,
-              new State(encoder.getAbsolutePosition(), motorEncoder.getVelocity() / 60),
+              new State(getAngle().getRotations(), motorEncoder.getVelocity() / 60),
               new State(targetAngle.getRotations(), 0));
       outputVoltage =
-          pidController.calculate(encoder.getAbsolutePosition(), motionProfileState.position)
-              + ffController.calculate(encoder.getAbsolutePosition(), motionProfileState.velocity);
+          pidController.calculate(getAngle().getRotations(), motionProfileState.position)
+              + ffController.calculate(getAngle().getRotations(), motionProfileState.velocity);
     } else {
       outputVoltage = controlVoltage;
     }
     if ((outputVoltage > 0 && inputs.isTooFarUp) || (outputVoltage < 0 && inputs.isTooFarDown)) {
       outputVoltage =
-          ffController.calculate(Radians.convertFrom(encoder.getAbsolutePosition(), Rotations), 0);
+          ffController.calculate(getAngle().getRadians(), 0);
     }
     motor.setVoltage(outputVoltage);
 
@@ -101,5 +101,9 @@ public class PivotIOSparkFlex implements PivotIO {
   @Override
   public void stop() {
     setPivotControl(Volts.of(0));
+  }
+
+  private Rotation2d getAngle() {
+    return Rotation2d.fromRotations(encoder.getAbsolutePosition() + 0);
   }
 }
