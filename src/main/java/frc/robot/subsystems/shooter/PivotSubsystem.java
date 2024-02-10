@@ -29,7 +29,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class PivotSubsystem extends SubsystemBase {
   private final PivotIO io;
-  private PivotIOInputsAutoLogged inputs;
+  private PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
 
   public PivotSubsystem(PivotIO io) {
     this.io = io;

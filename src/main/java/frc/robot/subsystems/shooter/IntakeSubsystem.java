@@ -22,7 +22,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends SubsystemBase {
   private final IntakeIO io;
-  private IntakeIOInputsAutoLogged inputs;
+  private IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
   public IntakeSubsystem(IntakeIO io) {
     this.io = io;
