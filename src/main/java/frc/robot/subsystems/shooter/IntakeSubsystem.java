@@ -15,25 +15,26 @@
 package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.shooter.interfaceLayers.IntakeIO;
-import frc.robot.subsystems.shooter.interfaceLayers.NoteDetectorIO;
+import frc.robot.subsystems.shooter.interfaceLayers.IntakeIOInputsAutoLogged;
+import org.littletonrobotics.junction.Logger;
 
-/** A class containing all the logic and commands to make the shooter mechanism work. */
-public class Shooter {
-  // private final FlywheelSubsystem flywheel;
-  // private final PivotSubsystem pivot;
-  private final NoteDetectorSubsystem noteDetector;
-  private final IntakeSubsystem intake;
+public class IntakeSubsystem extends SubsystemBase {
+  private final IntakeIO io;
+  private IntakeIOInputsAutoLogged inputs;
 
-  public Shooter(NoteDetectorIO noteDetectorIO, IntakeIO intakeIO) {
-    // TODO: Implement flywheel and pivot interfaces
-    // flywheel = new FlywheelSubsystem(null);
-    // pivot = new PivotSubsystem(null);
-    noteDetector = new NoteDetectorSubsystem(noteDetectorIO);
-    intake = new IntakeSubsystem(intakeIO);
+  public IntakeSubsystem(IntakeIO io) {
+    this.io = io;
   }
 
-  public Command intake() {
-    return intake.getIntakeCommand();
+  @Override
+  public void periodic() {
+    io.updateInputs(inputs);
+    Logger.processInputs("Shooter/intake", inputs);
+  }
+
+  public Command getIntakeCommand() {
+    return run(io::run).finallyDo(io::stop);
   }
 }
