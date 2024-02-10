@@ -65,6 +65,7 @@ public class PivotSubsystem extends SubsystemBase {
   /** Gets the command to run system identification on the pivot. */
   public Command getSysID() {
     return sequence(
+        run(() -> io.setPivotControl(Volts.of(-2))).until(() -> inputs.isTooFarDown),
         runOnce(
             () ->
                 sysIDRoutine =
@@ -78,13 +79,10 @@ public class PivotSubsystem extends SubsystemBase {
                         new SysIdRoutine.Mechanism(
                             (voltage) -> io.setPivotControl(voltage), null, this))),
         sysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward).until(() -> inputs.isTooFarUp),
-        runOnce(io::stop),
         waitSeconds(2),
         sysIDRoutine.quasistatic(SysIdRoutine.Direction.kReverse).until(() -> inputs.isTooFarDown),
-        runOnce(io::stop),
         waitSeconds(2),
         sysIDRoutine.dynamic(SysIdRoutine.Direction.kForward).until(() -> inputs.isTooFarUp),
-        runOnce(io::stop),
         waitSeconds(2),
         sysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse).until(() -> inputs.isTooFarDown));
   }
