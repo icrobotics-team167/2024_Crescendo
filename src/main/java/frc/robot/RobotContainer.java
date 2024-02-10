@@ -23,16 +23,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Driving;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.interfaceLayers.IntakeIO;
-import frc.robot.subsystems.shooter.interfaceLayers.IntakeIOSparkMax;
-import frc.robot.subsystems.shooter.interfaceLayers.NoteDetectorIO;
-import frc.robot.subsystems.shooter.interfaceLayers.NoteDetectorIOTimeOfFlight;
+import frc.robot.subsystems.shooter.interfaceLayers.*;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
-import frc.robot.subsystems.swerve.interfaceLayers.GyroIO;
-import frc.robot.subsystems.swerve.interfaceLayers.GyroIOPigeon2;
-import frc.robot.subsystems.swerve.interfaceLayers.ModuleIO;
-import frc.robot.subsystems.swerve.interfaceLayers.ModuleIOSim;
-import frc.robot.subsystems.swerve.interfaceLayers.ModuleIOSparkMax;
+import frc.robot.subsystems.swerve.interfaceLayers.*;
 import frc.robot.util.MathUtils;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -64,7 +57,9 @@ public class RobotContainer {
                 new ModuleIOSparkMax(1),
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3));
-        shooter = new Shooter(new NoteDetectorIOTimeOfFlight(), new IntakeIOSparkMax());
+        shooter =
+            new Shooter(
+                new PivotIOSparkFlex(), new NoteDetectorIOTimeOfFlight(), new IntakeIOSparkMax());
         break;
       case SIM:
         drivebase =
@@ -74,7 +69,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim());
-        shooter = new Shooter(new NoteDetectorIO() {}, new IntakeIO() {});
+        shooter = new Shooter(new PivotIO() {}, new NoteDetectorIO() {}, new IntakeIO() {});
         break;
       default:
         drivebase =
@@ -84,7 +79,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        shooter = new Shooter(new NoteDetectorIO() {}, new IntakeIO() {});
+        shooter = new Shooter(new PivotIO() {}, new NoteDetectorIO() {}, new IntakeIO() {});
     }
     // Configure the trigger bindings
     configureBindings();
@@ -130,6 +125,14 @@ public class RobotContainer {
     // primaryLeftStick.button(1).whileTrue(drivebase.getSysIDCTRE());
 
     secondaryRightStick.trigger().whileTrue(shooter.intake());
+    shooter.setPivotDefaultCommand(
+        shooter.getManualControlCommand(
+            () ->
+                MathUtils.inOutDeadband(
+                    -secondaryLeftStick.getY(),
+                    Driving.Deadbands.SECONDARY_LEFT_INNER,
+                    Driving.Deadbands.SECONDARY_LEFT_OUTER,
+                    Driving.SECONDARY_DRIVER_EXPONENT)));
   }
 
   /**
