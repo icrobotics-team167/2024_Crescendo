@@ -233,6 +233,9 @@ public class ModuleIOSparkMax implements ModuleIO {
     drivePIDController.setP(drive_kP);
     drivePIDController.setD(drive_kD);
     driveFF = new SimpleMotorFeedforward(drive_kS, drive_kV);
+    driveSparkMax.setClosedLoopRampRate(
+        SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond)
+            / SwerveSubsystem.MAX_LINEAR_ACCELERATION.in(MetersPerSecondPerSecond));
 
     azimuthPIDController = azimuthSparkMax.getPIDController();
     azimuthPIDController.setP(azimuth_kP);
