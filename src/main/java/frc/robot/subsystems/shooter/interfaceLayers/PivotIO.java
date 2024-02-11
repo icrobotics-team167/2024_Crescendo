@@ -21,6 +21,8 @@ import edu.wpi.first.units.*;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface PivotIO {
+  public static final double MIN_ANGLE = 38;
+  public static final double MAX_ANGLE = 90;
   @AutoLog
   public class PivotIOInputs {
     /** The angle of the pivot mechanism. 0 degrees is parallel to the ground. */

@@ -20,6 +20,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.*;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.shooter.interfaceLayers.PivotIO;
 import frc.robot.subsystems.shooter.interfaceLayers.PivotIOInputsAutoLogged;
 import java.util.function.DoubleSupplier;
@@ -55,6 +56,41 @@ public class PivotSubsystem extends SubsystemBase {
 
   /** Gets the command to put the pivot in the resting position. */
   public Command getRestingPositionCommand() {
-    return getPivotCommand(() -> Rotation2d.fromDegrees(15));
+    return getPivotCommand(() -> Rotation2d.fromDegrees(PivotIO.MIN_ANGLE));
+  }
+
+  private SysIdRoutine pivotVelSysIDroutine;
+
+  public Command getPivotVelSysID() {
+    return sequence(
+        getRestingPositionCommand().until(() -> inputs.isTooFarDown),
+        runOnce(
+            () ->
+                pivotVelSysIDroutine =
+                    new SysIdRoutine(
+                        new SysIdRoutine.Config(
+                            null,
+                            null,
+                            null,
+                            (state) ->
+                                Logger.recordOutput(
+                                    "Shooter/pivot/velSysIdState", state.toString())),
+                        new SysIdRoutine.Mechanism(
+                            (voltage) -> io.setRawControl(voltage), null, this))),
+        pivotVelSysIDroutine
+            .quasistatic(SysIdRoutine.Direction.kForward)
+            .until(() -> inputs.isTooFarUp),
+        waitSeconds(1),
+        pivotVelSysIDroutine
+            .quasistatic(SysIdRoutine.Direction.kReverse)
+            .until(() -> inputs.isTooFarDown),
+        waitSeconds(1),
+        pivotVelSysIDroutine
+            .dynamic(SysIdRoutine.Direction.kForward)
+            .until(() -> inputs.isTooFarUp),
+        waitSeconds(1),
+        pivotVelSysIDroutine
+            .dynamic(SysIdRoutine.Direction.kReverse)
+            .until(() -> inputs.isTooFarDown));
   }
 }

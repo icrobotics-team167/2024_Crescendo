@@ -108,8 +108,8 @@ public class PivotIOSparkFlex implements PivotIO {
   @Override
   public void updateInputs(PivotIOInputs inputs) {
     inputs.angle = getAngle();
-    inputs.isTooFarDown = getAngle().getDegrees() <= 38; // TODO: Tune
-    inputs.isTooFarUp = getAngle().getDegrees() >= 90; // TODO: Tune
+    inputs.isTooFarDown = getAngle().getDegrees() <= PivotIO.MIN_ANGLE;
+    inputs.isTooFarUp = getAngle().getDegrees() >= PivotIO.MAX_ANGLE;
 
     if (angleControl) {
       targetVelocity =
