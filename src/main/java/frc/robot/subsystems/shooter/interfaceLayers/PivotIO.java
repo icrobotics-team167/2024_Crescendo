@@ -21,6 +21,8 @@ import edu.wpi.first.units.*;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface PivotIO {
+  public static final double MIN_ANGLE = 38;
+  public static final double MAX_ANGLE = 90;
   @AutoLog
   public class PivotIOInputs {
     /** The angle of the pivot mechanism. 0 degrees is parallel to the ground. */
@@ -45,8 +47,11 @@ public interface PivotIO {
   /** Sets the target angle for the pivot mechanism. 0 degrees is parallel to the ground. */
   public default void setTargetAngle(Rotation2d angle) {}
 
-  /** Sets the open-loop control for the pivot mechanism. */
-  public default void setPivotControl(Measure<Voltage> rawVolts) {}
+  /** Sets the closed-loop velocity control for the mechanism. */
+  public default void setPivotControl(Measure<Velocity<Angle>> velocity) {}
+
+  /** Sets the raw open-loop velocity control for the motors. */
+  public default void setRawControl(Measure<Voltage> voltage) {}
 
   /** Stops the pivot mechanism and keeps it at its current angle. */
   public default void stop() {}

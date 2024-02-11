@@ -58,12 +58,12 @@ public class ModuleIOSim implements ModuleIO {
             -1,
             1);
     inputs.driveAppliedVoltage = Volts.of(inputs.driveAppliedOutput * 12);
-    inputs.driveAppliedCurrentAmps = Amps.of(driveMotorSim.getCurrentDrawAmps());
+    inputs.driveAppliedCurrent = Amps.of(driveMotorSim.getCurrentDrawAmps());
 
     inputs.azimuthAppliedOutput =
         MathUtil.clamp(azimuthPID.calculate(inputs.azimuthAbsolutePosition.getRotations()), -1, 1);
     inputs.azimuthAppliedVoltage = Volts.of(inputs.azimuthAppliedOutput * 12);
-    inputs.azimuthAppliedCurrentAmps = Amps.of(azimuthMotorSim.getCurrentDrawAmps());
+    inputs.azimuthAppliedCurrent = Amps.of(azimuthMotorSim.getCurrentDrawAmps());
 
     driveMotorSim.setInputVoltage(inputs.driveAppliedVoltage.in(Volts));
     azimuthMotorSim.setInputVoltage(inputs.azimuthAppliedVoltage.in(Volts));

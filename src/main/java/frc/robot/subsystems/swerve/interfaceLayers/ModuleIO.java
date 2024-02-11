@@ -32,7 +32,7 @@ public interface ModuleIO {
     /** The voltage applied to the motor by the motor controller. */
     public Measure<Voltage> driveAppliedVoltage = Volts.of(0);
     /** The current applied to the motor by the motor controller. */
-    public Measure<Current> driveAppliedCurrentAmps = Amps.of(0);
+    public Measure<Current> driveAppliedCurrent = Amps.of(0);
     /** The total output applied to the motor by the closed loop control. */
     public double driveAppliedOutput = 0.0;
 
@@ -43,7 +43,7 @@ public interface ModuleIO {
     /** The voltage applied to the motor by the motor controller. */
     public Measure<Voltage> azimuthAppliedVoltage = Volts.of(0);
     /** The current applied to the motor by the motor controller. */
-    public Measure<Current> azimuthAppliedCurrentAmps = Amps.of(0);
+    public Measure<Current> azimuthAppliedCurrent = Amps.of(0);
     /** The total output applied to the motor by the closed loop control. */
     public double azimuthAppliedOutput = 0.0;
 

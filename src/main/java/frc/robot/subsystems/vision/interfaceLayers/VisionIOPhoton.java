@@ -70,6 +70,10 @@ public class VisionIOPhoton implements VisionIO {
     inputs.isNewData = true;
     inputs.poseEstimate = botPoseEstimate.estimatedPose.toPose2d();
     inputs.timestamp = botPoseEstimate.timestampSeconds;
+    inputs.trackedTags = new Transform3d[botPoseEstimate.targetsUsed.size()];
+    for (int i = 0; i < inputs.trackedTags.length; i++) {
+      inputs.trackedTags[i] = botPoseEstimate.targetsUsed.get(i).getBestCameraToTarget();
+    }
   }
 
   @Override

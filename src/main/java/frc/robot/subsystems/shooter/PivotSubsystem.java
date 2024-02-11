@@ -29,7 +29,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class PivotSubsystem extends SubsystemBase {
   private final PivotIO io;
-  private PivotIOInputsAutoLogged inputs;
+  private PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
 
   public PivotSubsystem(PivotIO io) {
     this.io = io;
@@ -51,41 +51,46 @@ public class PivotSubsystem extends SubsystemBase {
 
   /** Gets a command to manually control the pivot angle. */
   public Command getManualOverrideCommand(DoubleSupplier controlSupplier) {
-    return run(() -> io.setPivotControl(Volts.of(controlSupplier.getAsDouble() * 12)));
+    return run(() -> io.setPivotControl(DegreesPerSecond.of(controlSupplier.getAsDouble() * 12)));
   }
 
   /** Gets the command to put the pivot in the resting position. */
   public Command getRestingPositionCommand() {
-    return getPivotCommand(() -> Rotation2d.fromDegrees(15));
+    return getPivotCommand(() -> Rotation2d.fromDegrees(PivotIO.MIN_ANGLE));
   }
 
-  /** The sysid routine generator. */
-  private SysIdRoutine sysIDRoutine;
+  private SysIdRoutine pivotVelSysIDroutine;
 
-  /** Gets the command to run system identification on the pivot. */
-  public Command getSysID() {
+  public Command getPivotVelSysID() {
     return sequence(
+        getRestingPositionCommand().until(() -> inputs.isTooFarDown),
         runOnce(
             () ->
-                sysIDRoutine =
+                pivotVelSysIDroutine =
                     new SysIdRoutine(
                         new SysIdRoutine.Config(
                             null,
                             null,
                             null,
                             (state) ->
-                                Logger.recordOutput("Shooter/pivot/SysIDState", state.toString())),
+                                Logger.recordOutput(
+                                    "Shooter/pivot/velSysIdState", state.toString())),
                         new SysIdRoutine.Mechanism(
-                            (voltage) -> io.setPivotControl(voltage), null, this))),
-        sysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward).until(() -> inputs.isTooFarUp),
-        runOnce(io::stop),
-        waitSeconds(2),
-        sysIDRoutine.quasistatic(SysIdRoutine.Direction.kReverse).until(() -> inputs.isTooFarDown),
-        runOnce(io::stop),
-        waitSeconds(2),
-        sysIDRoutine.dynamic(SysIdRoutine.Direction.kForward).until(() -> inputs.isTooFarUp),
-        runOnce(io::stop),
-        waitSeconds(2),
-        sysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse).until(() -> inputs.isTooFarDown));
+                            (voltage) -> io.setRawControl(voltage), null, this))),
+        pivotVelSysIDroutine
+            .quasistatic(SysIdRoutine.Direction.kForward)
+            .until(() -> inputs.isTooFarUp),
+        waitSeconds(1),
+        pivotVelSysIDroutine
+            .quasistatic(SysIdRoutine.Direction.kReverse)
+            .until(() -> inputs.isTooFarDown),
+        waitSeconds(1),
+        pivotVelSysIDroutine
+            .dynamic(SysIdRoutine.Direction.kForward)
+            .until(() -> inputs.isTooFarUp),
+        waitSeconds(1),
+        pivotVelSysIDroutine
+            .dynamic(SysIdRoutine.Direction.kReverse)
+            .until(() -> inputs.isTooFarDown));
   }
 }

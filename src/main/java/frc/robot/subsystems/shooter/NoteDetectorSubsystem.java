@@ -21,7 +21,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class NoteDetectorSubsystem extends SubsystemBase {
   private final NoteDetectorIO io;
-  private NoteDetectorIOInputsAutoLogged inputs;
+  private NoteDetectorIOInputsAutoLogged inputs = new NoteDetectorIOInputsAutoLogged();
 
   public NoteDetectorSubsystem(NoteDetectorIO io) {
     this.io = io;

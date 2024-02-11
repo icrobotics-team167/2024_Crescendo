@@ -16,37 +16,25 @@ package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIO;
-import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIOInputsAutoLogged;
+import frc.robot.subsystems.shooter.interfaceLayers.IntakeIO;
+import frc.robot.subsystems.shooter.interfaceLayers.IntakeIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
 
-public class FlywheelSubsystem extends SubsystemBase {
-  private final FlywheelIO io;
-  private FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
+public class IntakeSubsystem extends SubsystemBase {
+  private final IntakeIO io;
+  private IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
-  public FlywheelSubsystem(FlywheelIO io) {
+  public IntakeSubsystem(IntakeIO io) {
     this.io = io;
   }
 
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Shooter/flywheel", inputs);
+    Logger.processInputs("Shooter/intake", inputs);
   }
 
-  /**
-   * Gets the command to spin up the flywheel to shoot into the speaker. Stops spinning when the
-   * command ends.
-   */
-  public Command getSpeakerShotCommand() {
-    return run(io::runSpeaker).finallyDo(io::stop);
-  }
-
-  /**
-   * Gets the command to spin up the flywheel to shoot into the amp. Stops spinning when the
-   * command ends.
-   */
-  public Command getAmpShotCommand() {
-    return run(io::runAmp).finallyDo(io::stop);
+  public Command getIntakeCommand() {
+    return run(io::run).finallyDo(io::stop);
   }
 }

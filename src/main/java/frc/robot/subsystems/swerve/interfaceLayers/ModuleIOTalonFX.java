@@ -466,14 +466,14 @@ public class ModuleIOTalonFX implements ModuleIO {
     inputs.driveVelocity = MetersPerSecond.of(driveVelocity.getValueAsDouble());
     inputs.driveAppliedVoltage = Volts.of(driveAppliedVolts.getValueAsDouble());
     inputs.driveAppliedOutput = driveClosedLoopOutput.getValueAsDouble();
-    inputs.driveAppliedCurrentAmps = Amps.of(driveAppliedCurrent.getValueAsDouble());
+    inputs.driveAppliedCurrent = Amps.of(driveAppliedCurrent.getValueAsDouble());
 
     inputs.azimuthAbsolutePosition =
         Rotation2d.fromRotations(azimuthAbsolutePosition.getValueAsDouble());
     inputs.azimuthVelocity = RotationsPerSecond.of(azimuthVelocity.getValueAsDouble());
     inputs.azimuthAppliedVoltage = Volts.of(azimuthAppliedVolts.getValueAsDouble());
     inputs.azimuthAppliedOutput = azimuthClosedLoopOutput.getValueAsDouble();
-    inputs.azimuthAppliedCurrentAmps = Amps.of(azimuthAppliedCurrent.getValueAsDouble());
+    inputs.azimuthAppliedCurrent = Amps.of(azimuthAppliedCurrent.getValueAsDouble());
 
     inputs.odometryTimestamps =
         timestampQueue.stream().mapToDouble((Double value) -> value).toArray();

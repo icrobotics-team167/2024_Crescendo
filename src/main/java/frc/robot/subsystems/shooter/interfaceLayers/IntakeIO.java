@@ -14,23 +14,18 @@
 
 package frc.robot.subsystems.shooter.interfaceLayers;
 
-import com.playingwithfusion.TimeOfFlight;
+import org.littletonrobotics.junction.AutoLog;
 
-public class NoteDetectorIOTimeOfFlight implements NoteDetectorIO {
-  private final TimeOfFlight sensor;
-
-  public NoteDetectorIOTimeOfFlight() {
-    sensor = new TimeOfFlight(32);
+public interface IntakeIO {
+  @AutoLog
+  public class IntakeIOInputs {
+    // TODO: Add more input data as we need more
+    public boolean isRunning = false;
   }
 
-  @Override
-  public void updateInputs(NoteDetectorIOInputs inputs) {
-    if (sensor.isRangeValid()) {
-      inputs.detectedDistance = sensor.getRange();
-      inputs.hasNote = inputs.detectedDistance < 50; // TODO: Tune
-    } else {
-      inputs.detectedDistance = -1;
-      inputs.hasNote = false;
-    }
-  }
+  public default void updateInputs(IntakeIOInputs inputs) {}
+
+  public default void run() {}
+
+  public default void stop() {}
 }

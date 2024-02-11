@@ -14,23 +14,28 @@
 
 package frc.robot.subsystems.shooter.interfaceLayers;
 
-import com.playingwithfusion.TimeOfFlight;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
 
-public class NoteDetectorIOTimeOfFlight implements NoteDetectorIO {
-  private final TimeOfFlight sensor;
+public class IntakeIOSparkMax implements IntakeIO {
+  private final CANSparkMax motor;
 
-  public NoteDetectorIOTimeOfFlight() {
-    sensor = new TimeOfFlight(32);
+  public IntakeIOSparkMax() {
+    motor = new CANSparkMax(10, MotorType.kBrushless);
   }
 
   @Override
-  public void updateInputs(NoteDetectorIOInputs inputs) {
-    if (sensor.isRangeValid()) {
-      inputs.detectedDistance = sensor.getRange();
-      inputs.hasNote = inputs.detectedDistance < 50; // TODO: Tune
-    } else {
-      inputs.detectedDistance = -1;
-      inputs.hasNote = false;
-    }
+  public void updateInputs(IntakeIOInputs inputs) {
+    inputs.isRunning = motor.get() != 0.0;
+  }
+
+  @Override
+  public void run() {
+    motor.set(0.75);
+  }
+
+  @Override
+  public void stop() {
+    motor.stopMotor();
   }
 }
