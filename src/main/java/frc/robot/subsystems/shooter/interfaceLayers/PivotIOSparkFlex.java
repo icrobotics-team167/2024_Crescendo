@@ -24,8 +24,10 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.*;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import frc.robot.Robot;
 import frc.robot.util.SparkUtils;
 import java.util.Set;
 
@@ -36,7 +38,7 @@ public class PivotIOSparkFlex implements PivotIO {
   private final CANSparkFlex followerMotor;
   private final RelativeEncoder followerEncoder;
 
-  private final PIDController anglePIDController;
+  private final TrapezoidProfile angleMotionProfile;
 
   private final PIDController leaderPidController;
   private final ArmFeedforward leaderFFController;
@@ -76,10 +78,7 @@ public class PivotIOSparkFlex implements PivotIO {
         Set.of(SparkUtils.Sensor.INTEGRATED),
         false);
 
-    anglePIDController =
-        new PIDController(
-            1, // Radians/sec per radian of error
-            0, 0);
+    angleMotionProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(15, 30));
 
     leaderPidController =
         new PIDController(
@@ -113,8 +112,15 @@ public class PivotIOSparkFlex implements PivotIO {
 
     if (angleControl) {
       targetVelocity =
-          RadiansPerSecond.of(
-              anglePIDController.calculate(getAngle().getRadians(), targetAngle.getRadians()));
+          DegreesPerSecond.of(
+              angleMotionProfile.calculate(
+                      Robot.defaultPeriodSecs,
+                      new TrapezoidProfile.State(
+                          Radians.of(getAngle().getRadians()),
+                          DegreesPerSecond.of(leaderEncoder.getVelocity())),
+                      new TrapezoidProfile.State(
+                          Radians.of(targetAngle.getRadians()), RadiansPerSecond.of(0)))
+                  .velocity);
     }
     runMotor(targetVelocity);
 

@@ -47,6 +47,10 @@ public class Shooter {
     return pivot.getRestingPositionCommand();
   }
 
+  public Command getPivotVelSysIdCommand() {
+    return pivot.getPivotVelSysID();
+  }
+
   public void setPivotDefaultCommand(Command command) {
     pivot.setDefaultCommand(command);
   }
