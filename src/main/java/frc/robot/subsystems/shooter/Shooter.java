@@ -43,10 +43,6 @@ public class Shooter {
     return pivot.getManualOverrideCommand(pivotSupplier);
   }
 
-  public Command getPivotSysID() {
-    return pivot.getSysID();
-  }
-
   public void setPivotDefaultCommand(Command command) {
     pivot.setDefaultCommand(command);
   }

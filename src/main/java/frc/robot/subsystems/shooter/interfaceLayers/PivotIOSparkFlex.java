@@ -24,52 +24,86 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.units.*;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import frc.robot.Robot;
 import frc.robot.util.SparkUtils;
 import java.util.Set;
 
 public class PivotIOSparkFlex implements PivotIO {
   private DutyCycleEncoder encoder;
-  private final CANSparkFlex motor;
-  private final RelativeEncoder motorEncoder;
-  private final TrapezoidProfile motionProfiler;
-  private final PIDController pidController;
-  private final ArmFeedforward ffController;
+  private final CANSparkFlex leaderMotor;
+  private final RelativeEncoder leaderEncoder;
+  private final CANSparkFlex followerMotor;
+  private final RelativeEncoder followerEncoder;
+
+  private final PIDController anglePIDController;
+
+  private final PIDController leaderPidController;
+  private final ArmFeedforward leaderFFController;
+  private final PIDController followerPidController;
+  private final ArmFeedforward followerFFController;
 
   public PivotIOSparkFlex() {
-
     encoder = new DutyCycleEncoder(0);
 
-    motionProfiler = new TrapezoidProfile(new Constraints(5, 10));
-    pidController = new PIDController(0, 0, 0);
-    ffController = new ArmFeedforward(0, 0, 0);
-    motor = new CANSparkFlex(20, MotorType.kBrushless);
-    motorEncoder = motor.getEncoder();
-    SparkUtils.configureSettings(false, IdleMode.kBrake, Amps.of(60), motor);
+    leaderMotor = new CANSparkFlex(20, MotorType.kBrushless);
+    leaderEncoder = leaderMotor.getEncoder();
+    SparkUtils.configureSettings(false, IdleMode.kBrake, Amps.of(60), leaderMotor);
+    leaderEncoder.setPositionConversionFactor(360.0 / 400.0);
+    leaderEncoder.setVelocityConversionFactor((360.0 / 400.0) / 60.0);
     SparkUtils.configureFrameStrategy(
-        motor,
+        leaderMotor,
         Set.of(
             SparkUtils.Data.POSITION,
             SparkUtils.Data.VELOCITY,
             SparkUtils.Data.VOLTAGE,
             SparkUtils.Data.CURRENT),
         Set.of(SparkUtils.Sensor.INTEGRATED),
-        true);
-    CANSparkFlex follower = new CANSparkFlex(19, MotorType.kBrushless);
-    follower.setIdleMode(IdleMode.kBrake);
-    follower.follow(motor, true);
-    follower.setSmartCurrentLimit(60);
-    SparkUtils.configureFollowerFrameStrategy(follower);
+        false);
+
+    followerMotor = new CANSparkFlex(19, MotorType.kBrushless);
+    followerEncoder = followerMotor.getEncoder();
+    SparkUtils.configureSettings(true, IdleMode.kBrake, Amps.of(60), followerMotor);
+    followerEncoder.setPositionConversionFactor(360.0 / 400.0);
+    followerEncoder.setVelocityConversionFactor((360.0 / 400.0) / 60.0);
+    SparkUtils.configureFrameStrategy(
+        followerMotor,
+        Set.of(
+            SparkUtils.Data.POSITION,
+            SparkUtils.Data.VELOCITY,
+            SparkUtils.Data.VOLTAGE,
+            SparkUtils.Data.CURRENT),
+        Set.of(SparkUtils.Sensor.INTEGRATED),
+        false);
+
+    anglePIDController =
+        new PIDController(
+            1, // Radians/sec per radian of error
+            0, 0);
+
+    leaderPidController =
+        new PIDController(
+            1, // Volts per degrees/sec of error
+            0, 0);
+    leaderFFController =
+        new ArmFeedforward(
+            0, // Volts to overcome static friction
+            0, // Volts to overcome gravity
+            0); // Volts per degrees/sec of setpoint
+    followerPidController =
+        new PIDController(
+            1, // Volts per degrees/sec of error
+            0, 0);
+    followerFFController =
+        new ArmFeedforward(
+            0, // Volts to overcome static friction
+            0, // Volts to overcome gravity
+            0); // Volts per degrees/sec of setpoint
   }
 
   private Rotation2d targetAngle = null;
-  private double controlVoltage = 0;
-  private boolean pidControl = false;
+  private Measure<Velocity<Angle>> targetVelocity = RadiansPerSecond.of(0);
+  private boolean angleControl = false;
 
   @Override
   public void updateInputs(PivotIOInputs inputs) {
@@ -77,56 +111,61 @@ public class PivotIOSparkFlex implements PivotIO {
     inputs.isTooFarDown = getAngle().getDegrees() <= 38; // TODO: Tune
     inputs.isTooFarUp = getAngle().getDegrees() >= 90; // TODO: Tune
 
-    double outputVoltage;
-    if (pidControl) {
-      // Possibly wack motion profile code...
-      // TODO: Check if this works
-      State motionProfileState =
-          motionProfiler.calculate(
-              Robot.defaultPeriodSecs,
-              new State(getAngle().getRotations(), motorEncoder.getVelocity() / 60),
-              new State(targetAngle.getRotations(), 0));
-      outputVoltage =
-          pidController.calculate(getAngle().getRotations(), motionProfileState.position)
-              + ffController.calculate(getAngle().getRadians(), motionProfileState.velocity);
-    } else {
-      outputVoltage = controlVoltage;
+    if (angleControl) {
+      targetVelocity =
+          RadiansPerSecond.of(
+              anglePIDController.calculate(getAngle().getRadians(), targetAngle.getRadians()));
     }
-    if ((outputVoltage > 0 && inputs.isTooFarUp) || (outputVoltage < 0 && inputs.isTooFarDown)) {
-      outputVoltage = 0;
-    }
-    motor.setVoltage(outputVoltage);
-    // motor.set(outputVoltage / 12);
+    runMotor(targetVelocity);
 
-    inputs.velocity = RPM.of(motorEncoder.getVelocity());
+    inputs.velocity = DegreesPerSecond.of(leaderEncoder.getVelocity());
 
-    inputs.appliedOutput = motor.get();
-    inputs.appliedVoltage = Volts.of(motor.getBusVoltage() * motor.get());
-    inputs.appliedCurrent = Amps.of(motor.getOutputCurrent());
+    inputs.appliedOutput = leaderMotor.get();
+    inputs.appliedVoltage = Volts.of(leaderMotor.getBusVoltage() * leaderMotor.get());
+    inputs.appliedCurrent = Amps.of(leaderMotor.getOutputCurrent());
   }
 
   @Override
   public void setTargetAngle(Rotation2d targetAngle) {
     this.targetAngle = targetAngle;
-    controlVoltage = 0;
-    pidControl = true;
+    angleControl = true;
   }
 
   @Override
-  public void setPivotControl(Measure<Voltage> rawVolts) {
-    this.targetAngle = null;
-    controlVoltage = rawVolts.in(Volts);
-    pidControl = false;
+  public void setPivotControl(Measure<Velocity<Angle>> velocity) {
+    targetVelocity = velocity;
+    angleControl = false;
+  }
+
+  @Override
+  public void setRawControl(Measure<Voltage> voltage) {
+    leaderMotor.setVoltage(voltage.in(Volts));
+    followerMotor.setVoltage(voltage.in(Volts));
   }
 
   @Override
   public void stop() {
-    setPivotControl(Volts.of(0));
+    setPivotControl(RadiansPerSecond.of(0));
   }
 
+  /** Moving average filter to smooth out the noisy input. */
   private LinearFilter angleFilter = LinearFilter.movingAverage(5);
+
+  /** Gets the angle of the pivot mechanism. */
   private Rotation2d getAngle() {
     double rawAngle = encoder.getAbsolutePosition() - 195.0 / 360.0;
     return Rotation2d.fromRotations(angleFilter.calculate(rawAngle));
+  }
+
+  /** Run the motors at the specified pivot velocity. */
+  private void runMotor(Measure<Velocity<Angle>> pivotVel) {
+    leaderMotor.setVoltage(
+        leaderPidController.calculate(leaderEncoder.getVelocity(), pivotVel.in(DegreesPerSecond))
+            + leaderFFController.calculate(getAngle().getRadians(), pivotVel.in(RadiansPerSecond)));
+    followerMotor.setVoltage(
+        followerPidController.calculate(
+                followerEncoder.getVelocity(), pivotVel.in(DegreesPerSecond))
+            + followerFFController.calculate(
+                getAngle().getRadians(), pivotVel.in(RadiansPerSecond)));
   }
 }

@@ -20,7 +20,6 @@ import static edu.wpi.first.wpilibj2.command.Commands.*;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.shooter.interfaceLayers.PivotIO;
 import frc.robot.subsystems.shooter.interfaceLayers.PivotIOInputsAutoLogged;
 import java.util.function.DoubleSupplier;
@@ -51,39 +50,11 @@ public class PivotSubsystem extends SubsystemBase {
 
   /** Gets a command to manually control the pivot angle. */
   public Command getManualOverrideCommand(DoubleSupplier controlSupplier) {
-    return run(() -> io.setPivotControl(Volts.of(controlSupplier.getAsDouble() * 12)));
+    return run(() -> io.setPivotControl(DegreesPerSecond.of(controlSupplier.getAsDouble() * 12)));
   }
 
   /** Gets the command to put the pivot in the resting position. */
   public Command getRestingPositionCommand() {
     return getPivotCommand(() -> Rotation2d.fromDegrees(15));
-  }
-
-  /** The sysid routine generator. */
-  private SysIdRoutine sysIDRoutine;
-
-  /** Gets the command to run system identification on the pivot. */
-  public Command getSysID() {
-    return sequence(
-        run(() -> io.setPivotControl(Volts.of(-2))).until(() -> inputs.isTooFarDown),
-        runOnce(
-            () ->
-                sysIDRoutine =
-                    new SysIdRoutine(
-                        new SysIdRoutine.Config(
-                            null,
-                            null,
-                            null,
-                            (state) ->
-                                Logger.recordOutput("Shooter/pivot/SysIDState", state.toString())),
-                        new SysIdRoutine.Mechanism(
-                            (voltage) -> io.setPivotControl(voltage), null, this))),
-        sysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward).until(() -> inputs.isTooFarUp),
-        waitSeconds(2),
-        sysIDRoutine.quasistatic(SysIdRoutine.Direction.kReverse).until(() -> inputs.isTooFarDown),
-        waitSeconds(2),
-        sysIDRoutine.dynamic(SysIdRoutine.Direction.kForward).until(() -> inputs.isTooFarUp),
-        waitSeconds(2),
-        sysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse).until(() -> inputs.isTooFarDown));
   }
 }
