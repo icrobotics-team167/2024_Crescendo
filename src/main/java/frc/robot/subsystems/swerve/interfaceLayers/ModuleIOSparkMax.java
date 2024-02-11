@@ -16,6 +16,7 @@ package frc.robot.subsystems.swerve.interfaceLayers;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
@@ -96,6 +97,18 @@ public class ModuleIOSparkMax implements ModuleIO {
    * </ul>
    */
   private final Queue<Double> azimuthPositionQueue;
+  /**
+   * The absolute position of the module azimuth, as measured by an absolute encoder. 0 should mean
+   * the module is facing forwards. Wraps [-0.5, 0.5)
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Rotations
+   *       </ul>
+   * </ul>
+   */
+  private final StatusSignal<Double> azimuthAbsolutePosition;
   /**
    * Due to the nature of mounting magnets for absolute encoders, it is practically impossible to
    * line up magnetic north with forwards on the module. This value is added to the raw detected
@@ -242,6 +255,9 @@ public class ModuleIOSparkMax implements ModuleIO {
     cancoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
     cancoderConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset;
     azimuthCANcoder.getConfigurator().apply(cancoderConfig);
+    azimuthAbsolutePosition = azimuthCANcoder.getAbsolutePosition();
+    azimuthAbsolutePosition.setUpdateFrequency(50);
+    azimuthCANcoder.optimizeBusUtilization();
 
     // Configure CAN frame usage, and disable any unused CAN frames.
     SparkUtils.configureFrameStrategy(
@@ -281,8 +297,9 @@ public class ModuleIOSparkMax implements ModuleIO {
     inputs.drivePosition = Meters.of(driveEncoder.getPosition());
     inputs.driveVelocity = MetersPerSecond.of(driveEncoder.getVelocity());
 
+    azimuthAbsolutePosition.refresh();
     inputs.azimuthAbsolutePosition =
-        Rotation2d.fromRotations(azimuthCANcoder.getAbsolutePosition().getValueAsDouble());
+        Rotation2d.fromRotations(azimuthAbsolutePosition.getValueAsDouble());
     // Rotation2d.fromRotations(azimuthRelativeEncoder.getPosition());
     azimuthRelativeEncoder.setPosition(inputs.azimuthAbsolutePosition.getRotations());
     inputs.azimuthVelocity = RotationsPerSecond.of(azimuthRelativeEncoder.getVelocity());
