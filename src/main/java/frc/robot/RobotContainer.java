@@ -125,14 +125,17 @@ public class RobotContainer {
     // primaryLeftStick.button(1).whileTrue(drivebase.getSysIDCTRE());
 
     secondaryRightStick.trigger().whileTrue(shooter.intake());
-    shooter.setPivotDefaultCommand(
-        shooter.getManualControlCommand(
-            () ->
-                MathUtils.inOutDeadband(
-                    -secondaryLeftStick.getY(),
-                    Driving.Deadbands.SECONDARY_LEFT_INNER,
-                    Driving.Deadbands.SECONDARY_LEFT_OUTER,
-                    Driving.SECONDARY_DRIVER_EXPONENT)));
+    secondaryLeftStick
+        .trigger()
+        .whileTrue(
+            shooter.getManualControlCommand(
+                () ->
+                    MathUtils.inOutDeadband(
+                        -secondaryLeftStick.getY(),
+                        Driving.Deadbands.SECONDARY_LEFT_INNER,
+                        Driving.Deadbands.SECONDARY_LEFT_OUTER,
+                        Driving.SECONDARY_DRIVER_EXPONENT)));
+    shooter.setPivotDefaultCommand(shooter.getPivotRestingPositionCommand());
   }
 
   /**

@@ -37,11 +37,11 @@ public interface FlywheelIO {
   /** Updates the set of loggable inputs. */
   public default void updateInputs(FlywheelIOInputs inputs) {}
 
-  /** Spins the shooter flywheel up. */
-  public default void run() {}
+  /** Spins the shooter flywheels up to shoot into the speaker. */
+  public default void runSpeaker() {}
 
-  /** Spins the shooter flywheel with a raw voltage. */
-  public default void runVoltage(Measure<Voltage> volts) {}
+  /** Spins the shooter flywheels up to shoot into the amp. */
+  public default void runAmp() {}
 
   /** Stops the shooter flywheel. */
   public default void stop() {}

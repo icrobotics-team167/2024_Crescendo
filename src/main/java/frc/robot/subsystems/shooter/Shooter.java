@@ -43,6 +43,10 @@ public class Shooter {
     return pivot.getManualOverrideCommand(pivotSupplier);
   }
 
+  public Command getPivotRestingPositionCommand() {
+    return pivot.getRestingPositionCommand();
+  }
+
   public void setPivotDefaultCommand(Command command) {
     pivot.setDefaultCommand(command);
   }
