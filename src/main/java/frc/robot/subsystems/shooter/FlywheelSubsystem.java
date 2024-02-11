@@ -18,6 +18,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIO;
 import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIOInputsAutoLogged;
+
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import org.littletonrobotics.junction.Logger;
 
 public class FlywheelSubsystem extends SubsystemBase {
@@ -48,5 +51,9 @@ public class FlywheelSubsystem extends SubsystemBase {
    */
   public Command getAmpShotCommand() {
     return run(io::runAmp).finallyDo(io::stop);
+  }
+
+  public boolean isUpToSpeed() {
+    return inputs.velocity.gte(RotationsPerSecond.of(5000));
   }
 }

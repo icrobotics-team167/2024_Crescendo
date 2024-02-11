@@ -59,7 +59,10 @@ public class RobotContainer {
                 new ModuleIOSparkMax(3));
         shooter =
             new Shooter(
-                new PivotIOSparkFlex(), new NoteDetectorIOTimeOfFlight(), new IntakeIOSparkMax());
+                new FlywheelIOSparkFlex(),
+                new PivotIOSparkFlex(),
+                new NoteDetectorIOTimeOfFlight(),
+                new IntakeIOSparkMax());
         break;
       case SIM:
         drivebase =
@@ -69,7 +72,9 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim());
-        shooter = new Shooter(new PivotIO() {}, new NoteDetectorIO() {}, new IntakeIO() {});
+        shooter =
+            new Shooter(
+                new FlywheelIO() {}, new PivotIO() {}, new NoteDetectorIO() {}, new IntakeIO() {});
         break;
       default:
         drivebase =
@@ -79,7 +84,9 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        shooter = new Shooter(new PivotIO() {}, new NoteDetectorIO() {}, new IntakeIO() {});
+        shooter =
+            new Shooter(
+                new FlywheelIO() {}, new PivotIO() {}, new NoteDetectorIO() {}, new IntakeIO() {});
     }
     // Configure the trigger bindings
     configureBindings();

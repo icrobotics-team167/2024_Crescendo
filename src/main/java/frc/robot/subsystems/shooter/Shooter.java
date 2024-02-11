@@ -14,7 +14,11 @@
 
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.wpilibj2.command.Commands.*;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIO;
 import frc.robot.subsystems.shooter.interfaceLayers.IntakeIO;
 import frc.robot.subsystems.shooter.interfaceLayers.NoteDetectorIO;
 import frc.robot.subsystems.shooter.interfaceLayers.PivotIO;
@@ -22,14 +26,15 @@ import java.util.function.DoubleSupplier;
 
 /** A class containing all the logic and commands to make the shooter mechanism work. */
 public class Shooter {
-  // private final FlywheelSubsystem flywheel;
+  private final FlywheelSubsystem flywheel;
   private final PivotSubsystem pivot;
   private final NoteDetectorSubsystem noteDetector;
   private final IntakeSubsystem intake;
 
-  public Shooter(PivotIO pivotIO, NoteDetectorIO noteDetectorIO, IntakeIO intakeIO) {
+  public Shooter(
+      FlywheelIO flywheelIO, PivotIO pivotIO, NoteDetectorIO noteDetectorIO, IntakeIO intakeIO) {
     // TODO: Implement flywheel and pivot interfaces
-    // flywheel = new FlywheelSubsystem(null);
+    flywheel = new FlywheelSubsystem(flywheelIO);
     pivot = new PivotSubsystem(pivotIO);
     noteDetector = new NoteDetectorSubsystem(noteDetectorIO);
     intake = new IntakeSubsystem(intakeIO);
@@ -45,6 +50,15 @@ public class Shooter {
 
   public Command getPivotRestingPositionCommand() {
     return pivot.getRestingPositionCommand();
+  }
+
+  public Command getAmpShotCommand() {
+    return parallel(
+            parallel(
+                pivot.getPivotCommand(() -> Rotation2d.fromDegrees(90)),
+                flywheel.getAmpShotCommand()),
+            waitUntil(flywheel::isUpToSpeed).andThen())
+        .until(() -> false); // TODO: Configure feeder
   }
 
   public Command getPivotVelSysIdCommand() {

@@ -59,6 +59,10 @@ public class PivotSubsystem extends SubsystemBase {
     return getPivotCommand(() -> Rotation2d.fromDegrees(PivotIO.MIN_ANGLE));
   }
 
+  public Rotation2d getAngle() {
+    return inputs.angle;
+  }
+
   private SysIdRoutine pivotVelSysIDroutine;
 
   public Command getPivotVelSysID() {
