@@ -14,13 +14,15 @@
 
 package frc.robot.subsystems.vision;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.Robot.Mode;
-import frc.robot.subsystems.vision.interfaceLayers.VisionIO;
-import frc.robot.subsystems.vision.interfaceLayers.VisionIOInputsAutoLogged;
-import frc.robot.subsystems.vision.interfaceLayers.VisionIOLimelight;
+import frc.robot.subsystems.vision.interfaceLayers.*;
 import java.util.function.BiConsumer;
 import org.littletonrobotics.junction.Logger;
 
@@ -35,7 +37,13 @@ public class VisionPoseEstimator extends SubsystemBase {
     if (Robot.currentMode == Mode.SIM) {
       cameras = new VisionIO[] {new VisionIO() {}};
     } else {
-      cameras = new VisionIO[] {new VisionIOLimelight("limelight")};
+      cameras =
+          new VisionIO[] {
+            new VisionIOPhoton(
+                "AprilTagLimeLight",
+                new Transform3d(
+                    0, 0, 0, new Rotation3d(0, Radians.convertFrom(-30, Degrees), 0))) // TODO: Tune
+          };
     }
 
     cameraData = new VisionIOInputsAutoLogged[cameras.length];
