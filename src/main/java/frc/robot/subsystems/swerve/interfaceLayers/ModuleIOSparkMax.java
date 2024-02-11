@@ -227,6 +227,13 @@ public class ModuleIOSparkMax implements ModuleIO {
     // Initialize encoders
     driveEncoder = driveSparkMax.getEncoder();
     azimuthRelativeEncoder = azimuthSparkMax.getEncoder();
+    var cancoderConfig = new CANcoderConfiguration();
+    cancoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
+    cancoderConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset;
+    azimuthCANcoder.getConfigurator().apply(cancoderConfig);
+    azimuthAbsolutePosition = azimuthCANcoder.getAbsolutePosition();
+    azimuthAbsolutePosition.setUpdateFrequency(50);
+    azimuthCANcoder.optimizeBusUtilization();
 
     // The motor output in rotations is multiplied by this factor.
     driveEncoder.setPositionConversionFactor(
@@ -240,7 +247,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     azimuthSparkMax.setInverted(Module.AZIMUTH_MOTOR_INVERTED);
     azimuthRelativeEncoder.setPositionConversionFactor(1.0 / Module.AZIMUTH_GEAR_RATIO);
     azimuthRelativeEncoder.setVelocityConversionFactor((1.0 / Module.AZIMUTH_GEAR_RATIO) / 60);
-    azimuthRelativeEncoder.setPosition(azimuthCANcoder.getAbsolutePosition().getValueAsDouble());
+    azimuthRelativeEncoder.setPosition(azimuthAbsolutePosition.getValueAsDouble());
     azimuthRelativeEncoder.setMeasurementPeriod(10);
     azimuthRelativeEncoder.setAverageDepth(2);
 
@@ -264,14 +271,6 @@ public class ModuleIOSparkMax implements ModuleIO {
     azimuthSparkMax.burnFlash();
     driveSparkMax.setCANTimeout(0);
     azimuthSparkMax.setCANTimeout(0);
-
-    var cancoderConfig = new CANcoderConfiguration();
-    cancoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
-    cancoderConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset;
-    azimuthCANcoder.getConfigurator().apply(cancoderConfig);
-    azimuthAbsolutePosition = azimuthCANcoder.getAbsolutePosition();
-    azimuthAbsolutePosition.setUpdateFrequency(50);
-    azimuthCANcoder.optimizeBusUtilization();
 
     // Configure CAN frame usage, and disable any unused CAN frames.
     SparkUtils.configureFrameStrategy(
