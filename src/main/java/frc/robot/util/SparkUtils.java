@@ -80,6 +80,7 @@ public class SparkUtils {
     int status4 = FRAME_STRATEGY_DISABLED; // alternate quadrature encoder | default 20
     int status5 = FRAME_STRATEGY_DISABLED; // duty cycle position | default 200
     int status6 = FRAME_STRATEGY_DISABLED; // duty cycle velocity | default 200
+    int status7 = FRAME_STRATEGY_DISABLED; // Iaccum | default 250
 
     if (sensors.contains(Sensor.INTEGRATED) && data.contains(Data.VELOCITY)
         || data.contains(Data.VOLTAGE)
@@ -124,6 +125,7 @@ public class SparkUtils {
     spark.setPeriodicFramePeriod(PeriodicFrame.kStatus4, status4);
     spark.setPeriodicFramePeriod(PeriodicFrame.kStatus5, status5);
     spark.setPeriodicFramePeriod(PeriodicFrame.kStatus6, status6);
+    spark.setPeriodicFramePeriod(PeriodicFrame.kStatus7, status7);
   }
 
   /**
