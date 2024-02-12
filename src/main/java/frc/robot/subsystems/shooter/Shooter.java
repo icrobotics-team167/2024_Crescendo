@@ -18,6 +18,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.shooter.interfaceLayers.FeederIO;
 import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIO;
 import frc.robot.subsystems.shooter.interfaceLayers.IntakeIO;
 import frc.robot.subsystems.shooter.interfaceLayers.NoteDetectorIO;
@@ -30,14 +31,20 @@ public class Shooter {
   private final PivotSubsystem pivot;
   private final NoteDetectorSubsystem noteDetector;
   private final IntakeSubsystem intake;
+  private final FeederSubsystem feeder;
 
   public Shooter(
-      FlywheelIO flywheelIO, PivotIO pivotIO, NoteDetectorIO noteDetectorIO, IntakeIO intakeIO) {
+      FeederIO feederIO,
+      FlywheelIO flywheelIO,
+      PivotIO pivotIO,
+      NoteDetectorIO noteDetectorIO,
+      IntakeIO intakeIO) {
     // TODO: Implement flywheel and pivot interfaces
     flywheel = new FlywheelSubsystem(flywheelIO);
     pivot = new PivotSubsystem(pivotIO);
     noteDetector = new NoteDetectorSubsystem(noteDetectorIO);
     intake = new IntakeSubsystem(intakeIO);
+    feeder = new FeederSubsystem(feederIO);
   }
 
   public Command intake() {
@@ -55,10 +62,16 @@ public class Shooter {
   public Command getAmpShotCommand() {
     return parallel(
             parallel(
+                // Get up to 90 degrees pivot
                 pivot.getPivotCommand(() -> Rotation2d.fromDegrees(90)),
+                // Spin up flywheels
                 flywheel.getAmpShotCommand()),
-            waitUntil(flywheel::isUpToSpeed).andThen())
-        .until(() -> false); // TODO: Configure feeder
+            // Once the flywheels are up to speed and the pivot is at the setpoint, feed the note
+            waitUntil(
+                    () ->
+                        flywheel.isUpToSpeed() && Math.abs(pivot.getAngle().getDegrees() - 90) < 2)
+                .andThen(feeder.getFeedCommand()))
+        .until(() -> !noteDetector.hasNote()); // Stop when note is launched
   }
 
   public Command getPivotVelSysIdCommand() {
@@ -67,5 +80,9 @@ public class Shooter {
 
   public void setPivotDefaultCommand(Command command) {
     pivot.setDefaultCommand(command);
+  }
+
+  public Command feed() {
+    return feeder.getFeedCommand();
   }
 }

@@ -53,6 +53,6 @@ public class FlywheelSubsystem extends SubsystemBase {
   }
 
   public boolean isUpToSpeed() {
-    return inputs.velocity.gte(RotationsPerSecond.of(5000));
+    return inputs.topVelocity.gte(RotationsPerSecond.of(5000));
   }
 }

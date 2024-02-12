@@ -14,6 +14,8 @@
 
 package frc.robot.subsystems.shooter.interfaceLayers;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -59,6 +61,22 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
             SparkUtils.Data.CURRENT),
         Set.of(SparkUtils.Sensor.INTEGRATED),
         false);
+  }
+
+  @Override
+  public void updateInputs(FlywheelIOInputs inputs) {
+    inputs.topPosition = Rotations.of(topFlywheel.getEncoder().getPosition());
+    inputs.topVelocity = RPM.of(topFlywheel.getEncoder().getVelocity());
+    inputs.topAppliedOutput = topFlywheel.getAppliedOutput();
+    inputs.topAppliedCurrent = Amps.of(topFlywheel.getOutputCurrent());
+    inputs.topAppliedVoltage =
+        Volts.of(topFlywheel.getAppliedOutput() * topFlywheel.getBusVoltage());
+    inputs.bottomPosition = Rotations.of(bottomFlywheel.getEncoder().getPosition());
+    inputs.bottomVelocity = RPM.of(bottomFlywheel.getEncoder().getVelocity());
+    inputs.bottomAppliedOutput = bottomFlywheel.getAppliedOutput();
+    inputs.bottomAppliedCurrent = Amps.of(bottomFlywheel.getOutputCurrent());
+    inputs.bottomAppliedVoltage =
+        Volts.of(bottomFlywheel.getAppliedOutput() * bottomFlywheel.getBusVoltage());
   }
 
   @Override

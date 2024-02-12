@@ -30,7 +30,7 @@ public class NoteDetectorSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Shooter/noteDetector/", inputs);
+    Logger.processInputs("Shooter/noteDetector", inputs);
   }
 
   public boolean hasNote() {

@@ -59,6 +59,7 @@ public class RobotContainer {
                 new ModuleIOSparkMax(3));
         shooter =
             new Shooter(
+                new FeederIOSparkFlex(),
                 new FlywheelIOSparkFlex(),
                 new PivotIOSparkFlex(),
                 new NoteDetectorIOTimeOfFlight(),
@@ -74,7 +75,11 @@ public class RobotContainer {
                 new ModuleIOSim());
         shooter =
             new Shooter(
-                new FlywheelIO() {}, new PivotIO() {}, new NoteDetectorIO() {}, new IntakeIO() {});
+                new FeederIO() {},
+                new FlywheelIO() {},
+                new PivotIO() {},
+                new NoteDetectorIO() {},
+                new IntakeIO() {});
         break;
       default:
         drivebase =
@@ -86,7 +91,11 @@ public class RobotContainer {
                 new ModuleIO() {});
         shooter =
             new Shooter(
-                new FlywheelIO() {}, new PivotIO() {}, new NoteDetectorIO() {}, new IntakeIO() {});
+                new FeederIO() {},
+                new FlywheelIO() {},
+                new PivotIO() {},
+                new NoteDetectorIO() {},
+                new IntakeIO() {});
     }
     // Configure the trigger bindings
     configureBindings();
@@ -131,7 +140,7 @@ public class RobotContainer {
     // primaryLeftStick.button(1).whileTrue(drivebase.getSysIDURCL());
     // primaryLeftStick.button(1).whileTrue(drivebase.getSysIDCTRE());
 
-    secondaryRightStick.trigger().whileTrue(shooter.intake());
+    secondaryRightStick.trigger().whileTrue(shooter.feed());
     secondaryLeftStick
         .trigger()
         .whileTrue(

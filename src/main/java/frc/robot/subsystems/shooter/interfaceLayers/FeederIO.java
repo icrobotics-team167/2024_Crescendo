@@ -34,9 +34,9 @@ public interface FeederIO {
     public Measure<Current> appliedCurrent = Amps.of(0);
   }
 
+  public default void updateInputs(FeederIOInputs inputs) {}
+
   public default void run() {}
 
   public default void stop() {}
-
-  public default void runVoltage() {}
 }

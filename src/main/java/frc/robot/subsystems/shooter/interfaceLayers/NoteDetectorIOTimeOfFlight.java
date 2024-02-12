@@ -15,12 +15,14 @@
 package frc.robot.subsystems.shooter.interfaceLayers;
 
 import com.playingwithfusion.TimeOfFlight;
+import com.playingwithfusion.TimeOfFlight.RangingMode;
 
 public class NoteDetectorIOTimeOfFlight implements NoteDetectorIO {
   private final TimeOfFlight sensor;
 
   public NoteDetectorIOTimeOfFlight() {
     sensor = new TimeOfFlight(32);
+    sensor.setRangingMode(RangingMode.Short, 40);
   }
 
   @Override

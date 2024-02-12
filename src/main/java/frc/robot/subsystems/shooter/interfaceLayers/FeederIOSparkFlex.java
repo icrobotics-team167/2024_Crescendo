@@ -33,6 +33,7 @@ public class FeederIOSparkFlex implements FeederIO {
     motor.setCANTimeout(250);
     motor.setIdleMode(IdleMode.kBrake);
     motor.setSmartCurrentLimit(60);
+    motor.enableVoltageCompensation(12);
     SparkUtils.configureFrameStrategy(
         motor,
         Set.of(
@@ -42,5 +43,22 @@ public class FeederIOSparkFlex implements FeederIO {
             SparkUtils.Data.CURRENT),
         Set.of(SparkUtils.Sensor.INTEGRATED),
         false);
+  }
+
+  @Override
+  public void updateInputs(FeederIOInputs inputs) {
+    inputs.appliedVoltage = Volts.of(motor.getBusVoltage() * motor.get());
+    inputs.appliedCurrent = Amps.of(motor.getOutputCurrent());
+    inputs.appliedOutput = motor.get();
+  }
+
+  @Override
+  public void run() {
+    motor.set(1);
+  }
+
+  @Override
+  public void stop() {
+    motor.set(0);
   }
 }
