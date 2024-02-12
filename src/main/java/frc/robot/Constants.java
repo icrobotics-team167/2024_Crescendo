@@ -14,11 +14,11 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.units.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-
-import static edu.wpi.first.units.Units.*;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -33,7 +33,7 @@ public final class Constants {
       DriverStation.getAlliance().isPresent()
           ? DriverStation.getAlliance().get() == Alliance.Red
           : false;
-  
+
   public static final class Field {
     public static final Measure<Distance> FIELD_LENGTH = Meters.of(16.54);
     public static final Measure<Distance> FIELD_WIDTH = Meters.of(8.21);
