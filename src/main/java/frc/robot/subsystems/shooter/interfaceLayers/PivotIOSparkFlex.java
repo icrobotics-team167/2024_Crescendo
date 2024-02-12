@@ -78,7 +78,10 @@ public class PivotIOSparkFlex implements PivotIO {
         Set.of(SparkUtils.Sensor.INTEGRATED),
         false);
 
-    angleMotionProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(15, 30));
+    angleMotionProfile =
+        new TrapezoidProfile(
+            new TrapezoidProfile.Constraints(
+                DegreesPerSecond.of(15), DegreesPerSecond.per(Second).of(30)));
 
     leaderPidController =
         new PIDController(
@@ -96,8 +99,8 @@ public class PivotIOSparkFlex implements PivotIO {
     followerFFController =
         new ArmFeedforward(
             0, // Volts to overcome static friction
-            0, // Volts to overcome gravity
-            0); // Volts per degrees/sec of setpoint
+            0, // Volts per cosine of angle
+            0); // Volts per radians/sec of velocity setpoint
   }
 
   private Rotation2d targetAngle = null;
@@ -112,7 +115,7 @@ public class PivotIOSparkFlex implements PivotIO {
 
     if (angleControl) {
       targetVelocity =
-          DegreesPerSecond.of(
+          RadiansPerSecond.of(
               angleMotionProfile.calculate(
                       Robot.defaultPeriodSecs,
                       new TrapezoidProfile.State(
