@@ -50,6 +50,8 @@ public class FeederIOSparkFlex implements FeederIO {
     inputs.appliedVoltage = Volts.of(motor.getBusVoltage() * motor.get());
     inputs.appliedCurrent = Amps.of(motor.getOutputCurrent());
     inputs.appliedOutput = motor.get();
+    inputs.position = Rotations.of(motor.getEncoder().getPosition());
+    inputs.velocity = RPM.of(motor.getEncoder().getVelocity());
   }
 
   @Override
