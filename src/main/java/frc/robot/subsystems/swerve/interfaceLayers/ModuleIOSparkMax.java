@@ -30,6 +30,7 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.*;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.swerve.Module;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.util.SparkUtils;
@@ -215,6 +216,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     // Configure motors
     driveSparkMax.restoreFactoryDefaults();
     azimuthSparkMax.restoreFactoryDefaults();
+    Timer.delay(0.1);
 
     // Set up a timeout for applying settings.
     driveSparkMax.setCANTimeout(250);
@@ -267,10 +269,13 @@ public class ModuleIOSparkMax implements ModuleIO {
     azimuthPIDController.setPositionPIDWrappingMaxInput(0.5);
     azimuthPIDController.setPositionPIDWrappingMinInput(-0.5);
 
+    Timer.delay(0.1);
     driveSparkMax.burnFlash();
     azimuthSparkMax.burnFlash();
-    driveSparkMax.setCANTimeout(0);
-    azimuthSparkMax.setCANTimeout(0);
+    Timer.delay(0.1);
+
+    driveSparkMax.setCANTimeout(50);
+    azimuthSparkMax.setCANTimeout(50);
 
     // Configure CAN frame usage, and disable any unused CAN frames.
     SparkUtils.configureFrameStrategy(
