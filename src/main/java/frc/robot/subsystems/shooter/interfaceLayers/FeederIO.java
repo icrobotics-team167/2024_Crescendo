@@ -14,4 +14,29 @@
 
 package frc.robot.subsystems.shooter.interfaceLayers;
 
-public interface FeederIO {}
+import static edu.wpi.first.units.Units.*;
+
+import edu.wpi.first.units.*;
+import org.littletonrobotics.junction.AutoLog;
+
+public interface FeederIO {
+  @AutoLog
+  public class FeederIOInputs {
+    /** The position of the shooter flywheel. */
+    public Measure<Angle> position = Rotations.of(0);
+    /** The velocity of the shooter flywheel. */
+    public Measure<Velocity<Angle>> velocity = RotationsPerSecond.of(0);
+    /** The total output applied to the motor by the closed loop control. */
+    public double appliedOutput = 0;
+    /** The voltage applied to the motor by the motor controller. */
+    public Measure<Voltage> appliedVoltage = Volts.of(0);
+    /** The current applied to the motor by the motor controller. */
+    public Measure<Current> appliedCurrent = Amps.of(0);
+  }
+
+  public default void run() {}
+
+  public default void stop() {}
+
+  public default void runVoltage() {}
+}

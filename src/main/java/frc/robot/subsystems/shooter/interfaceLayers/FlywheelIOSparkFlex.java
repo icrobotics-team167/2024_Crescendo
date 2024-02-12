@@ -14,12 +14,12 @@
 
 package frc.robot.subsystems.shooter.interfaceLayers;
 
-import static edu.wpi.first.units.Units.*;
-
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.util.SparkUtils;
+import java.util.Set;
 
 public class FlywheelIOSparkFlex implements FlywheelIO {
   private final CANSparkFlex topFlywheel;
@@ -28,8 +28,37 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
   public FlywheelIOSparkFlex() {
     topFlywheel = new CANSparkFlex(0, MotorType.kBrushless); // TODO: Configure
     bottomFlywheel = new CANSparkFlex(0, MotorType.kBrushless);
-    SparkUtils.configureSettings(false, IdleMode.kCoast, Amps.of(60), bottomFlywheel);
-    SparkUtils.configureSettings(true, IdleMode.kCoast, Amps.of(60), bottomFlywheel);
+
+    topFlywheel.restoreFactoryDefaults();
+    bottomFlywheel.restoreFactoryDefaults();
+    Timer.delay(0.1);
+    topFlywheel.setCANTimeout(250);
+    bottomFlywheel.setCANTimeout(250);
+
+    bottomFlywheel.setInverted(false);
+    bottomFlywheel.setIdleMode(IdleMode.kCoast);
+    bottomFlywheel.setSmartCurrentLimit(60);
+    topFlywheel.setInverted(true);
+    topFlywheel.setIdleMode(IdleMode.kCoast);
+    bottomFlywheel.setSmartCurrentLimit(60);
+    SparkUtils.configureFrameStrategy(
+        topFlywheel,
+        Set.of(
+            SparkUtils.Data.POSITION,
+            SparkUtils.Data.VELOCITY,
+            SparkUtils.Data.INPUT,
+            SparkUtils.Data.CURRENT),
+        Set.of(SparkUtils.Sensor.INTEGRATED),
+        false);
+    SparkUtils.configureFrameStrategy(
+        bottomFlywheel,
+        Set.of(
+            SparkUtils.Data.POSITION,
+            SparkUtils.Data.VELOCITY,
+            SparkUtils.Data.INPUT,
+            SparkUtils.Data.CURRENT),
+        Set.of(SparkUtils.Sensor.INTEGRATED),
+        false);
   }
 
   @Override

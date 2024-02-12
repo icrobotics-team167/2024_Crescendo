@@ -250,9 +250,11 @@ public class ModuleIOSparkMax implements ModuleIO {
     driveSparkMax.setCANTimeout(250);
     azimuthSparkMax.setCANTimeout(250);
 
-    SparkUtils.configureSettings(false, IdleMode.kBrake, Amps.of(100), driveSparkMax);
-    SparkUtils.configureSettings(
-        Module.AZIMUTH_MOTOR_INVERTED, IdleMode.kBrake, Amps.of(40), azimuthSparkMax);
+    driveSparkMax.setIdleMode(IdleMode.kBrake);
+    driveSparkMax.setSmartCurrentLimit(100);
+    azimuthSparkMax.setInverted(Module.AZIMUTH_MOTOR_INVERTED);
+    azimuthSparkMax.setIdleMode(IdleMode.kBrake);
+    azimuthSparkMax.setSmartCurrentLimit(40);
 
     // Initialize encoders
     driveEncoder = driveSparkMax.getEncoder();
@@ -311,12 +313,12 @@ public class ModuleIOSparkMax implements ModuleIO {
     // Configure CAN frame usage, and disable any unused CAN frames.
     SparkUtils.configureFrameStrategy(
         driveSparkMax,
-        Set.of(SparkUtils.Data.VELOCITY, SparkUtils.Data.VOLTAGE, SparkUtils.Data.CURRENT),
+        Set.of(SparkUtils.Data.VELOCITY, SparkUtils.Data.INPUT, SparkUtils.Data.CURRENT),
         Set.of(SparkUtils.Sensor.INTEGRATED),
         false);
     SparkUtils.configureFrameStrategy(
         azimuthSparkMax,
-        Set.of(SparkUtils.Data.VELOCITY, SparkUtils.Data.VOLTAGE, SparkUtils.Data.CURRENT),
+        Set.of(SparkUtils.Data.VELOCITY, SparkUtils.Data.INPUT, SparkUtils.Data.CURRENT),
         Set.of(SparkUtils.Sensor.INTEGRATED),
         false);
 

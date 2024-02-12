@@ -27,6 +27,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.*;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Robot;
 import frc.robot.util.SparkUtils;
 import java.util.Set;
@@ -49,8 +50,15 @@ public class PivotIOSparkFlex implements PivotIO {
     encoder = new DutyCycleEncoder(0);
 
     leaderMotor = new CANSparkFlex(20, MotorType.kBrushless);
+    followerMotor = new CANSparkFlex(19, MotorType.kBrushless);
+    leaderMotor.restoreFactoryDefaults();
+    followerMotor.restoreFactoryDefaults();
+    Timer.delay(0.1);
+    leaderMotor.setCANTimeout(250);
+    followerMotor.setCANTimeout(250);
     leaderEncoder = leaderMotor.getEncoder();
-    SparkUtils.configureSettings(false, IdleMode.kBrake, Amps.of(60), leaderMotor);
+    leaderMotor.setIdleMode(IdleMode.kBrake);
+    leaderMotor.setSmartCurrentLimit(60);
     leaderEncoder.setPositionConversionFactor(360.0 / 400.0);
     leaderEncoder.setVelocityConversionFactor((360.0 / 400.0) / 60.0);
     SparkUtils.configureFrameStrategy(
@@ -58,14 +66,15 @@ public class PivotIOSparkFlex implements PivotIO {
         Set.of(
             SparkUtils.Data.POSITION,
             SparkUtils.Data.VELOCITY,
-            SparkUtils.Data.VOLTAGE,
+            SparkUtils.Data.INPUT,
             SparkUtils.Data.CURRENT),
         Set.of(SparkUtils.Sensor.INTEGRATED),
         false);
 
-    followerMotor = new CANSparkFlex(19, MotorType.kBrushless);
     followerEncoder = followerMotor.getEncoder();
-    SparkUtils.configureSettings(true, IdleMode.kBrake, Amps.of(60), followerMotor);
+    followerMotor.setInverted(true);
+    followerMotor.setIdleMode(IdleMode.kBrake);
+    followerMotor.setSmartCurrentLimit(60);
     followerEncoder.setPositionConversionFactor(360.0 / 400.0);
     followerEncoder.setVelocityConversionFactor((360.0 / 400.0) / 60.0);
     SparkUtils.configureFrameStrategy(
@@ -73,7 +82,7 @@ public class PivotIOSparkFlex implements PivotIO {
         Set.of(
             SparkUtils.Data.POSITION,
             SparkUtils.Data.VELOCITY,
-            SparkUtils.Data.VOLTAGE,
+            SparkUtils.Data.INPUT,
             SparkUtils.Data.CURRENT),
         Set.of(SparkUtils.Sensor.INTEGRATED),
         false);
