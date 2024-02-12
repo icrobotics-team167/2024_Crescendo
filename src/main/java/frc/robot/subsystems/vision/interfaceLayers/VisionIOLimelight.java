@@ -14,8 +14,11 @@
 
 package frc.robot.subsystems.vision.interfaceLayers;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Constants.Field;
 import frc.robot.subsystems.vision.LimelightHelpers;
 
 public class VisionIOLimelight implements VisionIO {
@@ -38,6 +41,15 @@ public class VisionIOLimelight implements VisionIO {
     if (poseEstimate.equals(new Pose2d())) {
       return;
     }
+    // If the pose is outside the field, it's obviously a bad pose so stop.
+    if (poseEstimate.getX() < 0
+        || poseEstimate.getY() < 0
+        || poseEstimate.getX() > Field.FIELD_LENGTH.in(Meters)
+        || poseEstimate.getY() > Field.FIELD_WIDTH.in(Meters)) {
+      return;
+    }
+
+    // If all checks succeed, then write data.
     inputs.poseEstimate = poseEstimate;
     inputs.isNewData = true;
     inputs.timestamp =

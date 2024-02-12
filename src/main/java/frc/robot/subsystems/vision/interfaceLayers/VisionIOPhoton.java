@@ -14,10 +14,13 @@
 
 package frc.robot.subsystems.vision.interfaceLayers;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.Constants.Field;
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -67,6 +70,15 @@ public class VisionIOPhoton implements VisionIO {
         && botPoseEstimate.targetsUsed.get(0).getPoseAmbiguity() > 0.2) {
       return;
     }
+    // If the pose is outside the field, it's obviously a bad pose so stop.
+    if (botPoseEstimate.estimatedPose.getX() < 0
+        || botPoseEstimate.estimatedPose.getY() < 0
+        || botPoseEstimate.estimatedPose.getX() > Field.FIELD_LENGTH.in(Meters)
+        || botPoseEstimate.estimatedPose.getY() > Field.FIELD_WIDTH.in(Meters)) {
+      return;
+    }
+
+    // If all checks succeed, then write data.
     inputs.isNewData = true;
     inputs.poseEstimate = botPoseEstimate.estimatedPose.toPose2d();
     inputs.timestamp = botPoseEstimate.timestampSeconds;
