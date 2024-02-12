@@ -276,6 +276,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         drive_kP = 1;
         drive_kI = 0;
         drive_kD = 0;
+
         azimuth_kS = 0;
         azimuth_kV = 0;
         azimuth_kA = 2;

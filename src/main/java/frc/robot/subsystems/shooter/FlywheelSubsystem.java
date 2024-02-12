@@ -14,13 +14,12 @@
 
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIO;
 import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIOInputsAutoLogged;
-
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import org.littletonrobotics.junction.Logger;
 
 public class FlywheelSubsystem extends SubsystemBase {
@@ -46,8 +45,8 @@ public class FlywheelSubsystem extends SubsystemBase {
   }
 
   /**
-   * Gets the command to spin up the flywheel to shoot into the amp. Stops spinning when the
-   * command ends.
+   * Gets the command to spin up the flywheel to shoot into the amp. Stops spinning when the command
+   * ends.
    */
   public Command getAmpShotCommand() {
     return run(io::runAmp).finallyDo(io::stop);
