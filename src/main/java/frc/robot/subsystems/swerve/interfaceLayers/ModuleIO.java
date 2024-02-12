@@ -77,6 +77,17 @@ public interface ModuleIO {
   public default void setRawDrive(double rawUnits) {}
 
   /**
+   * Sets the raw open-loop output of the azimuth motor for system characterization purposes.
+   *
+   * <p>NOTE: Normally the units here would be volts, but when using TorqueControlFOC on TalonFX
+   * modules, the units are in amps.
+   *
+   * @param rawUnits The raw output, in the units used by the control scheme.
+   * @see SwerveSubsystem#getSysID
+   */
+  public default void setRawAzimuth(double rawUnits) {}
+
+  /**
    * Sets the target position of the azimuth's closed-loop control.
    *
    * @param position The target position.

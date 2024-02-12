@@ -16,6 +16,7 @@ package frc.robot.subsystems.swerve.interfaceLayers;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -27,10 +28,13 @@ import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.*;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Robot;
 import frc.robot.subsystems.swerve.Module;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.util.SparkUtils;
@@ -63,7 +67,11 @@ public class ModuleIOSparkMax implements ModuleIO {
   /** The FF constants of the drive motor. */
   private final SimpleMotorFeedforward driveFF;
   /** The PID controller for the azimuth motor. */
-  private final SparkPIDController azimuthPIDController;
+  private final PIDController azimuthPIDController;
+  /** The FF constants of the azimuth motor. */
+  private final SimpleMotorFeedforward azimuthFF;
+
+  private final TrapezoidProfile azimuthProfile;
   /** The absolute encoder for azimuth. */
   private final CANcoder azimuthCANcoder;
   /**
@@ -112,6 +120,17 @@ public class ModuleIOSparkMax implements ModuleIO {
    */
   private final StatusSignal<Double> azimuthAbsolutePosition;
   /**
+   * The velocity of the module azimuth. CCW+.
+   *
+   * <ul>
+   *   <li><b>Units:</b>
+   *       <ul>
+   *         <li>Rotations per second
+   *       </ul>
+   * </ul>
+   */
+  private final StatusSignal<Double> azimuthVelocity;
+  /**
    * Due to the nature of mounting magnets for absolute encoders, it is practically impossible to
    * line up magnetic north with forwards on the module. This value is added to the raw detected
    * position, such that 0 is actually forwards on the azimuth.
@@ -149,6 +168,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     // a PID controller from hitting its target, such as gravity for an arm. Factors like friction
     // and inertia can be accounted for using kS and kV.
     double drive_kD; // % Output per m/s^2 of error derivative
+    double azimuth_kS;
     double azimuth_kV; // Volts of additional voltage per rot/s of velocity
     double azimuth_kP; // % Output per rotation of error
     double azimuth_KD; // % Output per rotations/s of error derivative
@@ -163,7 +183,9 @@ public class ModuleIOSparkMax implements ModuleIO {
         drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
         drive_kP = 1;
         drive_kD = 0;
-        azimuth_kV = 2;
+
+        azimuth_kS = 0;
+        azimuth_kV = 4.35 / 12;
         azimuth_kP = 8;
         azimuth_KD = 0;
         break;
@@ -177,7 +199,9 @@ public class ModuleIOSparkMax implements ModuleIO {
         drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
         drive_kP = 1;
         drive_kD = 0;
-        azimuth_kV = 2;
+
+        azimuth_kS = 0;
+        azimuth_kV = 4.35 / 12;
         azimuth_kP = 8;
         azimuth_KD = 0;
         break;
@@ -191,7 +215,9 @@ public class ModuleIOSparkMax implements ModuleIO {
         drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
         drive_kP = 1;
         drive_kD = 0;
-        azimuth_kV = 2;
+
+        azimuth_kS = 0;
+        azimuth_kV = 4.35 / 12;
         azimuth_kP = 8;
         azimuth_KD = 0;
         break;
@@ -205,7 +231,9 @@ public class ModuleIOSparkMax implements ModuleIO {
         drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
         drive_kP = 1;
         drive_kD = 0;
-        azimuth_kV = 2;
+
+        azimuth_kS = 0;
+        azimuth_kV = 4.35 / 12;
         azimuth_kP = 8;
         azimuth_KD = 0;
         break;
@@ -229,13 +257,20 @@ public class ModuleIOSparkMax implements ModuleIO {
     // Initialize encoders
     driveEncoder = driveSparkMax.getEncoder();
     azimuthRelativeEncoder = azimuthSparkMax.getEncoder();
+
     var cancoderConfig = new CANcoderConfiguration();
     cancoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
     cancoderConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset;
     azimuthCANcoder.getConfigurator().apply(cancoderConfig);
     azimuthAbsolutePosition = azimuthCANcoder.getAbsolutePosition();
-    azimuthAbsolutePosition.setUpdateFrequency(50);
+    azimuthAbsolutePosition.setUpdateFrequency(Module.ODOMETRY_FREQUENCY);
+    azimuthVelocity = azimuthCANcoder.getVelocity();
+    azimuthVelocity.setUpdateFrequency(50);
     azimuthCANcoder.optimizeBusUtilization();
+    azimuthProfile =
+        new TrapezoidProfile(
+            new TrapezoidProfile.Constraints(
+                RotationsPerSecond.of(10), RotationsPerSecond.per(Second).of(50)));
 
     // The motor output in rotations is multiplied by this factor.
     driveEncoder.setPositionConversionFactor(
@@ -261,13 +296,9 @@ public class ModuleIOSparkMax implements ModuleIO {
         SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond)
             / SwerveSubsystem.MAX_LINEAR_ACCELERATION.in(MetersPerSecondPerSecond));
 
-    azimuthPIDController = azimuthSparkMax.getPIDController();
-    azimuthPIDController.setP(azimuth_kP);
-    azimuthPIDController.setD(azimuth_KD);
-    azimuthPIDController.setFF(azimuth_kV);
-    azimuthPIDController.setPositionPIDWrappingEnabled(true);
-    azimuthPIDController.setPositionPIDWrappingMaxInput(0.5);
-    azimuthPIDController.setPositionPIDWrappingMinInput(-0.5);
+    azimuthPIDController = new PIDController(azimuth_kP, 0, azimuth_KD);
+    azimuthPIDController.enableContinuousInput(-0.5, 0.5);
+    azimuthFF = new SimpleMotorFeedforward(azimuth_kS, azimuth_kV);
 
     Timer.delay(0.1);
     driveSparkMax.burnFlash();
@@ -292,13 +323,12 @@ public class ModuleIOSparkMax implements ModuleIO {
     // Set up high frequency odometry
     driveSparkMax.setPeriodicFramePeriod(
         PeriodicFrame.kStatus2, (int) (1000.0 / Module.ODOMETRY_FREQUENCY));
-    azimuthSparkMax.setPeriodicFramePeriod(
-        PeriodicFrame.kStatus2, (int) (1000.0 / Module.ODOMETRY_FREQUENCY));
     timestampQueue = SparkMaxOdometryThread.getInstance().makeTimestampQueue();
     drivePositionQueue =
         SparkMaxOdometryThread.getInstance().registerSignal(driveEncoder::getPosition);
     azimuthPositionQueue =
-        SparkMaxOdometryThread.getInstance().registerSignal(azimuthRelativeEncoder::getPosition);
+        PhoenixOdometryThread.getInstance()
+            .registerSignal(azimuthCANcoder, azimuthAbsolutePosition);
 
     driveSparkMax.burnFlash();
     azimuthSparkMax.burnFlash();
@@ -315,12 +345,12 @@ public class ModuleIOSparkMax implements ModuleIO {
     inputs.drivePosition = Meters.of(driveEncoder.getPosition());
     inputs.driveVelocity = MetersPerSecond.of(driveEncoder.getVelocity());
 
-    azimuthAbsolutePosition.refresh();
+    BaseStatusSignal.refreshAll(azimuthAbsolutePosition, azimuthVelocity);
     inputs.azimuthAbsolutePosition =
         Rotation2d.fromRotations(azimuthAbsolutePosition.getValueAsDouble());
     // Rotation2d.fromRotations(azimuthRelativeEncoder.getPosition());
     azimuthRelativeEncoder.setPosition(inputs.azimuthAbsolutePosition.getRotations());
-    inputs.azimuthVelocity = RotationsPerSecond.of(azimuthRelativeEncoder.getVelocity());
+    inputs.azimuthVelocity = RotationsPerSecond.of(azimuthVelocity.getValueAsDouble());
     inputs.azimuthAppliedOutput = driveSparkMax.getAppliedOutput();
     inputs.azimuthAppliedVoltage =
         Volts.of(inputs.azimuthAppliedOutput * driveSparkMax.getBusVoltage());
@@ -354,8 +384,24 @@ public class ModuleIOSparkMax implements ModuleIO {
   }
 
   @Override
+  public void setRawAzimuth(double voltage) {
+    azimuthSparkMax.setVoltage(voltage);
+  }
+
+  @Override
   public void setAzimuthPosition(Rotation2d position) {
-    azimuthPIDController.setReference(position.getRotations(), ControlType.kPosition);
+    BaseStatusSignal.refreshAll(azimuthAbsolutePosition, azimuthVelocity);
+    double velocitySetpoint =
+        azimuthProfile.calculate(
+                Robot.defaultPeriodSecs,
+                new TrapezoidProfile.State(
+                    Rotations.of(azimuthAbsolutePosition.getValueAsDouble()),
+                    RotationsPerSecond.of(azimuthVelocity.getValueAsDouble())),
+                new TrapezoidProfile.State(Rotations.of(position.getRotations()), RPM.of(0)))
+            .velocity;
+    azimuthSparkMax.setVoltage(
+        azimuthPIDController.calculate(azimuthVelocity.getValueAsDouble(), velocitySetpoint)
+            + azimuthFF.calculate(velocitySetpoint));
   }
 
   @Override
