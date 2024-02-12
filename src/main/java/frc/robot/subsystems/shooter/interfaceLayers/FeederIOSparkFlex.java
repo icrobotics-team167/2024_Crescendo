@@ -27,7 +27,7 @@ public class FeederIOSparkFlex implements FeederIO {
   private CANSparkFlex motor;
 
   public FeederIOSparkFlex() {
-    motor = new CANSparkFlex(0, MotorType.kBrushless);
+    motor = new CANSparkFlex(23, MotorType.kBrushless);
     motor.restoreFactoryDefaults();
     Timer.delay(0.1);
     motor.setCANTimeout(250);

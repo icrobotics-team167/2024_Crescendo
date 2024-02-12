@@ -28,8 +28,8 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
   private final CANSparkFlex bottomFlywheel;
 
   public FlywheelIOSparkFlex() {
-    topFlywheel = new CANSparkFlex(0, MotorType.kBrushless); // TODO: Configure
-    bottomFlywheel = new CANSparkFlex(0, MotorType.kBrushless);
+    topFlywheel = new CANSparkFlex(22, MotorType.kBrushless);
+    bottomFlywheel = new CANSparkFlex(21, MotorType.kBrushless);
 
     topFlywheel.restoreFactoryDefaults();
     bottomFlywheel.restoreFactoryDefaults();
