@@ -31,7 +31,7 @@ public class IntakeIOSparkMax implements IntakeIO {
 
   @Override
   public void run() {
-    motor.set(0.75);
+    motor.set(0.4);
   }
 
   @Override

@@ -182,6 +182,14 @@ public class Module {
 
     // Calculate positions for odometry
     int sampleCount = inputs.odometryTimestamps.length; // All signals are sampled together
+    sampleCount =
+        inputs.odometryAzimuthPositions.length > sampleCount
+            ? inputs.odometryAzimuthPositions.length
+            : sampleCount;
+    sampleCount =
+        inputs.odometryDrivePositionsMeters.length > sampleCount
+            ? inputs.odometryDrivePositionsMeters.length
+            : sampleCount;
     odometryPositions = new SwerveModulePosition[sampleCount];
     for (int i = 0; i < sampleCount; i++) {
       double positionMeters = inputs.odometryDrivePositionsMeters[i];

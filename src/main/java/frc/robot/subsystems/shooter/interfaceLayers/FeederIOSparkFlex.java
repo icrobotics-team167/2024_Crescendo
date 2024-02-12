@@ -30,6 +30,7 @@ public class FeederIOSparkFlex implements FeederIO {
     motor = new CANSparkFlex(23, MotorType.kBrushless);
     motor.restoreFactoryDefaults();
     Timer.delay(0.1);
+    motor.setInverted(true);
     motor.setCANTimeout(250);
     motor.setIdleMode(IdleMode.kBrake);
     motor.setSmartCurrentLimit(60);
@@ -56,7 +57,7 @@ public class FeederIOSparkFlex implements FeederIO {
 
   @Override
   public void run() {
-    motor.set(1);
+    motor.set(0.4);
   }
 
   @Override

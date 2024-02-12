@@ -180,12 +180,12 @@ public class ModuleIOSparkMax implements ModuleIO {
         absoluteEncoderOffset = -0.270263671875;
 
         drive_kS = 0;
-        drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
+        drive_kV = 0;
         drive_kP = 1;
         drive_kD = 0;
 
         azimuth_kS = 0;
-        azimuth_kV = 4.35 / 12;
+        azimuth_kV = 0;
         azimuth_kP = 1;
         azimuth_KD = 0;
         break;
@@ -196,12 +196,12 @@ public class ModuleIOSparkMax implements ModuleIO {
         absoluteEncoderOffset = -0.106689453125;
 
         drive_kS = 0;
-        drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
+        drive_kV = 0;
         drive_kP = 1;
         drive_kD = 0;
 
         azimuth_kS = 0;
-        azimuth_kV = 4.35 / 12;
+        azimuth_kV = 0;
         azimuth_kP = 1;
         azimuth_KD = 0;
         break;
@@ -212,12 +212,12 @@ public class ModuleIOSparkMax implements ModuleIO {
         absoluteEncoderOffset = -0.1962890625;
 
         drive_kS = 0;
-        drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
+        drive_kV = 0;
         drive_kP = 1;
         drive_kD = 0;
 
         azimuth_kS = 0;
-        azimuth_kV = 4.35 / 12;
+        azimuth_kV = 0;
         azimuth_kP = 1;
         azimuth_KD = 0;
         break;
@@ -228,12 +228,12 @@ public class ModuleIOSparkMax implements ModuleIO {
         absoluteEncoderOffset = 0.481201171875;
 
         drive_kS = 0;
-        drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
+        drive_kV = 0;
         drive_kP = 1;
         drive_kD = 0;
 
         azimuth_kS = 0;
-        azimuth_kV = 4.35 / 12;
+        azimuth_kV = 0;
         azimuth_kP = 1;
         azimuth_KD = 0;
         break;
@@ -265,7 +265,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     cancoderConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset;
     azimuthCANcoder.getConfigurator().apply(cancoderConfig);
     azimuthAbsolutePosition = azimuthCANcoder.getAbsolutePosition();
-    azimuthAbsolutePosition.setUpdateFrequency(Module.ODOMETRY_FREQUENCY);
+    azimuthAbsolutePosition.setUpdateFrequency(50);
     azimuthVelocity = azimuthCANcoder.getVelocity();
     azimuthVelocity.setUpdateFrequency(50);
     azimuthCANcoder.optimizeBusUtilization();
@@ -329,8 +329,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     drivePositionQueue =
         SparkMaxOdometryThread.getInstance().registerSignal(driveEncoder::getPosition);
     azimuthPositionQueue =
-        PhoenixOdometryThread.getInstance()
-            .registerSignal(azimuthCANcoder, azimuthAbsolutePosition);
+        SparkMaxOdometryThread.getInstance().registerSignal(azimuthRelativeEncoder::getPosition);
 
     driveSparkMax.burnFlash();
     azimuthSparkMax.burnFlash();

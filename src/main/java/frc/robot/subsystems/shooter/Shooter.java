@@ -51,6 +51,11 @@ public class Shooter {
     return intake.getIntakeCommand();
   }
 
+  public Command autoIntake() {
+    return parallel(intake.getIntakeCommand(), feeder.getFeedCommand())
+        .until(noteDetector::hasNote);
+  }
+
   public Command getManualControlCommand(DoubleSupplier pivotSupplier) {
     return pivot.getManualOverrideCommand(pivotSupplier);
   }
