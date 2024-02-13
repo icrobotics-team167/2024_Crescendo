@@ -34,12 +34,14 @@ public interface PivotIO {
     public boolean isTooFarDown = false;
     /** The velocity of the pivot mechanism. */
     public Measure<Velocity<Angle>> velocity = DegreesPerSecond.of(0);
-    /** The total output applied to the motor by the closed loop control. */
-    public double appliedOutput = 0;
     /** The voltage applied to the motor by the motor controller. */
-    public Measure<Voltage> appliedVoltage = Volts.of(0);
+    public Measure<Voltage> leaderAppliedVoltage = Volts.of(0);
     /** The current applied to the motor by the motor controller. */
-    public Measure<Current> appliedCurrent = Amps.of(0);
+    public Measure<Current> leaderAppliedCurrent = Amps.of(0);
+    /** The voltage applied to the motor by the motor controller. */
+    public Measure<Voltage> followerAppliedVoltage = Volts.of(0);
+    /** The current applied to the motor by the motor controller. */
+    public Measure<Current> followerAppliedCurrent = Amps.of(0);
   }
 
   /** Updates the set of loggable inputs. */
