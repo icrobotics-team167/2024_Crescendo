@@ -48,14 +48,13 @@ public class Shooter {
   }
 
   public Command intake() {
-    System.out.println("running no sight");
     return intake.getIntakeCommand();
   }
 
   public Command autoIntake() {
-    System.out.println("runnong sight");
     return parallel(intake.getIntakeCommand(), feeder.getFeedCommand())
-        .until(noteDetector::hasNote);
+        .until(noteDetector::hasNote)
+        .andThen(feeder.getUnfeedCommand().withTimeout(0.2));
   }
 
   public Command getManualControlCommand(DoubleSupplier pivotSupplier) {

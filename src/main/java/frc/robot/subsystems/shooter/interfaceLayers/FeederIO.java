@@ -36,7 +36,9 @@ public interface FeederIO {
 
   public default void updateInputs(FeederIOInputs inputs) {}
 
-  public default void run() {}
+  public default void runForwards() {}
+
+  public default void runReverse() {}
 
   public default void stop() {}
 }

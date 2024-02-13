@@ -56,12 +56,17 @@ public class FeederIOSparkFlex implements FeederIO {
   }
 
   @Override
-  public void run() {
-    motor.set(0.1);
+  public void runForwards() {
+    motor.set(0.35);
+  }
+
+  @Override
+  public void runReverse() {
+    motor.set(-0.2);
   }
 
   @Override
   public void stop() {
-    motor.set(0);
+    motor.stopMotor();
   }
 }

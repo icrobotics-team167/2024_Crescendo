@@ -35,6 +35,10 @@ public class FeederSubsystem extends SubsystemBase {
   }
 
   public Command getFeedCommand() {
-    return startEnd(io::run, io::stop);
+    return startEnd(io::runForwards, io::stop);
+  }
+
+  public Command getUnfeedCommand() {
+    return startEnd(io::runReverse, io::stop);
   }
 }

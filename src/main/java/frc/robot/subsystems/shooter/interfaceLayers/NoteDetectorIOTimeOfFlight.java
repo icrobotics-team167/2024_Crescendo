@@ -35,7 +35,7 @@ public class NoteDetectorIOTimeOfFlight implements NoteDetectorIO {
   public void updateInputs(NoteDetectorIOInputs inputs) {
     if (sensor.isRangeValid()) {
       inputs.detectedDistance = Millimeters.of(rangeFilter.calculate(sensor.getRange()));
-      inputs.hasNote = inputs.detectedDistance.lte(Inches.of(12)); // TODO: Tune
+      inputs.hasNote = inputs.detectedDistance.lte(Inches.of(10)); // TODO: Tune
     } else {
       inputs.hasNote = false;
     }
