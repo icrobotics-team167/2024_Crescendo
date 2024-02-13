@@ -14,6 +14,9 @@
 
 package frc.robot.subsystems.shooter.interfaceLayers;
 
+import static edu.wpi.first.units.Units.Inches;
+
+import edu.wpi.first.units.*;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface NoteDetectorIO {
@@ -22,7 +25,7 @@ public interface NoteDetectorIO {
     /** If the detector sees a note or not. */
     public boolean hasNote = false;
     /** The distance from an object that the detector has measured. */
-    public double detectedDistance = 0;
+    public Measure<Distance> detectedDistance = Inches.of(-1);
   }
 
   /** Updates the set of loggable inputs. */

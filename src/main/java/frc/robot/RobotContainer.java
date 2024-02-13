@@ -140,7 +140,7 @@ public class RobotContainer {
     // primaryLeftStick.button(1).whileTrue(drivebase.getSysIDURCL());
     // primaryLeftStick.button(1).whileTrue(drivebase.getSysIDCTRE());
 
-    secondaryRightStick.trigger().whileTrue(shooter.autoIntake());
+    secondaryRightStick.trigger().whileTrue(shooter.intake());
     secondaryLeftStick
         .trigger()
         .whileTrue(

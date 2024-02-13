@@ -14,24 +14,29 @@
 
 package frc.robot.subsystems.shooter.interfaceLayers;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Millimeters;
+
 import com.playingwithfusion.TimeOfFlight;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
+import edu.wpi.first.math.filter.LinearFilter;
 
 public class NoteDetectorIOTimeOfFlight implements NoteDetectorIO {
   private final TimeOfFlight sensor;
 
   public NoteDetectorIOTimeOfFlight() {
     sensor = new TimeOfFlight(32);
-    sensor.setRangingMode(RangingMode.Short, 40);
+    sensor.setRangingMode(RangingMode.Short, 24);
   }
+
+  LinearFilter rangeFilter = LinearFilter.movingAverage(5);
 
   @Override
   public void updateInputs(NoteDetectorIOInputs inputs) {
     if (sensor.isRangeValid()) {
-      inputs.detectedDistance = sensor.getRange();
-      inputs.hasNote = inputs.detectedDistance < 50; // TODO: Tune
+      inputs.detectedDistance = Millimeters.of(rangeFilter.calculate(sensor.getRange()));
+      inputs.hasNote = inputs.detectedDistance.lte(Inches.of(12)); // TODO: Tune
     } else {
-      inputs.detectedDistance = -1;
       inputs.hasNote = false;
     }
   }
