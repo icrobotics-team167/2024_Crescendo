@@ -29,7 +29,7 @@ import edu.wpi.first.units.*;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Robot;
-import frc.robot.util.MotorUtils.SparkUtils;
+import frc.robot.util.motorUtils.SparkUtils;
 import java.util.Set;
 
 public class PivotIOSparkFlex implements PivotIO {
