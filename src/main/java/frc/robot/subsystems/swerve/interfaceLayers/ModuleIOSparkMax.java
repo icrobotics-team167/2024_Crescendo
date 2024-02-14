@@ -37,7 +37,7 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Robot;
 import frc.robot.subsystems.swerve.Module;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
-import frc.robot.util.SparkUtils;
+import frc.robot.util.MotorUtils.SparkUtils;
 import java.util.Queue;
 import java.util.Set;
 
