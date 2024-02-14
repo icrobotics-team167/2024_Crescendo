@@ -20,7 +20,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.util.SparkUtils;
+import frc.robot.util.MotorUtils.SparkUtils;
 import java.util.Set;
 
 public class FeederIOSparkFlex implements FeederIO {

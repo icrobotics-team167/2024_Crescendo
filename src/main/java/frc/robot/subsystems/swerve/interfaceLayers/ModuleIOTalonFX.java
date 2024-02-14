@@ -36,7 +36,6 @@ import edu.wpi.first.units.*;
 import frc.robot.subsystems.swerve.Module;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.util.MotorUtils.TalonUtils;
-
 import java.util.Queue;
 
 /**
