@@ -17,45 +17,53 @@ package frc.robot.subsystems.vision.interfaceLayers;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.Constants.Field;
-import frc.robot.subsystems.vision.LimelightHelpers;
+import org.littletonrobotics.junction.Logger;
 
 public class VisionIOLimelight implements VisionIO {
-  private String name = "";
-
-  public VisionIOLimelight(String name) {
-    this.name = name;
-  }
-
   @Override
   public void updateInputs(VisionIOInputs inputs) {
     inputs.isNewData = false;
     // If the Limelight doesn't see any tags to track, stop.
-    if (!LimelightHelpers.getTV(name)) {
+    if (hasTracking()) {
       return;
     }
-    Pose2d poseEstimate = LimelightHelpers.getBotPose2d_wpiBlue(name);
-    // If the Limelight returns a blank pose, stop.
-    // TODO: This might be redundant?
-    if (poseEstimate.equals(new Pose2d())) {
-      return;
-    }
+
+    double[] poseArray =
+        NetworkTableInstance.getDefault()
+            .getTable("limelight")
+            .getEntry("botpose_wpiblue")
+            .getDoubleArray(new double[6]);
+
     // If the pose is outside the field, it's obviously a bad pose so stop.
-    if (poseEstimate.getX() < 0
-        || poseEstimate.getY() < 0
-        || poseEstimate.getX() > Field.FIELD_LENGTH.in(Meters)
-        || poseEstimate.getY() > Field.FIELD_WIDTH.in(Meters)) {
+    if (poseArray[0] < 0
+        || poseArray[1] < 0
+        || poseArray[0] > Field.FIELD_LENGTH.in(Meters)
+        || poseArray[1] > Field.FIELD_WIDTH.in(Meters)) {
       return;
     }
 
     // If all checks succeed, then write data.
-    inputs.poseEstimate = poseEstimate;
+    inputs.poseEstimate =
+        new Pose2d(poseArray[0], poseArray[1], Rotation2d.fromDegrees(poseArray[5]));
     inputs.isNewData = true;
-    inputs.timestamp =
-        Timer.getFPGATimestamp()
-            - ((LimelightHelpers.getLatency_Capture(name)
-                    + LimelightHelpers.getLatency_Pipeline(name))
-                / 1000);
+    inputs.timestamp = getTimeStamp();
+  }
+
+  private double getTimeStamp() {
+    return Logger.getRealTimestamp()
+        + ((NetworkTableInstance.getDefault().getTable("limelight").getEntry("tl").getDouble(0)
+                + NetworkTableInstance.getDefault()
+                    .getTable("limelight")
+                    .getEntry("cl")
+                    .getDouble(0))
+            / 1000.0);
+  }
+
+  private boolean hasTracking() {
+    return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0)
+        == 1.0;
   }
 }
