@@ -115,8 +115,6 @@ public class Module {
    * </ul>
    */
   private double speedSetpoint = 0;
-  /** If the drive motor's control mode is in closed-loop velocity control, or open loop control. */
-  private boolean velocityControl = true;
 
   /**
    * The current states of the swerve modules.
@@ -160,24 +158,38 @@ public class Module {
     io.updateInputs(inputs);
   }
 
+  private enum DRIVE_MODE {
+    CLOSEDLOOP,
+    RAWDRIVE,
+    RAWAZIMUTH
+  }
+
+  private DRIVE_MODE driveMode = DRIVE_MODE.CLOSEDLOOP;
+
   /** Set the desired positions of the modules every robot tick. */
   public void periodic() {
     Logger.processInputs("Drive/" + getNameFromIndex(index) + " Module", inputs);
 
-    // Run closed loop turn control
-    io.setAzimuthPosition(angleSetpoint);
-
-    if (velocityControl) {
-      // Scale velocity based on azimuth error
-      // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
-      // towards the setpoint, its velocity should increase. This is achieved by
-      // taking the component of the velocity in the direction of the setpoint.
-      double adjustedSpeedSetpoint =
-          speedSetpoint
-              * Math.cos(inputs.azimuthAbsolutePosition.getRadians() - angleSetpoint.getRadians());
-      io.setDriveVelocity(MetersPerSecond.of(adjustedSpeedSetpoint));
-    } else {
-      io.setRawDrive(speedSetpoint);
+    switch (driveMode) {
+      case CLOSEDLOOP:
+        // Scale velocity based on azimuth error
+        // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
+        // towards the setpoint, its velocity should increase. This is achieved by
+        // taking the component of the velocity in the direction of the setpoint.
+        double adjustedSpeedSetpoint =
+            speedSetpoint
+                * Math.cos(
+                    inputs.azimuthAbsolutePosition.getRadians() - angleSetpoint.getRadians());
+        io.setDriveVelocity(MetersPerSecond.of(adjustedSpeedSetpoint));
+        io.setAzimuthPosition(angleSetpoint);
+        break;
+      case RAWAZIMUTH:
+        io.setDriveVelocity(MetersPerSecond.of(0));
+        io.setRawAzimuth(angleSetpoint.getRadians());
+        break;
+      case RAWDRIVE:
+        io.setRawDrive(speedSetpoint);
+        io.setAzimuthPosition(new Rotation2d());
     }
 
     // Calculate positions for odometry
@@ -200,7 +212,7 @@ public class Module {
 
   /** Runs the module with the specified setpoint state. Returns the optimized state. */
   public SwerveModuleState runSetpoint(SwerveModuleState state) {
-    velocityControl = true;
+    driveMode = DRIVE_MODE.CLOSEDLOOP;
     // Optimize state based on current angle
     // Controllers run in "periodic" when the setpoint is not null
     var optimizedState = SwerveModuleState.optimize(state, getAngle());
@@ -212,10 +224,14 @@ public class Module {
     return optimizedState;
   }
 
-  public void runCharacterization(double voltage) {
-    angleSetpoint = new Rotation2d();
-    velocityControl = false;
+  public void runDriveCharacterization(double voltage) {
+    driveMode = DRIVE_MODE.RAWDRIVE;
     speedSetpoint = voltage;
+  }
+
+  public void runAzimuthCharacterization(double voltage) {
+    driveMode = DRIVE_MODE.RAWAZIMUTH;
+    angleSetpoint = new Rotation2d(voltage);
   }
 
   /** Disables all outputs to motors. */

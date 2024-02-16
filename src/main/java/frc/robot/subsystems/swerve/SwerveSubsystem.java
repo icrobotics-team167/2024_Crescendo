@@ -371,7 +371,7 @@ public class SwerveSubsystem extends SubsystemBase {
   SysIdRoutine driveSysIDRoutine;
 
   /** Command factory for running system identification using URCL logging. For REV users. */
-  public Command getSysIDURCL() {
+  public Command getDriveSysIDURCL() {
     return sequence(
         runOnce(
             () ->
@@ -382,7 +382,7 @@ public class SwerveSubsystem extends SubsystemBase {
                             null,
                             null,
                             (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
-                        new Mechanism((voltage) -> runCharacterization(voltage), null, this))),
+                        new Mechanism((voltage) -> runDriveCharacterization(voltage), null, this))),
         driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
         waitSeconds(2),
         driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kReverse),
@@ -390,6 +390,30 @@ public class SwerveSubsystem extends SubsystemBase {
         driveSysIDRoutine.dynamic(SysIdRoutine.Direction.kForward),
         waitSeconds(2),
         driveSysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse));
+  }
+
+  SysIdRoutine azimuthSysIDRoutine;
+
+  /** Command factory for running system identification using URCL logging. For REV users. */
+  public Command getAzimuthSysIDURCL() {
+    return sequence(
+        runOnce(
+            () ->
+                azimuthSysIDRoutine =
+                    new SysIdRoutine(
+                        new Config(
+                            null,
+                            null,
+                            null,
+                            (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
+                        new Mechanism((voltage) -> runDriveCharacterization(voltage), null, this))),
+        azimuthSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
+        waitSeconds(2),
+        azimuthSysIDRoutine.quasistatic(SysIdRoutine.Direction.kReverse),
+        waitSeconds(2),
+        azimuthSysIDRoutine.dynamic(SysIdRoutine.Direction.kForward),
+        waitSeconds(2),
+        azimuthSysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse));
   }
 
   /**
@@ -415,7 +439,8 @@ public class SwerveSubsystem extends SubsystemBase {
                             null,
                             null,
                             (state) -> SignalLogger.writeString("SysIDState", state.toString())),
-                        new Mechanism((voltage) -> runCharacterization(voltage), null, this))),
+                        new Mechanism(
+                            (voltage) -> runAzimuthCharacterization(voltage), null, this))),
         driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
         runOnce(() -> stop()),
         waitSeconds(2),
@@ -434,9 +459,15 @@ public class SwerveSubsystem extends SubsystemBase {
    *
    * @param voltage The commanded voltage.
    */
-  private void runCharacterization(Measure<Voltage> voltage) {
+  private void runDriveCharacterization(Measure<Voltage> voltage) {
     for (int i = 0; i < 4; i++) {
-      modules[i].runCharacterization(voltage.baseUnitMagnitude());
+      modules[i].runDriveCharacterization(voltage.baseUnitMagnitude());
+    }
+  }
+
+  private void runAzimuthCharacterization(Measure<Voltage> voltage) {
+    for (int i = 0; i < 4; i++) {
+      modules[i].runDriveCharacterization(voltage.baseUnitMagnitude());
     }
   }
 }

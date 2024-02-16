@@ -181,12 +181,12 @@ public class ModuleIOSparkMax implements ModuleIO {
 
         drive_kS = 0;
         drive_kV = 0;
-        drive_kP = 1;
+        drive_kP = 0;
         drive_kD = 0;
 
         azimuth_kS = 0;
         azimuth_kV = 0;
-        azimuth_kP = 0.1;
+        azimuth_kP = 0;
         azimuth_KD = 0;
         break;
       case 1: // Front Right
@@ -197,12 +197,12 @@ public class ModuleIOSparkMax implements ModuleIO {
 
         drive_kS = 0;
         drive_kV = 0;
-        drive_kP = 1;
+        drive_kP = 0;
         drive_kD = 0;
 
         azimuth_kS = 0;
         azimuth_kV = 0;
-        azimuth_kP = 0.1;
+        azimuth_kP = 0;
         azimuth_KD = 0;
         break;
       case 2: // Back Left
@@ -213,12 +213,12 @@ public class ModuleIOSparkMax implements ModuleIO {
 
         drive_kS = 0;
         drive_kV = 0;
-        drive_kP = 1;
+        drive_kP = 0;
         drive_kD = 0;
 
         azimuth_kS = 0;
         azimuth_kV = 0;
-        azimuth_kP = 0.1;
+        azimuth_kP = 0;
         azimuth_KD = 0;
         break;
       case 3: // Back Right
@@ -229,12 +229,12 @@ public class ModuleIOSparkMax implements ModuleIO {
 
         drive_kS = 0;
         drive_kV = 0;
-        drive_kP = 1;
+        drive_kP = 0;
         drive_kD = 0;
 
         azimuth_kS = 0;
         azimuth_kV = 0;
-        azimuth_kP = 0.1;
+        azimuth_kP = 0;
         azimuth_KD = 0;
         break;
       default:
