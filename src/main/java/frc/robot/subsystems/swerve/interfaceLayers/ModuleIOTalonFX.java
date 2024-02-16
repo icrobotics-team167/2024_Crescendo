@@ -497,23 +497,34 @@ public class ModuleIOTalonFX implements ModuleIO {
    * The control request for accelerating the drive motor up to a specified wheel velocity. Is
    * mutable.
    */
-  MotionMagicVelocityTorqueCurrentFOC driveControlRequest =
+  MotionMagicVelocityTorqueCurrentFOC driveVelocityControlRequest =
       new MotionMagicVelocityTorqueCurrentFOC(0);
 
   @Override
   public void setDriveVelocity(Measure<Velocity<Distance>> velocity) {
-    driveTalon.setControl(driveControlRequest);
+    driveTalon.setControl(driveVelocityControlRequest);
   }
 
   /**
    * The control request for accelerating the drive motor using a raw amperage value. Is mutable.
    */
-  TorqueCurrentFOC rawCurrentControlRequest = new TorqueCurrentFOC(0);
+  TorqueCurrentFOC driveCurrentControlRequest = new TorqueCurrentFOC(0);
 
   @Override
   public void setRawDrive(double rawUnits) {
+    driveCurrentControlRequest.Output = rawUnits;
+    driveTalon.setControl(driveCurrentControlRequest);
+  }
+
+  /**
+   * The control request for accelerating the azimuth motor using a raw amperage value. Is mutable.
+   */
+  TorqueCurrentFOC rawCurrentControlRequest = new TorqueCurrentFOC(0);
+
+  @Override
+  public void setRawAzimuth(double rawUnits) {
     rawCurrentControlRequest.Output = rawUnits;
-    driveTalon.setControl(rawCurrentControlRequest);
+    azimuthTalon.setControl(rawCurrentControlRequest);
   }
 
   /** The control request for moving the azimuth motor to a specified position. Is mutable. */
