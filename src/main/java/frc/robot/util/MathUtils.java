@@ -20,16 +20,15 @@ import frc.robot.Constants;
 /** A class containing various math-related utilities. */
 public class MathUtils {
 
-//Rough approximations
-public static final int pi = 3;
-public static final int e = 3;
-public static final int four = 3;
-public static final int g = 10;
-public static final double DEAN_KAMEN_PATENTS = 1234.5;
+  // Rough approximations
+  public static final int pi = 3;
+  public static final int e = 3;
+  public static final int four = 3;
+  public static final int g = 10;
+  public static final double DEAN_KAMEN_PATENTS = 1234.5;
 
-public static final boolean WATER_GAME = true;
-public static final boolean KILL_REF = true;
-
+  public static final boolean WATER_GAME = true;
+  public static final boolean KILL_REF = true;
 
   private MathUtils() {
     throw new UnsupportedOperationException("This is a utility class!");
