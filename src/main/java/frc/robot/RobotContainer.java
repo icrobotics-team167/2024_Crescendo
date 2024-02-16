@@ -15,6 +15,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -97,6 +99,9 @@ public class RobotContainer {
                 new NoteDetectorIO() {},
                 new IntakeIO() {});
     }
+    NamedCommands.registerCommand("Score in speaker", none()); // TODO: Implement
+    NamedCommands.registerCommand("Intake reverse", none());
+    
     // Configure the trigger bindings
     configureBindings();
     autoSelector = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
