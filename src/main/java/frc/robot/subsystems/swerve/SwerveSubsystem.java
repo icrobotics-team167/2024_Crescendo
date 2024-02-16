@@ -370,7 +370,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
   SysIdRoutine driveSysIDRoutine;
 
-  /** Command factory for running system identification using URCL logging. For REV users. */
+  /**
+   * Command factory for running drive system characterization using URCL logging. For REV users.
+   */
   public Command getDriveSysIDURCL() {
     return sequence(
         runOnce(
@@ -378,10 +380,11 @@ public class SwerveSubsystem extends SubsystemBase {
                 driveSysIDRoutine =
                     new SysIdRoutine(
                         new Config(
-                            null,
-                            null,
-                            null,
-                            (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
+                            Volts.of(1).per(Second),
+                            Volts.of(6),
+                            Seconds.of(12),
+                            (state) ->
+                                Logger.recordOutput("DriveSysIDTestState", state.toString())),
                         new Mechanism((voltage) -> runDriveCharacterization(voltage), null, this))),
         driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
         waitSeconds(2),
@@ -392,53 +395,27 @@ public class SwerveSubsystem extends SubsystemBase {
         driveSysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse));
   }
 
-  SysIdRoutine azimuthSysIDRoutine;
-
-  /** Command factory for running system identification using URCL logging. For REV users. */
-  public Command getAzimuthSysIDURCL() {
-    return sequence(
-        runOnce(
-            () ->
-                azimuthSysIDRoutine =
-                    new SysIdRoutine(
-                        new Config(
-                            null,
-                            null,
-                            null,
-                            (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
-                        new Mechanism((voltage) -> runDriveCharacterization(voltage), null, this))),
-        azimuthSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
-        waitSeconds(2),
-        azimuthSysIDRoutine.quasistatic(SysIdRoutine.Direction.kReverse),
-        waitSeconds(2),
-        azimuthSysIDRoutine.dynamic(SysIdRoutine.Direction.kForward),
-        waitSeconds(2),
-        azimuthSysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse));
-  }
-
   /**
-   * Command factory for running system identification using CTRE's SignalLogger. Recommended for
-   * CTRE users.
+   * Command factory for running drive system characterization using CTRE's SignalLogger. For
+   * TalonFX users.
    *
-   * <p>NOTE: Using sysid with TorqueControlFOC is a little jank, since torque-control commutation
-   * is not officially supported by the sysid tool. When running sysid with TorqueControlFOC,
-   * although everything in the tool says "voltage," you have to pretend it's amperage. Velocity
-   * will also be wacky. In standard voltage control, voltage is directly controlling velocity, so
-   * quasistatic tests will have a stable velocity and dynamic tests will have a linearly increasing
-   * velocity. However, in TorqueControlFOC, amperage controls acceleration, so quasistatic tests
-   * will be linear and dynamic tests will be quadratic in their velocities.
+   * <p>Unlike voltage-based control modes, the TalonFX controller's TorqueControlFOC control mode
+   * controls acceleration via amperage. The dynamic tests linearly accelerate instead of staying at
+   * one velocity, and the quasistatic tests quadratically accelerate instead of linearly increasing
+   * in velocity.
    */
-  public Command getSysIDCTRE() {
+  public Command getDriveSysIDCTRE() {
     return sequence(
         runOnce(
             () ->
                 driveSysIDRoutine =
                     new SysIdRoutine(
                         new Config(
-                            null,
-                            null,
-                            null,
-                            (state) -> SignalLogger.writeString("SysIDState", state.toString())),
+                            Volts.of(10).per(Second),
+                            Volts.of(60),
+                            Seconds.of(12),
+                            (state) ->
+                                SignalLogger.writeString("DriveSysIDState", state.toString())),
                         new Mechanism(
                             (voltage) -> runAzimuthCharacterization(voltage), null, this))),
         driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
@@ -452,6 +429,66 @@ public class SwerveSubsystem extends SubsystemBase {
         waitSeconds(2),
         driveSysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse),
         runOnce(() -> stop()));
+  }
+
+  SysIdRoutine azimuthSysIDRoutine;
+
+  /**
+   * Command factory for running azimuth system characterization using URCL logging. For REV users.
+   */
+  public Command getAzimuthSysIDURCL() {
+    return sequence(
+        runOnce(
+            () ->
+                azimuthSysIDRoutine =
+                    new SysIdRoutine(
+                        new Config(
+                            Volts.of(1).per(Second),
+                            Volts.of(6),
+                            Seconds.of(12),
+                            (state) ->
+                                Logger.recordOutput("AzimuthSysIDTestState", state.toString())),
+                        new Mechanism(
+                            (voltage) -> runAzimuthCharacterization(voltage), null, this))),
+        azimuthSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
+        waitSeconds(2),
+        azimuthSysIDRoutine.quasistatic(SysIdRoutine.Direction.kReverse),
+        waitSeconds(2),
+        azimuthSysIDRoutine.dynamic(SysIdRoutine.Direction.kForward),
+        waitSeconds(2),
+        azimuthSysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse));
+  }
+
+  /**
+   * Command factory for running drive system characterization using CTRE's SignalLogger. For
+   * TalonFX users.
+   *
+   * <p>Unlike voltage-based control modes, the TalonFX controller's TorqueControlFOC control mode
+   * controls acceleration via amperage. The dynamic tests linearly accelerate instead of staying at
+   * one velocity, and the quasistatic tests quadratically accelerate instead of linearly increasing
+   * in velocity.
+   */
+  public Command getAzimuthSysIDCTRE() {
+    return sequence(
+        runOnce(
+            () ->
+                azimuthSysIDRoutine =
+                    new SysIdRoutine(
+                        new Config(
+                            Volts.of(5).per(Second),
+                            Volts.of(20),
+                            Seconds.of(8),
+                            (state) ->
+                                Logger.recordOutput("AzimuthSysIDTestState", state.toString())),
+                        new Mechanism(
+                            (voltage) -> runAzimuthCharacterization(voltage), null, this))),
+        azimuthSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
+        waitSeconds(2),
+        azimuthSysIDRoutine.quasistatic(SysIdRoutine.Direction.kReverse),
+        waitSeconds(2),
+        azimuthSysIDRoutine.dynamic(SysIdRoutine.Direction.kForward),
+        waitSeconds(2),
+        azimuthSysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse));
   }
 
   /**

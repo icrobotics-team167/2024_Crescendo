@@ -372,8 +372,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveConfig.MotionMagic.MotionMagicJerk =
         driveConfig.MotionMagic.MotionMagicAcceleration * 10; // Max allowed jerk, in m/s^3
     // Limit the current draw of the motors.
-    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 100;
-    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = 100;
+    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 120;
+    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = 120;
     driveTalon.getConfigurator().apply(driveConfig);
     setDriveBrakeMode(true);
 
