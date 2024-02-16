@@ -30,7 +30,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake reverse"
+                  "name": "Intake"
                 }
               }
             ]
@@ -61,7 +61,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake reverse"
+                  "name": "Intake"
                 }
               }
             ]

@@ -100,8 +100,8 @@ public class RobotContainer {
                 new IntakeIO() {});
     }
     NamedCommands.registerCommand("Score in speaker", none()); // TODO: Implement
-    NamedCommands.registerCommand("Intake reverse", none());
-    
+    NamedCommands.registerCommand("Intake", none());
+
     // Configure the trigger bindings
     configureBindings();
     autoSelector = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
