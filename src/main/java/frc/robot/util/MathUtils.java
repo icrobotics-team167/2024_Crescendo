@@ -29,6 +29,7 @@ public class MathUtils {
 
   public static final boolean WATER_GAME = true;
   public static final boolean KILL_REF = true;
+  public static final boolean TOMS_FAULT = true;
 
   private MathUtils() {
     throw new UnsupportedOperationException("This is a utility class!");
