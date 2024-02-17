@@ -35,6 +35,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.*;
 import frc.robot.subsystems.swerve.Module;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.util.SwerveUtils;
 import frc.robot.util.motorUtils.TalonUtils;
 import java.util.Queue;
 
@@ -480,17 +481,9 @@ public class ModuleIOTalonFX implements ModuleIO {
     inputs.azimuthAppliedOutput = azimuthClosedLoopOutput.getValueAsDouble();
     inputs.azimuthAppliedCurrent = Amps.of(azimuthAppliedCurrent.getValueAsDouble());
 
-    inputs.odometryTimestamps =
-        timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
-    inputs.odometryDrivePositionsMeters =
-        drivePositionQueue.stream().mapToDouble((Double value) -> value).toArray();
-    inputs.odometryAzimuthPositions =
-        azimuthPositionQueue.stream()
-            .map((Double value) -> Rotation2d.fromRotations(value))
-            .toArray(Rotation2d[]::new);
-    timestampQueue.clear();
-    drivePositionQueue.clear();
-    azimuthPositionQueue.clear();
+    inputs.odometryTimestamps = SwerveUtils.queueToDoubleArray(timestampQueue);
+    inputs.odometryDrivePositionsMeters = SwerveUtils.queueToDoubleArray(drivePositionQueue);
+    inputs.odometryAzimuthPositions = SwerveUtils.queueToRotation2dArray(azimuthPositionQueue);
   }
 
   /**

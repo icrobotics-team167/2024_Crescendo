@@ -37,6 +37,7 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Robot;
 import frc.robot.subsystems.swerve.Module;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.util.SwerveUtils;
 import frc.robot.util.motorUtils.SparkUtils;
 import java.util.Queue;
 import java.util.Set;
@@ -357,17 +358,9 @@ public class ModuleIOSparkMax implements ModuleIO {
         Volts.of(inputs.azimuthAppliedOutput * driveSparkMax.getBusVoltage());
     inputs.azimuthAppliedCurrent = Amps.of(azimuthSparkMax.getOutputCurrent());
 
-    inputs.odometryTimestamps =
-        timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
-    inputs.odometryDrivePositionsMeters =
-        drivePositionQueue.stream().mapToDouble((Double value) -> value).toArray();
-    inputs.odometryAzimuthPositions =
-        azimuthPositionQueue.stream()
-            .map((Double value) -> Rotation2d.fromRotations(value))
-            .toArray(Rotation2d[]::new);
-    timestampQueue.clear();
-    drivePositionQueue.clear();
-    azimuthPositionQueue.clear();
+    inputs.odometryTimestamps = SwerveUtils.queueToDoubleArray(timestampQueue);
+    inputs.odometryDrivePositionsMeters = SwerveUtils.queueToDoubleArray(drivePositionQueue);
+    inputs.odometryAzimuthPositions = SwerveUtils.queueToRotation2dArray(azimuthPositionQueue);
   }
 
   @Override
