@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.328727312725281,
+        "y": 4.124147725730131
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.9779026794520815,
+        "y": 3.3094457072105032
+      },
+      "isLocked": false,
+      "linkedName": "intake true middle"
+    },
+    {
+      "anchor": {
+        "x": 4.247467412313741,
+        "y": 5.344228580195052
+      },
+      "prevControl": {
+        "x": 3.791395389058584,
+        "y": 3.6602703404837014
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Shoot going through stage position"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 14.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 178.6677801461304,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 179.31955955026646,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

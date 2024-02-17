@@ -175,8 +175,8 @@ public class ModuleIOSparkMax implements ModuleIO {
     double azimuth_KD; // % Output per rotations/s of error derivative
     switch (index) {
       case 0: // Front Left
-        driveSparkMax = new CANSparkMax(1, MotorType.kBrushless);
-        azimuthSparkMax = new CANSparkMax(2, MotorType.kBrushless);
+        driveSparkMax = new CANSparkMax(2, MotorType.kBrushless);
+        azimuthSparkMax = new CANSparkMax(3, MotorType.kBrushless);
         azimuthCANcoder = new CANcoder(18);
         absoluteEncoderOffset = -0.270263671875;
 

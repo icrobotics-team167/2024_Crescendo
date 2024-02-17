@@ -144,7 +144,7 @@ public class RobotContainer {
         .whileTrue(new StartEndCommand(drivebase::setSlowmode, drivebase::unsetSlowmode));
     primaryRightStick.trigger().onTrue(new InstantCommand(drivebase::stopWithX));
     // primaryLeftStick.button(1).whileTrue(drivebase.getSysIDURCL());
-     primaryLeftStick.button(1).whileTrue(drivebase.getAzimuthSysIDURCL());
+    primaryLeftStick.button(1).whileTrue(drivebase.getAzimuthSysIDURCL());
 
     secondaryRightStick.trigger().whileTrue(shooter.autoIntake());
     secondaryLeftStick

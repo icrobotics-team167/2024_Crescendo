@@ -141,7 +141,8 @@ public class PivotIOSparkFlex implements PivotIO {
 
     inputs.velocity = DegreesPerSecond.of(leaderEncoder.getVelocity());
 
-    // inputs.appliedVoltage = Volts.of(leaderMotor.getBusVoltage() * leaderMotor.get());
+    // inputs.appliedVoltage = Volts.of(leaderMotor.getBusVoltage() *
+    // leaderMotor.get());
     inputs.leaderAppliedVoltage = Volts.of(leaderSetpoint);
     inputs.followerAppliedVoltage = Volts.of(followerSetpoint);
     inputs.leaderAppliedCurrent = Amps.of(leaderMotor.getOutputCurrent());
@@ -183,14 +184,15 @@ public class PivotIOSparkFlex implements PivotIO {
   /** Run the motors at the specified pivot velocity. */
   private void runMotor(Measure<Velocity<Angle>> pivotVel) {
     // leaderSetpoint =
-    //     leaderPidController.calculate(leaderEncoder.getVelocity(), pivotVel.in(DegreesPerSecond))
-    //         + leaderFFController.calculate(getAngle().getRadians(),
+    // leaderPidController.calculate(leaderEncoder.getVelocity(),
+    // pivotVel.in(DegreesPerSecond))
+    // + leaderFFController.calculate(getAngle().getRadians(),
     // pivotVel.in(RadiansPerSecond));
     // followerSetpoint =
-    //     followerPidController.calculate(
-    //             followerEncoder.getVelocity(), pivotVel.in(DegreesPerSecond))
-    //         + followerFFController.calculate(
-    //             getAngle().getRadians(), pivotVel.in(RadiansPerSecond));
+    // followerPidController.calculate(
+    // followerEncoder.getVelocity(), pivotVel.in(DegreesPerSecond))
+    // + followerFFController.calculate(
+    // getAngle().getRadians(), pivotVel.in(RadiansPerSecond));
     leaderMotor.setVoltage(leaderSetpoint);
     leaderMotor.setVoltage(followerSetpoint);
   }
