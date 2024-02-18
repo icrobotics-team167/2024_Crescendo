@@ -23,6 +23,8 @@ public interface VisionIO {
   public class VisionIOInputs {
     public Pose2d poseEstimate = new Pose2d();
     public Transform3d[] trackedTags = new Transform3d[0];
+    public double tX = 0;
+    public double tY = 0;
     public double timestamp = 0;
     public boolean isNewData = false;
   }

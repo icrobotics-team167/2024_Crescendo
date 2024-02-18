@@ -24,12 +24,12 @@ import frc.robot.subsystems.vision.interfaceLayers.*;
 import java.util.function.BiConsumer;
 import org.littletonrobotics.junction.Logger;
 
-public class VisionPoseEstimator extends SubsystemBase {
+public class VisionSubsystem extends SubsystemBase {
   private BiConsumer<Pose2d, Double> estimationConsumer;
   private VisionIO[] cameras;
   private VisionIOInputsAutoLogged[] cameraData;
 
-  public VisionPoseEstimator(BiConsumer<Pose2d, Double> estimationConsumer) {
+  public VisionSubsystem(BiConsumer<Pose2d, Double> estimationConsumer) {
     this.estimationConsumer = estimationConsumer;
 
     if (Robot.currentMode == Mode.SIM) {
@@ -66,5 +66,9 @@ public class VisionPoseEstimator extends SubsystemBase {
         estimationConsumer.accept(cameraData[i].poseEstimate, cameraData[i].timestamp);
       }
     }
+  }
+
+  public double getTX() {
+    return cameraData[0].tX;
   }
 }

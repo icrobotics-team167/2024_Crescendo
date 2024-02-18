@@ -86,6 +86,8 @@ public class VisionIOPhoton implements VisionIO {
     for (int i = 0; i < inputs.trackedTags.length; i++) {
       inputs.trackedTags[i] = botPoseEstimate.targetsUsed.get(i).getBestCameraToTarget();
     }
+    inputs.tX = botPoseEstimate.targetsUsed.get(0).getYaw();
+    inputs.tY = botPoseEstimate.targetsUsed.get(0).getPitch();
   }
 
   @Override
