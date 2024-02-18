@@ -31,11 +31,15 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.swerve.interfaceLayers.*;
 import frc.robot.util.MathUtils;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import edu.wpi.first.networktables.*;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
@@ -49,56 +53,68 @@ public class RobotContainer {
   private CommandJoystick secondaryLeftStick = new CommandJoystick(2);
   private CommandJoystick secondaryRightStick = new CommandJoystick(3);
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     switch (Robot.currentMode) {
       case REAL:
-        drivebase =
-            new SwerveSubsystem(
-                new GyroIOPigeon2(),
-                new ModuleIOSparkMax(0),
-                new ModuleIOSparkMax(1),
-                new ModuleIOSparkMax(2),
-                new ModuleIOSparkMax(3));
-        shooter =
-            new Shooter(
-                new FeederIOSparkFlex(),
-                new FlywheelIOSparkFlex(),
-                new PivotIOSparkFlex(),
-                new NoteDetectorIOTimeOfFlight(),
-                new IntakeIOTalonFX());
+        drivebase = new SwerveSubsystem(
+            new GyroIOPigeon2(),
+            new ModuleIOSparkMax(0),
+            new ModuleIOSparkMax(1),
+            new ModuleIOSparkMax(2),
+            new ModuleIOSparkMax(3));
+        shooter = new Shooter(
+            new FeederIOSparkFlex(),
+            new FlywheelIOSparkFlex(),
+            new PivotIOSparkFlex(),
+            new NoteDetectorIOTimeOfFlight(),
+            new IntakeIOTalonFX());
         break;
       case SIM:
-        drivebase =
-            new SwerveSubsystem(
-                new GyroIO() {},
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim());
-        shooter =
-            new Shooter(
-                new FeederIO() {},
-                new FlywheelIO() {},
-                new PivotIO() {},
-                new NoteDetectorIO() {},
-                new IntakeIO() {});
+        drivebase = new SwerveSubsystem(
+            new GyroIO() {
+            },
+            new ModuleIOSim(),
+            new ModuleIOSim(),
+            new ModuleIOSim(),
+            new ModuleIOSim());
+        shooter = new Shooter(
+            new FeederIO() {
+            },
+            new FlywheelIO() {
+            },
+            new PivotIO() {
+            },
+            new NoteDetectorIO() {
+            },
+            new IntakeIO() {
+            });
         break;
       default:
-        drivebase =
-            new SwerveSubsystem(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-        shooter =
-            new Shooter(
-                new FeederIO() {},
-                new FlywheelIO() {},
-                new PivotIO() {},
-                new NoteDetectorIO() {},
-                new IntakeIO() {});
+        drivebase = new SwerveSubsystem(
+            new GyroIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            });
+        shooter = new Shooter(
+            new FeederIO() {
+            },
+            new FlywheelIO() {
+            },
+            new PivotIO() {
+            },
+            new NoteDetectorIO() {
+            },
+            new IntakeIO() {
+            });
     }
     NamedCommands.registerCommand("Score in speaker", none()); // TODO: Implement
     NamedCommands.registerCommand("Intake", none()); // TODO: Implement
@@ -110,31 +126,35 @@ public class RobotContainer {
   }
 
   /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
+   * Use this method to define your trigger->command mappings. Triggers can be
+   * created via the
+   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
+   * an arbitrary
    * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
+   * {@link
+   * CommandXboxController
+   * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+   * PS4} controllers or
+   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
   private void configureBindings() {
     drivebase.setDefaultCommand(
         drivebase.getDriveCommand(
-            () ->
-                MathUtils.inOutDeadband(
-                    -primaryLeftStick.getY(),
-                    Driving.Deadbands.PRIMARY_LEFT_INNER,
-                    Driving.Deadbands.PRIMARY_LEFT_OUTER,
-                    Driving.PRIMARY_DRIVER_EXPONENT),
-            () ->
-                MathUtils.inOutDeadband(
-                    -primaryLeftStick.getX(),
-                    Driving.Deadbands.PRIMARY_LEFT_INNER,
-                    Driving.Deadbands.PRIMARY_LEFT_OUTER,
-                    Driving.PRIMARY_DRIVER_EXPONENT),
-            () ->
-                MathUtils.inOutDeadband(
+            () -> MathUtils.inOutDeadband(
+                -primaryLeftStick.getY(),
+                Driving.Deadbands.PRIMARY_LEFT_INNER,
+                Driving.Deadbands.PRIMARY_LEFT_OUTER,
+                Driving.PRIMARY_DRIVER_EXPONENT),
+            () -> MathUtils.inOutDeadband(
+                -primaryLeftStick.getX(),
+                Driving.Deadbands.PRIMARY_LEFT_INNER,
+                Driving.Deadbands.PRIMARY_LEFT_OUTER,
+                Driving.PRIMARY_DRIVER_EXPONENT),
+            () -> primaryRightStick.trigger().getAsBoolean()
+                ? NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0) / -75
+                : MathUtils.inOutDeadband(
                     -primaryRightStick.getX(),
                     Driving.Deadbands.PRIMARY_RIGHT_INNER,
                     Driving.Deadbands.PRIMARY_RIGHT_OUTER,
@@ -143,7 +163,7 @@ public class RobotContainer {
     primaryLeftStick
         .trigger()
         .whileTrue(new StartEndCommand(drivebase::setSlowmode, drivebase::unsetSlowmode));
-    primaryRightStick.trigger().onTrue(new InstantCommand(drivebase::stopWithX));
+    //primaryRightStick.trigger().onTrue(new InstantCommand(drivebase::stopWithX));
     // primaryLeftStick.button(1).whileTrue(drivebase.getDriveSysIDURCL());
     // primaryLeftStick.button(2).whileTrue(drivebase.getAzimuthSysIDURCL());
 
@@ -154,12 +174,11 @@ public class RobotContainer {
         .trigger()
         .whileTrue(
             shooter.getManualControlCommand(
-                () ->
-                    MathUtils.inOutDeadband(
-                        -secondaryLeftStick.getY(),
-                        Driving.Deadbands.SECONDARY_LEFT_INNER,
-                        Driving.Deadbands.SECONDARY_LEFT_OUTER,
-                        Driving.SECONDARY_DRIVER_EXPONENT)));
+                () -> MathUtils.inOutDeadband(
+                    -secondaryLeftStick.getY(),
+                    Driving.Deadbands.SECONDARY_LEFT_INNER,
+                    Driving.Deadbands.SECONDARY_LEFT_OUTER,
+                    Driving.SECONDARY_DRIVER_EXPONENT)));
     shooter.setPivotDefaultCommand(none());
   }
 
