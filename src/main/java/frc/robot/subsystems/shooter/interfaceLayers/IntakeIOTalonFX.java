@@ -26,8 +26,10 @@ public class IntakeIOTalonFX implements IntakeIO {
   public IntakeIOTalonFX() {
     // motor = new CANSparkMax(10, MotorType.kBrushless);
     motor = new TalonFX(10, "Croppenheimer");
-    configs.withStatorCurrentLimit(60).withStatorCurrentLimitEnable(true);
-    configs.withSupplyCurrentLimit(40).withSupplyCurrentLimitEnable(true);
+    configs.StatorCurrentLimit = 60;
+    configs.StatorCurrentLimitEnable = true;
+    configs.SupplyCurrentLimit = 40;
+    configs.SupplyCurrentLimitEnable = true;
     motor.getConfigurator().apply(configs);
   }
 

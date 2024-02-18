@@ -95,4 +95,19 @@ public class Shooter {
   public Command feed() {
     return feeder.getFeedCommand();
   }
+//This is a temp thing for testing stuff
+  public Command shoot() {
+    return flywheel.getSpeakerShotCommand();
+  }
+
+  public Command getSpeakerShotCommand() {
+    return parallel(
+      parallel(
+        pivot.getPivotCommand(() -> Rotation2d.fromDegrees(0)),
+        flywheel.getSpeakerShotCommand()),
+        waitUntil(
+          () -> flywheel.isUpToSpeed() && Math.abs(pivot.getAngle().getDegrees() - 90) < 2)
+          .andThen(feeder.getFeedCommand()))
+          .until(() -> !noteDetector.hasNote());
+  }
 }
