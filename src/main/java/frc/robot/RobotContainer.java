@@ -160,7 +160,7 @@ public class RobotContainer {
                         Driving.Deadbands.SECONDARY_LEFT_INNER,
                         Driving.Deadbands.SECONDARY_LEFT_OUTER,
                         Driving.SECONDARY_DRIVER_EXPONENT)));
-    shooter.setPivotDefaultCommand(none());
+    // shooter.setPivotDefaultCommand(none());
   }
 
   /**

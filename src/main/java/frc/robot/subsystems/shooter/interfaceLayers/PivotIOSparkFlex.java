@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Robot;
 import frc.robot.util.motorUtils.SparkUtils;
 import java.util.Set;
+import org.littletonrobotics.junction.Logger;
 
 public class PivotIOSparkFlex implements PivotIO {
   private DutyCycleEncoder encoder;
@@ -57,10 +58,13 @@ public class PivotIOSparkFlex implements PivotIO {
     leaderMotor.restoreFactoryDefaults();
     followerMotor.restoreFactoryDefaults();
     Timer.delay(0.1);
+
     leaderMotor.setCANTimeout(250);
     followerMotor.setCANTimeout(250);
+
     leaderEncoder = leaderMotor.getEncoder();
     leaderMotor.setIdleMode(IdleMode.kBrake);
+    leaderMotor.setInverted(false);
     leaderMotor.setSmartCurrentLimit(60);
     leaderEncoder.setPositionConversionFactor(360.0 / 400.0);
     leaderEncoder.setVelocityConversionFactor((360.0 / 400.0) / 60.0);
@@ -97,27 +101,33 @@ public class PivotIOSparkFlex implements PivotIO {
 
     leaderPidController =
         new PIDController(
-            1, // Volts per degrees/sec of error
+            1.0 / 20, // Volts per degrees/sec of error
             0, 0);
     leaderFFController =
         new ArmFeedforward(
-            0, // Volts to overcome static friction
+            0.05, // Volts to overcome static friction
             0, // Volts to overcome gravity
-            0); // Volts per degrees/sec of setpoint
+            10.5 / (Math.PI / 2)); // Volts per radians/sec of setpoint
     followerPidController =
         new PIDController(
-            1, // Volts per degrees/sec of error
+            1.0 / 20, // Volts per degrees/sec of error
             0, 0);
     followerFFController =
         new ArmFeedforward(
-            0, // Volts to overcome static friction
+            0.05, // Volts to overcome static friction
             0, // Volts per cosine of angle
-            0); // Volts per radians/sec of velocity setpoint
+            10.5 / (Math.PI / 2)); // Volts per radians/sec of velocity setpoint
+  }
+
+  private enum ControlMode {
+    TARGET_ANGLE,
+    TARGET_VEL,
+    OPEN_LOOP
   }
 
   private Rotation2d targetAngle = null;
   private Measure<Velocity<Angle>> targetVelocity = RadiansPerSecond.of(0);
-  private boolean angleControl = false;
+  private ControlMode controlMode = ControlMode.TARGET_VEL;
 
   @Override
   public void updateInputs(PivotIOInputs inputs) {
@@ -125,21 +135,30 @@ public class PivotIOSparkFlex implements PivotIO {
     inputs.isTooFarDown = getAngle().getDegrees() <= PivotIO.MIN_ANGLE;
     inputs.isTooFarUp = getAngle().getDegrees() >= PivotIO.MAX_ANGLE;
 
-    if (angleControl) {
-      targetVelocity =
-          RadiansPerSecond.of(
-              angleMotionProfile.calculate(
-                      Robot.defaultPeriodSecs,
-                      new TrapezoidProfile.State(
-                          Radians.of(getAngle().getRadians()),
-                          DegreesPerSecond.of(leaderEncoder.getVelocity())),
-                      new TrapezoidProfile.State(
-                          Radians.of(targetAngle.getRadians()), RadiansPerSecond.of(0)))
-                  .velocity);
+    switch (controlMode) {
+      case TARGET_ANGLE:
+        targetVelocity =
+            RadiansPerSecond.of(
+                angleMotionProfile.calculate(
+                        Robot.defaultPeriodSecs,
+                        new TrapezoidProfile.State(
+                            Radians.of(getAngle().getRadians()),
+                            DegreesPerSecond.of(leaderEncoder.getVelocity())),
+                        new TrapezoidProfile.State(
+                            Radians.of(targetAngle.getRadians()), RadiansPerSecond.of(0)))
+                    .velocity);
+        runMotor(targetVelocity);
+        break;
+      case TARGET_VEL:
+        runMotor(targetVelocity);
+        break;
+      case OPEN_LOOP:
+        leaderMotor.setVoltage(leaderSetpoint);
+        followerMotor.setVoltage(followerSetpoint);
     }
-    runMotor(targetVelocity);
 
-    inputs.velocity = DegreesPerSecond.of(leaderEncoder.getVelocity());
+    inputs.leaderVelocity = DegreesPerSecond.of(leaderEncoder.getVelocity());
+    inputs.followerVelocity = DegreesPerSecond.of(followerEncoder.getVelocity());
 
     // inputs.appliedVoltage = Volts.of(leaderMotor.getBusVoltage() *
     // leaderMotor.get());
@@ -152,24 +171,25 @@ public class PivotIOSparkFlex implements PivotIO {
   @Override
   public void setTargetAngle(Rotation2d targetAngle) {
     this.targetAngle = targetAngle;
-    angleControl = true;
+    controlMode = ControlMode.TARGET_ANGLE;
   }
 
   @Override
-  public void setPivotControl(Measure<Velocity<Angle>> velocity) {
+  public void setVelocityControl(Measure<Velocity<Angle>> velocity) {
     targetVelocity = velocity;
-    angleControl = false;
+    controlMode = ControlMode.TARGET_VEL;
   }
 
   @Override
   public void setRawControl(Measure<Voltage> voltage) {
+    controlMode = ControlMode.OPEN_LOOP;
     leaderSetpoint = voltage.in(Volts);
     followerSetpoint = voltage.in(Volts);
   }
 
   @Override
   public void stop() {
-    setPivotControl(RadiansPerSecond.of(0));
+    setVelocityControl(RadiansPerSecond.of(0));
   }
 
   /** Moving average filter to smooth out the noisy input. */
@@ -183,17 +203,16 @@ public class PivotIOSparkFlex implements PivotIO {
 
   /** Run the motors at the specified pivot velocity. */
   private void runMotor(Measure<Velocity<Angle>> pivotVel) {
-    // leaderSetpoint =
-    // leaderPidController.calculate(leaderEncoder.getVelocity(),
-    // pivotVel.in(DegreesPerSecond))
-    // + leaderFFController.calculate(getAngle().getRadians(),
-    // pivotVel.in(RadiansPerSecond));
-    // followerSetpoint =
-    // followerPidController.calculate(
-    // followerEncoder.getVelocity(), pivotVel.in(DegreesPerSecond))
-    // + followerFFController.calculate(
-    // getAngle().getRadians(), pivotVel.in(RadiansPerSecond));
+    Logger.recordOutput("Shooter/pivot/targetVel", -pivotVel.in(RadiansPerSecond));
+    leaderSetpoint =
+        -(leaderPidController.calculate(-leaderEncoder.getVelocity(), pivotVel.in(DegreesPerSecond))
+            + leaderFFController.calculate(getAngle().getRadians(), pivotVel.in(RadiansPerSecond)));
+    followerSetpoint =
+        -(followerPidController.calculate(
+                -followerEncoder.getVelocity(), pivotVel.in(DegreesPerSecond))
+            + followerFFController.calculate(
+                getAngle().getRadians(), pivotVel.in(RadiansPerSecond)));
     leaderMotor.setVoltage(leaderSetpoint);
-    leaderMotor.setVoltage(followerSetpoint);
+    followerMotor.setVoltage(followerSetpoint);
   }
 }

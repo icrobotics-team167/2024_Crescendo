@@ -32,8 +32,10 @@ public interface PivotIO {
     public boolean isTooFarUp = false;
     /** If the pivot mechanism has reached its absolute min pivot angle. */
     public boolean isTooFarDown = false;
-    /** The velocity of the pivot mechanism. */
-    public Measure<Velocity<Angle>> velocity = DegreesPerSecond.of(0);
+    /** The velocity of the leader motor. */
+    public Measure<Velocity<Angle>> leaderVelocity = DegreesPerSecond.of(0);
+    /** The velocity of the follower motor. */
+    public Measure<Velocity<Angle>> followerVelocity = DegreesPerSecond.of(0);
     /** The voltage applied to the motor by the motor controller. */
     public Measure<Voltage> leaderAppliedVoltage = Volts.of(0);
     /** The current applied to the motor by the motor controller. */
@@ -51,7 +53,7 @@ public interface PivotIO {
   public default void setTargetAngle(Rotation2d angle) {}
 
   /** Sets the closed-loop velocity control for the mechanism. */
-  public default void setPivotControl(Measure<Velocity<Angle>> velocity) {}
+  public default void setVelocityControl(Measure<Velocity<Angle>> velocity) {}
 
   /** Sets the raw open-loop velocity control for the motors. */
   public default void setRawControl(Measure<Voltage> voltage) {}

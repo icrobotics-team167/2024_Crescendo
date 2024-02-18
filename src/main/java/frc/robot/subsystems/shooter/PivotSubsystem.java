@@ -51,7 +51,8 @@ public class PivotSubsystem extends SubsystemBase {
 
   /** Gets a command to manually control the pivot angle. */
   public Command getManualOverrideCommand(DoubleSupplier controlSupplier) {
-    return run(() -> io.setRawControl(Volts.of(controlSupplier.getAsDouble() * 12)));
+    return run(() -> io.setVelocityControl(DegreesPerSecond.of(controlSupplier.getAsDouble() * 12)))
+        .finallyDo(() -> io.setVelocityControl(DegreesPerSecond.of(0)));
   }
 
   /** Gets the command to put the pivot in the resting position. */

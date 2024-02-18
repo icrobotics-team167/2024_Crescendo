@@ -186,9 +186,9 @@ public class ModuleIOSparkMax implements ModuleIO {
         drive_kD = 0;
 
         azimuth_kS = 0;
-        azimuth_kV = 1;
-        azimuth_kP = 2;
-        azimuth_KD = 0.1;
+        azimuth_kV = 0;
+        azimuth_kP = 0;
+        azimuth_KD = 0.0;
         break;
       case 1: // Front Right
         driveSparkMax = new CANSparkMax(4, MotorType.kBrushless);
@@ -202,9 +202,9 @@ public class ModuleIOSparkMax implements ModuleIO {
         drive_kD = 0;
 
         azimuth_kS = 0;
-        azimuth_kV = 1;
-        azimuth_kP = 2;
-        azimuth_KD = 0.1;
+        azimuth_kV = 0;
+        azimuth_kP = 0;
+        azimuth_KD = 0.0;
         break;
       case 2: // Back Left
         driveSparkMax = new CANSparkMax(9, MotorType.kBrushless);
@@ -218,9 +218,9 @@ public class ModuleIOSparkMax implements ModuleIO {
         drive_kD = 0;
 
         azimuth_kS = 0;
-        azimuth_kV = 1;
-        azimuth_kP = 2;
-        azimuth_KD = 0.1;
+        azimuth_kV = 0;
+        azimuth_kP = 0;
+        azimuth_KD = 0.0;
         break;
       case 3: // Back Right
         driveSparkMax = new CANSparkMax(6, MotorType.kBrushless);
@@ -234,9 +234,9 @@ public class ModuleIOSparkMax implements ModuleIO {
         drive_kD = 0;
 
         azimuth_kS = 0;
-        azimuth_kV = 1;
-        azimuth_kP = 2;
-        azimuth_KD = 0.1;
+        azimuth_kV = 0;
+        azimuth_kP = 0;
+        azimuth_KD = 0;
         break;
       default:
         throw new RuntimeException("Invalid module index");
