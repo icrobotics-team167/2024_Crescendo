@@ -187,7 +187,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
         azimuth_kS = 0;
         azimuth_kV = 1;
-        azimuth_kP = 3;
+        azimuth_kP = 2;
         azimuth_KD = 0.1;
         break;
       case 1: // Front Right
@@ -203,7 +203,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
         azimuth_kS = 0;
         azimuth_kV = 1;
-        azimuth_kP = 3;
+        azimuth_kP = 2;
         azimuth_KD = 0.1;
         break;
       case 2: // Back Left
@@ -219,7 +219,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
         azimuth_kS = 0;
         azimuth_kV = 1;
-        azimuth_kP = 3;
+        azimuth_kP = 2;
         azimuth_KD = 0.1;
         break;
       case 3: // Back Right
@@ -235,7 +235,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
         azimuth_kS = 0;
         azimuth_kV = 1;
-        azimuth_kP = 3;
+        azimuth_kP = 2;
         azimuth_KD = 0.1;
         break;
       default:
