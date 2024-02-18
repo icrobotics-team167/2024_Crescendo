@@ -433,9 +433,9 @@ public class SwerveSubsystem extends SubsystemBase {
     azimuthSysIDRoutine =
         new SysIdRoutine(
             new Config(
-                Volts.of(1).per(Second),
+                Volts.of(2).per(Second),
                 Volts.of(6),
-                Seconds.of(12),
+                Seconds.of(6),
                 (state) -> Logger.recordOutput("AzimuthSysIDTestState", state.toString())),
             new Mechanism((voltage) -> runAzimuthCharacterization(voltage), null, this));
     return sequence(
@@ -501,7 +501,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   private void runAzimuthCharacterization(Measure<Voltage> voltage) {
     for (int i = 0; i < 4; i++) {
-      modules[i].runDriveCharacterization(voltage.baseUnitMagnitude());
+      modules[i].runAzimuthCharacterization(voltage.baseUnitMagnitude());
     }
   }
 }

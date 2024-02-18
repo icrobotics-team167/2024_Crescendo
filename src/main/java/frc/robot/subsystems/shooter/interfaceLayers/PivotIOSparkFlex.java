@@ -177,7 +177,7 @@ public class PivotIOSparkFlex implements PivotIO {
 
   /** Gets the angle of the pivot mechanism. */
   private Rotation2d getAngle() {
-    double rawAngle = encoder.getAbsolutePosition() - 195.0 / 360.0;
+    double rawAngle = encoder.getAbsolutePosition() + Rotations.convertFrom(.94, Radians);
     return Rotation2d.fromRotations(angleFilter.calculate(rawAngle));
   }
 

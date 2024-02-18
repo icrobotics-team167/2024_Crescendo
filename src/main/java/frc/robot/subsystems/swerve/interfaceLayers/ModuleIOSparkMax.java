@@ -181,14 +181,14 @@ public class ModuleIOSparkMax implements ModuleIO {
         absoluteEncoderOffset = -0.270263671875;
 
         drive_kS = 0;
-        drive_kV = 0;
-        drive_kP = 0;
+        drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
+        drive_kP = 1;
         drive_kD = 0;
 
         azimuth_kS = 0;
-        azimuth_kV = 0;
-        azimuth_kP = 0;
-        azimuth_KD = 0;
+        azimuth_kV = 1;
+        azimuth_kP = 3;
+        azimuth_KD = 0.1;
         break;
       case 1: // Front Right
         driveSparkMax = new CANSparkMax(4, MotorType.kBrushless);
@@ -197,14 +197,14 @@ public class ModuleIOSparkMax implements ModuleIO {
         absoluteEncoderOffset = -0.106689453125;
 
         drive_kS = 0;
-        drive_kV = 0;
-        drive_kP = 0;
+        drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
+        drive_kP = 1;
         drive_kD = 0;
 
         azimuth_kS = 0;
-        azimuth_kV = 0;
-        azimuth_kP = 0;
-        azimuth_KD = 0;
+        azimuth_kV = 1;
+        azimuth_kP = 3;
+        azimuth_KD = 0.1;
         break;
       case 2: // Back Left
         driveSparkMax = new CANSparkMax(9, MotorType.kBrushless);
@@ -213,14 +213,14 @@ public class ModuleIOSparkMax implements ModuleIO {
         absoluteEncoderOffset = -0.1962890625;
 
         drive_kS = 0;
-        drive_kV = 0;
-        drive_kP = 0;
+        drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
+        drive_kP = 1;
         drive_kD = 0;
 
         azimuth_kS = 0;
-        azimuth_kV = 0;
-        azimuth_kP = 0;
-        azimuth_KD = 0;
+        azimuth_kV = 1;
+        azimuth_kP = 3;
+        azimuth_KD = 0.1;
         break;
       case 3: // Back Right
         driveSparkMax = new CANSparkMax(6, MotorType.kBrushless);
@@ -229,14 +229,14 @@ public class ModuleIOSparkMax implements ModuleIO {
         absoluteEncoderOffset = 0.481201171875;
 
         drive_kS = 0;
-        drive_kV = 0;
-        drive_kP = 0;
+        drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
+        drive_kP = 1;
         drive_kD = 0;
 
         azimuth_kS = 0;
-        azimuth_kV = 0;
-        azimuth_kP = 0;
-        azimuth_KD = 0;
+        azimuth_kV = 1;
+        azimuth_kP = 3;
+        azimuth_KD = 0.1;
         break;
       default:
         throw new RuntimeException("Invalid module index");
