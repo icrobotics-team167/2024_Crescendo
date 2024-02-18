@@ -17,6 +17,7 @@ package frc.robot.subsystems.swerve;
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -45,7 +46,7 @@ import frc.robot.subsystems.swerve.interfaceLayers.GyroIOInputsAutoLogged;
 import frc.robot.subsystems.swerve.interfaceLayers.ModuleIO;
 import frc.robot.subsystems.swerve.interfaceLayers.PhoenixOdometryThread;
 import frc.robot.subsystems.swerve.interfaceLayers.SparkMaxOdometryThread;
-import frc.robot.subsystems.vision.VisionPoseEstimator;
+import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -98,8 +99,7 @@ public class SwerveSubsystem extends SubsystemBase {
   /** The pose estimator, used to fuse odometry data and vision data together. */
   private SwerveDrivePoseEstimator poseEstimator;
   /** The vision-based pose estimator. */
-  private VisionPoseEstimator visionPoseEstimator =
-      new VisionPoseEstimator(this::addVisionMeasurement);
+  private VisionSubsystem visionPoseEstimator = new VisionSubsystem(this::addVisionMeasurement);
 
   /** If slowmode should be enabled or not. */
   private boolean slowmode = Driving.SLOWMODE_DEFAULT;
@@ -380,7 +380,7 @@ public class SwerveSubsystem extends SubsystemBase {
               Volts.of(6),
               Seconds.of(12),
               IS_TALONFX
-                  ? ((state) -> Logger.recordOutput("AzimuthSysIDTestState", state.toString()))
+                  ? ((state) -> SignalLogger.writeString("DriveSysIDTestState,", state.toString()))
                   : ((state) -> Logger.recordOutput("DriveSysIDTestState", state.toString()))),
           new Mechanism(this::runDriveCharacterization, null, this));
   ;
@@ -397,60 +397,26 @@ public class SwerveSubsystem extends SubsystemBase {
         driveSysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse));
   }
 
-  SysIdRoutine azimuthSysIDRoutine;
+  SysIdRoutine azimuthSysIDRoutine =
+      new SysIdRoutine(
+          new Config(
+              // Adjust as needed. Quasistatic test should reach max output at the same time as the
+              // timeout, IE 1 volt per second with 12 second timeout would reach max output of 12
+              // volts then timeout.
+              Volts.of(1).per(Second),
+              Volts.of(6),
+              Seconds.of(12),
+              IS_TALONFX
+                  ? ((state) ->
+                      SignalLogger.writeString("AzimuthSysIDTestState,", state.toString()))
+                  : ((state) -> Logger.recordOutput("AzimuthSysIDTestState", state.toString()))),
+          new Mechanism(this::runAzimuthCharacterization, null, this));
+  ;
 
   /**
    * Command factory for running azimuth system characterization using URCL logging. For REV users.
    */
-  public Command getAzimuthSysIDURCL() {
-    azimuthSysIDRoutine =
-        new SysIdRoutine(
-            new Config(
-                Volts.of(2).per(Second),
-                Volts.of(6),
-                Seconds.of(6),
-                (state) -> Logger.recordOutput("AzimuthSysIDTestState", state.toString())),
-            new Mechanism((voltage) -> runAzimuthCharacterization(voltage), null, this));
-    return sequence(
-        // runOnce(
-        //     () ->
-        //         azimuthSysIDRoutine =
-        //             new SysIdRoutine(
-        //                 new Config(
-        //                     Volts.of(1).per(Second),
-        //                     Volts.of(6),
-        //                     Seconds.of(12),
-        //                     (state) ->
-        //                         Logger.recordOutput("AzimuthSysIDTestState", state.toString())),
-        //                 new Mechanism(
-        //                     (voltage) -> runAzimuthCharacterization(voltage), null, this))),
-        azimuthSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
-        waitSeconds(2),
-        azimuthSysIDRoutine.quasistatic(SysIdRoutine.Direction.kReverse),
-        waitSeconds(2),
-        azimuthSysIDRoutine.dynamic(SysIdRoutine.Direction.kForward),
-        waitSeconds(2),
-        azimuthSysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse));
-  }
-
-  /**
-   * Command factory for running drive system characterization using CTRE's SignalLogger. For
-   * TalonFX users.
-   *
-   * <p>Unlike voltage-based control modes, the TalonFX controller's TorqueControlFOC control mode
-   * controls acceleration via amperage. The dynamic tests linearly accelerate instead of staying at
-   * one velocity, and the quasistatic tests quadratically accelerate instead of linearly increasing
-   * in velocity.
-   */
-  public Command getAzimuthSysIDCTRE() {
-    azimuthSysIDRoutine =
-        new SysIdRoutine(
-            new Config(
-                Volts.of(5).per(Second),
-                Volts.of(20),
-                Seconds.of(8),
-                (state) -> Logger.recordOutput("AzimuthSysIDTestState", state.toString())),
-            new Mechanism((voltage) -> runAzimuthCharacterization(voltage), null, this));
+  public Command getAzimuthSysID() {
     return sequence(
         azimuthSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
         waitSeconds(2),
