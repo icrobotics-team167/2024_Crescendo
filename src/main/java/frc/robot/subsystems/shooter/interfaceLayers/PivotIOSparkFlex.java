@@ -163,8 +163,8 @@ public class PivotIOSparkFlex implements PivotIO {
 
   @Override
   public void setRawControl(Measure<Voltage> voltage) {
-    leaderMotor.setVoltage(voltage.in(Volts));
-    followerMotor.setVoltage(voltage.in(Volts));
+    leaderSetpoint = voltage.in(Volts);
+    followerSetpoint = voltage.in(Volts);
   }
 
   @Override
