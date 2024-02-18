@@ -177,7 +177,7 @@ public class ModuleIOSparkMax implements ModuleIO {
       case 0: // Front Left
         driveSparkMax = new CANSparkMax(2, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(3, MotorType.kBrushless);
-        azimuthCANcoder = new CANcoder(18);
+        azimuthCANcoder = new CANcoder(18, "Croppenheimer");
         absoluteEncoderOffset = -0.270263671875;
 
         drive_kS = 0;
@@ -193,7 +193,7 @@ public class ModuleIOSparkMax implements ModuleIO {
       case 1: // Front Right
         driveSparkMax = new CANSparkMax(4, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(5, MotorType.kBrushless);
-        azimuthCANcoder = new CANcoder(17);
+        azimuthCANcoder = new CANcoder(17, "Croppenheimer");
         absoluteEncoderOffset = -0.106689453125;
 
         drive_kS = 0;
@@ -209,7 +209,7 @@ public class ModuleIOSparkMax implements ModuleIO {
       case 2: // Back Left
         driveSparkMax = new CANSparkMax(9, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(8, MotorType.kBrushless);
-        azimuthCANcoder = new CANcoder(16);
+        azimuthCANcoder = new CANcoder(16, "Croppenheimer");
         absoluteEncoderOffset = -0.1962890625;
 
         drive_kS = 0;
@@ -225,7 +225,7 @@ public class ModuleIOSparkMax implements ModuleIO {
       case 3: // Back Right
         driveSparkMax = new CANSparkMax(6, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(7, MotorType.kBrushless);
-        azimuthCANcoder = new CANcoder(15);
+        azimuthCANcoder = new CANcoder(15, "Croppenheimer");
         absoluteEncoderOffset = 0.481201171875;
 
         drive_kS = 0;

@@ -27,5 +27,7 @@ public interface IntakeIO {
 
   public default void run() {}
 
+  public default void runReverse() {}
+
   public default void stop() {}
 }

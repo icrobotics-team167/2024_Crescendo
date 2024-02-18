@@ -51,6 +51,10 @@ public class Shooter {
     return intake.getIntakeCommand();
   }
 
+  public Command intakeOut() {
+    return intake.getIntakeOutCommand();
+  }
+
   public Command autoIntake() {
     return parallel(intake.getIntakeCommand(), feeder.getFeedCommand())
         .until(noteDetector::hasNote)

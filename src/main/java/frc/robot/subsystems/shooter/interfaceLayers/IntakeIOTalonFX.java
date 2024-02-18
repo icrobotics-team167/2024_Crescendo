@@ -14,14 +14,21 @@
 
 package frc.robot.subsystems.shooter.interfaceLayers;
 
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
+import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.controls.*;
+import com.ctre.phoenix6.hardware.*;
 
-public class IntakeIOSparkMax implements IntakeIO {
-  private final CANSparkMax motor;
+public class IntakeIOTalonFX implements IntakeIO {
+  // private final CANSparkMax motor;
+  private final TalonFX motor;
+  private final CurrentLimitsConfigs configs = new CurrentLimitsConfigs();
 
-  public IntakeIOSparkMax() {
-    motor = new CANSparkMax(10, MotorType.kBrushless);
+  public IntakeIOTalonFX() {
+    // motor = new CANSparkMax(10, MotorType.kBrushless);
+    motor = new TalonFX(10, "Croppenheimer");
+    configs.withStatorCurrentLimit(60).withStatorCurrentLimitEnable(true);
+    configs.withSupplyCurrentLimit(40).withSupplyCurrentLimitEnable(true);
+    motor.getConfigurator().apply(configs);
   }
 
   @Override

@@ -397,18 +397,6 @@ public class SwerveSubsystem extends SubsystemBase {
         driveSysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse));
   }
 
-  SysIdRoutine azimuthSysIDRoutine =
-      new SysIdRoutine(
-          new Config(
-              Volts.of(1).per(Second),
-              Volts.of(6),
-              Seconds.of(12),
-              IS_TALONFX
-                  ? ((state) -> Logger.recordOutput("AzimuthSysIDTestState", state.toString()))
-                  : ((state) -> Logger.recordOutput("DriveSysIDTestState", state.toString()))),
-          new Mechanism(this::runAzimuthCharacterization, null, this));
-  ;
-
   SysIdRoutine azimuthSysIDRoutine;
 
   /**

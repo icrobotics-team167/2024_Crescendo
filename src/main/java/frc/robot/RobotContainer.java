@@ -66,7 +66,7 @@ public class RobotContainer {
                 new FlywheelIOSparkFlex(),
                 new PivotIOSparkFlex(),
                 new NoteDetectorIOTimeOfFlight(),
-                new IntakeIOSparkMax());
+                new IntakeIOTalonFX());
         break;
       case SIM:
         drivebase =
@@ -101,7 +101,8 @@ public class RobotContainer {
                 new IntakeIO() {});
     }
     NamedCommands.registerCommand("Score in speaker", none()); // TODO: Implement
-    NamedCommands.registerCommand("Intake", none());
+    NamedCommands.registerCommand("Intake", none()); // TODO: Implement
+    NamedCommands.registerCommand("Intake Out", none()); // TODO: Implement
 
     // Configure the trigger bindings
     configureBindings();
@@ -147,6 +148,7 @@ public class RobotContainer {
     // primaryLeftStick.button(2).whileTrue(drivebase.getAzimuthSysIDURCL());
 
     secondaryRightStick.trigger().whileTrue(shooter.autoIntake());
+    secondaryRightStick.button(2).whileTrue(shooter.intakeOut());
     secondaryLeftStick
         .trigger()
         .whileTrue(

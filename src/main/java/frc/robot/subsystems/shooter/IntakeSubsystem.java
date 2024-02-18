@@ -37,4 +37,8 @@ public class IntakeSubsystem extends SubsystemBase {
   public Command getIntakeCommand() {
     return run(io::run).finallyDo(io::stop);
   }
+
+  public Command getIntakeOutCommand() {
+    return run(io::runReverse).finallyDo(io::stop);
+  }
 }
