@@ -374,18 +374,15 @@ public class SwerveSubsystem extends SubsystemBase {
    * Command factory for running drive system characterization using URCL logging. For REV users.
    */
   public Command getDriveSysIDURCL() {
+    driveSysIDRoutine =
+        new SysIdRoutine(
+            new Config(
+                Volts.of(1).per(Second),
+                Volts.of(6),
+                Seconds.of(12),
+                (state) -> Logger.recordOutput("DriveSysIDTestState", state.toString())),
+            new Mechanism((voltage) -> runDriveCharacterization(voltage), null, this));
     return sequence(
-        runOnce(
-            () ->
-                driveSysIDRoutine =
-                    new SysIdRoutine(
-                        new Config(
-                            Volts.of(1).per(Second),
-                            Volts.of(6),
-                            Seconds.of(12),
-                            (state) ->
-                                Logger.recordOutput("DriveSysIDTestState", state.toString())),
-                        new Mechanism((voltage) -> runDriveCharacterization(voltage), null, this))),
         driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
         waitSeconds(2),
         driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kReverse),
@@ -405,19 +402,15 @@ public class SwerveSubsystem extends SubsystemBase {
    * in velocity.
    */
   public Command getDriveSysIDCTRE() {
+    driveSysIDRoutine =
+        new SysIdRoutine(
+            new Config(
+                Volts.of(10).per(Second),
+                Volts.of(60),
+                Seconds.of(12),
+                (state) -> SignalLogger.writeString("DriveSysIDState", state.toString())),
+            new Mechanism((voltage) -> runAzimuthCharacterization(voltage), null, this));
     return sequence(
-        runOnce(
-            () ->
-                driveSysIDRoutine =
-                    new SysIdRoutine(
-                        new Config(
-                            Volts.of(10).per(Second),
-                            Volts.of(60),
-                            Seconds.of(12),
-                            (state) ->
-                                SignalLogger.writeString("DriveSysIDState", state.toString())),
-                        new Mechanism(
-                            (voltage) -> runAzimuthCharacterization(voltage), null, this))),
         driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
         runOnce(() -> stop()),
         waitSeconds(2),
@@ -438,13 +431,13 @@ public class SwerveSubsystem extends SubsystemBase {
    */
   public Command getAzimuthSysIDURCL() {
     azimuthSysIDRoutine =
-      new SysIdRoutine(
-          new Config(
-              Volts.of(1).per(Second),
-              Volts.of(6),
-              Seconds.of(12),
-              (state) -> Logger.recordOutput("AzimuthSysIDTestState", state.toString())),
-          new Mechanism((voltage) -> runAzimuthCharacterization(voltage), null, this));
+        new SysIdRoutine(
+            new Config(
+                Volts.of(1).per(Second),
+                Volts.of(6),
+                Seconds.of(12),
+                (state) -> Logger.recordOutput("AzimuthSysIDTestState", state.toString())),
+            new Mechanism((voltage) -> runAzimuthCharacterization(voltage), null, this));
     return sequence(
         // runOnce(
         //     () ->
@@ -477,19 +470,15 @@ public class SwerveSubsystem extends SubsystemBase {
    * in velocity.
    */
   public Command getAzimuthSysIDCTRE() {
+    azimuthSysIDRoutine =
+        new SysIdRoutine(
+            new Config(
+                Volts.of(5).per(Second),
+                Volts.of(20),
+                Seconds.of(8),
+                (state) -> Logger.recordOutput("AzimuthSysIDTestState", state.toString())),
+            new Mechanism((voltage) -> runAzimuthCharacterization(voltage), null, this));
     return sequence(
-        runOnce(
-            () ->
-                azimuthSysIDRoutine =
-                    new SysIdRoutine(
-                        new Config(
-                            Volts.of(5).per(Second),
-                            Volts.of(20),
-                            Seconds.of(8),
-                            (state) ->
-                                Logger.recordOutput("AzimuthSysIDTestState", state.toString())),
-                        new Mechanism(
-                            (voltage) -> runAzimuthCharacterization(voltage), null, this))),
         azimuthSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
         waitSeconds(2),
         azimuthSysIDRoutine.quasistatic(SysIdRoutine.Direction.kReverse),
