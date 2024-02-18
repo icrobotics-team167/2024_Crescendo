@@ -17,7 +17,6 @@ package frc.robot.subsystems.swerve;
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
-import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -368,20 +367,26 @@ public class SwerveSubsystem extends SubsystemBase {
         });
   }
 
-  SysIdRoutine driveSysIDRoutine;
+  // Set to true if you are using TalonFX motors.
+  private final boolean IS_TALONFX = false;
 
-  /**
-   * Command factory for running drive system characterization using URCL logging. For REV users.
-   */
-  public Command getDriveSysIDURCL() {
-    driveSysIDRoutine =
-        new SysIdRoutine(
-            new Config(
-                Volts.of(1).per(Second),
-                Volts.of(6),
-                Seconds.of(12),
-                (state) -> Logger.recordOutput("DriveSysIDTestState", state.toString())),
-            new Mechanism((voltage) -> runDriveCharacterization(voltage), null, this));
+  SysIdRoutine driveSysIDRoutine =
+      new SysIdRoutine(
+          new Config(
+              // Adjust as needed. Quasistatic test should reach max output at the same time as the
+              // timeout, IE 1 volt per second with 12 second timeout would reach max output of 12
+              // volts then timeout.
+              Volts.of(1).per(Second),
+              Volts.of(6),
+              Seconds.of(12),
+              IS_TALONFX
+                  ? ((state) -> Logger.recordOutput("AzimuthSysIDTestState", state.toString()))
+                  : ((state) -> Logger.recordOutput("DriveSysIDTestState", state.toString()))),
+          new Mechanism(this::runDriveCharacterization, null, this));
+  ;
+
+  /** Command factory for running drive system characterization. */
+  public Command getDriveSysID() {
     return sequence(
         driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
         waitSeconds(2),
@@ -392,37 +397,17 @@ public class SwerveSubsystem extends SubsystemBase {
         driveSysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse));
   }
 
-  /**
-   * Command factory for running drive system characterization using CTRE's SignalLogger. For
-   * TalonFX users.
-   *
-   * <p>Unlike voltage-based control modes, the TalonFX controller's TorqueControlFOC control mode
-   * controls acceleration via amperage. The dynamic tests linearly accelerate instead of staying at
-   * one velocity, and the quasistatic tests quadratically accelerate instead of linearly increasing
-   * in velocity.
-   */
-  public Command getDriveSysIDCTRE() {
-    driveSysIDRoutine =
-        new SysIdRoutine(
-            new Config(
-                Volts.of(10).per(Second),
-                Volts.of(60),
-                Seconds.of(12),
-                (state) -> SignalLogger.writeString("DriveSysIDState", state.toString())),
-            new Mechanism((voltage) -> runAzimuthCharacterization(voltage), null, this));
-    return sequence(
-        driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
-        runOnce(() -> stop()),
-        waitSeconds(2),
-        driveSysIDRoutine.quasistatic(SysIdRoutine.Direction.kReverse),
-        runOnce(() -> stop()),
-        waitSeconds(2),
-        driveSysIDRoutine.dynamic(SysIdRoutine.Direction.kForward),
-        runOnce(() -> stop()),
-        waitSeconds(2),
-        driveSysIDRoutine.dynamic(SysIdRoutine.Direction.kReverse),
-        runOnce(() -> stop()));
-  }
+  SysIdRoutine azimuthSysIDRoutine =
+      new SysIdRoutine(
+          new Config(
+              Volts.of(1).per(Second),
+              Volts.of(6),
+              Seconds.of(12),
+              IS_TALONFX
+                  ? ((state) -> Logger.recordOutput("AzimuthSysIDTestState", state.toString()))
+                  : ((state) -> Logger.recordOutput("DriveSysIDTestState", state.toString()))),
+          new Mechanism(this::runAzimuthCharacterization, null, this));
+  ;
 
   SysIdRoutine azimuthSysIDRoutine;
 
