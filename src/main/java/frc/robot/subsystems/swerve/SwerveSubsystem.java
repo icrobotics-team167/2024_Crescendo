@@ -437,19 +437,27 @@ public class SwerveSubsystem extends SubsystemBase {
    * Command factory for running azimuth system characterization using URCL logging. For REV users.
    */
   public Command getAzimuthSysIDURCL() {
+    azimuthSysIDRoutine =
+      new SysIdRoutine(
+          new Config(
+              Volts.of(1).per(Second),
+              Volts.of(6),
+              Seconds.of(12),
+              (state) -> Logger.recordOutput("AzimuthSysIDTestState", state.toString())),
+          new Mechanism((voltage) -> runAzimuthCharacterization(voltage), null, this));
     return sequence(
-        runOnce(
-            () ->
-                azimuthSysIDRoutine =
-                    new SysIdRoutine(
-                        new Config(
-                            Volts.of(1).per(Second),
-                            Volts.of(6),
-                            Seconds.of(12),
-                            (state) ->
-                                Logger.recordOutput("AzimuthSysIDTestState", state.toString())),
-                        new Mechanism(
-                            (voltage) -> runAzimuthCharacterization(voltage), null, this))),
+        // runOnce(
+        //     () ->
+        //         azimuthSysIDRoutine =
+        //             new SysIdRoutine(
+        //                 new Config(
+        //                     Volts.of(1).per(Second),
+        //                     Volts.of(6),
+        //                     Seconds.of(12),
+        //                     (state) ->
+        //                         Logger.recordOutput("AzimuthSysIDTestState", state.toString())),
+        //                 new Mechanism(
+        //                     (voltage) -> runAzimuthCharacterization(voltage), null, this))),
         azimuthSysIDRoutine.quasistatic(SysIdRoutine.Direction.kForward),
         waitSeconds(2),
         azimuthSysIDRoutine.quasistatic(SysIdRoutine.Direction.kReverse),
