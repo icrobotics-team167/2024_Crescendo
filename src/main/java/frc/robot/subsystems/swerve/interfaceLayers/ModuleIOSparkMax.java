@@ -31,10 +31,8 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.*;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Robot;
 import frc.robot.subsystems.swerve.Module;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.util.SwerveUtils;
@@ -71,8 +69,6 @@ public class ModuleIOSparkMax implements ModuleIO {
   private final PIDController azimuthPIDController;
   /** The FF constants of the azimuth motor. */
   private final SimpleMotorFeedforward azimuthFF;
-
-  private final TrapezoidProfile azimuthProfile;
   /** The absolute encoder for azimuth. */
   private final CANcoder azimuthCANcoder;
   /**
@@ -270,10 +266,6 @@ public class ModuleIOSparkMax implements ModuleIO {
     azimuthVelocity = azimuthCANcoder.getVelocity();
     azimuthVelocity.setUpdateFrequency(50);
     azimuthCANcoder.optimizeBusUtilization();
-    azimuthProfile =
-        new TrapezoidProfile(
-            new TrapezoidProfile.Constraints(
-                RotationsPerSecond.of(10), RotationsPerSecond.per(Second).of(50)));
 
     // The motor output in rotations is multiplied by this factor.
     driveEncoder.setPositionConversionFactor(
@@ -385,17 +377,9 @@ public class ModuleIOSparkMax implements ModuleIO {
   @Override
   public void setAzimuthPosition(Rotation2d position) {
     BaseStatusSignal.refreshAll(azimuthAbsolutePosition, azimuthVelocity);
-    double velocitySetpoint =
-        azimuthProfile.calculate(
-                Robot.defaultPeriodSecs,
-                new TrapezoidProfile.State(
-                    Rotations.of(azimuthAbsolutePosition.getValueAsDouble()),
-                    RotationsPerSecond.of(azimuthVelocity.getValueAsDouble())),
-                new TrapezoidProfile.State(Rotations.of(position.getRotations()), RPM.of(0)))
-            .velocity;
     azimuthSparkMax.setVoltage(
-        azimuthPIDController.calculate(azimuthVelocity.getValueAsDouble(), velocitySetpoint)
-            + azimuthFF.calculate(velocitySetpoint));
+        azimuthPIDController.calculate(azimuthVelocity.getValueAsDouble(), position.getRotations())
+            + azimuthFF.calculate(azimuthVelocity.getValueAsDouble()));
   }
 
   @Override
