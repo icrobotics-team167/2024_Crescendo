@@ -148,6 +148,7 @@ public class RobotContainer {
     // primaryLeftStick.button(2).whileTrue(drivebase.getAzimuthSysIDURCL());
 
     secondaryRightStick.trigger().whileTrue(shooter.autoIntake());
+    secondaryRightStick.button(4).whileTrue(shooter.feed());
     secondaryRightStick.button(2).whileTrue(shooter.intakeOut());
     secondaryRightStick.button(3).whileTrue(shooter.shoot());
     secondaryLeftStick

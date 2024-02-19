@@ -57,7 +57,7 @@ public class FeederIOSparkFlex implements FeederIO {
 
   @Override
   public void runForwards() {
-    motor.set(0.35);
+    motor.set(1);
   }
 
   @Override

@@ -181,7 +181,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         absoluteEncoderOffset = -0.270263671875;
 
         drive_kS = 0;
-        drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
+        drive_kV = 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
         drive_kP = 1;
         drive_kD = 0;
 
@@ -197,7 +197,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         absoluteEncoderOffset = -0.106689453125;
 
         drive_kS = 0;
-        drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
+        drive_kV = 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
         drive_kP = 1;
         drive_kD = 0;
 
@@ -213,7 +213,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         absoluteEncoderOffset = -0.1962890625;
 
         drive_kS = 0;
-        drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
+        drive_kV = 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
         drive_kP = 1;
         drive_kD = 0;
 
@@ -229,7 +229,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         absoluteEncoderOffset = 0.481201171875;
 
         drive_kS = 0;
-        drive_kV = SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond) / 12;
+        drive_kV = 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
         drive_kP = 1;
         drive_kD = 0;
 

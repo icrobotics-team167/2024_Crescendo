@@ -40,7 +40,7 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
     bottomFlywheel.setInverted(false);
     bottomFlywheel.setIdleMode(IdleMode.kCoast);
     bottomFlywheel.setSmartCurrentLimit(60);
-    topFlywheel.setInverted(true);
+    topFlywheel.setInverted(false);
     topFlywheel.setIdleMode(IdleMode.kCoast);
     bottomFlywheel.setSmartCurrentLimit(60);
     SparkUtils.configureFrameStrategy(
@@ -79,10 +79,20 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
         Volts.of(bottomFlywheel.getAppliedOutput() * bottomFlywheel.getBusVoltage());
   }
 
+  private final double targetRPM = 4000;
   @Override
   public void runSpeaker() {
-    bottomFlywheel.setVoltage(12);
-    topFlywheel.setVoltage(12);
+    if (bottomFlywheel.getEncoder().getVelocity() < targetRPM) {
+      bottomFlywheel.setVoltage(12);
+    } else {
+      bottomFlywheel.setVoltage(0);
+    }
+    
+    if (topFlywheel.getEncoder().getVelocity() < targetRPM) {
+      topFlywheel.setVoltage(12);
+    } else {
+      topFlywheel.setVoltage(0);
+    }
   }
 
   @Override

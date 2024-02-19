@@ -64,7 +64,7 @@ public class PivotIOSparkFlex implements PivotIO {
 
     leaderEncoder = leaderMotor.getEncoder();
     leaderMotor.setIdleMode(IdleMode.kBrake);
-    leaderMotor.setInverted(false);
+    leaderMotor.setInverted(true);
     leaderMotor.setSmartCurrentLimit(60);
     leaderEncoder.setPositionConversionFactor(360.0 / 400.0);
     leaderEncoder.setVelocityConversionFactor((360.0 / 400.0) / 60.0);
@@ -79,7 +79,7 @@ public class PivotIOSparkFlex implements PivotIO {
         false);
 
     followerEncoder = followerMotor.getEncoder();
-    followerMotor.setInverted(true);
+    followerMotor.setInverted(false);
     followerMotor.setIdleMode(IdleMode.kBrake);
     followerMotor.setSmartCurrentLimit(60);
     followerEncoder.setPositionConversionFactor(360.0 / 400.0);
@@ -197,12 +197,17 @@ public class PivotIOSparkFlex implements PivotIO {
 
   /** Gets the angle of the pivot mechanism. */
   private Rotation2d getAngle() {
-    double rawAngle = encoder.getAbsolutePosition() + Rotations.convertFrom(.94, Radians);
+    double rawAngle = encoder.getAbsolutePosition() - (134.0 / 360);
     return Rotation2d.fromRotations(angleFilter.calculate(rawAngle));
   }
 
   /** Run the motors at the specified pivot velocity. */
   private void runMotor(Measure<Velocity<Angle>> pivotVel) {
+    if ((pivotVel.baseUnitMagnitude() < 0 && getAngle().getDegrees() <= PivotIO.MIN_ANGLE)
+        || (pivotVel.baseUnitMagnitude() > 0 && getAngle().getDegrees() >= PivotIO.MAX_ANGLE)) {
+      return;
+    }
+
     Logger.recordOutput("Shooter/pivot/targetVel", -pivotVel.in(RadiansPerSecond));
     leaderSetpoint =
         -(leaderPidController.calculate(-leaderEncoder.getVelocity(), pivotVel.in(DegreesPerSecond))
