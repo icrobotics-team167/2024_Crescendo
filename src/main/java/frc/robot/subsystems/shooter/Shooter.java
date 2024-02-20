@@ -23,6 +23,7 @@ import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIO;
 import frc.robot.subsystems.shooter.interfaceLayers.IntakeIO;
 import frc.robot.subsystems.shooter.interfaceLayers.NoteDetectorIO;
 import frc.robot.subsystems.shooter.interfaceLayers.PivotIO;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.function.DoubleSupplier;
 
 /** A class containing all the logic and commands to make the shooter mechanism work. */
@@ -105,12 +106,38 @@ public class Shooter {
   public Command getSpeakerShotCommand() {
     return parallel(
             parallel(
-                pivot.getPivotCommand(() -> Rotation2d.fromDegrees(0)),
+                pivot.getPivotCommand(() -> Rotation2d.fromDegrees(30)),
                 flywheel.getSpeakerShotCommand()),
-            waitUntil(
-                    () ->
-                        flywheel.isUpToSpeed() && Math.abs(pivot.getAngle().getDegrees() - 90) < 2)
-                .andThen(feeder.getFeedCommand()))
+            waitUntil(() -> flywheel.isUpToSpeed()).andThen(feeder.getFeedCommand()))
+        .until(() -> !noteDetector.hasNote());
+  }
+
+  public Command getTeleopAutoAimCommand(
+      SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
+    return parallel(
+            pivot.getPivotCommand(
+                () -> {
+                  // Magic code Spencer and Chris wrote
+                  // TODO: Fix scalar
+                  double ty = drivebase.visionPoseEstimator.getTY();
+                  double MIN_ANGLE = 0;
+                  double MAX_ANGLE = 60;
+                  double MAX_TY = 32.1;
+                  double MIN_TY = 0;
+                  double SCALAR = 1;
+
+                  double angle = SCALAR * (((ty - MIN_TY) * ((MAX_ANGLE - MIN_ANGLE) / MAX_TY)) - MIN_ANGLE);
+                  return Rotation2d.fromDegrees(angle);
+                }),
+            drivebase.getDriveCommand(
+                xVel,
+                yVel,
+                () -> {
+                  double tx = drivebase.visionPoseEstimator.getTX();
+                  return tx / -75.0;
+                }),
+            flywheel.getSpeakerShotCommand(),
+            waitUntil(flywheel::isUpToSpeed).andThen(feeder.getFeedCommand()))
         .until(() -> !noteDetector.hasNote());
   }
 }

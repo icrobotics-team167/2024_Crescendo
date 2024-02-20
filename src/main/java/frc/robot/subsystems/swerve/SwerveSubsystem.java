@@ -99,7 +99,7 @@ public class SwerveSubsystem extends SubsystemBase {
   /** The pose estimator, used to fuse odometry data and vision data together. */
   private SwerveDrivePoseEstimator poseEstimator;
   /** The vision-based pose estimator. */
-  private VisionSubsystem visionPoseEstimator = new VisionSubsystem(this::addVisionMeasurement);
+  public VisionSubsystem visionPoseEstimator = new VisionSubsystem(this::addVisionMeasurement);
 
   /** If slowmode should be enabled or not. */
   private boolean slowmode = Driving.SLOWMODE_DEFAULT;
