@@ -70,18 +70,20 @@ public class Shooter {
   }
 
   public Command getAmpShotCommand() {
-    return parallel(
-            parallel(
-                // Get up to 90 degrees pivot
-                pivot.getPivotCommand(() -> Rotation2d.fromDegrees(90)),
-                // Spin up flywheels
-                flywheel.getAmpShotCommand()),
-            // Once the flywheels are up to speed and the pivot is at the setpoint, feed the note
-            waitUntil(
-                    () ->
-                        flywheel.isUpToSpeed() && Math.abs(pivot.getAngle().getDegrees() - 90) < 2)
-                .andThen(feeder.getFeedCommand()))
-        .until(() -> !noteDetector.hasNote()); // Stop when note is launched
+    return flywheel.getAmpShotCommand();
+    // return parallel(
+    //         parallel(
+    //             // Get up to 90 degrees pivot
+    //             pivot.getPivotCommand(() -> Rotation2d.fromDegrees(90)),
+    //             // Spin up flywheels
+    //             flywheel.getAmpShotCommand()),
+    //         // Once the flywheels are up to speed and the pivot is at the setpoint, feed the note
+    //         waitUntil(
+    //                 () ->
+    //                     flywheel.isUpToSpeed() && Math.abs(pivot.getAngle().getDegrees() - 90) <
+    // 2)
+    //             .andThen(feeder.getFeedCommand()))
+    //     .until(() -> !noteDetector.hasNote()); // Stop when note is launched
   }
 
   public Command getPivotVelSysIdCommand() {

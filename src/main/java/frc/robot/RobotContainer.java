@@ -162,6 +162,7 @@ public class RobotContainer {
                         Driving.Deadbands.SECONDARY_LEFT_OUTER,
                         Driving.SECONDARY_DRIVER_EXPONENT)));
     // shooter.setPivotDefaultCommand(none());
+    secondaryLeftStick.button(3).whileTrue(shooter.getAmpShotCommand());
   }
 
   /**
