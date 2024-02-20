@@ -69,8 +69,6 @@ public class ModuleIOSparkMax implements ModuleIO {
   private final SimpleMotorFeedforward driveFF;
   /** The PID controller for the azimuth motor. */
   private final PIDController azimuthPIDController;
-  /** The FF constants of the azimuth motor. */
-  private final SimpleMotorFeedforward azimuthFF;
   /** The absolute encoder for azimuth. */
   private final CANcoder azimuthCANcoder;
   /**
@@ -167,8 +165,6 @@ public class ModuleIOSparkMax implements ModuleIO {
     // a PID controller from hitting its target, such as gravity for an arm. Factors like friction
     // and inertia can be accounted for using kS and kV.
     double drive_kD; // % Output per m/s^2 of error derivative
-    double azimuth_kS;
-    double azimuth_kV; // Volts of additional voltage per rot/s of velocity
     double azimuth_kP; // % Output per rotation of error
     double azimuth_KD; // % Output per rotations/s of error derivative
     switch (index) {
@@ -183,8 +179,6 @@ public class ModuleIOSparkMax implements ModuleIO {
         drive_kP = 1;
         drive_kD = 0;
 
-        azimuth_kS = 0;
-        azimuth_kV = 0;
         azimuth_kP = 0;
         azimuth_KD = 0.0;
         break;
@@ -199,8 +193,6 @@ public class ModuleIOSparkMax implements ModuleIO {
         drive_kP = 1;
         drive_kD = 0;
 
-        azimuth_kS = 0;
-        azimuth_kV = 0;
         azimuth_kP = 0;
         azimuth_KD = 0.0;
         break;
@@ -215,8 +207,6 @@ public class ModuleIOSparkMax implements ModuleIO {
         drive_kP = 1;
         drive_kD = 0;
 
-        azimuth_kS = 0;
-        azimuth_kV = 0;
         azimuth_kP = 0;
         azimuth_KD = 0.0;
         break;
@@ -231,8 +221,6 @@ public class ModuleIOSparkMax implements ModuleIO {
         drive_kP = 1;
         drive_kD = 0;
 
-        azimuth_kS = 0;
-        azimuth_kV = 0;
         azimuth_kP = 0;
         azimuth_KD = 0;
         break;
@@ -295,7 +283,6 @@ public class ModuleIOSparkMax implements ModuleIO {
 
     azimuthPIDController = new PIDController(azimuth_kP, 0, azimuth_KD);
     azimuthPIDController.enableContinuousInput(-0.5, 0.5);
-    azimuthFF = new SimpleMotorFeedforward(azimuth_kS, azimuth_kV);
 
     Timer.delay(0.1);
     driveSparkMax.burnFlash();
@@ -378,10 +365,10 @@ public class ModuleIOSparkMax implements ModuleIO {
 
   @Override
   public void setAzimuthPosition(Rotation2d position) {
-    BaseStatusSignal.refreshAll(azimuthAbsolutePosition, azimuthVelocity);
+    BaseStatusSignal.refreshAll(azimuthAbsolutePosition);
     azimuthSparkMax.setVoltage(
-        azimuthPIDController.calculate(azimuthVelocity.getValueAsDouble(), position.getRotations())
-            + azimuthFF.calculate(azimuthVelocity.getValueAsDouble()));
+        azimuthPIDController.calculate(
+            azimuthVelocity.getValueAsDouble(), position.getRotations()));
   }
 
   @Override
