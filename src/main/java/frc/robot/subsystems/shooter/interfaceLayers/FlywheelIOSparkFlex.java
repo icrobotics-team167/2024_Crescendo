@@ -20,6 +20,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.util.CANConstants.Shooter;
 import frc.robot.util.motorUtils.SparkUtils;
 import java.util.Set;
 
@@ -28,8 +29,8 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
   private final CANSparkFlex bottomFlywheel;
 
   public FlywheelIOSparkFlex() {
-    topFlywheel = new CANSparkFlex(22, MotorType.kBrushless);
-    bottomFlywheel = new CANSparkFlex(21, MotorType.kBrushless);
+    topFlywheel = new CANSparkFlex(Shooter.TOP_FLYWHEEL, MotorType.kBrushless);
+    bottomFlywheel = new CANSparkFlex(Shooter.BOTTOM_FLYWHEEL, MotorType.kBrushless);
 
     topFlywheel.restoreFactoryDefaults();
     bottomFlywheel.restoreFactoryDefaults();

@@ -15,8 +15,9 @@
 package frc.robot.subsystems.shooter.interfaceLayers;
 
 import com.ctre.phoenix6.configs.*;
-import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.*;
+import frc.robot.util.CANConstants;
+import frc.robot.util.CANConstants.Shooter;
 
 public class IntakeIOTalonFX implements IntakeIO {
   // private final CANSparkMax motor;
@@ -24,8 +25,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   private final CurrentLimitsConfigs configs = new CurrentLimitsConfigs();
 
   public IntakeIOTalonFX() {
-    // motor = new CANSparkMax(10, MotorType.kBrushless);
-    motor = new TalonFX(10, "Croppenheimer");
+    motor = new TalonFX(Shooter.INTAKE, CANConstants.CANIVORE_NAME);
     configs.StatorCurrentLimit = 60;
     configs.StatorCurrentLimitEnable = true;
     configs.SupplyCurrentLimit = 40;

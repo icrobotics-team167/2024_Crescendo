@@ -20,12 +20,13 @@ import static edu.wpi.first.units.Units.Millimeters;
 import com.playingwithfusion.TimeOfFlight;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
 import edu.wpi.first.math.filter.LinearFilter;
+import frc.robot.util.CANConstants.Shooter;
 
 public class NoteDetectorIOTimeOfFlight implements NoteDetectorIO {
   private final TimeOfFlight sensor;
 
   public NoteDetectorIOTimeOfFlight() {
-    sensor = new TimeOfFlight(32);
+    sensor = new TimeOfFlight(Shooter.NOTE_DETECTOR);
     sensor.setRangingMode(RangingMode.Short, 24);
   }
 

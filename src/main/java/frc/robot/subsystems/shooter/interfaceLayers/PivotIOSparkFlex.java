@@ -29,6 +29,7 @@ import edu.wpi.first.units.*;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Robot;
+import frc.robot.util.CANConstants.Shooter;
 import frc.robot.util.motorUtils.SparkUtils;
 import java.util.Set;
 import org.littletonrobotics.junction.Logger;
@@ -53,8 +54,8 @@ public class PivotIOSparkFlex implements PivotIO {
   public PivotIOSparkFlex() {
     encoder = new DutyCycleEncoder(0);
 
-    leaderMotor = new CANSparkFlex(20, MotorType.kBrushless);
-    followerMotor = new CANSparkFlex(19, MotorType.kBrushless);
+    leaderMotor = new CANSparkFlex(Shooter.PIVOT_LEADER, MotorType.kBrushless);
+    followerMotor = new CANSparkFlex(Shooter.PIVOT_FOLLOWER, MotorType.kBrushless);
     leaderMotor.restoreFactoryDefaults();
     followerMotor.restoreFactoryDefaults();
     Timer.delay(0.1);

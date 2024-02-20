@@ -35,6 +35,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.*;
 import frc.robot.subsystems.swerve.Module;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.util.CANConstants;
+import frc.robot.util.CANConstants.Drivebase;
 import frc.robot.util.SwerveUtils;
 import frc.robot.util.motorUtils.TalonUtils;
 import java.util.Queue;
@@ -268,9 +270,9 @@ public class ModuleIOTalonFX implements ModuleIO {
     double azimuth_kD; // Amps of current per rotations/s of error derivative
     switch (index) {
       case 0: // Front Left module
-        driveTalon = new TalonFX(0, "drivebase");
-        azimuthTalon = new TalonFX(1, "drivebase");
-        cancoder = new CANcoder(2, "drivebase");
+        driveTalon = new TalonFX(Drivebase.FRONT_LEFT_DRIVE, CANConstants.CANIVORE_NAME);
+        azimuthTalon = new TalonFX(Drivebase.FRONT_LEFT_TURN, CANConstants.CANIVORE_NAME);
+        cancoder = new CANcoder(Drivebase.FRONT_LEFT_ENCODER, CANConstants.CANIVORE_NAME);
         absoluteEncoderOffset = Rotation2d.fromDegrees(0); // TODO: Calibrate
         drive_kS = 0;
         drive_kV = 0;
@@ -287,9 +289,9 @@ public class ModuleIOTalonFX implements ModuleIO {
         azimuth_kD = 0;
         break;
       case 1: // Front Right modules
-        driveTalon = new TalonFX(3, "drivebase");
-        azimuthTalon = new TalonFX(4, "drivebase");
-        cancoder = new CANcoder(5, "drivebase");
+        driveTalon = new TalonFX(Drivebase.FRONT_RIGHT_DRIVE, CANConstants.CANIVORE_NAME);
+        azimuthTalon = new TalonFX(Drivebase.FRONT_RIGHT_TURN, CANConstants.CANIVORE_NAME);
+        cancoder = new CANcoder(Drivebase.FRONT_RIGHT_ENCODER, CANConstants.CANIVORE_NAME);
         absoluteEncoderOffset = Rotation2d.fromDegrees(0); // TODO: Calibrate
 
         drive_kS = 0;
@@ -307,9 +309,9 @@ public class ModuleIOTalonFX implements ModuleIO {
         azimuth_kD = 0;
         break;
       case 2: // Back Left modules
-        driveTalon = new TalonFX(6, "drivebase");
-        azimuthTalon = new TalonFX(7, "drivebase");
-        cancoder = new CANcoder(8, "drivebase");
+        driveTalon = new TalonFX(Drivebase.BACK_LEFT_DRIVE, CANConstants.CANIVORE_NAME);
+        azimuthTalon = new TalonFX(Drivebase.BACK_RIGHT_TURN, CANConstants.CANIVORE_NAME);
+        cancoder = new CANcoder(Drivebase.BACK_LEFT_ENCODER, CANConstants.CANIVORE_NAME);
         absoluteEncoderOffset = Rotation2d.fromDegrees(0); // TODO: Calibrate
 
         drive_kS = 0;
@@ -327,9 +329,9 @@ public class ModuleIOTalonFX implements ModuleIO {
         azimuth_kD = 0;
         break;
       case 3: // Back Right modules
-        driveTalon = new TalonFX(9, "drivebase");
-        azimuthTalon = new TalonFX(10, "drivebase");
-        cancoder = new CANcoder(11, "drivebase");
+        driveTalon = new TalonFX(Drivebase.BACK_RIGHT_DRIVE, CANConstants.CANIVORE_NAME);
+        azimuthTalon = new TalonFX(Drivebase.BACK_RIGHT_TURN, CANConstants.CANIVORE_NAME);
+        cancoder = new CANcoder(Drivebase.BACK_RIGHT_ENCODER, CANConstants.CANIVORE_NAME);
         absoluteEncoderOffset = Rotation2d.fromDegrees(0); // TODO: Calibrate
 
         drive_kS = 0;

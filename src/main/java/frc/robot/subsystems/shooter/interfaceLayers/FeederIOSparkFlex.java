@@ -20,6 +20,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.util.CANConstants.Shooter;
 import frc.robot.util.motorUtils.SparkUtils;
 import java.util.Set;
 
@@ -27,7 +28,7 @@ public class FeederIOSparkFlex implements FeederIO {
   private CANSparkFlex motor;
 
   public FeederIOSparkFlex() {
-    motor = new CANSparkFlex(23, MotorType.kBrushless);
+    motor = new CANSparkFlex(Shooter.FEEDER, MotorType.kBrushless);
     motor.restoreFactoryDefaults();
     Timer.delay(0.1);
     motor.setInverted(true);

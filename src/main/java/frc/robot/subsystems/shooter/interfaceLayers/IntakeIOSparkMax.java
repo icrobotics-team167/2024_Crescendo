@@ -16,12 +16,13 @@ package frc.robot.subsystems.shooter.interfaceLayers;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import frc.robot.util.CANConstants.Shooter;
 
 public class IntakeIOSparkMax implements IntakeIO {
   private final CANSparkMax motor;
 
   public IntakeIOSparkMax() {
-    motor = new CANSparkMax(10, MotorType.kBrushless);
+    motor = new CANSparkMax(Shooter.INTAKE, MotorType.kBrushless);
   }
 
   @Override
