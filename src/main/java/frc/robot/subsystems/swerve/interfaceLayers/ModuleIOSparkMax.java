@@ -29,7 +29,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.*;
@@ -70,7 +69,7 @@ public class ModuleIOSparkMax implements ModuleIO {
   /** The FF constants of the drive motor. */
   private final SimpleMotorFeedforward driveFF;
   /** The PID controller for the azimuth motor. */
-  private final PIDController azimuthPIDController;
+  private final SparkPIDController azimuthPIDController;
   /** The absolute encoder for azimuth. */
   private final CANcoder azimuthCANcoder;
   /**
@@ -245,6 +244,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     azimuthSparkMax.setInverted(Module.AZIMUTH_MOTOR_INVERTED);
     azimuthSparkMax.setIdleMode(IdleMode.kBrake);
     azimuthSparkMax.setSmartCurrentLimit(40);
+    azimuthSparkMax.enableVoltageCompensation(12);
 
     // Initialize encoders
     driveEncoder = driveSparkMax.getEncoder();
@@ -284,8 +284,12 @@ public class ModuleIOSparkMax implements ModuleIO {
         SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond)
             / SwerveSubsystem.MAX_LINEAR_ACCELERATION.in(MetersPerSecondPerSecond));
 
-    azimuthPIDController = new PIDController(azimuth_kP, 0, azimuth_KD);
-    azimuthPIDController.enableContinuousInput(-0.5, 0.5);
+    azimuthPIDController = azimuthSparkMax.getPIDController();
+    azimuthPIDController.setPositionPIDWrappingEnabled(true);
+    azimuthPIDController.setPositionPIDWrappingMaxInput(0.5);
+    azimuthPIDController.setPositionPIDWrappingMinInput(-0.5);
+    azimuthPIDController.setP(azimuth_kP);
+    azimuthPIDController.setD(azimuth_KD);
 
     Timer.delay(0.1);
     driveSparkMax.burnFlash();
@@ -384,16 +388,8 @@ public class ModuleIOSparkMax implements ModuleIO {
   }
 
   @Override
-  public void setRawAzimuth(double voltage) {
-    azimuthSparkMax.setVoltage(voltage);
-  }
-
-  @Override
   public void setAzimuthPosition(Rotation2d position) {
-    BaseStatusSignal.refreshAll(azimuthAbsolutePosition);
-    azimuthSparkMax.setVoltage(
-        azimuthPIDController.calculate(
-            azimuthVelocity.getValueAsDouble(), position.getRotations()));
+    azimuthPIDController.setReference(position.getRotations(), ControlType.kPosition);
   }
 
   @Override
