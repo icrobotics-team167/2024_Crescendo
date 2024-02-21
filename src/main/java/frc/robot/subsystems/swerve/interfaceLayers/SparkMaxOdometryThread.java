@@ -59,7 +59,7 @@ public class SparkMaxOdometryThread {
 
   public Queue<Double> registerSignal(Supplier<OptionalDouble> signal) {
     ArrayBlockingQueue<Double> queue =
-        new ArrayBlockingQueue<>((int) (Module.ODOMETRY_FREQUENCY / 50.0));
+        new ArrayBlockingQueue<>((int) Math.ceil(Module.ODOMETRY_FREQUENCY / 50.0));
     SwerveSubsystem.odometryLock.lock();
     try {
       signals.add(signal);
@@ -72,7 +72,7 @@ public class SparkMaxOdometryThread {
 
   public Queue<Double> makeTimestampQueue() {
     ArrayBlockingQueue<Double> queue =
-        new ArrayBlockingQueue<>((int) (Module.ODOMETRY_FREQUENCY / 50.0));
+        new ArrayBlockingQueue<>((int) Math.ceil(Module.ODOMETRY_FREQUENCY / 50.0));
     SwerveSubsystem.odometryLock.lock();
     try {
       timestampQueues.add(queue);
