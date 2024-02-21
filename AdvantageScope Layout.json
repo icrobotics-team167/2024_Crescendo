@@ -1,0 +1,335 @@
+{
+  "hubs": [
+    {
+      "x": -8,
+      "y": -8,
+      "width": 1920,
+      "height": 1032,
+      "state": {
+        "sidebar": {
+          "width": 300,
+          "expanded": [
+            "/AdvantageKit",
+            "/FMSInfo",
+            "/AdvantageKit/Shooter",
+            "/AdvantageKit/Shooter/pivot",
+            "/AdvantageKit/Shooter/pivot/Angle",
+            "/AdvantageKit/DriverStation/Joystick2/AxisTypes",
+            "/AdvantageKit/DriverStation/Joystick2/AxisValues",
+            "/AdvantageKit/RealOutputs/SwerveStates",
+            "/AdvantageKit/SystemStats/CANBus",
+            "/AdvantageKit/RealOutputs",
+            "/AdvantageKit/RealOutputs/SystemStats",
+            "/AdvantageKit/RealOutputs/SystemStats/CANBus",
+            "/AdvantageKit/RealOutputs/LoggedRobot",
+            "/AdvantageKit/RealOutputs/Logger",
+            "/AdvantageKit/RealOutputs/Shooter",
+            "/AdvantageKit/RealOutputs/Shooter/pivot",
+            "/AdvantageKit/Shooter/flywheel"
+          ]
+        },
+        "tabs": {
+          "selected": 7,
+          "tabs": [
+            {
+              "type": 0,
+              "path": "../docs/INDEX.md"
+            },
+            {
+              "type": 1,
+              "legendHeight": null,
+              "legends": {
+                "left": {
+                  "lockedRange": [
+                    0,
+                    100
+                  ],
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 100
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/SystemStats/CANBus/Utilization",
+                      "color": "#2b66a2",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": [
+                    0,
+                    100
+                  ],
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 100
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/CANFilteredUtilization",
+                      "color": "#e5b31b",
+                      "show": true
+                    }
+                  ]
+                }
+              },
+              "title": "CAN Usage"
+            },
+            {
+              "type": 1,
+              "legendHeight": null,
+              "legends": {
+                "left": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/LoggedRobot/FullCycleMS",
+                      "color": "#2b66a2",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": []
+                }
+              },
+              "title": "Robot Tick Time"
+            },
+            {
+              "type": 1,
+              "legendHeight": null,
+              "legends": {
+                "left": {
+                  "lockedRange": [
+                    -12,
+                    12
+                  ],
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/Shooter/pivot/LeaderAppliedVoltage",
+                      "color": "#2b66a2",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/Shooter/pivot/FollowerAppliedVoltage",
+                      "color": "#e5b31b",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": [
+                    -90,
+                    90
+                  ],
+                  "unitConversion": {
+                    "type": "angular velocity",
+                    "factor": 1,
+                    "from": "radians/second",
+                    "to": "degrees/second"
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/Shooter/pivot/LeaderVelocity",
+                      "color": "#af2437",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/Shooter/pivot/FollowerVelocity",
+                      "color": "#80588e",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Shooter/pivot/targetVel",
+                      "color": "#e48b32",
+                      "show": true
+                    }
+                  ]
+                }
+              },
+              "title": "Pivot Velocity"
+            },
+            {
+              "type": 1,
+              "legendHeight": null,
+              "legends": {
+                "left": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": "angle",
+                    "factor": 1,
+                    "from": "radians",
+                    "to": "degrees"
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/Shooter/pivot/Angle/value",
+                      "color": "#2b66a2",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/Shooter/pivot/IsTooFarDown",
+                      "color": "#e5b31b",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/Shooter/pivot/IsTooFarUp",
+                      "color": "#af2437",
+                      "show": true
+                    }
+                  ]
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": []
+                }
+              },
+              "title": "Pivot Angle"
+            },
+            {
+              "type": 1,
+              "legendHeight": null,
+              "legends": {
+                "left": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": "angular velocity",
+                    "factor": 1,
+                    "from": "radians/second",
+                    "to": "rotations/minute"
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/Shooter/flywheel/TopVelocity",
+                      "color": "#2b66a2",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/Shooter/flywheel/BottomVelocity",
+                      "color": "#e5b31b",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": []
+                }
+              },
+              "title": "Flywheel Velocities"
+            },
+            {
+              "type": 9,
+              "uuid": "7z3xr5ouuo6yr6sg618no0w9qr9xdc6o",
+              "fields": [
+                {
+                  "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/Measured",
+                  "sourceTypeIndex": 1,
+                  "sourceType": "SwerveModuleState[]"
+                },
+                {
+                  "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized",
+                  "sourceTypeIndex": 1,
+                  "sourceType": "SwerveModuleState[]"
+                },
+                null
+              ],
+              "listFields": [],
+              "options": {
+                "maxSpeed": 4.5,
+                "rotationUnits": "radians",
+                "arrangement": "0,1,2,3",
+                "sizeLeftRight": 0.6,
+                "sizeFrontBack": 0.6,
+                "forwardDirection": "up"
+              },
+              "configHidden": false,
+              "visualizer": null,
+              "title": "Swerve"
+            },
+            {
+              "type": 1,
+              "legendHeight": null,
+              "legends": {
+                "left": {
+                  "lockedRange": [
+                    0,
+                    13
+                  ],
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/SystemStats/BatteryVoltage",
+                      "color": "#2b66a2",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": []
+                }
+              },
+              "title": "Battery Voltage"
+            },
+            {
+              "type": 3,
+              "field": "NT:/AdvantageKit/RealOutputs/Console",
+              "title": "Console"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "satellites": [],
+  "version": "3.2.0"
+}

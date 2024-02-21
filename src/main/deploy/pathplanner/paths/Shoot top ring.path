@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.35211562161016,
+        "y": 7.507647152046441
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.381500802887644,
+        "y": 7.180210827658122
+      },
+      "isLocked": false,
+      "linkedName": "3 note auto intake top note"
+    },
+    {
+      "anchor": {
+        "x": 5.7,
+        "y": 6.334218486618792
+      },
+      "prevControl": {
+        "x": 6.527827528589529,
+        "y": 6.794303731057604
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "shoot position"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 14.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -179.31704309701513,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "3 note auto",
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

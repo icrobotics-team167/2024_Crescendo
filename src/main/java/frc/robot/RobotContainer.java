@@ -1,100 +1,168 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+// Copyright (c) 2024 FRC 167
+// https://www.thebluealliance.com/team/167
+// https://github.com/icrobotics-team167
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// version 3 as published by the Free Software Foundation or
+// available in the root directory of this project.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
 
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.*;
+
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands; // Keep this around so that we don't have to reimport when we add named commands
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-// import frc.robot.commands.auto.*; // Compiler no likey because there's no autos in the auto folder
-import frc.robot.commands.auto.testAutos.*;
-import frc.robot.commands.teleop.*;
-import frc.robot.subsystems.SwerveSubsystem;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.Driving;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.interfaceLayers.*;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.subsystems.swerve.interfaceLayers.*;
+import frc.robot.util.MathUtils;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
+ * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  private LoggedDashboardChooser<Command> autoSelector;
 
-  public SendableChooser<Command> autoSelector = new SendableChooser<Command>();
+  private final SwerveSubsystem drivebase;
+  private final Shooter shooter;
 
-  private final SwerveSubsystem driveBase = new SwerveSubsystem();
+  private CommandJoystick primaryLeftStick = new CommandJoystick(0);
+  private CommandJoystick primaryRightStick = new CommandJoystick(1);
+  private CommandJoystick secondaryLeftStick = new CommandJoystick(2);
+  private CommandJoystick secondaryRightStick = new CommandJoystick(3);
 
-  CommandJoystick primaryLeftStick = new CommandJoystick(Constants.Driving.Controllers.IDs.PRIMARY_LEFT);
-  CommandJoystick primaryRightStick = new CommandJoystick(Constants.Driving.Controllers.IDs.PRIMARY_RIGHT);
-  CommandJoystick secondaryLeftStick = new CommandJoystick(Constants.Driving.Controllers.IDs.SECONDARY_LEFT);
-  CommandJoystick secondaryRightStick = new CommandJoystick(Constants.Driving.Controllers.IDs.SECONDARY_RIGHT);
-
-  private Timer disabledTimer = new Timer();
-
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
+  /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // Auto Command Registering
-
-    // Auto selector configuring
-    autoSelector = AutoBuilder.buildAutoChooser(); // Load all the pathplanner autos
-    // Load non-pathplanner autos
-    autoSelector.addOption("Test Auto (Module Actuation)", new TestWheels(driveBase));
-    SmartDashboard.putData(autoSelector);
+    switch (Robot.currentMode) {
+      case REAL:
+        drivebase =
+            new SwerveSubsystem(
+                new GyroIOPigeon2(false),
+                new ModuleIOSparkMax(0),
+                new ModuleIOSparkMax(1),
+                new ModuleIOSparkMax(2),
+                new ModuleIOSparkMax(3));
+        shooter =
+            new Shooter(
+                new FeederIOSparkFlex(),
+                new FlywheelIOSparkFlex(),
+                new PivotIOSparkFlex(),
+                new NoteDetectorIOTimeOfFlight(),
+                new IntakeIOTalonFX());
+        break;
+      case SIM:
+        drivebase =
+            new SwerveSubsystem(
+                new GyroIO() {},
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim());
+        shooter =
+            new Shooter(
+                new FeederIO() {},
+                new FlywheelIO() {},
+                new PivotIO() {},
+                new NoteDetectorIO() {},
+                new IntakeIO() {});
+        break;
+      default:
+        drivebase =
+            new SwerveSubsystem(
+                new GyroIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {});
+        shooter =
+            new Shooter(
+                new FeederIO() {},
+                new FlywheelIO() {},
+                new PivotIO() {},
+                new NoteDetectorIO() {},
+                new IntakeIO() {});
+    }
+    NamedCommands.registerCommand("Score in speaker", none()); // TODO: Implement
+    NamedCommands.registerCommand("Intake", none()); // TODO: Implement
+    NamedCommands.registerCommand("Intake Out", none()); // TODO: Implement
 
     // Configure the trigger bindings
     configureBindings();
-
-    // Configure field oriented driving
-    AbsoluteFieldDrive driveController = new AbsoluteFieldDrive(
-        driveBase,
-        () -> MathUtil.applyDeadband(-primaryLeftStick.getY(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
-        () -> MathUtil.applyDeadband(-primaryLeftStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_LEFT),
-        () -> MathUtil.applyDeadband(-primaryRightStick.getX(), Constants.Driving.Controllers.Deadbands.PRIMARY_RIGHT));
-    driveBase.setDefaultCommand(driveController);
+    autoSelector = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
   }
 
   /**
-   * Use this method to define your trigger->command mappings. Triggers can be
-   * created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
-   * an arbitrary
+   * Use this method to define your trigger->command mappings. Triggers can be created via the
+   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
    * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
-   * {@link
-   * CommandXboxController
-   * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or
-   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
+   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
   private void configureBindings() {
-    primaryLeftStick.button(1) // Trigger on the primary driver's left stick
-        .whileTrue(new StartEndCommand(driveBase::setSlowMode, driveBase::unsetSlowMode)); // Press and hold for slow
-                                                                                           // mode
-    primaryRightStick.button(1) // Trigger on the primary driver's right stick
-        .whileTrue(new StartEndCommand(driveBase::lockMotion, driveBase::unlockMotion)); // Press and hold to lock
-                                                                                         // the drivebase
-    primaryRightStick.button(2) // Button #2 on the primary driver's right stick
-        .onTrue(new InstantCommand(driveBase::resetRotation)); // Resets which way the robot thinks is forward, used
-                                                               // when the robot wasn't facing away from the driver
-                                                               // station on boot and can't get an AprilTag lock to
-                                                               // calculate its orientation
+    drivebase.setDefaultCommand(
+        drivebase.getDriveCommand(
+            () ->
+                MathUtils.inOutDeadband(
+                    -primaryLeftStick.getY(),
+                    Driving.Deadbands.PRIMARY_LEFT_INNER,
+                    Driving.Deadbands.PRIMARY_LEFT_OUTER,
+                    Driving.PRIMARY_DRIVER_EXPONENT),
+            () ->
+                MathUtils.inOutDeadband(
+                    -primaryLeftStick.getX(),
+                    Driving.Deadbands.PRIMARY_LEFT_INNER,
+                    Driving.Deadbands.PRIMARY_LEFT_OUTER,
+                    Driving.PRIMARY_DRIVER_EXPONENT),
+            () ->
+                MathUtils.inOutDeadband(
+                    -primaryRightStick.getX(),
+                    Driving.Deadbands.PRIMARY_RIGHT_INNER,
+                    Driving.Deadbands.PRIMARY_RIGHT_OUTER,
+                    Driving.PRIMARY_DRIVER_EXPONENT)));
+
+    primaryLeftStick
+        .trigger()
+        .whileTrue(new StartEndCommand(drivebase::setSlowmode, drivebase::unsetSlowmode));
+    primaryRightStick.trigger().onTrue(new InstantCommand(drivebase::stopWithX));
+    // primaryLeftStick.button(1).whileTrue(drivebase.getDriveSysIDURCL());
+    // primaryLeftStick.button(2).whileTrue(drivebase.getAzimuthSysIDURCL());
+
+    secondaryRightStick.trigger().whileTrue(shooter.autoIntake());
+    secondaryRightStick.button(4).whileTrue(shooter.feed());
+    secondaryRightStick.button(2).whileTrue(shooter.intakeOut());
+    secondaryRightStick.button(3).whileTrue(shooter.shoot());
+    secondaryLeftStick
+        .trigger()
+        .whileTrue(
+            shooter.getManualControlCommand(
+                () ->
+                    MathUtils.inOutDeadband(
+                        -secondaryLeftStick.getY(),
+                        Driving.Deadbands.SECONDARY_LEFT_INNER,
+                        Driving.Deadbands.SECONDARY_LEFT_OUTER,
+                        Driving.SECONDARY_DRIVER_EXPONENT)));
+    // shooter.setPivotDefaultCommand(none());
+    secondaryLeftStick.button(3).whileTrue(shooter.getAmpShotCommand());
   }
 
   /**
@@ -103,74 +171,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoSelector.getSelected();
-  }
-
-  /**
-   * Runs once at the start of autonomous.
-   */
-  public void autonomousInit() {
-    driveBase.unlockMotion();
-  }
-
-  /**
-   * Runs every robot tick during autonomous.
-   */
-  public void autonomousPeriodic() {
-  }
-
-  /**
-   * Runs once at the start of teleop.
-   */
-  public void teleopInit() {
-    driveBase.unlockMotion();
-  }
-
-  /**
-   * Runs every robot tick during teleop.
-   */
-  public void teleopPeriodic() {
-
-  }
-
-  /**
-   * Runs once at the end of an match.
-   */
-  public void endOfMatchInit() {
-    driveBase.lockMotion();
-    driveBase.setWheelBrake(true);
-    disabledTimer.reset();
-    disabledTimer.start();
-  }
-
-  /**
-   * Runs every robot tick after a match.
-   */
-  public void endOfMatchPeriodic() {
-    if (disabledTimer.hasElapsed(Constants.END_OF_MATCH_LOCK)) {
-      driveBase.unlockMotion();
-      driveBase.setWheelBrake(false);
-    }
-  }
-
-  /**
-   * Runs once at robot boot, before a match.
-   */
-  public void preMatch() {
-    driveBase.setWheelBrake(true);
-    driveBase.setWheelsForward();
-  }
-
-  /**
-   * Gets which alliance the robot is on
-   * 
-   * @return If the robot is on red alliance. False if it is on the blue alliance,
-   *         or if the alliance cannot be loaded.
-   */
-  public static boolean isRedAlliance() {
-    if (DriverStation.getAlliance().isPresent()) {
-      return DriverStation.getAlliance().get() == Alliance.Red;
-    }
-    return false;
+    return autoSelector.get();
   }
 }
