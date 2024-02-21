@@ -10,9 +10,11 @@ This project uses the GNU-GPL v3 open-source license. Due to the nature of the G
 
 ## General Usage
 
-- Always commit any changes before deploying code to the robot. If at an event, use the [Event Deploy For WPILib](https://marketplace.visualstudio.com/items?itemName=Mechanical-Advantage.event-deploy-wpilib) VSCode extension so that any changes are auto-committed using the "Deploy Robot Code (Event)" option. Branches should be named "event_(eventName)" such as "event_IowaRegional" so that the extension works.
+- Always commit any changes before deploying code to the robot.
+  - When committing changes, always include the name of the person committing in the commit description. The commit description should also contain details of what actually changed in the commit.
+  - If at an event, use the [Event Deploy For WPILib](https://marketplace.visualstudio.com/items?itemName=Mechanical-Advantage.event-deploy-wpilib) VSCode extension so that any changes are auto-committed using the "Deploy Robot Code (Event)" option. Branches should be named "event_(eventName)" such as "event_IowaRegional" so that the extension works.
 - [The Google Java Style Guide](https://google.github.io/styleguide/javaguide.html) is enforced via the [Spotless](https://github.com/diffplug/spotless) plugin for gradle. It is recommended to use the [Spotless Gradle](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle) extension for VSCode as your Java formatter so that the code style guidelines are always followed.
-- Programmers should use AdvantageScope for telemetry data, and drivers should use ShuffleBoard for match data.
+- Programmers should use [AdvantageScope](https://github.com/Mechanical-Advantage/AdvantageScope) for telemetry data, and drivers should use [Elastic](https://github.com/Gold872/elastic-dashboard) for match data.
 
 ## Known issues
 
@@ -23,6 +25,7 @@ This project uses the GNU-GPL v3 open-source license. Due to the nature of the G
 Contributors:
 
 - [Tada Goto](https://github.com/TheComputer314)
+- [Spencer Thomas](https://github.com/RealGenius1)
 
 Code taken from the following places:
 
