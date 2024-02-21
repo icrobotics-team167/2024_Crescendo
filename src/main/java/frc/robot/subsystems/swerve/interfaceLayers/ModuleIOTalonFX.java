@@ -70,7 +70,7 @@ public class ModuleIOTalonFX implements ModuleIO {
    *       </ul>
    * </ul>
    */
-  private final Queue<Double> timestampQueue;
+  private Queue<Double> timestampQueue;
   /**
    * The current distance that the module has driven so far.
    *
@@ -92,7 +92,7 @@ public class ModuleIOTalonFX implements ModuleIO {
    *       </ul>
    * </ul>
    */
-  private final Queue<Double> drivePositionQueue;
+  private Queue<Double> drivePositionQueue;
   /**
    * The current drive velocity of the module.
    *
@@ -171,7 +171,7 @@ public class ModuleIOTalonFX implements ModuleIO {
    *       </ul>
    * </ul>
    */
-  private final Queue<Double> azimuthPositionQueue;
+  private Queue<Double> azimuthPositionQueue;
   /**
    * The current velocity of the azimuth.
    *
@@ -244,6 +244,7 @@ public class ModuleIOTalonFX implements ModuleIO {
    *           </ul>
    *     </ul>
    */
+  @SuppressWarnings("unused")
   public ModuleIOTalonFX(int index) {
     // PIDF tuning values. NONE OF THESE VALUES SHOULD BE NEGATIVE, IF THEY ARE YA DONE GOOFED
     // SOMEWHERE
@@ -411,11 +412,16 @@ public class ModuleIOTalonFX implements ModuleIO {
     cancoder.getConfigurator().apply(cancoderConfig);
 
     // Set up the StatusSignals for getting values.
-    timestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
+    if (Module.ODOMETRY_FREQUENCY > 50) {
+      timestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
+      drivePositionQueue =
+          PhoenixOdometryThread.getInstance().registerSignal(driveTalon, driveTalon.getPosition());
+      azimuthPositionQueue =
+          PhoenixOdometryThread.getInstance()
+              .registerSignal(azimuthTalon, azimuthTalon.getPosition());
+    }
 
     drivePosition = driveTalon.getPosition();
-    drivePositionQueue =
-        PhoenixOdometryThread.getInstance().registerSignal(driveTalon, driveTalon.getPosition());
     driveVelocity = driveTalon.getVelocity();
     driveAppliedVolts = driveTalon.getMotorVoltage();
     driveClosedLoopOutput = driveTalon.getClosedLoopOutput();
@@ -423,9 +429,6 @@ public class ModuleIOTalonFX implements ModuleIO {
 
     azimuthAbsolutePosition = cancoder.getAbsolutePosition();
     azimuthPosition = azimuthTalon.getPosition();
-    azimuthPositionQueue =
-        PhoenixOdometryThread.getInstance()
-            .registerSignal(azimuthTalon, azimuthTalon.getPosition());
     azimuthVelocity = azimuthTalon.getVelocity();
     azimuthAppliedVolts = azimuthTalon.getMotorVoltage();
     azimuthClosedLoopOutput = azimuthTalon.getClosedLoopOutput();
@@ -434,7 +437,9 @@ public class ModuleIOTalonFX implements ModuleIO {
     // Boost the rate at which position and velocity data for the drive motor and azimuth motor are
     // sent over CAN for async odometry.
     BaseStatusSignal.setUpdateFrequencyForAll(
-        Module.ODOMETRY_FREQUENCY, drivePosition, azimuthPosition);
+        Module.ODOMETRY_FREQUENCY > 50 ? Module.ODOMETRY_FREQUENCY : 50,
+        drivePosition,
+        azimuthPosition);
     // Lower the rate at which everything else we need is send over CAN to reduce CAN bus usage.
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
@@ -483,9 +488,11 @@ public class ModuleIOTalonFX implements ModuleIO {
     inputs.azimuthAppliedOutput = azimuthClosedLoopOutput.getValueAsDouble();
     inputs.azimuthAppliedCurrent = Amps.of(azimuthAppliedCurrent.getValueAsDouble());
 
-    inputs.odometryTimestamps = SwerveUtils.queueToDoubleArray(timestampQueue);
-    inputs.odometryDrivePositionsMeters = SwerveUtils.queueToDoubleArray(drivePositionQueue);
-    inputs.odometryAzimuthPositions = SwerveUtils.queueToRotation2dArray(azimuthPositionQueue);
+    if (timestampQueue != null) {
+      inputs.odometryTimestamps = SwerveUtils.queueToDoubleArray(timestampQueue);
+      inputs.odometryDrivePositionsMeters = SwerveUtils.queueToDoubleArray(drivePositionQueue);
+      inputs.odometryAzimuthPositions = SwerveUtils.queueToRotation2dArray(azimuthPositionQueue);
+    }
   }
 
   /**

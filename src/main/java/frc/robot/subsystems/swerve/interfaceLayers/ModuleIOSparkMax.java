@@ -83,7 +83,7 @@ public class ModuleIOSparkMax implements ModuleIO {
    *       </ul>
    * </ul>
    */
-  private final Queue<Double> timestampQueue;
+  private Queue<Double> timestampQueue;
   /**
    * A {@link Queue} holding all the drive positions that the async odometry thread captures.
    *
@@ -94,7 +94,7 @@ public class ModuleIOSparkMax implements ModuleIO {
    *       </ul>
    * </ul>
    */
-  private final Queue<Double> drivePositionQueue;
+  private Queue<Double> drivePositionQueue;
   /**
    * A {@link Queue} holding all the azimuth positions that the async odometry thread captures.
    *
@@ -105,7 +105,7 @@ public class ModuleIOSparkMax implements ModuleIO {
    *       </ul>
    * </ul>
    */
-  private final Queue<Double> azimuthPositionQueue;
+  private Queue<Double> azimuthPositionQueue;
   /**
    * The absolute position of the module azimuth, as measured by an absolute encoder. 0 should mean
    * the module is facing forwards. Wraps [-0.5, 0.5)
@@ -157,6 +157,7 @@ public class ModuleIOSparkMax implements ModuleIO {
    *           </ul>
    *     </ul>
    */
+  @SuppressWarnings("unused")
   public ModuleIOSparkMax(int index) {
     // PIDF tuning values for this module. NONE OF THESE VALUES SHOULD BE NEGATIVE, IF THEY ARE
     // YA DONE GOOFED SOMEWHERE
@@ -307,31 +308,33 @@ public class ModuleIOSparkMax implements ModuleIO {
         false);
 
     // Set up high frequency odometry
-    driveSparkMax.setPeriodicFramePeriod(
-        PeriodicFrame.kStatus2, (int) (1000.0 / Module.ODOMETRY_FREQUENCY));
-    timestampQueue = SparkMaxOdometryThread.getInstance().makeTimestampQueue();
-    drivePositionQueue =
-        SparkMaxOdometryThread.getInstance()
-            .registerSignal(
-                () -> {
-                  double value = driveEncoder.getPosition();
-                  if (driveSparkMax.getLastError() == REVLibError.kOk) {
-                    return OptionalDouble.of(value);
-                  } else {
-                    return OptionalDouble.empty();
-                  }
-                });
-    azimuthPositionQueue =
-        SparkMaxOdometryThread.getInstance()
-            .registerSignal(
-                () -> {
-                  double value = azimuthRelativeEncoder.getPosition();
-                  if (driveSparkMax.getLastError() == REVLibError.kOk) {
-                    return OptionalDouble.of(value);
-                  } else {
-                    return OptionalDouble.empty();
-                  }
-                });
+    if (Module.ODOMETRY_FREQUENCY > 50) {
+      driveSparkMax.setPeriodicFramePeriod(
+          PeriodicFrame.kStatus2, (int) (1000.0 / Module.ODOMETRY_FREQUENCY));
+      timestampQueue = SparkMaxOdometryThread.getInstance().makeTimestampQueue();
+      drivePositionQueue =
+          SparkMaxOdometryThread.getInstance()
+              .registerSignal(
+                  () -> {
+                    double value = driveEncoder.getPosition();
+                    if (driveSparkMax.getLastError() == REVLibError.kOk) {
+                      return OptionalDouble.of(value);
+                    } else {
+                      return OptionalDouble.empty();
+                    }
+                  });
+      azimuthPositionQueue =
+          SparkMaxOdometryThread.getInstance()
+              .registerSignal(
+                  () -> {
+                    double value = azimuthRelativeEncoder.getPosition();
+                    if (driveSparkMax.getLastError() == REVLibError.kOk) {
+                      return OptionalDouble.of(value);
+                    } else {
+                      return OptionalDouble.empty();
+                    }
+                  });
+    }
 
     driveSparkMax.burnFlash();
     azimuthSparkMax.burnFlash();
@@ -359,9 +362,11 @@ public class ModuleIOSparkMax implements ModuleIO {
         Volts.of(inputs.azimuthAppliedOutput * driveSparkMax.getBusVoltage());
     inputs.azimuthAppliedCurrent = Amps.of(azimuthSparkMax.getOutputCurrent());
 
-    inputs.odometryTimestamps = SwerveUtils.queueToDoubleArray(timestampQueue);
-    inputs.odometryDrivePositionsMeters = SwerveUtils.queueToDoubleArray(drivePositionQueue);
-    inputs.odometryAzimuthPositions = SwerveUtils.queueToRotation2dArray(azimuthPositionQueue);
+    if (timestampQueue != null) {
+      inputs.odometryTimestamps = SwerveUtils.queueToDoubleArray(timestampQueue);
+      inputs.odometryDrivePositionsMeters = SwerveUtils.queueToDoubleArray(drivePositionQueue);
+      inputs.odometryAzimuthPositions = SwerveUtils.queueToRotation2dArray(azimuthPositionQueue);
+    }
   }
 
   @Override
