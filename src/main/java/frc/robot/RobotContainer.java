@@ -55,7 +55,7 @@ public class RobotContainer {
       case REAL:
         drivebase =
             new SwerveSubsystem(
-                new GyroIOPigeon2(),
+                new GyroIOPigeon2(false),
                 new ModuleIOSparkMax(0),
                 new ModuleIOSparkMax(1),
                 new ModuleIOSparkMax(2),

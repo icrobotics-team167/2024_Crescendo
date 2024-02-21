@@ -26,6 +26,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.controller.PIDController;
@@ -39,6 +40,7 @@ import frc.robot.util.CANConstants;
 import frc.robot.util.CANConstants.Drivebase;
 import frc.robot.util.SwerveUtils;
 import frc.robot.util.motorUtils.SparkUtils;
+import java.util.OptionalDouble;
 import java.util.Queue;
 import java.util.Set;
 
@@ -309,9 +311,27 @@ public class ModuleIOSparkMax implements ModuleIO {
         PeriodicFrame.kStatus2, (int) (1000.0 / Module.ODOMETRY_FREQUENCY));
     timestampQueue = SparkMaxOdometryThread.getInstance().makeTimestampQueue();
     drivePositionQueue =
-        SparkMaxOdometryThread.getInstance().registerSignal(driveEncoder::getPosition);
+        SparkMaxOdometryThread.getInstance()
+            .registerSignal(
+                () -> {
+                  double value = driveEncoder.getPosition();
+                  if (driveSparkMax.getLastError() == REVLibError.kOk) {
+                    return OptionalDouble.of(value);
+                  } else {
+                    return OptionalDouble.empty();
+                  }
+                });
     azimuthPositionQueue =
-        SparkMaxOdometryThread.getInstance().registerSignal(azimuthRelativeEncoder::getPosition);
+        SparkMaxOdometryThread.getInstance()
+            .registerSignal(
+                () -> {
+                  double value = azimuthRelativeEncoder.getPosition();
+                  if (driveSparkMax.getLastError() == REVLibError.kOk) {
+                    return OptionalDouble.of(value);
+                  } else {
+                    return OptionalDouble.empty();
+                  }
+                });
 
     driveSparkMax.burnFlash();
     azimuthSparkMax.burnFlash();

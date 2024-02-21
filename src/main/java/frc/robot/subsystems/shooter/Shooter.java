@@ -126,7 +126,8 @@ public class Shooter {
                   double MIN_TY = 0;
                   double SCALAR = 1;
 
-                  double angle = SCALAR * (((ty - MIN_TY) * ((MAX_ANGLE - MIN_ANGLE) / MAX_TY)) - MIN_ANGLE);
+                  double angle =
+                      SCALAR * (((ty - MIN_TY) * ((MAX_ANGLE - MIN_ANGLE) / MAX_TY)) - MIN_ANGLE);
                   return Rotation2d.fromDegrees(angle);
                 }),
             drivebase.getDriveCommand(
