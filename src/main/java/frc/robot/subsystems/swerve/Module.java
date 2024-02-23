@@ -177,13 +177,12 @@ public class Module {
         // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
         // towards the setpoint, its velocity should increase. This is achieved by
         // taking the component of the velocity in the direction of the setpoint.
-        double adjustedSpeedSetpoint =
-            speedSetpoint
-                * Math.cos(
-                    inputs.azimuthAbsolutePosition.getRadians() - angleSetpoint.getRadians());
-        if (adjustedSpeedSetpoint < 0) {
-          adjustedSpeedSetpoint = 0;
+        double angleCos =
+            Math.cos(inputs.azimuthAbsolutePosition.getRadians() - angleSetpoint.getRadians());
+        if (angleCos < 0) {
+          angleCos = 0;
         }
+        double adjustedSpeedSetpoint = speedSetpoint * angleCos;
 
         io.setDriveVelocity(MetersPerSecond.of(adjustedSpeedSetpoint));
         io.setAzimuthPosition(angleSetpoint);

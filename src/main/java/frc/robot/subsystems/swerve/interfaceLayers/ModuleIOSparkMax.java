@@ -61,12 +61,13 @@ public class ModuleIOSparkMax implements ModuleIO {
   private final StatusSignal<Double> azimuthVelocity;
 
   public ModuleIOSparkMax(int moduleID) {
-    double drive_kS;
-    double drive_kV;
-    double drive_kP;
-    double drive_kD;
-    double azimuth_kP;
-    double azimuth_kD;
+    double drive_kS; // Volts to overcome static friction
+    double drive_kV; // Volts per meters/second of setpoint
+    double drive_kP; // Volts per meters/second of error
+    double drive_kD; // Volts per meters/second^2 or error derivative
+    double azimuth_kP; // Volts per rotation of error
+    double azimuth_kD; // Volts per rotation/second of error derivative
+    double azimuthOffset;
     switch (moduleID) {
       case 0:
         driveMotor = new CANSparkMax(CANConstants.Drivebase.FRONT_LEFT_DRIVE, MotorType.kBrushless);
@@ -77,11 +78,12 @@ public class ModuleIOSparkMax implements ModuleIO {
 
         drive_kS = 0;
         drive_kV = 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
-        drive_kP = 3 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
-        drive_kD = 0.001;
+        drive_kP = 1 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
+        drive_kD = 0.00;
 
-        azimuth_kP = 1;
-        azimuth_kD = 0.01;
+        azimuth_kP = 24;
+        azimuth_kD = 0.0;
+        azimuthOffset = 0.219482421875;
         break;
       case 1:
         driveMotor =
@@ -93,11 +95,12 @@ public class ModuleIOSparkMax implements ModuleIO {
 
         drive_kS = 0;
         drive_kV = 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
-        drive_kP = 3 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
-        drive_kD = 0.001;
+        drive_kP = 1 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
+        drive_kD = 0.00;
 
-        azimuth_kP = 1;
-        azimuth_kD = 0.01;
+        azimuth_kP = 24;
+        azimuth_kD = 0.0;
+        azimuthOffset = 0.37841796875;
         break;
       case 2:
         driveMotor = new CANSparkMax(CANConstants.Drivebase.BACK_LEFT_DRIVE, MotorType.kBrushless);
@@ -107,11 +110,12 @@ public class ModuleIOSparkMax implements ModuleIO {
 
         drive_kS = 0;
         drive_kV = 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
-        drive_kP = 3 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
-        drive_kD = 0.001;
+        drive_kP = 1 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
+        drive_kD = 0.00;
 
-        azimuth_kP = 1;
-        azimuth_kD = 0.01;
+        azimuth_kP = 24;
+        azimuth_kD = 0.0;
+        azimuthOffset = 0.315673828125;
         break;
       case 3:
         driveMotor = new CANSparkMax(CANConstants.Drivebase.BACK_RIGHT_DRIVE, MotorType.kBrushless);
@@ -122,11 +126,12 @@ public class ModuleIOSparkMax implements ModuleIO {
 
         drive_kS = 0;
         drive_kV = 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
-        drive_kP = 3 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
-        drive_kD = 0.001;
+        drive_kP = 1 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
+        drive_kD = 0.00;
 
-        azimuth_kP = 1;
-        azimuth_kD = 0.01;
+        azimuth_kP = 24;
+        azimuth_kD = 0.0;
+        azimuthOffset = -0.01953125;
         break;
       default:
         throw new IndexOutOfBoundsException("Invalid module ID. Expected 0-3, got " + moduleID);
@@ -145,19 +150,19 @@ public class ModuleIOSparkMax implements ModuleIO {
     azimuthMotor.setCANTimeout(250);
 
     driveMotor.setIdleMode(IdleMode.kCoast);
-    driveMotor.setSmartCurrentLimit(60, 10, 100);
+    driveMotor.setSmartCurrentLimit(60);
     driveMotor.setSecondaryCurrentLimit(80);
 
     driveRelativeEncoder = driveMotor.getEncoder();
     // Default measurement values are a burning pile of dogshit because REV, why would they
     // willingly set the default measurements to have 112 ms of measurement latency
-    // This sets the measurement latency to 24 ms, much more tolerable
+    // This sets the measurement latency to 60 ms, much more tolerable
     // Formula for measurement delay:
     // T = Moving average filter sample count
     // P = Measurement period
     // Measurement latency = (T-1)/2 * P
-    driveRelativeEncoder.setAverageDepth(4);
-    driveRelativeEncoder.setMeasurementPeriod(16);
+    driveRelativeEncoder.setAverageDepth(8);
+    driveRelativeEncoder.setMeasurementPeriod(24);
     // Convert from rotations/RPM of motor shaft to meters/meters per second of wheel
     driveRelativeEncoder.setPositionConversionFactor(
         Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters) / Module.DRIVE_GEAR_RATIO);
@@ -168,16 +173,19 @@ public class ModuleIOSparkMax implements ModuleIO {
     driveFF = new SimpleMotorFeedforward(drive_kS, drive_kV);
 
     azimuthMotor.setIdleMode(IdleMode.kBrake);
-    azimuthMotor.setSmartCurrentLimit(40, 5, 0);
+    azimuthMotor.setSmartCurrentLimit(40);
     azimuthMotor.setSecondaryCurrentLimit(60);
     azimuthMotor.setInverted(Module.AZIMUTH_MOTOR_INVERTED);
 
     azimuthPIDs = new PIDController(azimuth_kP, 0, azimuth_kD);
 
     var cancoderConfig = new CANcoderConfiguration();
+    cancoderConfig.MagnetSensor.MagnetOffset = azimuthOffset;
     azimuthCANcoder.getConfigurator().apply(cancoderConfig);
     azimuthAbsolutePosition = azimuthCANcoder.getAbsolutePosition();
+    azimuthAbsolutePosition.setUpdateFrequency(50);
     azimuthVelocity = azimuthCANcoder.getVelocity();
+    azimuthVelocity.setUpdateFrequency(50);
 
     azimuthCANcoder.optimizeBusUtilization();
     SparkUtils.configureFrameStrategy(
