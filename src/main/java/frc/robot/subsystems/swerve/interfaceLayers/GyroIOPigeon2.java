@@ -26,7 +26,6 @@ import frc.robot.subsystems.swerve.Module;
 import frc.robot.util.CANConstants;
 import frc.robot.util.CANConstants.Drivebase;
 import frc.robot.util.SwerveUtils;
-import java.util.OptionalDouble;
 import java.util.Queue;
 
 /** IO implementation for Pigeon2 */
@@ -44,25 +43,10 @@ public class GyroIOPigeon2 implements GyroIO {
     yaw.setUpdateFrequency(Module.ODOMETRY_FREQUENCY > 50 ? Module.ODOMETRY_FREQUENCY : 50);
     yawVelocity.setUpdateFrequency(50);
     pigeon.optimizeBusUtilization();
-    if (Module.ODOMETRY_FREQUENCY > 50) {
-      if (phoenixDrive) {
-        yawTimestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
-        yawPositionQueue =
-            PhoenixOdometryThread.getInstance().registerSignal(pigeon, pigeon.getYaw());
-      } else {
-        yawTimestampQueue = SparkMaxOdometryThread.getInstance().makeTimestampQueue();
-        yawPositionQueue =
-            SparkMaxOdometryThread.getInstance()
-                .registerSignal(
-                    () -> {
-                      boolean valid = yaw.refresh().getStatus().isOK();
-                      if (valid) {
-                        return OptionalDouble.of(yaw.getValueAsDouble());
-                      } else {
-                        return OptionalDouble.empty();
-                      }
-                    });
-      }
+    if (Module.ODOMETRY_FREQUENCY > 50 && phoenixDrive) {
+      yawTimestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
+      yawPositionQueue =
+          PhoenixOdometryThread.getInstance().registerSignal(pigeon, pigeon.getYaw());
     }
   }
 
