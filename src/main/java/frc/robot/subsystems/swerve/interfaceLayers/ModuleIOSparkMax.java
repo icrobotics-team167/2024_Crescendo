@@ -21,6 +21,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -174,57 +175,65 @@ public class ModuleIOSparkMax implements ModuleIO {
         driveSparkMax = new CANSparkMax(Drivebase.FRONT_LEFT_DRIVE, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(Drivebase.FRONT_LEFT_TURN, MotorType.kBrushless);
         azimuthCANcoder = new CANcoder(Drivebase.FRONT_LEFT_ENCODER, CANConstants.CANIVORE_NAME);
-        absoluteEncoderOffset = -0.270263671875;
+        // absoluteEncoderOffset = -0.270263671875;
+        absoluteEncoderOffset = -0.015339807878856412;
 
         drive_kS = 0;
-        drive_kV = 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
-        drive_kP = 1;
-        drive_kD = 0;
+        drive_kV = 1 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
+        // drive_kV = 0;
+        drive_kP = .1;
+        drive_kD = 0.01;
 
-        azimuth_kP = 0;
+        azimuth_kP = 1;
         azimuth_KD = 0.0;
         break;
       case 1: // Front Right
         driveSparkMax = new CANSparkMax(Drivebase.FRONT_RIGHT_DRIVE, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(Drivebase.FRONT_RIGHT_TURN, MotorType.kBrushless);
         azimuthCANcoder = new CANcoder(Drivebase.FRONT_RIGHT_ENCODER, CANConstants.CANIVORE_NAME);
-        absoluteEncoderOffset = -0.106689453125;
+        // absoluteEncoderOffset = -0.106689453125;
+        absoluteEncoderOffset = 1.5585243868650545;
 
         drive_kS = 0;
-        drive_kV = 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
-        drive_kP = 1;
-        drive_kD = 0;
+        drive_kV = 1 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
+        // drive_kV = 0;
+        drive_kP = .1;
+        drive_kD = 0.01;
 
-        azimuth_kP = 0;
+        azimuth_kP = 1;
         azimuth_KD = 0.0;
         break;
       case 2: // Back Left
         driveSparkMax = new CANSparkMax(Drivebase.BACK_LEFT_DRIVE, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(Drivebase.BACK_LEFT_TURN, MotorType.kBrushless);
         azimuthCANcoder = new CANcoder(Drivebase.BACK_LEFT_ENCODER, CANConstants.CANIVORE_NAME);
-        absoluteEncoderOffset = -0.1962890625;
+        // absoluteEncoderOffset = -0.1962890625;
+        absoluteEncoderOffset = -0.09970875121256667;
 
         drive_kS = 0;
-        drive_kV = 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
-        drive_kP = 1;
-        drive_kD = 0;
+        drive_kV = 1 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
+        // drive_kV = 0;
+        drive_kP = .1;
+        drive_kD = 0.01;
 
-        azimuth_kP = 0;
+        azimuth_kP = 1;
         azimuth_KD = 0.0;
         break;
       case 3: // Back Right
         driveSparkMax = new CANSparkMax(Drivebase.BACK_RIGHT_DRIVE, MotorType.kBrushless);
         azimuthSparkMax = new CANSparkMax(Drivebase.BACK_RIGHT_TURN, MotorType.kBrushless);
         azimuthCANcoder = new CANcoder(Drivebase.BACK_RIGHT_ENCODER, CANConstants.CANIVORE_NAME);
-        absoluteEncoderOffset = 0.481201171875;
+        // absoluteEncoderOffset = 0.481201171875;
+        absoluteEncoderOffset = -2.9206994201342606;
 
         drive_kS = 0;
-        drive_kV = 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
-        drive_kP = 1;
-        drive_kD = 0;
+        drive_kV = 1 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
+        // drive_kV = 0;
+        drive_kP = .1;
+        drive_kD = 0.01;
 
-        azimuth_kP = 0;
-        azimuth_KD = 0;
+        azimuth_kP = 1;
+        azimuth_KD = 0.0;
         break;
       default:
         throw new RuntimeException("Invalid module index");
@@ -253,6 +262,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     var cancoderConfig = new CANcoderConfiguration();
     cancoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
     cancoderConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset;
+    cancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
     azimuthCANcoder.getConfigurator().apply(cancoderConfig);
     azimuthAbsolutePosition = azimuthCANcoder.getAbsolutePosition();
     azimuthAbsolutePosition.setUpdateFrequency(50);
@@ -302,12 +312,22 @@ public class ModuleIOSparkMax implements ModuleIO {
     // Configure CAN frame usage, and disable any unused CAN frames.
     SparkUtils.configureFrameStrategy(
         driveSparkMax,
-        Set.of(SparkUtils.Data.VELOCITY, SparkUtils.Data.INPUT, SparkUtils.Data.CURRENT),
+        Set.of(
+            SparkUtils.Data.POSITION,
+            SparkUtils.Data.VELOCITY,
+            SparkUtils.Data.INPUT,
+            SparkUtils.Data.CURRENT,
+            SparkUtils.Data.OUTPUT),
         Set.of(SparkUtils.Sensor.INTEGRATED),
         false);
     SparkUtils.configureFrameStrategy(
         azimuthSparkMax,
-        Set.of(SparkUtils.Data.VELOCITY, SparkUtils.Data.INPUT, SparkUtils.Data.CURRENT),
+        Set.of(
+            SparkUtils.Data.POSITION,
+            SparkUtils.Data.VELOCITY,
+            SparkUtils.Data.INPUT,
+            SparkUtils.Data.CURRENT,
+            SparkUtils.Data.OUTPUT),
         Set.of(SparkUtils.Sensor.INTEGRATED),
         false);
 
@@ -358,7 +378,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     BaseStatusSignal.refreshAll(azimuthAbsolutePosition, azimuthVelocity);
     inputs.azimuthAbsolutePosition =
         Rotation2d.fromRotations(azimuthAbsolutePosition.getValueAsDouble());
-    // Rotation2d.fromRotations(azimuthRelativeEncoder.getPosition());
+    // Rotation2d.fromRotations(azimuthRelativeEncoder.getPosition())
     azimuthRelativeEncoder.setPosition(inputs.azimuthAbsolutePosition.getRotations());
     inputs.azimuthVelocity = RotationsPerSecond.of(azimuthVelocity.getValueAsDouble());
     inputs.azimuthAppliedOutput = driveSparkMax.getAppliedOutput();
