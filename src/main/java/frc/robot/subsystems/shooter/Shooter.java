@@ -53,7 +53,7 @@ public class Shooter {
   }
 
   public Command intakeOut() {
-    return intake.getIntakeOutCommand();
+    return intake.getIntakeOutCommand().alongWith(feeder.getUnfeedCommand());
   }
 
   public Command autoIntake() {
