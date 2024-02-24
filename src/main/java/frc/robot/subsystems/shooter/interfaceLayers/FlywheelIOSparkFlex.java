@@ -62,6 +62,11 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
             SparkUtils.Data.CURRENT),
         Set.of(SparkUtils.Sensor.INTEGRATED),
         false);
+
+    topFlywheel.getEncoder().setAverageDepth(4);
+    topFlywheel.getEncoder().setMeasurementPeriod(16);
+    bottomFlywheel.getEncoder().setAverageDepth(4);
+    bottomFlywheel.getEncoder().setMeasurementPeriod(16);
   }
 
   @Override
