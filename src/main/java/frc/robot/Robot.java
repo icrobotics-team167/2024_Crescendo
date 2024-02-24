@@ -14,9 +14,9 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -64,7 +64,6 @@ public class Robot extends LoggedRobot {
   public void robotInit() {
     Logger.recordMetadata("Git SHA", BuildConstants.GIT_SHA);
     Logger.recordMetadata("Uncommitted Changes?", BuildConstants.DIRTY == 1 ? "True" : "False");
-
     // Comment this line out when not running AK log replays.
     currentMode = Robot.isReal() ? Mode.REAL : Mode.SIM;
     // Uncomment this line when running AK log replays.
@@ -173,4 +172,10 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {}
+
+  public static boolean isOnRed() {
+    return DriverStation.getAlliance().isPresent()
+        ? DriverStation.getAlliance().get() == Alliance.Red
+        : false;
+  }
 }

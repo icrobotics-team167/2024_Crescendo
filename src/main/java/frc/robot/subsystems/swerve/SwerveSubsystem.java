@@ -45,7 +45,6 @@ import frc.robot.subsystems.swerve.interfaceLayers.GyroIO;
 import frc.robot.subsystems.swerve.interfaceLayers.GyroIOInputsAutoLogged;
 import frc.robot.subsystems.swerve.interfaceLayers.ModuleIO;
 import frc.robot.subsystems.swerve.interfaceLayers.PhoenixOdometryThread;
-import frc.robot.subsystems.swerve.interfaceLayers.SparkMaxOdometryThread;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
@@ -124,7 +123,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
     // Start threads (no-op for each if no signals have been created)
     PhoenixOdometryThread.getInstance().start();
-    SparkMaxOdometryThread.getInstance().start();
 
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configureHolonomic(
@@ -360,9 +358,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
           runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(
-                  MAX_LINEAR_SPEED.times(xIn),
-                  MAX_LINEAR_SPEED.times(yIn),
-                  MAX_ANGULAR_SPEED.times(rotIn),
+                  MAX_LINEAR_SPEED.in(MetersPerSecond) * xIn,
+                  MAX_LINEAR_SPEED.in(MetersPerSecond) * yIn,
+                  MAX_ANGULAR_SPEED.in(RadiansPerSecond) * rotIn,
                   gyroInputs.yawPosition));
         });
   }

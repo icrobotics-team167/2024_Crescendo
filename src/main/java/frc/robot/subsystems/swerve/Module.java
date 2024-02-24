@@ -26,11 +26,12 @@ import org.littletonrobotics.junction.Logger;
 
 public class Module {
   /**
-   * The rate at which module states are measured. If set too high, can cause saturation of the CAN
-   * network. CAN bus usage should never go above 80%, so lower this value if Driver Station reports
-   * too high of CAN utilization. Do not set below 50.
+   * If set above 50 hertz and the motors are made by CTRE, then enables high frequency odometry,
+   * allowing the odometry to measure position at a much higher rate, thus improving accuracy. Set
+   * below 50 to disable. Does nothing if the motors are made by REV.
    *
-   * <p>Without a CANivore, anything above 50 can cause issues.
+   * <p>Setting this too high will cause issues with CAN usage. Not recommended to use if you don't
+   * have a CANivore.
    *
    * <ul>
    *   <li><b>Units:</b>
@@ -176,10 +177,13 @@ public class Module {
         // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
         // towards the setpoint, its velocity should increase. This is achieved by
         // taking the component of the velocity in the direction of the setpoint.
-        double adjustedSpeedSetpoint =
-            speedSetpoint
-                * Math.cos(
-                    inputs.azimuthAbsolutePosition.getRadians() - angleSetpoint.getRadians());
+        double angleCos =
+            Math.cos(inputs.azimuthAbsolutePosition.getRadians() - angleSetpoint.getRadians());
+        if (angleCos < 0) {
+          angleCos = 0;
+        }
+        double adjustedSpeedSetpoint = speedSetpoint * angleCos;
+
         io.setDriveVelocity(MetersPerSecond.of(adjustedSpeedSetpoint));
         io.setAzimuthPosition(angleSetpoint);
         break;
@@ -194,14 +198,6 @@ public class Module {
 
     // Calculate positions for odometry
     int sampleCount = inputs.odometryTimestamps.length; // All signals are sampled together
-    sampleCount =
-        inputs.odometryAzimuthPositions.length > sampleCount
-            ? inputs.odometryAzimuthPositions.length
-            : sampleCount;
-    sampleCount =
-        inputs.odometryDrivePositionsMeters.length > sampleCount
-            ? inputs.odometryDrivePositionsMeters.length
-            : sampleCount;
     odometryPositions = new SwerveModulePosition[sampleCount];
     for (int i = 0; i < sampleCount; i++) {
       double positionMeters = inputs.odometryDrivePositionsMeters[i];

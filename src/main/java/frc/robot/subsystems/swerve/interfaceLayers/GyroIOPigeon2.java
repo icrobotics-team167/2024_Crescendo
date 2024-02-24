@@ -25,15 +25,15 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.subsystems.swerve.Module;
 import frc.robot.util.CANConstants;
 import frc.robot.util.CANConstants.Drivebase;
-import java.util.OptionalDouble;
+import frc.robot.util.SwerveUtils;
 import java.util.Queue;
 
 /** IO implementation for Pigeon2 */
 public class GyroIOPigeon2 implements GyroIO {
   private final Pigeon2 pigeon = new Pigeon2(Drivebase.GYRO, CANConstants.CANIVORE_NAME);
   private final StatusSignal<Double> yaw = pigeon.getYaw();
-  private final Queue<Double> yawPositionQueue;
-  private final Queue<Double> yawTimestampQueue;
+  private Queue<Double> yawPositionQueue;
+  private Queue<Double> yawTimestampQueue;
   private final StatusSignal<Double> yawVelocity = pigeon.getAngularVelocityZWorld();
 
   @SuppressWarnings("unused")
@@ -43,23 +43,10 @@ public class GyroIOPigeon2 implements GyroIO {
     yaw.setUpdateFrequency(Module.ODOMETRY_FREQUENCY > 50 ? Module.ODOMETRY_FREQUENCY : 50);
     yawVelocity.setUpdateFrequency(50);
     pigeon.optimizeBusUtilization();
-    if (phoenixDrive) {
+    if (Module.ODOMETRY_FREQUENCY > 50 && phoenixDrive) {
       yawTimestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
       yawPositionQueue =
           PhoenixOdometryThread.getInstance().registerSignal(pigeon, pigeon.getYaw());
-    } else {
-      yawTimestampQueue = SparkMaxOdometryThread.getInstance().makeTimestampQueue();
-      yawPositionQueue =
-          SparkMaxOdometryThread.getInstance()
-              .registerSignal(
-                  () -> {
-                    boolean valid = yaw.refresh().getStatus().isOK();
-                    if (valid) {
-                      return OptionalDouble.of(yaw.getValueAsDouble());
-                    } else {
-                      return OptionalDouble.empty();
-                    }
-                  });
     }
   }
 
@@ -69,14 +56,10 @@ public class GyroIOPigeon2 implements GyroIO {
     inputs.yawPosition = Rotation2d.fromDegrees(yaw.getValueAsDouble());
     inputs.yawVelocityRadPerSec = RadiansPerSecond.of(yawVelocity.getValueAsDouble());
 
-    inputs.odometryYawTimestamps =
-        yawTimestampQueue.stream().mapToDouble((Double value) -> value).toArray();
-    inputs.odometryYawPositions =
-        yawPositionQueue.stream()
-            .map((Double value) -> Rotation2d.fromDegrees(value))
-            .toArray(Rotation2d[]::new);
-    yawTimestampQueue.clear();
-    yawPositionQueue.clear();
+    if (yawTimestampQueue != null) {
+      inputs.odometryYawTimestamps = SwerveUtils.queueToDoubleArray(yawTimestampQueue);
+      inputs.odometryYawPositions = SwerveUtils.queueToRotation2dArray(yawPositionQueue);
+    }
   }
 
   @Override

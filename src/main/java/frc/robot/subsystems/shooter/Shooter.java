@@ -87,10 +87,6 @@ public class Shooter {
     //     .until(() -> !noteDetector.hasNote()); // Stop when note is launched
   }
 
-  public Command getPivotVelSysIdCommand() {
-    return pivot.getPivotVelSysID();
-  }
-
   public void setPivotDefaultCommand(Command command) {
     pivot.setDefaultCommand(command);
   }

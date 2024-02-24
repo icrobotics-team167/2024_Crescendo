@@ -66,7 +66,8 @@ public class PhoenixOdometryThread extends Thread {
   }
 
   public Queue<Double> registerSignal(ParentDevice device, StatusSignal<Double> signal) {
-    ArrayBlockingQueue<Double> queue = new ArrayBlockingQueue<>((int) (Module.ODOMETRY_FREQUENCY / 50.0));
+    ArrayBlockingQueue<Double> queue =
+        new ArrayBlockingQueue<>((int) Math.ceil(Module.ODOMETRY_FREQUENCY / 50.0));
     signalsLock.lock();
     SwerveSubsystem.odometryLock.lock();
     try {
@@ -84,7 +85,8 @@ public class PhoenixOdometryThread extends Thread {
   }
 
   public Queue<Double> makeTimestampQueue() {
-    ArrayBlockingQueue<Double> queue = new ArrayBlockingQueue<>((int) (Module.ODOMETRY_FREQUENCY / 50.0));
+    ArrayBlockingQueue<Double> queue =
+        new ArrayBlockingQueue<>((int) Math.ceil(Module.ODOMETRY_FREQUENCY / 50.0));
     SwerveSubsystem.odometryLock.lock();
     try {
       timestampQueues.add(queue);

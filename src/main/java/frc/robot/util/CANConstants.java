@@ -28,8 +28,8 @@ public final class CANConstants {
     public static final int BACK_LEFT_DRIVE = 9;
     public static final int BACK_LEFT_TURN = 8;
     public static final int BACK_LEFT_ENCODER = 16;
-    public static final int BACK_RIGHT_DRIVE = 6;
-    public static final int BACK_RIGHT_TURN = 7;
+    public static final int BACK_RIGHT_DRIVE = 7;
+    public static final int BACK_RIGHT_TURN = 6;
     public static final int BACK_RIGHT_ENCODER = 15;
   }
 
