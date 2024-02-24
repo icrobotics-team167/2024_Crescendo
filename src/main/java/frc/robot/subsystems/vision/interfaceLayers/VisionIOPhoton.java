@@ -26,6 +26,7 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class VisionIOPhoton implements VisionIO {
   private String name = "";
@@ -86,8 +87,13 @@ public class VisionIOPhoton implements VisionIO {
     for (int i = 0; i < inputs.trackedTags.length; i++) {
       inputs.trackedTags[i] = botPoseEstimate.targetsUsed.get(i).getBestCameraToTarget();
     }
-    inputs.tX = botPoseEstimate.targetsUsed.get(0).getYaw();
-    inputs.tY = botPoseEstimate.targetsUsed.get(0).getPitch();
+    for (PhotonTrackedTarget target : botPoseEstimate.targetsUsed) {
+      if (target.getFiducialId() == 8 || target.getFiducialId() == 3) {
+        inputs.tX = target.getYaw();
+        inputs.tY = target.getPitch();
+        break;
+      }
+    }
   }
 
   @Override

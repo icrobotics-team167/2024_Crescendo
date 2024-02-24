@@ -14,10 +14,14 @@
 
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.Field;
+import frc.robot.Robot;
 import frc.robot.subsystems.shooter.interfaceLayers.FeederIO;
 import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIO;
 import frc.robot.subsystems.shooter.interfaceLayers.IntakeIO;
@@ -111,30 +115,55 @@ public class Shooter {
   public Command getTeleopAutoAimCommand(
       SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
     return parallel(
-            pivot.getPivotCommand(
-                () -> {
-                  // Magic code Spencer and Chris wrote
-                  // TODO: Fix scalar
-                  double ty = drivebase.visionPoseEstimator.getTY();
-                  double MIN_ANGLE = 0;
-                  double MAX_ANGLE = 60;
-                  double MAX_TY = 32.1;
-                  double MIN_TY = 0;
-                  double SCALAR = 1;
+        pivot.getPivotCommand(
+            () -> {
+              // return SpencerAim(drivebase);
+              return TadaAim(drivebase);
+            }),
+        drivebase.getDriveCommand(
+            xVel,
+            yVel,
+            () -> {
+              // return SpencerYaw(drivebase);
+              return TadaYaw(drivebase);
+            }));
+  }
 
-                  double angle =
-                      SCALAR * (((ty - MIN_TY) * ((MAX_ANGLE - MIN_ANGLE) / MAX_TY)) - MIN_ANGLE);
-                  return Rotation2d.fromDegrees(angle);
-                }),
-            drivebase.getDriveCommand(
-                xVel,
-                yVel,
-                () -> {
-                  double tx = drivebase.visionPoseEstimator.getTX();
-                  return tx / -75.0;
-                }),
-            flywheel.getSpeakerShotCommand(),
-            waitUntil(flywheel::isUpToSpeed).andThen(feeder.getFeedCommand()))
-        .until(() -> !noteDetector.hasNote());
+  private Rotation2d SpencerAim(SwerveSubsystem drivebase) {
+    // Magic code Spencer and Chris wrote
+    // TODO: Fix scalar
+    double ty = drivebase.visionPoseEstimator.getTY();
+    double MIN_ANGLE = 0;
+    double MAX_ANGLE = 60;
+    double MAX_TY = 32.1;
+    double MIN_TY = 0;
+    double SCALAR = 1;
+
+    double angle = SCALAR * (((ty - MIN_TY) * ((MAX_ANGLE - MIN_ANGLE) / MAX_TY)) - MIN_ANGLE);
+    return Rotation2d.fromDegrees(angle);
+  }
+
+  private double speakerX = Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0;
+  private double speakerY = 5.5;
+  private double speakerZ = 2;
+
+  private Rotation2d TadaAim(SwerveSubsystem drivebase) {
+    Translation2d currentBotPosition = drivebase.getPose().getTranslation();
+    double targetDistance = currentBotPosition.getDistance(new Translation2d(speakerX, speakerY));
+    return new Rotation2d(Math.atan(speakerZ / targetDistance));
+  }
+
+  private double SpencerYaw(SwerveSubsystem drivebase) {
+    double tx = drivebase.visionPoseEstimator.getTX();
+    return tx / -75.0;
+  }
+
+  private double TadaYaw(SwerveSubsystem drivebase) {
+    Translation2d currentBotPosition = drivebase.getPose().getTranslation();
+    Rotation2d currentBotYaw = drivebase.getPose().getRotation();
+    Rotation2d targetBotYaw =
+        new Translation2d(speakerX, speakerY).minus(currentBotPosition).getAngle();
+    double errorDegrees = targetBotYaw.getDegrees() - currentBotYaw.getDegrees();
+    return errorDegrees / 75.0;
   }
 }
