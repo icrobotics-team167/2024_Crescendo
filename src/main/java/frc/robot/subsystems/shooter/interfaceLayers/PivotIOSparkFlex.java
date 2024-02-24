@@ -35,7 +35,7 @@ import java.util.Set;
 import org.littletonrobotics.junction.Logger;
 
 public class PivotIOSparkFlex implements PivotIO {
-  private DutyCycleEncoder encoder;
+  private final DutyCycleEncoder encoder;
   private final CANSparkFlex leaderMotor;
   private final RelativeEncoder leaderEncoder;
   private final CANSparkFlex followerMotor;
@@ -198,7 +198,7 @@ public class PivotIOSparkFlex implements PivotIO {
 
   /** Gets the angle of the pivot mechanism. */
   private Rotation2d getAngle() {
-    double rawAngle = encoder.getAbsolutePosition() - (134.0 / 360);
+    double rawAngle = encoder.getAbsolutePosition() - (256.0 / 360.0);
     return Rotation2d.fromRotations(angleFilter.calculate(rawAngle));
   }
 
