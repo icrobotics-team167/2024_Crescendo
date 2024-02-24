@@ -156,13 +156,13 @@ public class ModuleIOSparkMax implements ModuleIO {
     driveRelativeEncoder = driveMotor.getEncoder();
     // Default measurement values are a burning pile of dogshit because REV, why would they
     // willingly set the default measurements to have 112 ms of measurement latency
-    // This sets the measurement latency to 60 ms, much more tolerable
+    // This sets the measurement latency to 24 ms, much more tolerable
     // Formula for measurement delay:
     // T = Moving average filter sample count
     // P = Measurement period
     // Measurement latency = (T-1)/2 * P
-    driveRelativeEncoder.setAverageDepth(8);
-    driveRelativeEncoder.setMeasurementPeriod(24);
+    driveRelativeEncoder.setAverageDepth(4);
+    driveRelativeEncoder.setMeasurementPeriod(16);
     // Convert from rotations/RPM of motor shaft to meters/meters per second of wheel
     driveRelativeEncoder.setPositionConversionFactor(
         Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters) / Module.DRIVE_GEAR_RATIO);
