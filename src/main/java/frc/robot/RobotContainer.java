@@ -68,22 +68,6 @@ public class RobotContainer {
                 new NoteDetectorIOTimeOfFlight(),
                 new IntakeIOTalonFX());
         break;
-      case SIM:
-        drivebase =
-            new SwerveSubsystem(
-                new GyroIO() {},
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim());
-        shooter =
-            new Shooter(
-                new FeederIO() {},
-                new FlywheelIO() {},
-                new PivotIO() {},
-                new NoteDetectorIO() {},
-                new IntakeIO() {});
-        break;
       default:
         drivebase =
             new SwerveSubsystem(
