@@ -34,7 +34,7 @@ public class FeederIOSparkFlex implements FeederIO {
     motor.setInverted(true);
     motor.setCANTimeout(250);
     motor.setIdleMode(IdleMode.kBrake);
-    motor.setSmartCurrentLimit(60);
+    motor.setSmartCurrentLimit(30);
     motor.enableVoltageCompensation(12);
     SparkUtils.configureFrameStrategy(
         motor,

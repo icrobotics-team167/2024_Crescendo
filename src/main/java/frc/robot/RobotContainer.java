@@ -30,6 +30,7 @@ import frc.robot.subsystems.shooter.interfaceLayers.*;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.swerve.interfaceLayers.*;
 import frc.robot.util.MathUtils;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -103,26 +104,29 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+    DoubleSupplier primaryLeftStickX =
+        () ->
+            MathUtils.inOutDeadband(
+                -primaryLeftStick.getX(),
+                Driving.Deadbands.PRIMARY_LEFT_INNER,
+                Driving.Deadbands.PRIMARY_LEFT_OUTER,
+                Driving.PRIMARY_DRIVER_EXPONENT);
+    DoubleSupplier primaryLeftStickY =
+        () ->
+            MathUtils.inOutDeadband(
+                -primaryLeftStick.getY(),
+                Driving.Deadbands.PRIMARY_LEFT_INNER,
+                Driving.Deadbands.PRIMARY_LEFT_OUTER,
+                Driving.PRIMARY_DRIVER_EXPONENT);
+    DoubleSupplier primaryRightStickX =
+        () ->
+            MathUtils.inOutDeadband(
+                -primaryRightStick.getX(),
+                Driving.Deadbands.PRIMARY_RIGHT_INNER,
+                Driving.Deadbands.PRIMARY_RIGHT_OUTER,
+                Driving.PRIMARY_DRIVER_EXPONENT);
     drivebase.setDefaultCommand(
-        drivebase.getDriveCommand(
-            () ->
-                MathUtils.inOutDeadband(
-                    -primaryLeftStick.getY(),
-                    Driving.Deadbands.PRIMARY_LEFT_INNER,
-                    Driving.Deadbands.PRIMARY_LEFT_OUTER,
-                    Driving.PRIMARY_DRIVER_EXPONENT),
-            () ->
-                MathUtils.inOutDeadband(
-                    -primaryLeftStick.getX(),
-                    Driving.Deadbands.PRIMARY_LEFT_INNER,
-                    Driving.Deadbands.PRIMARY_LEFT_OUTER,
-                    Driving.PRIMARY_DRIVER_EXPONENT),
-            () ->
-                MathUtils.inOutDeadband(
-                    -primaryRightStick.getX(),
-                    Driving.Deadbands.PRIMARY_RIGHT_INNER,
-                    Driving.Deadbands.PRIMARY_RIGHT_OUTER,
-                    Driving.PRIMARY_DRIVER_EXPONENT)));
+        drivebase.getDriveCommand(primaryLeftStickY, primaryLeftStickX, primaryRightStickX));
 
     primaryLeftStick
         .trigger()
@@ -145,6 +149,10 @@ public class RobotContainer {
                         Driving.Deadbands.SECONDARY_LEFT_INNER,
                         Driving.Deadbands.SECONDARY_LEFT_OUTER,
                         Driving.SECONDARY_DRIVER_EXPONENT)));
+    secondaryLeftStick
+        .button(2)
+        .whileTrue(
+            shooter.getTeleopAutoAimCommand(drivebase, primaryLeftStickY, primaryLeftStickX));
     // shooter.setPivotDefaultCommand(none());
     secondaryLeftStick.button(3).whileTrue(shooter.getAmpShotCommand());
   }
