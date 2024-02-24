@@ -81,7 +81,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         drive_kP = 1 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
         drive_kD = 0.00;
 
-        azimuth_kP = 24;
+        azimuth_kP = 36;
         azimuth_kD = 1;
         azimuthOffset = 0.219482421875;
         break;
@@ -98,7 +98,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         drive_kP = 1 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
         drive_kD = 0.00;
 
-        azimuth_kP = 24;
+        azimuth_kP = 36;
         azimuth_kD = 1;
         azimuthOffset = 0.37841796875;
         break;
@@ -113,7 +113,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         drive_kP = 1 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
         drive_kD = 0.00;
 
-        azimuth_kP = 24;
+        azimuth_kP = 36;
         azimuth_kD = 1;
         azimuthOffset = 0.315673828125;
         break;
@@ -129,7 +129,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         drive_kP = 1 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
         drive_kD = 0.00;
 
-        azimuth_kP = 24;
+        azimuth_kP = 36;
         azimuth_kD = 1;
         azimuthOffset = -0.01953125;
         break;
@@ -156,13 +156,13 @@ public class ModuleIOSparkMax implements ModuleIO {
     driveRelativeEncoder = driveMotor.getEncoder();
     // Default measurement values are a burning pile of dogshit because REV, why would they
     // willingly set the default measurements to have 112 ms of measurement latency
-    // This sets the measurement latency to 60 ms, much more tolerable
+    // This sets the measurement latency to 24 ms, much more tolerable
     // Formula for measurement delay:
     // T = Moving average filter sample count
     // P = Measurement period
     // Measurement latency = (T-1)/2 * P
-    driveRelativeEncoder.setAverageDepth(8);
-    driveRelativeEncoder.setMeasurementPeriod(24);
+    driveRelativeEncoder.setAverageDepth(4);
+    driveRelativeEncoder.setMeasurementPeriod(16);
     // Convert from rotations/RPM of motor shaft to meters/meters per second of wheel
     driveRelativeEncoder.setPositionConversionFactor(
         Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters) / Module.DRIVE_GEAR_RATIO);
@@ -178,6 +178,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     azimuthMotor.setInverted(Module.AZIMUTH_MOTOR_INVERTED);
 
     azimuthPIDs = new PIDController(azimuth_kP, 0, azimuth_kD);
+    azimuthPIDs.enableContinuousInput(-0.5, 0.5);
 
     var cancoderConfig = new CANcoderConfiguration();
     cancoderConfig.MagnetSensor.MagnetOffset = azimuthOffset;
@@ -229,6 +230,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     driveOutput =
         drivePIDs.calculate(driveRelativeEncoder.getVelocity(), velocity.in(MetersPerSecond))
             + driveFF.calculate(velocity.in(MetersPerSecond));
+    // driveOutput = 0;
     driveMotor.setVoltage(driveOutput);
   }
 

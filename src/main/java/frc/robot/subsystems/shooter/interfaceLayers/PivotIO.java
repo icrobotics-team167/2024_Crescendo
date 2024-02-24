@@ -21,7 +21,7 @@ import edu.wpi.first.units.*;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface PivotIO {
-  public static final double MIN_ANGLE = 18;
+  public static final double MIN_ANGLE = 10;
   public static final double MAX_ANGLE = 90;
 
   @AutoLog
