@@ -206,10 +206,10 @@ public class PivotIOSparkFlex implements PivotIO {
   private void runMotor(Measure<Velocity<Angle>> pivotVel) {
     if ((pivotVel.baseUnitMagnitude() < 0 && getAngle().getDegrees() <= PivotIO.MIN_ANGLE)
         || (pivotVel.baseUnitMagnitude() > 0 && getAngle().getDegrees() >= PivotIO.MAX_ANGLE)) {
-      return;
+      pivotVel = RPM.of(0);
     }
 
-    Logger.recordOutput("Shooter/pivot/targetVel", -pivotVel.in(RadiansPerSecond));
+    Logger.recordOutput("Shooter/pivot/targetVel", pivotVel.in(RadiansPerSecond));
     leaderSetpoint =
         -(leaderPidController.calculate(-leaderEncoder.getVelocity(), pivotVel.in(DegreesPerSecond))
             + leaderFFController.calculate(getAngle().getRadians(), pivotVel.in(RadiansPerSecond)));
