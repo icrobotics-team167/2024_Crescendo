@@ -14,7 +14,12 @@
 
 package frc.robot.util;
 
+import static edu.wpi.first.units.Units.Meters;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import frc.robot.Constants.Field;
 import frc.robot.Robot;
 
 /** A class containing various math-related utilities. */
@@ -74,6 +79,28 @@ public class MathUtils {
     } else {
       return rawRotation;
     }
+  }
+
+  /**
+   * If the robot is on the Red Alliance, flips the translation to account for that. Does nothing if
+   * the robot is on the Blue Alliance.
+   */
+  public static Translation2d adjustTranslation(Translation2d rawTranslation) {
+    if (Robot.isOnRed()) {
+      return new Translation2d(
+          Field.FIELD_LENGTH.in(Meters) - rawTranslation.getX(), rawTranslation.getY());
+    } else {
+      return rawTranslation;
+    }
+  }
+
+  /**
+   * If the robot is on the Red Alliance, flips the pose to account for that. Does nothing if the
+   * robot is on the Blue Alliance.
+   */
+  public static Pose2d adjustPose(Pose2d rawPose) {
+    return new Pose2d(
+        adjustTranslation(rawPose.getTranslation()), adjustRotation(rawPose.getRotation()));
   }
 
   public static int getRandomNumber(int min, int max) {

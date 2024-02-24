@@ -47,6 +47,7 @@ import frc.robot.subsystems.swerve.interfaceLayers.ModuleIO;
 import frc.robot.subsystems.swerve.interfaceLayers.PhoenixOdometryThread;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.util.MathUtils;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.DoubleSupplier;
@@ -300,7 +301,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   /** Resets the current odometry pose and also sets the gyro angle. */
   public void setPoseAndGyro(Pose2d pose) {
-    gyroIO.setYaw(pose.getRotation());
+    gyroIO.setYaw(MathUtils.adjustRotation(pose.getRotation()));
     setPose(pose);
   }
 
