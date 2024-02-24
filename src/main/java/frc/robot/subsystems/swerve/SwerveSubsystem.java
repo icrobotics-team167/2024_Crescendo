@@ -115,7 +115,7 @@ public class SwerveSubsystem extends SubsystemBase {
     modules[2] = new Module(blModuleIO, 2);
     modules[3] = new Module(brModuleIO, 3);
     for (int i = 0; i < 4; i++) {
-      lastModulePositions[i] = modules[i].getPosition();
+      lastModulePositions[i] = modules[i].getModulePosition();
     }
     poseEstimator =
         new SwerveDrivePoseEstimator(
@@ -282,7 +282,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private SwerveModulePosition[] getModulePositions() {
     SwerveModulePosition[] states = new SwerveModulePosition[4];
     for (int i = 0; i < 4; i++) {
-      states[i] = modules[i].getPosition();
+      states[i] = modules[i].getModulePosition();
     }
     return states;
   }

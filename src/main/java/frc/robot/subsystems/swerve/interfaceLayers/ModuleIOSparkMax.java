@@ -81,7 +81,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         drive_kP = 1 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
         drive_kD = 0.00;
 
-        azimuth_kP = 24;
+        azimuth_kP = 36;
         azimuth_kD = 1;
         azimuthOffset = 0.219482421875;
         break;
@@ -98,7 +98,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         drive_kP = 1 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
         drive_kD = 0.00;
 
-        azimuth_kP = 24;
+        azimuth_kP = 36;
         azimuth_kD = 1;
         azimuthOffset = 0.37841796875;
         break;
@@ -113,7 +113,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         drive_kP = 1 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
         drive_kD = 0.00;
 
-        azimuth_kP = 24;
+        azimuth_kP = 36;
         azimuth_kD = 1;
         azimuthOffset = 0.315673828125;
         break;
@@ -129,7 +129,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         drive_kP = 1 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
         drive_kD = 0.00;
 
-        azimuth_kP = 24;
+        azimuth_kP = 36;
         azimuth_kD = 1;
         azimuthOffset = -0.01953125;
         break;
@@ -178,6 +178,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     azimuthMotor.setInverted(Module.AZIMUTH_MOTOR_INVERTED);
 
     azimuthPIDs = new PIDController(azimuth_kP, 0, azimuth_kD);
+    azimuthPIDs.enableContinuousInput(-0.5, 0.5);
 
     var cancoderConfig = new CANcoderConfiguration();
     cancoderConfig.MagnetSensor.MagnetOffset = azimuthOffset;
@@ -229,6 +230,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     driveOutput =
         drivePIDs.calculate(driveRelativeEncoder.getVelocity(), velocity.in(MetersPerSecond))
             + driveFF.calculate(velocity.in(MetersPerSecond));
+    // driveOutput = 0;
     driveMotor.setVoltage(driveOutput);
   }
 

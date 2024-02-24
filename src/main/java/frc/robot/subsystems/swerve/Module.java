@@ -247,23 +247,23 @@ public class Module {
   }
 
   /** Returns the current drive position of the module. */
-  public Measure<Distance> getPositionMeters() {
+  public Measure<Distance> getDrivePosition() {
     return inputs.drivePosition;
   }
 
   /** Returns the current drive velocity of the module. */
-  public Measure<Velocity<Distance>> getVelocityMetersPerSec() {
+  public Measure<Velocity<Distance>> getVelocity() {
     return inputs.driveVelocity;
   }
 
   /** Returns the module position (azimuth and drive position). */
-  public SwerveModulePosition getPosition() {
-    return new SwerveModulePosition(getPositionMeters(), getAngle());
+  public SwerveModulePosition getModulePosition() {
+    return new SwerveModulePosition(getDrivePosition(), getAngle());
   }
 
   /** Returns the module state (azimuth and drive velocity). */
   public SwerveModuleState getState() {
-    return new SwerveModuleState(getVelocityMetersPerSec(), getAngle());
+    return new SwerveModuleState(getVelocity(), getAngle());
   }
 
   /** Returns the module positions received this cycle. */
