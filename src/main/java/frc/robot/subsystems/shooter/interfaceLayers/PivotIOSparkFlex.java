@@ -32,7 +32,6 @@ import frc.robot.Robot;
 import frc.robot.util.CANConstants.Shooter;
 import frc.robot.util.motorUtils.SparkUtils;
 import java.util.Set;
-import org.littletonrobotics.junction.Logger;
 
 public class PivotIOSparkFlex implements PivotIO {
   private final DutyCycleEncoder encoder;
@@ -66,7 +65,7 @@ public class PivotIOSparkFlex implements PivotIO {
     leaderEncoder = leaderMotor.getEncoder();
     leaderMotor.setIdleMode(IdleMode.kBrake);
     leaderMotor.setInverted(true);
-    leaderMotor.setSmartCurrentLimit(60);
+    leaderMotor.setSmartCurrentLimit(40);
     leaderEncoder.setPositionConversionFactor(360.0 / 400.0);
     leaderEncoder.setVelocityConversionFactor((360.0 / 400.0) / 60.0);
     SparkUtils.configureFrameStrategy(
@@ -82,7 +81,7 @@ public class PivotIOSparkFlex implements PivotIO {
     followerEncoder = followerMotor.getEncoder();
     followerMotor.setInverted(false);
     followerMotor.setIdleMode(IdleMode.kBrake);
-    followerMotor.setSmartCurrentLimit(60);
+    followerMotor.setSmartCurrentLimit(40);
     followerEncoder.setPositionConversionFactor(360.0 / 400.0);
     followerEncoder.setVelocityConversionFactor((360.0 / 400.0) / 60.0);
     SparkUtils.configureFrameStrategy(
@@ -148,9 +147,12 @@ public class PivotIOSparkFlex implements PivotIO {
                         new TrapezoidProfile.State(
                             Radians.of(targetAngle.getRadians()), RadiansPerSecond.of(0)))
                     .velocity);
+        inputs.angleSetpoint = targetAngle;
+        inputs.velocitySetpoint = targetVelocity;
         runMotor(targetVelocity);
         break;
       case TARGET_VEL:
+        inputs.velocitySetpoint = targetVelocity;
         runMotor(targetVelocity);
         break;
       case OPEN_LOOP:
@@ -209,7 +211,8 @@ public class PivotIOSparkFlex implements PivotIO {
       pivotVel = RPM.of(0);
     }
 
-    Logger.recordOutput("Shooter/pivot/targetVel", pivotVel.in(RadiansPerSecond));
+    // pivotVel = RPM.of(0);
+
     leaderSetpoint =
         -(leaderPidController.calculate(-leaderEncoder.getVelocity(), pivotVel.in(DegreesPerSecond))
             + leaderFFController.calculate(getAngle().getRadians(), pivotVel.in(RadiansPerSecond)));

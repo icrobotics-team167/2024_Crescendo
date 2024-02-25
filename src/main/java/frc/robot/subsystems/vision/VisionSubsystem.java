@@ -17,8 +17,6 @@ package frc.robot.subsystems.vision;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.Robot.Mode;
@@ -39,18 +37,18 @@ public class VisionSubsystem extends SubsystemBase {
     } else {
       cameras =
           new VisionIO[] {
-            new VisionIOPhoton(
-                "AprilTagLimeLight",
-                new Transform3d(
-                    Meters.convertFrom(2, Inches),
-                    Meters.convertFrom(13.25, Inches),
-                    Meters.convertFrom(11, Inches),
-                    new Rotation3d(0, Radians.convertFrom(-30, Degrees), 0)))
+            // new VisionIOPhoton(
+            //     "AprilTagLimeLight",
+            //     new Transform3d(
+            //         Meters.convertFrom(2, Inches),
+            //         Meters.convertFrom(13.25, Inches),
+            //         Meters.convertFrom(11, Inches),
+            //         new Rotation3d(0, Radians.convertFrom(-30, Degrees), 0)))
           };
-      cameras = new VisionIO[] {};
     }
 
     cameraData = new VisionIOInputsAutoLogged[cameras.length];
+
     for (int i = 0; i < cameraData.length; i++) {
       cameraData[i] = new VisionIOInputsAutoLogged();
     }
@@ -67,6 +65,7 @@ public class VisionSubsystem extends SubsystemBase {
   public void updateEstimation() {
     for (int i = 0; i < cameraData.length; i++) {
       if (cameraData[i].isNewData) {
+        System.out.println("Camera " + i + " did not have any new data!");
         estimationConsumer.accept(cameraData[i].poseEstimate, cameraData[i].timestamp);
       }
     }
