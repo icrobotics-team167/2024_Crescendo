@@ -36,8 +36,8 @@ public final class CANConstants {
   public final class Shooter {
     public static final int INTAKE = 10;
     public static final int FEEDER = 23;
-    public static final int PIVOT_LEADER = 19;
-    public static final int PIVOT_FOLLOWER = 20;
+    public static final int PIVOT_LEADER = 20;
+    public static final int PIVOT_FOLLOWER = 19;
     public static final int TOP_FLYWHEEL = 22;
     public static final int BOTTOM_FLYWHEEL = 21;
     public static final int NOTE_DETECTOR = 32;

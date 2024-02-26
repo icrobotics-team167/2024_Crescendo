@@ -64,7 +64,7 @@ public class PivotIOSparkFlex implements PivotIO {
 
     leaderEncoder = leaderMotor.getEncoder();
     leaderMotor.setIdleMode(IdleMode.kBrake);
-    leaderMotor.setInverted(false);
+    leaderMotor.setInverted(true);
     leaderMotor.setSmartCurrentLimit(10);
     leaderEncoder.setPositionConversionFactor(360.0 / 400.0);
     leaderEncoder.setVelocityConversionFactor((360.0 / 400.0) / 60.0);
@@ -79,7 +79,7 @@ public class PivotIOSparkFlex implements PivotIO {
         false);
 
     followerEncoder = followerMotor.getEncoder();
-    followerMotor.setInverted(true);
+    followerMotor.setInverted(false);
     followerMotor.setIdleMode(IdleMode.kBrake);
     followerMotor.setSmartCurrentLimit(10);
     followerEncoder.setPositionConversionFactor(360.0 / 400.0);
@@ -209,13 +209,13 @@ public class PivotIOSparkFlex implements PivotIO {
     // pivotVel = RPM.of(0);
 
     leaderSetpoint =
-        leaderPidController.calculate(leaderEncoder.getVelocity(), pivotVel.in(DegreesPerSecond))
-            + leaderFFController.calculate(getAngle().getRadians(), pivotVel.in(RadiansPerSecond));
+        -(leaderPidController.calculate(-leaderEncoder.getVelocity(), pivotVel.in(DegreesPerSecond))
+            + leaderFFController.calculate(getAngle().getRadians(), pivotVel.in(RadiansPerSecond)));
     followerSetpoint =
-        followerPidController.calculate(
-                followerEncoder.getVelocity(), pivotVel.in(DegreesPerSecond))
+        -(followerPidController.calculate(
+                -followerEncoder.getVelocity(), pivotVel.in(DegreesPerSecond))
             + followerFFController.calculate(
-                getAngle().getRadians(), pivotVel.in(RadiansPerSecond));
+                getAngle().getRadians(), pivotVel.in(RadiansPerSecond)));
     leaderMotor.setVoltage(leaderSetpoint);
     followerMotor.setVoltage(followerSetpoint);
   }
