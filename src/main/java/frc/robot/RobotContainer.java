@@ -25,14 +25,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Driving;
-import frc.robot.subsystems.misc.LightSubsystem;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.interfaceLayers.*;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.swerve.interfaceLayers.*;
 import frc.robot.util.MathUtils;
-
-import java.util.GregorianCalendar;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -158,8 +155,6 @@ public class RobotContainer {
             shooter.getTeleopAutoAimCommand(drivebase, primaryLeftStickY, primaryLeftStickX));
     // shooter.setPivotDefaultCommand(none());
     secondaryLeftStick.button(3).whileTrue(shooter.getAmpShotCommand());
-
-    
   }
 
   /**

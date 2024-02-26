@@ -44,7 +44,7 @@ public final class CANConstants {
   }
 
   public final class misc {
-    //TODO: Configure
+    // TODO: Configure
     public static final int LIGHT_PWM_ID = 8;
   }
 }
