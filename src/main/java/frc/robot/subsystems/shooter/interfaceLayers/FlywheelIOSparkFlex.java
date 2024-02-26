@@ -40,10 +40,10 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
 
     bottomFlywheel.setInverted(true);
     bottomFlywheel.setIdleMode(IdleMode.kCoast);
-    bottomFlywheel.setSmartCurrentLimit(50);
+    bottomFlywheel.setSmartCurrentLimit(40);
     topFlywheel.setInverted(false);
     topFlywheel.setIdleMode(IdleMode.kCoast);
-    topFlywheel.setSmartCurrentLimit(50);
+    topFlywheel.setSmartCurrentLimit(40);
     SparkUtils.configureFrameStrategy(
         topFlywheel,
         Set.of(

@@ -147,7 +147,7 @@ public class Shooter {
   private double speakerY = 5.5;
   private double speakerZ = 2;
 
-  //ARM ANGLE MATH
+  // ARM ANGLE MATH
   private Rotation2d TadaAim(SwerveSubsystem drivebase) {
     Translation2d currentBotPosition = drivebase.getPose().getTranslation();
     double targetDistance = currentBotPosition.getDistance(new Translation2d(speakerX, speakerY));
@@ -159,7 +159,7 @@ public class Shooter {
     return tx / -75.0;
   }
 
-  //ROBOT ROTATE MATH
+  // ROBOT ROTATE MATH
   private double TadaYaw(SwerveSubsystem drivebase) {
     Translation2d currentBotPosition = drivebase.getPose().getTranslation();
     Rotation2d currentBotYaw = drivebase.getPose().getRotation();
