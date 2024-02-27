@@ -16,10 +16,13 @@ package frc.robot.util.motorUtils;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
+import com.revrobotics.REVLibError;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Time;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import java.util.Set;
+import java.util.function.Supplier;
 
 // https://github.com/SciBorgs/Crescendo-2024/blob/main/src/main/java/org/sciborgs1155/lib/SparkUtils.java
 /** Utility class for configuration of Spark motor controllers */
@@ -118,5 +121,14 @@ public class SparkUtils {
    */
   public static void configureNothingFrameStrategy(CANSparkBase spark) {
     configureFrameStrategy(spark, Set.of(), Set.of(), false);
+  }
+
+  public static void configureSpark(Supplier<REVLibError> config) {
+    for (int i = 0; i < 5; i++) {
+      if (config.get() == REVLibError.kOk) {
+        return;
+      }
+    }
+    DriverStation.reportError("Failed to configure Spark!", true);
   }
 }

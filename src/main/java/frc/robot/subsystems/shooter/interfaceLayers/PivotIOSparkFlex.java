@@ -55,19 +55,21 @@ public class PivotIOSparkFlex implements PivotIO {
 
     leaderMotor = new CANSparkFlex(Shooter.PIVOT_LEADER, MotorType.kBrushless);
     followerMotor = new CANSparkFlex(Shooter.PIVOT_FOLLOWER, MotorType.kBrushless);
-    leaderMotor.restoreFactoryDefaults();
-    followerMotor.restoreFactoryDefaults();
+
+    SparkUtils.configureSpark(() -> leaderMotor.restoreFactoryDefaults());
+    SparkUtils.configureSpark(() -> followerMotor.restoreFactoryDefaults());
     Timer.delay(0.1);
 
-    leaderMotor.setCANTimeout(250);
-    followerMotor.setCANTimeout(250);
+    SparkUtils.configureSpark(() -> leaderMotor.setCANTimeout(250));
+    SparkUtils.configureSpark(() -> followerMotor.setCANTimeout(250));
 
     leaderEncoder = leaderMotor.getEncoder();
-    leaderMotor.setIdleMode(IdleMode.kBrake);
+    SparkUtils.configureSpark(() -> leaderMotor.setIdleMode(IdleMode.kBrake));
     leaderMotor.setInverted(true);
-    leaderMotor.setSmartCurrentLimit(40);
-    leaderEncoder.setPositionConversionFactor(360.0 / 400.0);
-    leaderEncoder.setVelocityConversionFactor((360.0 / 400.0) / 60.0);
+    SparkUtils.configureSpark(() -> leaderMotor.setSmartCurrentLimit(40));
+    SparkUtils.configureSpark(() -> leaderEncoder.setPositionConversionFactor(360.0 / 400.0));
+    SparkUtils.configureSpark(
+        () -> leaderEncoder.setVelocityConversionFactor((360.0 / 400.0) / 60.0));
     SparkUtils.configureFrameStrategy(
         leaderMotor,
         Set.of(
@@ -80,10 +82,11 @@ public class PivotIOSparkFlex implements PivotIO {
 
     followerEncoder = followerMotor.getEncoder();
     followerMotor.setInverted(false);
-    followerMotor.setIdleMode(IdleMode.kBrake);
-    followerMotor.setSmartCurrentLimit(40);
-    followerEncoder.setPositionConversionFactor(360.0 / 400.0);
-    followerEncoder.setVelocityConversionFactor((360.0 / 400.0) / 60.0);
+    SparkUtils.configureSpark(() -> followerMotor.setIdleMode(IdleMode.kBrake));
+    SparkUtils.configureSpark(() -> followerMotor.setSmartCurrentLimit(40));
+    SparkUtils.configureSpark(() -> followerEncoder.setPositionConversionFactor(360.0 / 400.0));
+    SparkUtils.configureSpark(
+        () -> followerEncoder.setVelocityConversionFactor((360.0 / 400.0) / 60.0));
     SparkUtils.configureFrameStrategy(
         followerMotor,
         Set.of(

@@ -19,6 +19,7 @@ import static edu.wpi.first.units.Units.*;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.util.CANConstants.Shooter;
 import frc.robot.util.motorUtils.SparkUtils;
@@ -26,16 +27,18 @@ import java.util.Set;
 
 public class FeederIOSparkFlex implements FeederIO {
   private CANSparkFlex motor;
+  private RelativeEncoder encoder;
 
   public FeederIOSparkFlex() {
     motor = new CANSparkFlex(Shooter.FEEDER, MotorType.kBrushless);
-    motor.restoreFactoryDefaults();
+    SparkUtils.configureSpark(() -> motor.restoreFactoryDefaults());
     Timer.delay(0.1);
     motor.setInverted(true);
-    motor.setCANTimeout(250);
-    motor.setIdleMode(IdleMode.kBrake);
-    motor.setSmartCurrentLimit(30);
-    motor.enableVoltageCompensation(12);
+    SparkUtils.configureSpark(() -> motor.setCANTimeout(250));
+    SparkUtils.configureSpark(() -> motor.setIdleMode(IdleMode.kBrake));
+    SparkUtils.configureSpark(() -> motor.setSmartCurrentLimit(30));
+    SparkUtils.configureSpark(() -> motor.enableVoltageCompensation(12));
+    encoder = motor.getEncoder();
     SparkUtils.configureFrameStrategy(
         motor,
         Set.of(
@@ -52,8 +55,8 @@ public class FeederIOSparkFlex implements FeederIO {
     inputs.appliedVoltage = Volts.of(motor.getBusVoltage() * motor.get());
     inputs.appliedCurrent = Amps.of(motor.getOutputCurrent());
     inputs.appliedOutput = motor.get();
-    inputs.position = Rotations.of(motor.getEncoder().getPosition());
-    inputs.velocity = RPM.of(motor.getEncoder().getVelocity());
+    inputs.position = Rotations.of(encoder.getPosition());
+    inputs.velocity = RPM.of(encoder.getVelocity());
   }
 
   @Override

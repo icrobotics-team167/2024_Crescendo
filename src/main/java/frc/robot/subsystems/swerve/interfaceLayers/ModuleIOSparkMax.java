@@ -137,21 +137,21 @@ public class ModuleIOSparkMax implements ModuleIO {
         throw new IndexOutOfBoundsException("Invalid module ID. Expected 0-3, got " + moduleID);
     }
 
-    driveMotor.restoreFactoryDefaults();
-    azimuthMotor.restoreFactoryDefaults();
+    SparkUtils.configureSpark(() -> driveMotor.restoreFactoryDefaults());
+    SparkUtils.configureSpark(() -> azimuthMotor.restoreFactoryDefaults());
     Timer.delay(0.1);
 
-    driveMotor.clearFaults();
-    azimuthMotor.clearFaults();
+    SparkUtils.configureSpark(() -> driveMotor.clearFaults());
+    SparkUtils.configureSpark(() -> azimuthMotor.clearFaults());
     azimuthCANcoder.clearStickyFaults();
     Timer.delay(0.1);
 
-    driveMotor.setCANTimeout(250);
-    azimuthMotor.setCANTimeout(250);
+    SparkUtils.configureSpark(() -> driveMotor.setCANTimeout(250));
+    SparkUtils.configureSpark(() -> azimuthMotor.setCANTimeout(250));
 
-    driveMotor.setIdleMode(IdleMode.kCoast);
-    driveMotor.setSmartCurrentLimit(60);
-    driveMotor.setSecondaryCurrentLimit(80);
+    SparkUtils.configureSpark(() -> driveMotor.setIdleMode(IdleMode.kCoast));
+    SparkUtils.configureSpark(() -> driveMotor.setSmartCurrentLimit(60));
+    SparkUtils.configureSpark(() -> driveMotor.setSecondaryCurrentLimit(80));
 
     driveRelativeEncoder = driveMotor.getEncoder();
     // Default measurement values are a burning pile of dogshit because REV, why would they
@@ -161,20 +161,24 @@ public class ModuleIOSparkMax implements ModuleIO {
     // T = Moving average filter sample count
     // P = Measurement period
     // Measurement latency = (T-1)/2 * P
-    driveRelativeEncoder.setAverageDepth(4);
-    driveRelativeEncoder.setMeasurementPeriod(16);
+    SparkUtils.configureSpark(() -> driveRelativeEncoder.setAverageDepth(4));
+    SparkUtils.configureSpark(() -> driveRelativeEncoder.setMeasurementPeriod(16));
     // Convert from rotations/RPM of motor shaft to meters/meters per second of wheel
-    driveRelativeEncoder.setPositionConversionFactor(
-        Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters) / Module.DRIVE_GEAR_RATIO);
-    driveRelativeEncoder.setVelocityConversionFactor(
-        (Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters) / Module.DRIVE_GEAR_RATIO) / 60);
+    SparkUtils.configureSpark(
+        () ->
+            driveRelativeEncoder.setPositionConversionFactor(
+                Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters) / Module.DRIVE_GEAR_RATIO));
+    SparkUtils.configureSpark(
+        () ->
+            driveRelativeEncoder.setVelocityConversionFactor(
+                (Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters) / Module.DRIVE_GEAR_RATIO) / 60));
 
     drivePIDs = new PIDController(drive_kP, 0, drive_kD);
     driveFF = new SimpleMotorFeedforward(drive_kS, drive_kV);
 
-    azimuthMotor.setIdleMode(IdleMode.kBrake);
-    azimuthMotor.setSmartCurrentLimit(40);
-    azimuthMotor.setSecondaryCurrentLimit(60);
+    SparkUtils.configureSpark(() -> azimuthMotor.setIdleMode(IdleMode.kBrake));
+    SparkUtils.configureSpark(() -> azimuthMotor.setSmartCurrentLimit(40));
+    SparkUtils.configureSpark(() -> azimuthMotor.setSecondaryCurrentLimit(60));
     azimuthMotor.setInverted(Module.AZIMUTH_MOTOR_INVERTED);
 
     azimuthPIDs = new PIDController(azimuth_kP, 0, azimuth_kD);
