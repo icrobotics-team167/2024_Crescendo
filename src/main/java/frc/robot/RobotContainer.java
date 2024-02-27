@@ -145,7 +145,7 @@ public class RobotContainer {
             shooter.getManualControlCommand(
                 () ->
                     MathUtils.inOutDeadband(
-                        -secondaryLeftStick.getY(),
+                        secondaryLeftStick.getY(),
                         Driving.Deadbands.SECONDARY_LEFT_INNER,
                         Driving.Deadbands.SECONDARY_LEFT_OUTER,
                         Driving.SECONDARY_DRIVER_EXPONENT)));

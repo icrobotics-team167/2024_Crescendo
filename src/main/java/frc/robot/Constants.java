@@ -36,7 +36,7 @@ public final class Constants {
     public static final boolean SLOWMODE_DEFAULT = true;
     public static final double SLOWMODE_MULTIPLIER = 0.2;
     public static final double PRIMARY_DRIVER_EXPONENT = 1.5;
-    public static final double SECONDARY_DRIVER_EXPONENT = 1;
+    public static final double SECONDARY_DRIVER_EXPONENT = 1.5;
 
     public static final class Deadbands {
       public static final double PRIMARY_LEFT_INNER = 0.05;
