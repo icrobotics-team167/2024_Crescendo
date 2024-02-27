@@ -15,12 +15,15 @@
 package frc.robot.subsystems.misc.interfaceLayers;
 
 import edu.wpi.first.wpilibj.PWM;
+import frc.robot.util.CANConstants;
 
 public class LightsIOBlinkin implements LightsIO {
-  PWM colourSpark;
+  PWM colorSparkRight;
+  PWM colorSparkLeft;
+  private double lastColor;
 
-  /** Cool colours. */
-  public static enum Colours {
+  /** Cool colors. */
+  public static enum Colors {
     RAINBOW_PALETTE(1005),
     RAINBOW_GLITTER(1055),
     CONFETTI(1065),
@@ -53,14 +56,14 @@ public class LightsIOBlinkin implements LightsIO {
     DARK_GREY(1985),
     BLACK(1995);
 
-    int colourValue;
+    int colorValue;
     /**
-     * colours constructor
+     * colors constructor
      *
-     * @param colourValue colour value
+     * @param colorValue color value
      */
-    private Colours(int colourValue) {
-      this.colourValue = colourValue;
+    private Colors(int colorValue) {
+      this.colorValue = colorValue;
     }
   }
 
@@ -69,25 +72,33 @@ public class LightsIOBlinkin implements LightsIO {
    *
    * @param PWMID the PWMID of the blinky blinky light module (Spark motor)
    */
-  public LightsIOBlinkin(int PWMID) {
-    colourSpark = new PWM(PWMID);
+  public LightsIOBlinkin() {
+    colorSparkRight = new PWM(CANConstants.misc.LIGHT_PWM_ID_RIGHT);
+    colorSparkLeft = new PWM(CANConstants.misc.LIGHT_PWM_ID_LEFT);
+    lastColor = 0;
   }
 
   /**
-   * Set the colour for the spark motor bruv
+   * Set the color for the spark motor bruv
    *
-   * @param colour colours object bruv
+   * @param color colors object bruv
    */
-  public void setColour(Colours colour) {
-    // set colour to set colourValue bruv
-    colourSpark.setPulseTimeMicroseconds(colour.colourValue);
+  @Override
+  public void setColor(Colors color) {
+    // set color to set colorValue bruv
+    setColorValue(color.colorValue);
   }
 
   public void setColorValue(int colorValue) {
-    colourSpark.setPulseTimeMicroseconds(colorValue);
+    colorSparkRight.setPulseTimeMicroseconds(colorValue);
+    colorSparkLeft.setPulseTimeMicroseconds(colorValue);
+    lastColor = colorValue;
   }
 
   public void setColorNull() {
-    colourSpark.setPulseTimeMicroseconds(0);
+    // Black is essentially just off, cuz black isn't real. I don't understand why we can't get
+    // diversity awards
+    colorSparkRight.setPulseTimeMicroseconds(1995);
+    colorSparkLeft.setPulseTimeMicroseconds(1995);
   }
 }

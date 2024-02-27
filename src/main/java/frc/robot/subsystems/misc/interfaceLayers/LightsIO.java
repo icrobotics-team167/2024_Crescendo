@@ -14,7 +14,7 @@
 
 package frc.robot.subsystems.misc.interfaceLayers;
 
-import frc.robot.subsystems.misc.interfaceLayers.LightsIOBlinkin.Colours;
+import frc.robot.subsystems.misc.interfaceLayers.LightsIOBlinkin.Colors;
 
 public interface LightsIO {
 
@@ -24,7 +24,7 @@ public interface LightsIO {
 
   public default void updateInputs(LightsIOInputs inputs) {}
 
-  public default void setColor(Colours color) {}
+  public default void setColor(Colors color) {}
 
   public default void setColorValue(int num) {}
 

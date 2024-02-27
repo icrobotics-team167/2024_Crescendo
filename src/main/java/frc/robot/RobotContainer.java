@@ -25,6 +25,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Driving;
+import frc.robot.subsystems.misc.LightSubsystem;
+import frc.robot.subsystems.misc.interfaceLayers.LightsIO;
+import frc.robot.subsystems.misc.interfaceLayers.LightsIOBlinkin;
+import frc.robot.subsystems.misc.interfaceLayers.LightsIOBlinkin.Colors;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.interfaceLayers.*;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -44,6 +48,7 @@ public class RobotContainer {
 
   private final SwerveSubsystem drivebase;
   private final Shooter shooter;
+  private final LightSubsystem light;
 
   private CommandJoystick primaryLeftStick = new CommandJoystick(0);
   private CommandJoystick primaryRightStick = new CommandJoystick(1);
@@ -68,6 +73,7 @@ public class RobotContainer {
                 new PivotIOSparkFlex(),
                 new NoteDetectorIOTimeOfFlight(),
                 new IntakeIOTalonFX());
+        light = new LightSubsystem(new LightsIOBlinkin());
         break;
       default:
         drivebase =
@@ -84,6 +90,7 @@ public class RobotContainer {
                 new PivotIO() {},
                 new NoteDetectorIO() {},
                 new IntakeIO() {});
+        light = new LightSubsystem(new LightsIO() {});
     }
     NamedCommands.registerCommand("Score in speaker", none()); // TODO: Implement
     NamedCommands.registerCommand("Intake", none()); // TODO: Implement
@@ -155,6 +162,10 @@ public class RobotContainer {
             shooter.getTeleopAutoAimCommand(drivebase, primaryLeftStickY, primaryLeftStickX));
     // shooter.setPivotDefaultCommand(none());
     secondaryLeftStick.button(3).whileTrue(shooter.getAmpShotCommand());
+
+    primaryLeftStick.button(10).onTrue(light.setColor(Colors.LIME));
+    primaryLeftStick.button(11).onTrue(light.setColorValue(1865));
+    primaryRightStick.button(9).onTrue(light.setColorNull());
   }
 
   /**
