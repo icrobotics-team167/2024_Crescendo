@@ -65,7 +65,7 @@ public class PivotIOSparkFlex implements PivotIO {
     leaderEncoder = leaderMotor.getEncoder();
     leaderMotor.setIdleMode(IdleMode.kBrake);
     leaderMotor.setInverted(true);
-    leaderMotor.setSmartCurrentLimit(10);
+    leaderMotor.setSmartCurrentLimit(40);
     leaderEncoder.setPositionConversionFactor(360.0 / 400.0);
     leaderEncoder.setVelocityConversionFactor((360.0 / 400.0) / 60.0);
     SparkUtils.configureFrameStrategy(
@@ -81,7 +81,7 @@ public class PivotIOSparkFlex implements PivotIO {
     followerEncoder = followerMotor.getEncoder();
     followerMotor.setInverted(false);
     followerMotor.setIdleMode(IdleMode.kBrake);
-    followerMotor.setSmartCurrentLimit(10);
+    followerMotor.setSmartCurrentLimit(40);
     followerEncoder.setPositionConversionFactor(360.0 / 400.0);
     followerEncoder.setVelocityConversionFactor((360.0 / 400.0) / 60.0);
     SparkUtils.configureFrameStrategy(
