@@ -125,7 +125,8 @@ public class Shooter {
             yVel,
             () -> {
               // return SpencerYaw(drivebase);
-              return TadaYaw(drivebase);
+              // return TadaYaw(drivebase);
+              return 0;
             }));
   }
 
