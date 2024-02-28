@@ -155,13 +155,12 @@ public class Shooter {
     double angle = SCALAR * (((ty - MIN_TY) * ((MAX_ANGLE - MIN_ANGLE) / MAX_TY)) - MIN_ANGLE);
     return Rotation2d.fromDegrees(angle);
   }
-
-  private double speakerX = Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0;
   private double speakerY = 5.5;
   private double speakerZ = 2;
 
   // ARM ANGLE MATH
   private Rotation2d TadaAim(SwerveSubsystem drivebase) {
+    double speakerX = Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0;
     Translation2d currentBotPosition = drivebase.getPose().getTranslation();
     double targetDistance = currentBotPosition.getDistance(new Translation2d(speakerX, speakerY));
     return new Rotation2d(Math.atan(speakerZ / targetDistance));
@@ -174,6 +173,7 @@ public class Shooter {
 
   // ROBOT ROTATE MATH
   private double TadaYaw(SwerveSubsystem drivebase) {
+    double speakerX = Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0;
     Translation2d currentBotPosition = drivebase.getPose().getTranslation();
     Rotation2d currentBotYaw = drivebase.getPose().getRotation();
     Rotation2d targetBotYaw =
