@@ -138,7 +138,7 @@ public class PivotIOSparkFlex implements PivotIO {
     switch (controlMode) {
       case TARGET_ANGLE:
         targetVelocity =
-            RadiansPerSecond.of(
+            DegreesPerSecond.of(
                 angleMotionProfile.calculate(
                         Robot.defaultPeriodSecs,
                         new TrapezoidProfile.State(
