@@ -17,6 +17,7 @@ package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -38,6 +39,8 @@ public class Shooter {
   private final IntakeSubsystem intake;
   private final FeederSubsystem feeder;
 
+  private PIDController autoAimController;
+
   public Shooter(
       FeederIO feederIO,
       FlywheelIO flywheelIO,
@@ -50,6 +53,9 @@ public class Shooter {
     noteDetector = new NoteDetectorSubsystem(noteDetectorIO);
     intake = new IntakeSubsystem(intakeIO);
     feeder = new FeederSubsystem(feederIO);
+
+    autoAimController = new PIDController(1.0 / 50, 0, 1.0 / 200);
+    autoAimController.enableContinuousInput(-180, 180);
   }
 
   public Command intake() {
@@ -172,10 +178,6 @@ public class Shooter {
     Rotation2d currentBotYaw = drivebase.getPose().getRotation();
     Rotation2d targetBotYaw =
         new Translation2d(speakerX, speakerY).minus(currentBotPosition).getAngle();
-    double errorDegrees = -targetBotYaw.getDegrees() + currentBotYaw.getDegrees();
-    System.out.println(errorDegrees);
-    System.out.println(currentBotYaw);
-    return errorDegrees / 75.0;
-    // michael was also here
+    return autoAimController.calculate(currentBotYaw.getDegrees(), targetBotYaw.getDegrees());
   }
 }
