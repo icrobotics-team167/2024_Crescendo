@@ -155,6 +155,7 @@ public class Shooter {
     double angle = SCALAR * (((ty - MIN_TY) * ((MAX_ANGLE - MIN_ANGLE) / MAX_TY)) - MIN_ANGLE);
     return Rotation2d.fromDegrees(angle);
   }
+
   private double speakerY = 5.5;
   private double speakerZ = 2;
 
