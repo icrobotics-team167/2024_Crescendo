@@ -61,9 +61,13 @@ public class Shooter {
   }
 
   public Command autoIntake() {
-    return parallel(intake.getIntakeCommand(), feeder.getFeedCommand())
-        .until(noteDetector::hasNote)
-        .andThen(feeder.getUnfeedCommand().withTimeout(0.2));
+    if (!noteDetector.hasNote()) {
+      return parallel(intake.getIntakeCommand(), feeder.getFeedCommand())
+          .until(noteDetector::hasNote)
+          .finallyDo(() -> feeder.getUnfeedCommand());
+    } else {
+      return null;
+    }
   }
 
   public Command getManualControlCommand(DoubleSupplier pivotSupplier) {
@@ -115,18 +119,20 @@ public class Shooter {
   public Command getTeleopAutoAimCommand(
       SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
     return parallel(
-        pivot.getPivotCommand(
-            () -> {
-              // return SpencerAim(drivebase);
-              return TadaAim(drivebase);
-            }),
+        // pivot.getPivotCommand(
+        //     () -> {
+        //       // return SpencerAim(drivebase);
+        //       // return TadaAim(drivebase);
+        //       // return null;
+        //     }),
         drivebase.getDriveCommand(
             xVel,
             yVel,
             () -> {
               // return SpencerYaw(drivebase);
-              // return TadaYaw(drivebase);
-              return 0;
+              return TadaYaw(drivebase);
+              // return 0;
+              // Michael was here
             }));
   }
 
@@ -166,7 +172,10 @@ public class Shooter {
     Rotation2d currentBotYaw = drivebase.getPose().getRotation();
     Rotation2d targetBotYaw =
         new Translation2d(speakerX, speakerY).minus(currentBotPosition).getAngle();
-    double errorDegrees = targetBotYaw.getDegrees() - currentBotYaw.getDegrees();
+    double errorDegrees = -targetBotYaw.getDegrees() + currentBotYaw.getDegrees();
+    System.out.println(errorDegrees);
+    System.out.println(currentBotYaw);
     return errorDegrees / 75.0;
+    // michael was also here
   }
 }

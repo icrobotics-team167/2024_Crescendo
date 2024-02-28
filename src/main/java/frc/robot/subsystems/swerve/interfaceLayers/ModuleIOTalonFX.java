@@ -38,7 +38,6 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.util.CANConstants;
 import frc.robot.util.CANConstants.Drivebase;
 import frc.robot.util.SwerveUtils;
-import frc.robot.util.motorUtils.TalonUtils;
 import java.util.Queue;
 
 /**
@@ -455,9 +454,6 @@ public class ModuleIOTalonFX implements ModuleIO {
     // Completely disable sending of any data we don't need to further reduce CAN bus usage.
     driveTalon.optimizeBusUtilization();
     azimuthTalon.optimizeBusUtilization();
-
-    TalonUtils.addMotor(driveTalon);
-    TalonUtils.addMotor(azimuthTalon);
   }
 
   @Override

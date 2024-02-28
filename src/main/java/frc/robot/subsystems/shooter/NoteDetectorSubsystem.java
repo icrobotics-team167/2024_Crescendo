@@ -35,5 +35,6 @@ public class NoteDetectorSubsystem extends SubsystemBase {
 
   public boolean hasNote() {
     return inputs.hasNote;
+    // Hey a random Michael has appeared
   }
 }

@@ -93,7 +93,7 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
 
   @Override
   public void runSpeaker() {
-    double targetRPM = 5000;
+    double targetRPM = 4500;
     if (bottomFlywheelEncoder.getVelocity() < targetRPM) {
       bottomFlywheel.setVoltage(12);
     } else {
@@ -109,7 +109,7 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
 
   @Override
   public void runAmp() {
-    double targetRPM = 2000;
+    double targetRPM = 3500;
     if (bottomFlywheelEncoder.getVelocity() < targetRPM) {
       bottomFlywheel.setVoltage(12);
     } else {
