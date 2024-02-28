@@ -15,14 +15,14 @@
 package frc.robot.subsystems.vision.interfaceLayers;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Pose3d;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionIO {
   @AutoLog
   public class VisionIOInputs {
     public Pose2d poseEstimate = new Pose2d();
-    public Transform3d[] trackedTags = new Transform3d[0];
+    public Pose3d[] trackedTags = new Pose3d[0];
     public double tX = 0;
     public double tY = 0;
     public double timestamp = 0;
