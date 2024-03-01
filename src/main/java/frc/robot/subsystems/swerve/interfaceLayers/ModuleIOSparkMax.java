@@ -82,7 +82,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
         drive_kS = 0;
         drive_kV = 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
-        drive_kP = 1 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
+        drive_kP = 2;
         drive_kD = 0.00;
 
         azimuth_kP = 36;
@@ -99,7 +99,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
         drive_kS = 0;
         drive_kV = 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
-        drive_kP = 1 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
+        drive_kP = 2;
         drive_kD = 0.00;
 
         azimuth_kP = 36;
@@ -114,7 +114,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
         drive_kS = 0;
         drive_kV = 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
-        drive_kP = 1 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
+        drive_kP = 2;
         drive_kD = 0.00;
 
         azimuth_kP = 36;
@@ -130,7 +130,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
         drive_kS = 0;
         drive_kV = 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
-        drive_kP = 1 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
+        drive_kP = 2;
         drive_kD = 0.00;
 
         azimuth_kP = 36;
