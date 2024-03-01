@@ -31,6 +31,8 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
   private final RelativeEncoder topFlywheelEncoder;
   private final RelativeEncoder bottomFlywheelEncoder;
 
+  private double setpoint;
+
   public FlywheelIOSparkFlex() {
     topFlywheel = new CANSparkFlex(Shooter.TOP_FLYWHEEL, MotorType.kBrushless);
     bottomFlywheel = new CANSparkFlex(Shooter.BOTTOM_FLYWHEEL, MotorType.kBrushless);
@@ -77,6 +79,7 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
 
   @Override
   public void updateInputs(FlywheelIOInputs inputs) {
+    inputs.velocitySetpointRPM = setpoint;
     inputs.topPosition = Rotations.of(topFlywheelEncoder.getPosition());
     inputs.topVelocity = RPM.of(topFlywheelEncoder.getVelocity());
     inputs.topAppliedOutput = topFlywheel.getAppliedOutput();
@@ -93,14 +96,14 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
 
   @Override
   public void runSpeaker() {
-    double targetRPM = 5000;
-    if (bottomFlywheelEncoder.getVelocity() < targetRPM) {
+    setpoint = 5000;
+    if (bottomFlywheelEncoder.getVelocity() < setpoint) {
       bottomFlywheel.setVoltage(12);
     } else {
       bottomFlywheel.setVoltage(0);
     }
 
-    if (Math.abs(topFlywheelEncoder.getVelocity()) < targetRPM) {
+    if (Math.abs(topFlywheelEncoder.getVelocity()) < setpoint) {
       topFlywheel.setVoltage(12);
     } else {
       topFlywheel.setVoltage(0);
@@ -109,14 +112,14 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
 
   @Override
   public void runAmp() {
-    double targetRPM = 3500;
-    if (bottomFlywheelEncoder.getVelocity() < targetRPM) {
+    setpoint = 3500;
+    if (bottomFlywheelEncoder.getVelocity() < setpoint) {
       bottomFlywheel.setVoltage(12);
     } else {
       bottomFlywheel.setVoltage(0);
     }
 
-    if (Math.abs(topFlywheelEncoder.getVelocity()) < targetRPM) {
+    if (Math.abs(topFlywheelEncoder.getVelocity()) < setpoint) {
       topFlywheel.setVoltage(-12);
     } else {
       topFlywheel.setVoltage(0);
@@ -125,6 +128,7 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
 
   @Override
   public void stop() {
+    setpoint = 0;
     topFlywheel.setVoltage(0);
     bottomFlywheel.setVoltage(0);
   }

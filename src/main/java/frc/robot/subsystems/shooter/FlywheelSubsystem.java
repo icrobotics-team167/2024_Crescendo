@@ -14,7 +14,7 @@
 
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RPM;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -53,6 +53,10 @@ public class FlywheelSubsystem extends SubsystemBase {
   }
 
   public boolean isUpToSpeed() {
-    return inputs.topVelocity.gte(RotationsPerSecond.of(5000));
+    System.out.println("Flywheel speed: " + inputs.bottomVelocity.in(RPM));
+    System.out.println(
+        "Flywheel.isUpToSpeed: "
+            + String.valueOf(inputs.bottomVelocity.in(RPM) >= inputs.velocitySetpointRPM));
+    return inputs.bottomVelocity.in(RPM) >= inputs.velocitySetpointRPM;
   }
 }

@@ -86,7 +86,7 @@ public class Shooter {
 
   public Command getAutoAmpShotCommand() {
     return deadline(
-        waitUntil(flywheel::isUpToSpeed).andThen(feeder.getFeedCommand()).withTimeout(2),
+        waitUntil(flywheel::isUpToSpeed).andThen(feeder.getFeedCommand().withTimeout(2)),
         parallel( // Gets canceled when the above finishes
             pivot.getPivotCommand(
                 () -> {

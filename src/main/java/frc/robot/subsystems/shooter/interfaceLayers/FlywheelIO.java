@@ -22,6 +22,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface FlywheelIO {
   @AutoLog
   public class FlywheelIOInputs {
+    public double velocitySetpointRPM = 0;
     /** The position of the top shooter flywheel. */
     public Measure<Angle> topPosition = Rotations.of(0);
     /** The velocity of the top shooter flywheel. */
