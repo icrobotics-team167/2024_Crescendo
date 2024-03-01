@@ -154,7 +154,7 @@ public class RobotContainer {
         .whileTrue(
             shooter.getTeleopAutoAimCommand(drivebase, primaryLeftStickY, primaryLeftStickX));
     // shooter.setPivotDefaultCommand(none());
-    secondaryLeftStick.button(3).whileTrue(shooter.getAmpShotCommand());
+    secondaryLeftStick.button(3).whileTrue(shooter.getAutoAmpShotCommand());
   }
 
   /**

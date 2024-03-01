@@ -68,8 +68,6 @@ public class VisionSubsystem extends SubsystemBase {
     for (int i = 0; i < cameraData.length; i++) {
       if (cameraData[i].isNewData) {
         estimationConsumer.accept(cameraData[i].poseEstimate, cameraData[i].timestamp);
-      } else {
-        System.out.println("Camera " + i + " did not have any new data!");
       }
     }
   }

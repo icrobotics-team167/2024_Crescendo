@@ -30,7 +30,6 @@ import frc.robot.subsystems.shooter.interfaceLayers.NoteDetectorIO;
 import frc.robot.subsystems.shooter.interfaceLayers.PivotIO;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.function.DoubleSupplier;
-import org.littletonrobotics.junction.Logger;
 
 /** A class containing all the logic and commands to make the shooter mechanism work. */
 public class Shooter {
@@ -85,21 +84,16 @@ public class Shooter {
     return pivot.getRestingPositionCommand();
   }
 
-  public Command getAmpShotCommand() {
-    return flywheel.getAmpShotCommand();
-    // return parallel(
-    //         parallel(
-    //             // Get up to 90 degrees pivot
-    //             pivot.getPivotCommand(() -> Rotation2d.fromDegrees(90)),
-    //             // Spin up flywheels
-    //             flywheel.getAmpShotCommand()),
-    //         // Once the flywheels are up to speed and the pivot is at the setpoint, feed the note
-    //         waitUntil(
-    //                 () ->
-    //                     flywheel.isUpToSpeed() && Math.abs(pivot.getAngle().getDegrees() - 90) <
-    // 2)
-    //             .andThen(feeder.getFeedCommand()))
-    //     .until(() -> !noteDetector.hasNote()); // Stop when note is launched
+  public Command getAutoAmpShotCommand() {
+    return deadline(
+        waitUntil(flywheel::isUpToSpeed).andThen(feeder.getFeedCommand()).withTimeout(2),
+        parallel( // Gets canceled when the above finishes
+            pivot.getPivotCommand(
+                () -> {
+                  return Rotation2d.fromDegrees(90);
+                })),
+        flywheel.getAmpShotCommand());
+    // return flywheel.getAmpShotCommand();
   }
 
   public void setPivotDefaultCommand(Command command) {
@@ -109,29 +103,30 @@ public class Shooter {
   public Command feed() {
     return feeder.getFeedCommand();
   }
-  // This is a temp thing for testing stuff
+
   public Command shoot() {
     return flywheel.getSpeakerShotCommand();
   }
 
   public Command getSpeakerShotCommand() {
-    return parallel(
-            parallel(
-                pivot.getPivotCommand(() -> Rotation2d.fromDegrees(30)),
-                flywheel.getSpeakerShotCommand()),
-            waitUntil(() -> flywheel.isUpToSpeed()).andThen(feeder.getFeedCommand()))
-        .until(() -> !noteDetector.hasNote());
+    return none();
+    // return parallel(
+    //         parallel(
+    //             pivot.getPivotCommand(() -> Rotation2d.fromDegrees(30)),
+    //             flywheel.getSpeakerShotCommand()),
+    //         waitUntil(() -> flywheel.isUpToSpeed()).andThen(feeder.getFeedCommand()))
+    //     .until(() -> !noteDetector.hasNote());
   }
 
   public Command getTeleopAutoAimCommand(
       SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
     return parallel(
-        // pivot.getPivotCommand(
-        //     () -> {
-        //       // return SpencerAim(drivebase);
-        //       return TadaAim(drivebase);
-        //       // return null;
-        //     }),
+        pivot.getPivotCommand(
+            () -> {
+              // return SpencerAim(drivebase);
+              return TadaAim(drivebase);
+              // return null;
+            }),
         drivebase.getDriveCommand(
             xVel,
             yVel,
