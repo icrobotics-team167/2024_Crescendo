@@ -18,6 +18,7 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.Field;
@@ -32,9 +33,11 @@ public class VisionIOPhoton implements VisionIO {
   private String name = "";
   private PhotonCamera camera;
   private PhotonPoseEstimator poseEstimator;
+  private Transform3d robotToCameraTransform;
 
   public VisionIOPhoton(String name, Transform3d robotToCameraTransform) {
     this.name = name;
+    this.robotToCameraTransform = robotToCameraTransform;
     camera = new PhotonCamera(name);
     try {
       poseEstimator =
@@ -83,9 +86,12 @@ public class VisionIOPhoton implements VisionIO {
     inputs.isNewData = true;
     inputs.poseEstimate = botPoseEstimate.estimatedPose.toPose2d();
     inputs.timestamp = botPoseEstimate.timestampSeconds;
-    inputs.trackedTags = new Transform3d[botPoseEstimate.targetsUsed.size()];
+    inputs.trackedTags = new Pose3d[botPoseEstimate.targetsUsed.size()];
     for (int i = 0; i < inputs.trackedTags.length; i++) {
-      inputs.trackedTags[i] = botPoseEstimate.targetsUsed.get(i).getBestCameraToTarget();
+      inputs.trackedTags[i] =
+          new Pose3d(inputs.poseEstimate)
+              .plus(robotToCameraTransform)
+              .plus(botPoseEstimate.targetsUsed.get(i).getBestCameraToTarget());
     }
     for (PhotonTrackedTarget target : botPoseEstimate.targetsUsed) {
       if (target.getFiducialId() == 8 || target.getFiducialId() == 3) {

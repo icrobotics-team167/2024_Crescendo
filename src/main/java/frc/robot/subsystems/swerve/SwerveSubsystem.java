@@ -62,7 +62,7 @@ public class SwerveSubsystem extends SubsystemBase {
               * Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters));
   /** The max linear acceleration of the robot. */
   public static final Measure<Velocity<Velocity<Distance>>> MAX_LINEAR_ACCELERATION =
-      MetersPerSecondPerSecond.of(14);
+      MetersPerSecondPerSecond.of(7);
   /** The distance between the front modules and the back modules. */
   private static final Measure<Distance> TRACK_LENGTH = Inches.of(23.5);
   /** The distance between the left modules and the right modules. */
@@ -154,6 +154,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   @Override
+  @SuppressWarnings("unused")
   public void periodic() {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
@@ -176,37 +177,42 @@ public class SwerveSubsystem extends SubsystemBase {
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
     }
 
-    poseEstimator.update(gyroInputs.yawPosition, getModulePositions());
+    if (Module.ODOMETRY_FREQUENCY > 50) {
+      double[] sampleTimestamps =
+          modules[0].getOdometryTimestamps(); // All signals are sampled together
+      int sampleCount = sampleTimestamps.length;
+      for (int i = 0; i < sampleCount && i < gyroInputs.odometryYawPositions.length; i++) {
+        // Read wheel positions and deltas from each module
+        SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
+        SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
+        for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
+          modulePositions[moduleIndex] = modules[moduleIndex].getOdometryPositions()[i];
+          moduleDeltas[moduleIndex] =
+              new SwerveModulePosition(
+                  modulePositions[moduleIndex].distanceMeters
+                      - lastModulePositions[moduleIndex].distanceMeters,
+                  modulePositions[moduleIndex].angle);
+          lastModulePositions[moduleIndex] = modulePositions[moduleIndex];
+        }
 
-    // double[] sampleTimestamps =
-    //     modules[0].getOdometryTimestamps(); // All signals are sampled together
-    // int sampleCount = sampleTimestamps.length;
-    // for (int i = 0; i < sampleCount && i < gyroInputs.odometryYawPositions.length; i++) {
-    //   // Read wheel positions and deltas from each module
-    //   SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
-    //   SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
-    //   for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
-    //     modulePositions[moduleIndex] = modules[moduleIndex].getOdometryPositions()[i];
-    //     moduleDeltas[moduleIndex] =
-    //         new SwerveModulePosition(
-    //             modulePositions[moduleIndex].distanceMeters
-    //                 - lastModulePositions[moduleIndex].distanceMeters,
-    //             modulePositions[moduleIndex].angle);
-    //     lastModulePositions[moduleIndex] = modulePositions[moduleIndex];
-    //   }
+        // Update gyro angle
+        if (gyroInputs.connected) {
+          // Use the real gyro angle
+          rawGyroRotation = gyroInputs.odometryYawPositions[i];
+        } else {
+          // Use the angle delta from the kinematics and module deltas
+          Twist2d twist = kinematics.toTwist2d(moduleDeltas);
+          rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
+        }
 
-    //   // Update gyro angle
-    //   if (gyroInputs.connected) {
-    //       rawGyroRotation = gyroInputs.odometryYawPositions[i];
-    //   } else {
-    //     // Use the angle delta from the kinematics and module deltas
-    //     Twist2d twist = kinematics.toTwist2d(moduleDeltas);
-    //     rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
-    //   }
-
-    //   // Apply update
-    //   poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
-    // }
+        // Apply update
+        poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
+      }
+    } else {
+      rawGyroRotation = gyroInputs.yawPosition;
+      lastModulePositions = getModulePositions();
+      poseEstimator.update(rawGyroRotation, lastModulePositions);
+    }
     visionPoseEstimator.updateEstimation();
   }
 

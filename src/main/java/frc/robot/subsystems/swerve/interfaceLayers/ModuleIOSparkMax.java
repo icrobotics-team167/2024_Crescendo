@@ -17,6 +17,7 @@ package frc.robot.subsystems.swerve.interfaceLayers;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.util.motorUtils.SparkUtils.Data.*;
@@ -32,6 +33,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.Distance;
 import edu.wpi.first.units.Measure;
@@ -59,6 +61,8 @@ public class ModuleIOSparkMax implements ModuleIO {
 
   private final StatusSignal<Double> azimuthAbsolutePosition;
   private final StatusSignal<Double> azimuthVelocity;
+
+  private final SlewRateLimiter driveRateLimiter;
 
   public ModuleIOSparkMax(int moduleID) {
     double drive_kS; // Volts to overcome static friction
@@ -176,6 +180,9 @@ public class ModuleIOSparkMax implements ModuleIO {
     drivePIDs = new PIDController(drive_kP, 0, drive_kD);
     driveFF = new SimpleMotorFeedforward(drive_kS, drive_kV);
 
+    driveRateLimiter =
+        new SlewRateLimiter(SwerveSubsystem.MAX_LINEAR_ACCELERATION.in(MetersPerSecondPerSecond));
+
     SparkUtils.configureSpark(() -> azimuthMotor.setIdleMode(IdleMode.kBrake));
     SparkUtils.configureSpark(() -> azimuthMotor.setSmartCurrentLimit(40));
     SparkUtils.configureSpark(() -> azimuthMotor.setSecondaryCurrentLimit(60));
@@ -231,6 +238,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
   @Override
   public void setDriveVelocity(Measure<Velocity<Distance>> velocity) {
+    velocity = MetersPerSecond.of(driveRateLimiter.calculate(velocity.in(MetersPerSecond)));
     driveOutput =
         drivePIDs.calculate(driveRelativeEncoder.getVelocity(), velocity.in(MetersPerSecond))
             + driveFF.calculate(velocity.in(MetersPerSecond));

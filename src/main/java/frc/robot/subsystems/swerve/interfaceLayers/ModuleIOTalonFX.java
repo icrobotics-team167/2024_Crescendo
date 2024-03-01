@@ -375,8 +375,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveConfig.MotionMagic.MotionMagicJerk =
         driveConfig.MotionMagic.MotionMagicAcceleration * 10; // Max allowed jerk, in m/s^3
     // Limit the current draw of the motors.
-    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 120;
-    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = 120;
+    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 60;
+    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = 60;
     driveTalon.getConfigurator().apply(driveConfig);
     setDriveBrakeMode(true);
 
@@ -399,8 +399,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     azimuthConfig.MotionMagic.MotionMagicAcceleration = 10; // Max allowed acceleration, in rot/s^2
     azimuthConfig.MotionMagic.MotionMagicJerk = 50; // Max allowed jerk, in rot/s^3
     azimuthConfig.ClosedLoopGeneral.ContinuousWrap = true;
-    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 40;
-    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = 40;
+    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 60;
+    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = 60;
     azimuthTalon.getConfigurator().apply(azimuthConfig);
     setAzimuthBrakeMode(true);
 

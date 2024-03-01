@@ -17,6 +17,7 @@ package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -39,6 +40,8 @@ public class Shooter {
   private final IntakeSubsystem intake;
   private final FeederSubsystem feeder;
 
+  private PIDController autoAimController;
+
   public Shooter(
       FeederIO feederIO,
       FlywheelIO flywheelIO,
@@ -51,6 +54,9 @@ public class Shooter {
     noteDetector = new NoteDetectorSubsystem(noteDetectorIO);
     intake = new IntakeSubsystem(intakeIO);
     feeder = new FeederSubsystem(feederIO);
+
+    autoAimController = new PIDController(1.0 / 50, 0, 1.0 / 200);
+    autoAimController.enableContinuousInput(-180, 180);
   }
 
   public Command intake() {
@@ -151,12 +157,12 @@ public class Shooter {
     return Rotation2d.fromDegrees(angle);
   }
 
-  private double speakerX = Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0;
   private double speakerY = 5.5;
   private double speakerZ = 2;
 
   // ARM ANGLE MATH
   private Rotation2d TadaAim(SwerveSubsystem drivebase) {
+    double speakerX = Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0;
     Translation2d currentBotPosition = drivebase.getPose().getTranslation();
     double targetDistance = currentBotPosition.getDistance(new Translation2d(speakerX, speakerY));
     return new Rotation2d(Math.atan(speakerZ / targetDistance));
@@ -169,14 +175,11 @@ public class Shooter {
 
   // ROBOT ROTATE MATH
   private double TadaYaw(SwerveSubsystem drivebase) {
+    double speakerX = Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0;
     Translation2d currentBotPosition = drivebase.getPose().getTranslation();
     Rotation2d currentBotYaw = drivebase.getPose().getRotation();
     Rotation2d targetBotYaw =
         new Translation2d(speakerX, speakerY).minus(currentBotPosition).getAngle();
-    double errorDegrees = targetBotYaw.getDegrees() - currentBotYaw.getDegrees();
-    Logger.recordOutput("Shooter/autoAim/targetYaw", targetBotYaw);
-    Logger.recordOutput("Shooter/autoAim/errorDegrees", errorDegrees);
-    return errorDegrees / 50.0;
-    // michael was also here
+    return autoAimController.calculate(currentBotYaw.getDegrees(), targetBotYaw.getDegrees());
   }
 }
