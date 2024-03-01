@@ -108,7 +108,7 @@ public class Shooter {
     return flywheel.getSpeakerShotCommand();
   }
 
-  public Command getSpeakerShotCommand() {
+  public Command getAutoSpeakerShotCommand() {
     return none();
     // return parallel(
     //         parallel(
@@ -118,63 +118,40 @@ public class Shooter {
     //     .until(() -> !noteDetector.hasNote());
   }
 
+  private double speakerY = 5.5;
+  private double speakerZ = 2;
+
   public Command getTeleopAutoAimCommand(
       SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
     return parallel(
         pivot.getPivotCommand(
             () -> {
-              // return SpencerAim(drivebase);
-              return TadaAim(drivebase);
-              // return null;
+              double speakerX = Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0;
+              Translation2d currentBotPosition = drivebase.getPose().getTranslation();
+              double targetDistance =
+                  currentBotPosition.getDistance(new Translation2d(speakerX, speakerY));
+              return new Rotation2d(Math.atan(speakerZ / targetDistance));
             }),
         drivebase.getDriveCommand(
             xVel,
             yVel,
             () -> {
-              // return SpencerYaw(drivebase);
-              return TadaYaw(drivebase);
-              // return 0;
+              return aimAtPosition(
+                  drivebase,
+                  new Translation2d(Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0, speakerY));
               // Michael was here
             }));
   }
 
-  private Rotation2d SpencerAim(SwerveSubsystem drivebase) {
-    // Magic code Spencer and Chris wrote
-    // TODO: Fix scalar
-    double ty = drivebase.visionPoseEstimator.getTY();
-    double MIN_ANGLE = 0;
-    double MAX_ANGLE = 60;
-    double MAX_TY = 32.1;
-    double MIN_TY = 0;
-    double SCALAR = 1;
-
-    double angle = SCALAR * (((ty - MIN_TY) * ((MAX_ANGLE - MIN_ANGLE) / MAX_TY)) - MIN_ANGLE);
-    return Rotation2d.fromDegrees(angle);
-  }
-
-  private double speakerY = 5.5;
-  private double speakerZ = 2;
-
-  // ARM ANGLE MATH
-  private Rotation2d TadaAim(SwerveSubsystem drivebase) {
-    double speakerX = Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0;
-    Translation2d currentBotPosition = drivebase.getPose().getTranslation();
-    double targetDistance = currentBotPosition.getDistance(new Translation2d(speakerX, speakerY));
-    return new Rotation2d(Math.atan(speakerZ / targetDistance));
-  }
-
-  private double SpencerYaw(SwerveSubsystem drivebase) {
-    double tx = drivebase.visionPoseEstimator.getTX();
-    return tx / -75.0;
-  }
-
   // ROBOT ROTATE MATH
-  private double TadaYaw(SwerveSubsystem drivebase) {
-    double speakerX = Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0;
+  private double aimAtPosition(SwerveSubsystem drivebase, Translation2d position) {
     Translation2d currentBotPosition = drivebase.getPose().getTranslation();
+    Rotation2d targetBotYaw = position.minus(currentBotPosition).getAngle();
+    return aimToYaw(drivebase, targetBotYaw);
+  }
+
+  private double aimToYaw(SwerveSubsystem drivebase, Rotation2d targetBotYaw) {
     Rotation2d currentBotYaw = drivebase.getPose().getRotation();
-    Rotation2d targetBotYaw =
-        new Translation2d(speakerX, speakerY).minus(currentBotPosition).getAngle();
     return autoAimController.calculate(currentBotYaw.getDegrees(), targetBotYaw.getDegrees());
   }
 }
