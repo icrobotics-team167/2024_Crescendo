@@ -166,6 +166,7 @@ public class RobotContainer {
     primaryLeftStick.button(10).onTrue(light.setColor(Colors.LIME));
     primaryLeftStick.button(11).onTrue(light.setColorValue(1865));
     primaryRightStick.button(9).onTrue(light.setColorNull());
+    primaryRightStick.button(8).onTrue(light.setColorValue(1775));
   }
 
   /**

@@ -19,7 +19,6 @@ import frc.robot.util.CANConstants;
 
 public class LightsIOBlinkin implements LightsIO {
   PWM colorSparkRight;
-  PWM colorSparkLeft;
   private double lastColor;
 
   /** Cool colors. */
@@ -73,8 +72,8 @@ public class LightsIOBlinkin implements LightsIO {
    * @param PWMID the PWMID of the blinky blinky light module (Spark motor)
    */
   public LightsIOBlinkin() {
+    // NOTE: 1705 is a good value
     colorSparkRight = new PWM(CANConstants.misc.LIGHT_PWM_ID_RIGHT);
-    colorSparkLeft = new PWM(CANConstants.misc.LIGHT_PWM_ID_LEFT);
     lastColor = 0;
   }
 
@@ -91,7 +90,6 @@ public class LightsIOBlinkin implements LightsIO {
 
   public void setColorValue(int colorValue) {
     colorSparkRight.setPulseTimeMicroseconds(colorValue);
-    colorSparkLeft.setPulseTimeMicroseconds(colorValue);
     lastColor = colorValue;
   }
 
@@ -99,6 +97,5 @@ public class LightsIOBlinkin implements LightsIO {
     // Black is essentially just off, cuz black isn't real. I don't understand why we can't get
     // diversity awards
     colorSparkRight.setPulseTimeMicroseconds(1995);
-    colorSparkLeft.setPulseTimeMicroseconds(1995);
   }
 }
