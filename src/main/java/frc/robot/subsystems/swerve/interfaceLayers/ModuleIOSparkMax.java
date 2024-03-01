@@ -150,8 +150,8 @@ public class ModuleIOSparkMax implements ModuleIO {
     SparkUtils.configureSpark(() -> azimuthMotor.setCANTimeout(250));
 
     SparkUtils.configureSpark(() -> driveMotor.setIdleMode(IdleMode.kCoast));
-    SparkUtils.configureSpark(() -> driveMotor.setSmartCurrentLimit(60));
-    SparkUtils.configureSpark(() -> driveMotor.setSecondaryCurrentLimit(80));
+    SparkUtils.configureSpark(() -> driveMotor.setSmartCurrentLimit(80));
+    SparkUtils.configureSpark(() -> driveMotor.setSecondaryCurrentLimit(100));
 
     driveRelativeEncoder = driveMotor.getEncoder();
     // Default measurement values are a burning pile of dogshit because REV, why would they

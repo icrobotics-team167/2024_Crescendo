@@ -29,6 +29,7 @@ import frc.robot.subsystems.shooter.interfaceLayers.NoteDetectorIO;
 import frc.robot.subsystems.shooter.interfaceLayers.PivotIO;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.Logger;
 
 /** A class containing all the logic and commands to make the shooter mechanism work. */
 public class Shooter {
@@ -122,7 +123,7 @@ public class Shooter {
         // pivot.getPivotCommand(
         //     () -> {
         //       // return SpencerAim(drivebase);
-        //       // return TadaAim(drivebase);
+        //       return TadaAim(drivebase);
         //       // return null;
         //     }),
         drivebase.getDriveCommand(
@@ -172,10 +173,10 @@ public class Shooter {
     Rotation2d currentBotYaw = drivebase.getPose().getRotation();
     Rotation2d targetBotYaw =
         new Translation2d(speakerX, speakerY).minus(currentBotPosition).getAngle();
-    double errorDegrees = -targetBotYaw.getDegrees() + currentBotYaw.getDegrees();
-    System.out.println(errorDegrees);
-    System.out.println(currentBotYaw);
-    return errorDegrees / 75.0;
+    double errorDegrees = targetBotYaw.getDegrees() - currentBotYaw.getDegrees();
+    Logger.recordOutput("Shooter/autoAim/targetYaw", targetBotYaw);
+    Logger.recordOutput("Shooter/autoAim/errorDegrees", errorDegrees);
+    return errorDegrees / 50.0;
     // michael was also here
   }
 }

@@ -27,7 +27,6 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -94,7 +93,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private SwerveModulePosition[] lastModulePositions = new SwerveModulePosition[4];
 
   // Pose estimation
-  /** A thread lock to prevent read/write conflicts on odometry/pose estimation. */
+  /** A thread lock to prevent read/write con wasnt micle flicts on odometry/pose estimation. */
   public static final Lock odometryLock = new ReentrantLock();
   /** The pose estimator, used to fuse odometry data and vision data together. */
   private SwerveDrivePoseEstimator poseEstimator;
@@ -177,36 +176,37 @@ public class SwerveSubsystem extends SubsystemBase {
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
     }
 
-    double[] sampleTimestamps =
-        modules[0].getOdometryTimestamps(); // All signals are sampled together
-    int sampleCount = sampleTimestamps.length;
-    for (int i = 0; i < sampleCount && i < gyroInputs.odometryYawPositions.length; i++) {
-      // Read wheel positions and deltas from each module
-      SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
-      SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
-      for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
-        modulePositions[moduleIndex] = modules[moduleIndex].getOdometryPositions()[i];
-        moduleDeltas[moduleIndex] =
-            new SwerveModulePosition(
-                modulePositions[moduleIndex].distanceMeters
-                    - lastModulePositions[moduleIndex].distanceMeters,
-                modulePositions[moduleIndex].angle);
-        lastModulePositions[moduleIndex] = modulePositions[moduleIndex];
-      }
+    poseEstimator.update(gyroInputs.yawPosition, getModulePositions());
 
-      // Update gyro angle
-      if (gyroInputs.connected) {
-        // Use the real gyro angle
-        rawGyroRotation = gyroInputs.odometryYawPositions[i];
-      } else {
-        // Use the angle delta from the kinematics and module deltas
-        Twist2d twist = kinematics.toTwist2d(moduleDeltas);
-        rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
-      }
+    // double[] sampleTimestamps =
+    //     modules[0].getOdometryTimestamps(); // All signals are sampled together
+    // int sampleCount = sampleTimestamps.length;
+    // for (int i = 0; i < sampleCount && i < gyroInputs.odometryYawPositions.length; i++) {
+    //   // Read wheel positions and deltas from each module
+    //   SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
+    //   SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
+    //   for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
+    //     modulePositions[moduleIndex] = modules[moduleIndex].getOdometryPositions()[i];
+    //     moduleDeltas[moduleIndex] =
+    //         new SwerveModulePosition(
+    //             modulePositions[moduleIndex].distanceMeters
+    //                 - lastModulePositions[moduleIndex].distanceMeters,
+    //             modulePositions[moduleIndex].angle);
+    //     lastModulePositions[moduleIndex] = modulePositions[moduleIndex];
+    //   }
 
-      // Apply update
-      poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
-    }
+    //   // Update gyro angle
+    //   if (gyroInputs.connected) {
+    //       rawGyroRotation = gyroInputs.odometryYawPositions[i];
+    //   } else {
+    //     // Use the angle delta from the kinematics and module deltas
+    //     Twist2d twist = kinematics.toTwist2d(moduleDeltas);
+    //     rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
+    //   }
+
+    //   // Apply update
+    //   poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
+    // }
     visionPoseEstimator.updateEstimation();
   }
 
