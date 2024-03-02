@@ -23,6 +23,7 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -120,7 +121,12 @@ public class SwerveSubsystem extends SubsystemBase {
     }
     poseEstimator =
         new SwerveDrivePoseEstimator(
-            kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+            kinematics,
+            rawGyroRotation,
+            lastModulePositions,
+            new Pose2d(),
+            VecBuilder.fill(0.1, 0.1, 0.1),
+            VecBuilder.fill(2, 2, 2));
 
     // Start threads (no-op for each if no signals have been created)
     PhoenixOdometryThread.getInstance().start();
@@ -223,7 +229,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * @param speeds Speeds in meters/sec
    */
   public void runVelocity(ChassisSpeeds speeds) {
-    if (slowmode) {
+    if (DriverStation.isTeleop() && slowmode) {
       speeds.vxMetersPerSecond *= Driving.SLOWMODE_MULTIPLIER;
       speeds.vyMetersPerSecond *= Driving.SLOWMODE_MULTIPLIER;
       speeds.omegaRadiansPerSecond *= Driving.SLOWMODE_MULTIPLIER;
@@ -365,7 +371,7 @@ public class SwerveSubsystem extends SubsystemBase {
           yIn /= Math.max(controlMagnitude, 1);
 
           runVelocity(
-              ChassisSpeeds.fromRobotRelativeSpeeds(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
                   MAX_LINEAR_SPEED.in(MetersPerSecond) * xIn,
                   MAX_LINEAR_SPEED.in(MetersPerSecond) * yIn,
                   MAX_ANGULAR_SPEED.in(RadiansPerSecond) * rotIn,

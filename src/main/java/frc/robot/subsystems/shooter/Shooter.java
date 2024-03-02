@@ -17,6 +17,7 @@ package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -32,6 +33,7 @@ import frc.robot.subsystems.shooter.interfaceLayers.IntakeIO;
 import frc.robot.subsystems.shooter.interfaceLayers.NoteDetectorIO;
 import frc.robot.subsystems.shooter.interfaceLayers.PivotIO;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
 
 /** A class containing all the logic and commands to make the shooter mechanism work. */
@@ -73,14 +75,10 @@ public class Shooter {
   }
 
   public Command autoIntake() {
-    if (!noteDetector.hasNote()) {
-      return parallel(intake.getIntakeCommand(), feeder.getFeedCommand())
-          .until(noteDetector::hasNote)
-          .finallyDo(() -> feeder.getUnfeedCommand())
-          .alongWith(light.setColor(Colors.ORANGE));
-    } else {
-      return null;
-    }
+    return parallel(intake.getIntakeCommand(), feeder.getFeedCommand())
+        .until(noteDetector::hasNote)
+        .andThen(
+            parallel(light.setColor(Colors.ORANGE), feeder.getUnfeedCommand().withTimeout(0.25)));
   }
 
   public Command getManualControlCommand(DoubleSupplier pivotSupplier) {
@@ -116,48 +114,71 @@ public class Shooter {
     return flywheel.getSpeakerShotCommand();
   }
 
-  public Command getAutoSpeakerShotCommand() {
+  private double speakerY = 5.5;
+  private double speakerZ = 1.2;
+
+  public Command getAutoSpeakerShotCommand(SwerveSubsystem drivebase) {
     // return none();
     return parallel(
+            runOnce(
+                () ->
+                    PPHolonomicDriveController.setRotationTargetOverride(
+                        () ->
+                            Optional.of(
+                                aimAtPosition(
+                                    drivebase,
+                                    new Translation2d(
+                                        Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0,
+                                        speakerY))))),
             parallel(
-                pivot.getPivotCommand(() -> Rotation2d.fromDegrees(30)),
+                pivot.getPivotCommand(
+                    () -> {
+                      return aimAtHeight(drivebase, speakerY);
+                    }),
                 flywheel.getSpeakerShotCommand(),
                 light.setColorValue(1705)),
             waitUntil(() -> flywheel.isUpToSpeed()).andThen(feeder.getFeedCommand()))
         .until(() -> !noteDetector.hasNote())
-        .finallyDo(() -> light.setColor(Colors.GREEN));
+        .finallyDo(
+            () -> {
+              light.setColor(Colors.GREEN);
+              PPHolonomicDriveController.setRotationTargetOverride(() -> Optional.empty());
+            });
   }
-
-  private double speakerY = 5.5;
-  private double speakerZ = 2;
 
   public Command getTeleopAutoAimCommand(
       SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
     return parallel(
         pivot.getPivotCommand(
             () -> {
-              double speakerX = Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0;
-              Translation2d currentBotPosition = drivebase.getPose().getTranslation();
-              double targetDistance =
-                  currentBotPosition.getDistance(new Translation2d(speakerX, speakerY));
-              return new Rotation2d(Math.atan(speakerZ / targetDistance));
+              return aimAtHeight(drivebase, speakerZ);
             }),
         drivebase.getDriveCommand(
             xVel,
             yVel,
             () -> {
-              return aimAtPosition(
+              return aimToYaw(
                   drivebase,
-                  new Translation2d(Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0, speakerY));
+                  aimAtPosition(
+                      drivebase,
+                      new Translation2d(
+                          Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0, speakerY)));
               // Michael was here
             }));
   }
 
+  private Rotation2d aimAtHeight(SwerveSubsystem drivebase, double height) {
+    double speakerX = Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0;
+    Translation2d currentBotPosition = drivebase.getPose().getTranslation();
+    double targetDistance = currentBotPosition.getDistance(new Translation2d(speakerX, speakerY));
+    return new Rotation2d(Math.atan(height / targetDistance));
+  }
+
   // ROBOT ROTATE MATH
-  private double aimAtPosition(SwerveSubsystem drivebase, Translation2d position) {
+  private Rotation2d aimAtPosition(SwerveSubsystem drivebase, Translation2d position) {
     Translation2d currentBotPosition = drivebase.getPose().getTranslation();
     Rotation2d targetBotYaw = position.minus(currentBotPosition).getAngle();
-    return aimToYaw(drivebase, targetBotYaw);
+    return targetBotYaw;
   }
 
   private double aimToYaw(SwerveSubsystem drivebase, Rotation2d targetBotYaw) {

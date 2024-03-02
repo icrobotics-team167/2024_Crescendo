@@ -56,6 +56,7 @@ public class VisionIOPhoton implements VisionIO {
   @Override
   public void updateInputs(VisionIOInputs inputs) {
     inputs.isNewData = false;
+    inputs.trackedTags = new Pose3d[0];
     // If the camera didn't load properly, stop.
     if (poseEstimator == null) {
       return;
