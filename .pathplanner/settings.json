@@ -5,11 +5,12 @@
   "pathFolders": [
     "2 note auto",
     "3 note auto",
-    "Chris Style auto"
+    "Chris Style auto",
+    "1 note auto"
   ],
   "autoFolders": [],
-  "defaultMaxVel": 3.0,
-  "defaultMaxAccel": 14.0,
+  "defaultMaxVel": 2.0,
+  "defaultMaxAccel": 2.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "maxModuleSpeed": 4.5

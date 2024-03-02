@@ -153,7 +153,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     SparkUtils.configureSpark(() -> driveMotor.setCANTimeout(250));
     SparkUtils.configureSpark(() -> azimuthMotor.setCANTimeout(250));
 
-    SparkUtils.configureSpark(() -> driveMotor.setIdleMode(IdleMode.kCoast));
+    SparkUtils.configureSpark(() -> driveMotor.setIdleMode(IdleMode.kBrake));
     SparkUtils.configureSpark(() -> driveMotor.setSmartCurrentLimit(60));
     SparkUtils.configureSpark(() -> driveMotor.setSecondaryCurrentLimit(80));
 

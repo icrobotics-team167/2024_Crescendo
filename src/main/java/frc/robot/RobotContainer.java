@@ -98,9 +98,10 @@ public class RobotContainer {
 
     // Configure the trigger bindings
     configureBindings();
+    // System.out.println("Deploy directory: " + Filesystem.getDeployDirectory());
     autoSelector =
         new LoggedDashboardChooser<>(
-            "Auto Chooser", AutoBuilder.buildAutoChooser("1 meter forward"));
+            "Auto Chooser", AutoBuilder.buildAutoChooser("Barely move at all"));
   }
 
   /**
