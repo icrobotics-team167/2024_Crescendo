@@ -25,10 +25,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Driving;
-import frc.robot.subsystems.misc.LightSubsystem;
 import frc.robot.subsystems.misc.interfaceLayers.LightsIO;
 import frc.robot.subsystems.misc.interfaceLayers.LightsIOBlinkin;
-import frc.robot.subsystems.misc.interfaceLayers.LightsIOBlinkin.Colors;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.interfaceLayers.*;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -48,7 +46,7 @@ public class RobotContainer {
 
   private final SwerveSubsystem drivebase;
   private final Shooter shooter;
-  private final LightSubsystem light;
+  // private final LightSubsystem light;
 
   private CommandJoystick primaryLeftStick = new CommandJoystick(0);
   private CommandJoystick primaryRightStick = new CommandJoystick(1);
@@ -72,8 +70,9 @@ public class RobotContainer {
                 new FlywheelIOSparkFlex(),
                 new PivotIOSparkFlex(),
                 new NoteDetectorIOTimeOfFlight(),
-                new IntakeIOTalonFX());
-        light = new LightSubsystem(new LightsIOBlinkin());
+                new IntakeIOTalonFX(),
+                new LightsIOBlinkin());
+        // light = new LightSubsystem(new LightsIOBlinkin());
         break;
       default:
         drivebase =
@@ -89,8 +88,9 @@ public class RobotContainer {
                 new FlywheelIO() {},
                 new PivotIO() {},
                 new NoteDetectorIO() {},
-                new IntakeIO() {});
-        light = new LightSubsystem(new LightsIO() {});
+                new IntakeIO() {},
+                new LightsIO() {});
+        // light = new LightSubsystem(new LightsIO() {});
     }
     NamedCommands.registerCommand("Score in speaker", none()); // TODO: Implement
     NamedCommands.registerCommand("Intake", none()); // TODO: Implement
@@ -98,7 +98,9 @@ public class RobotContainer {
 
     // Configure the trigger bindings
     configureBindings();
-    autoSelector = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
+    autoSelector =
+        new LoggedDashboardChooser<>(
+            "Auto Chooser", AutoBuilder.buildAutoChooser("1 meter forward"));
   }
 
   /**
@@ -161,12 +163,7 @@ public class RobotContainer {
         .whileTrue(
             shooter.getTeleopAutoAimCommand(drivebase, primaryLeftStickY, primaryLeftStickX));
     // shooter.setPivotDefaultCommand(none());
-    secondaryLeftStick.button(3).whileTrue(shooter.getAmpShotCommand());
-
-    primaryLeftStick.button(10).onTrue(light.setColor(Colors.LIME));
-    primaryLeftStick.button(11).onTrue(light.setColorValue(1865));
-    primaryRightStick.button(9).onTrue(light.setColorNull());
-    primaryRightStick.button(8).onTrue(light.setColorValue(1705));
+    secondaryLeftStick.button(3).whileTrue(shooter.getAutoAmpShotCommand());
   }
 
   /**

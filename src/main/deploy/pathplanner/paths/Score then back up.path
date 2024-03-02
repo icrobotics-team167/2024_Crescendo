@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4,
+        "x": 1.4259262722800992,
         "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.65,
+        "x": 1.6759262722800992,
         "y": 5.55
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Start Point (Subwoofer)"
     },
     {
       "anchor": {

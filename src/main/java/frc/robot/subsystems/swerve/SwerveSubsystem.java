@@ -365,7 +365,7 @@ public class SwerveSubsystem extends SubsystemBase {
           yIn /= Math.max(controlMagnitude, 1);
 
           runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
+              ChassisSpeeds.fromRobotRelativeSpeeds(
                   MAX_LINEAR_SPEED.in(MetersPerSecond) * xIn,
                   MAX_LINEAR_SPEED.in(MetersPerSecond) * yIn,
                   MAX_ANGULAR_SPEED.in(RadiansPerSecond) * rotIn,

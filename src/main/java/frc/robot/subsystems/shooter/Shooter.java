@@ -23,6 +23,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.Field;
 import frc.robot.Robot;
+import frc.robot.subsystems.misc.LightSubsystem;
+import frc.robot.subsystems.misc.interfaceLayers.*;
+import frc.robot.subsystems.misc.interfaceLayers.LightsIOBlinkin.Colors;
 import frc.robot.subsystems.shooter.interfaceLayers.FeederIO;
 import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIO;
 import frc.robot.subsystems.shooter.interfaceLayers.IntakeIO;
@@ -38,6 +41,7 @@ public class Shooter {
   private final NoteDetectorSubsystem noteDetector;
   private final IntakeSubsystem intake;
   private final FeederSubsystem feeder;
+  private final LightSubsystem light;
 
   private PIDController autoAimController;
 
@@ -46,13 +50,15 @@ public class Shooter {
       FlywheelIO flywheelIO,
       PivotIO pivotIO,
       NoteDetectorIO noteDetectorIO,
-      IntakeIO intakeIO) {
+      IntakeIO intakeIO,
+      LightsIO lightIO) {
     // TODO: Implement flywheel and pivot interfaces
     flywheel = new FlywheelSubsystem(flywheelIO);
     pivot = new PivotSubsystem(pivotIO);
     noteDetector = new NoteDetectorSubsystem(noteDetectorIO);
     intake = new IntakeSubsystem(intakeIO);
     feeder = new FeederSubsystem(feederIO);
+    light = new LightSubsystem(lightIO);
 
     autoAimController = new PIDController(1.0 / 50, 0, 1.0 / 200);
     autoAimController.enableContinuousInput(-180, 180);
@@ -70,7 +76,8 @@ public class Shooter {
     if (!noteDetector.hasNote()) {
       return parallel(intake.getIntakeCommand(), feeder.getFeedCommand())
           .until(noteDetector::hasNote)
-          .finallyDo(() -> feeder.getUnfeedCommand());
+          .finallyDo(() -> feeder.getUnfeedCommand())
+          .alongWith(light.setColor(Colors.ORANGE));
     } else {
       return null;
     }
@@ -92,7 +99,8 @@ public class Shooter {
                 () -> {
                   return Rotation2d.fromDegrees(90);
                 })),
-        flywheel.getAmpShotCommand());
+        flywheel.getAmpShotCommand(),
+        light.setColorValue(1705));
     // return flywheel.getAmpShotCommand();
   }
 
@@ -109,13 +117,15 @@ public class Shooter {
   }
 
   public Command getAutoSpeakerShotCommand() {
-    return none();
-    // return parallel(
-    //         parallel(
-    //             pivot.getPivotCommand(() -> Rotation2d.fromDegrees(30)),
-    //             flywheel.getSpeakerShotCommand()),
-    //         waitUntil(() -> flywheel.isUpToSpeed()).andThen(feeder.getFeedCommand()))
-    //     .until(() -> !noteDetector.hasNote());
+    // return none();
+    return parallel(
+            parallel(
+                pivot.getPivotCommand(() -> Rotation2d.fromDegrees(30)),
+                flywheel.getSpeakerShotCommand(),
+                light.setColorValue(1705)),
+            waitUntil(() -> flywheel.isUpToSpeed()).andThen(feeder.getFeedCommand()))
+        .until(() -> !noteDetector.hasNote())
+        .finallyDo(() -> light.setColor(Colors.GREEN));
   }
 
   private double speakerY = 5.5;
