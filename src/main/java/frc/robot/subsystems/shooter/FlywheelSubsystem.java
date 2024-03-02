@@ -53,10 +53,11 @@ public class FlywheelSubsystem extends SubsystemBase {
   }
 
   public boolean isUpToSpeed() {
-    System.out.println("Flywheel speed: " + inputs.bottomVelocity.in(RPM));
-    System.out.println(
-        "Flywheel.isUpToSpeed: "
-            + String.valueOf(inputs.bottomVelocity.in(RPM) >= inputs.velocitySetpointRPM));
+    System.out.println("Flywheel setpoint: " + inputs.velocitySetpointRPM);
+    if (inputs.velocitySetpointRPM == 0) {
+      return false;
+    }
+    System.out.println("Is up to speed?: " + String.valueOf(inputs.bottomVelocity.in(RPM) >= inputs.velocitySetpointRPM));
     return inputs.bottomVelocity.in(RPM) >= inputs.velocitySetpointRPM;
   }
 }
