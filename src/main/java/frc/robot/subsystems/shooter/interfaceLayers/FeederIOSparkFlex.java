@@ -33,7 +33,6 @@ public class FeederIOSparkFlex implements FeederIO {
     motor = new CANSparkFlex(Shooter.FEEDER, MotorType.kBrushless);
     SparkUtils.configureSpark(() -> motor.restoreFactoryDefaults());
     Timer.delay(0.1);
-    motor.setInverted(true);
     SparkUtils.configureSpark(() -> motor.setCANTimeout(250));
     SparkUtils.configureSpark(() -> motor.setIdleMode(IdleMode.kBrake));
     SparkUtils.configureSpark(() -> motor.setSmartCurrentLimit(30));

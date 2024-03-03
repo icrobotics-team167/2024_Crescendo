@@ -45,7 +45,7 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
     SparkUtils.configureSpark(() -> topFlywheel.setCANTimeout(250));
     SparkUtils.configureSpark(() -> bottomFlywheel.setCANTimeout(250));
 
-    bottomFlywheel.setInverted(true);
+    bottomFlywheel.setInverted(false);
     SparkUtils.configureSpark(() -> bottomFlywheel.setIdleMode(IdleMode.kCoast));
     SparkUtils.configureSpark(() -> bottomFlywheel.setSmartCurrentLimit(40));
     topFlywheel.setInverted(false);
