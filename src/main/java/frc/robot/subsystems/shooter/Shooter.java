@@ -167,29 +167,28 @@ public class Shooter {
   public Command getTeleopAutoAimCommand(
       SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
     return parallel(
-            pivot.getPivotCommand(
-                () -> {
-                  Rotation2d targetAngle = aimAtHeight(drivebase, speakerZ);
-                  if (Math.abs(pivot.getAngle().getDegrees() - targetAngle.getDegrees()) < 0.1) {
-                    light.setColorValue(1465);
-                  } else {
-                    light.setColor(Colors.GREEN);
-                  }
-                  return targetAngle;
-                }),
-            drivebase.getDriveCommand(
-                xVel,
-                yVel,
-                () -> {
-                  return aimToYaw(
+        pivot.getPivotCommand(
+            () -> {
+              Rotation2d targetAngle = aimAtHeight(drivebase, speakerZ);
+              if (Math.abs(pivot.getAngle().getDegrees() - targetAngle.getDegrees()) < 0.1) {
+                light.setColorValue(1465);
+              } else {
+                light.setColor(Colors.GOLD);
+              }
+              return targetAngle;
+            }),
+        drivebase.getDriveCommand(
+            xVel,
+            yVel,
+            () -> {
+              return aimToYaw(
+                  drivebase,
+                  aimAtPosition(
                       drivebase,
-                      aimAtPosition(
-                          drivebase,
-                          new Translation2d(
-                              Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0, speakerY)));
-                  // Michael was here
-                }))
-        .finallyDo(() -> light.setColor(Colors.GREEN));
+                      new Translation2d(
+                          Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0, speakerY)));
+              // Michael was here
+            }));
   }
 
   private Rotation2d aimAtHeight(SwerveSubsystem drivebase, double height) {
