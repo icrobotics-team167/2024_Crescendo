@@ -121,6 +121,10 @@ public class Shooter {
         .finallyDo(() -> light.setColor(Colors.GREEN));
   }
 
+  public Command getAutoSpinUp() {
+    return flywheel.getSpeakerShotCommand();
+  }
+
   public Command getSourceIntakeCommand() {
     return parallel(
             flywheel.getSourceIntakeCommand(),
@@ -155,7 +159,6 @@ public class Shooter {
                     () -> {
                       return aimAtHeight(drivebase, speakerZ);
                     }),
-                flywheel.getSpeakerShotCommand(),
                 runOnce(() -> light.setColorValue(1705))))
         .finallyDo(
             () -> {

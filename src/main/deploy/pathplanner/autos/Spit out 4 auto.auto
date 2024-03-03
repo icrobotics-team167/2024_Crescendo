@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.45,
-      "y": 3.2
+      "x": 1.47,
+      "y": 1.53
     },
     "rotation": 180.0
   },
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Starting below, go to mid mid"
+            "pathName": "Starting low, head to bottom mid"
           }
         },
         {
@@ -24,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Spit out second from top"
+                  "pathName": "Spit out bottom note"
                 }
               },
               {
@@ -43,7 +43,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Go down entire column, 4 note"
+                  "pathName": "Go up entire column, 4 note"
                 }
               },
               {

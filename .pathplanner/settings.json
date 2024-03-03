@@ -3,10 +3,11 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "2 note auto",
-    "3 note auto",
-    "Spit out 5 auto",
-    "Spit out 4 auto"
+    "preload + 1 close + 1 far note auto",
+    "preload + 1 close note auto",
+    "preload + 3 close auto",
+    "Spit out 4 auto",
+    "Spit out 5 auto"
   ],
   "autoFolders": [],
   "defaultMaxVel": 2.0,

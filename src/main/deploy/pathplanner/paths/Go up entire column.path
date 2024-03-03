@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.43,
-        "y": 5.55
+        "x": 8.28,
+        "y": 0.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4299999999999997,
-        "y": 5.55
+        "x": 8.28,
+        "y": 1.55
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "spit out 5 pt 2-3"
     },
     {
       "anchor": {
-        "x": 3.5,
-        "y": 5.55
+        "x": 8.28,
+        "y": 7.65
       },
       "prevControl": {
-        "x": 2.5,
-        "y": 5.55
+        "x": 8.28,
+        "y": 6.65
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,8 +32,8 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 4.5,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 540.0
   },
@@ -43,10 +43,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "preload + 1 close note auto",
+  "folder": "Spit out 5 auto",
   "previewStartingState": {
     "rotation": 180.0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

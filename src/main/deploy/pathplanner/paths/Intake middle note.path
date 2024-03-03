@@ -3,37 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.28,
-        "y": 7.692559233099464
+        "x": 2.147408380327451,
+        "y": 5.537862667174266
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.28,
-        "y": 6.692559233099464
+        "x": 2.647408380327451,
+        "y": 5.537862667174266
       },
       "isLocked": false,
-      "linkedName": "spit out 5 pt 2-3"
+      "linkedName": "preload + 3 note pt 3-4"
     },
     {
       "anchor": {
-        "x": 8.28,
-        "y": 0.5264869437102309
+        "x": 2.8981397630253705,
+        "y": 5.537862667174266
       },
       "prevControl": {
-        "x": 8.28,
-        "y": 1.526486943710231
+        "x": 2.3981397630253705,
+        "y": 5.537862667174266
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "preload + 3 note pt 4-5"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.5,
-    "maxAcceleration": 6.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 540.0
   },
@@ -43,10 +43,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Spit out 5 auto",
+  "folder": "preload + 3 close auto",
   "previewStartingState": {
     "rotation": 180.0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

@@ -95,6 +95,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Score in speaker", shooter.getAutoSpeakerShotCommand(drivebase));
     NamedCommands.registerCommand("Intake", shooter.autoIntake());
     NamedCommands.registerCommand("Intake Out", shooter.intakeOut());
+    NamedCommands.registerCommand("Spin up flywheel", shooter.getAutoSpinUp());
 
     // Configure the trigger bindings
     configureBindings();
