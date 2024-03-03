@@ -24,6 +24,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -42,6 +43,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism;
 import frc.robot.Constants.Driving;
+import frc.robot.Constants.Field;
+import frc.robot.Robot;
 import frc.robot.subsystems.swerve.interfaceLayers.GyroIO;
 import frc.robot.subsystems.swerve.interfaceLayers.GyroIOInputsAutoLogged;
 import frc.robot.subsystems.swerve.interfaceLayers.ModuleIO;
@@ -376,6 +379,27 @@ public class SwerveSubsystem extends SubsystemBase {
                   MAX_LINEAR_SPEED.in(MetersPerSecond) * yIn,
                   MAX_ANGULAR_SPEED.in(RadiansPerSecond) * rotIn,
                   gyroInputs.yawPosition));
+        });
+  }
+
+  private PIDController xController = new PIDController(5, 0, 0);
+  private PIDController yController = new PIDController(2, 0, 0);
+
+  public Command getAmpAlign(DoubleSupplier yInput) {
+    yController.enableContinuousInput(-180, 180);
+    return run(
+        () -> {
+          double targetX = 1.84;
+          if (Robot.isOnRed()) {
+            targetX = Field.FIELD_LENGTH.in(Meters) - targetX;
+          }
+
+          runVelocity(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  xController.calculate(getPose().getX(), targetX),
+                  yInput.getAsDouble(),
+                  yController.calculate(getPose().getRotation().getDegrees(), 90),
+                  rawGyroRotation));
         });
   }
 
