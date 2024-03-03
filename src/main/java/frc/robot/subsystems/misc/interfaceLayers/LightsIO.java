@@ -14,12 +14,14 @@
 
 package frc.robot.subsystems.misc.interfaceLayers;
 
+import org.littletonrobotics.junction.AutoLog;
+
 import frc.robot.subsystems.misc.interfaceLayers.LightsIOBlinkin.Colors;
 
 public interface LightsIO {
-
+  @AutoLog
   public class LightsIOInputs {
-    // TODO: Implement
+    public int colorValue = 0;
   }
 
   public default void updateInputs(LightsIOInputs inputs) {}

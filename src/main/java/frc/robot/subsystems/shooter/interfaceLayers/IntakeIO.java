@@ -19,7 +19,6 @@ import org.littletonrobotics.junction.AutoLog;
 public interface IntakeIO {
   @AutoLog
   public class IntakeIOInputs {
-    // TODO: Add more input data as we need more
     public boolean isRunning = false;
   }
 

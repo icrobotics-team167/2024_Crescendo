@@ -19,6 +19,7 @@ import frc.robot.util.CANConstants;
 
 public class LightsIOBlinkin implements LightsIO {
   PWM colorSparkRight;
+  int colorValue = 0;
 
   /** Cool colors. */
   public static enum Colors {
@@ -75,6 +76,11 @@ public class LightsIOBlinkin implements LightsIO {
     colorSparkRight = new PWM(CANConstants.misc.LIGHT_PWM_ID_RIGHT);
   }
 
+  @Override
+  public void updateInputs(LightsIOInputs inputs) {
+    inputs.colorValue = colorValue;
+  }
+
   /**
    * Set the color for the spark motor bruv
    *
@@ -87,6 +93,7 @@ public class LightsIOBlinkin implements LightsIO {
   }
 
   public void setColorValue(int colorValue) {
+    this.colorValue = colorValue;
     colorSparkRight.setPulseTimeMicroseconds(colorValue);
   }
 

@@ -18,14 +18,22 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.misc.interfaceLayers.LightsIO;
 import frc.robot.subsystems.misc.interfaceLayers.LightsIOBlinkin.Colors;
+import frc.robot.subsystems.misc.interfaceLayers.LightsIOInputsAutoLogged;
+import org.littletonrobotics.junction.Logger;
 
 public class LightSubsystem extends SubsystemBase {
-
   LightsIO io;
+  LightsIOInputsAutoLogged inputs = new LightsIOInputsAutoLogged();
 
   public LightSubsystem(LightsIO io) {
     this.io = io;
     io.setColor(Colors.GREEN);
+  }
+
+  @Override
+  public void periodic() {
+    io.updateInputs(inputs);
+    Logger.processInputs("Misc/lights", inputs);
   }
 
   public void setColor(Colors color) {
