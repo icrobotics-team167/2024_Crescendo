@@ -256,6 +256,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
   @Override
   public void stop() {
+    driveRateLimiter.reset(0);
     driveMotor.stopMotor();
     azimuthMotor.stopMotor();
   }
