@@ -40,6 +40,8 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
     SparkUtils.configureSpark(() -> topFlywheel.restoreFactoryDefaults());
     SparkUtils.configureSpark(() -> bottomFlywheel.restoreFactoryDefaults());
     Timer.delay(0.1);
+    SparkUtils.configureSpark(() -> topFlywheel.clearFaults());
+    SparkUtils.configureSpark(() -> bottomFlywheel.clearFaults());
     SparkUtils.configureSpark(() -> topFlywheel.setCANTimeout(250));
     SparkUtils.configureSpark(() -> bottomFlywheel.setCANTimeout(250));
 

@@ -124,12 +124,13 @@ public class Shooter {
 
   public Command getSourceIntakeCommand() {
     return parallel(
-        flywheel.getSourceIntakeCommand(),
-        feeder.getUnfeedCommand(),
-        pivot.getPivotCommand(
-            () -> {
-              return Rotation2d.fromDegrees(45);
-            })).until(noteDetector::hasNote);
+            flywheel.getSourceIntakeCommand(),
+            feeder.getUnfeedCommand(),
+            pivot.getPivotCommand(
+                () -> {
+                  return Rotation2d.fromDegrees(45);
+                }))
+        .until(noteDetector::hasNote);
   }
 
   private double speakerY = 5.5;
