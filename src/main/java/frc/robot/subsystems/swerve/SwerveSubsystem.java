@@ -64,7 +64,7 @@ public class SwerveSubsystem extends SubsystemBase {
               * Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters));
   /** The max linear acceleration of the robot. */
   public static final Measure<Velocity<Velocity<Distance>>> MAX_LINEAR_ACCELERATION =
-      MetersPerSecondPerSecond.of(6);
+      MetersPerSecondPerSecond.of(7);
   /** The distance between the front modules and the back modules. */
   private static final Measure<Distance> TRACK_LENGTH = Inches.of(23.5);
   /** The distance between the left modules and the right modules. */
@@ -125,8 +125,8 @@ public class SwerveSubsystem extends SubsystemBase {
             rawGyroRotation,
             lastModulePositions,
             new Pose2d(),
-            VecBuilder.fill(0.1, 0.1, 0.1),
-            VecBuilder.fill(2, 2, 2));
+            VecBuilder.fill(0.15, 0.15, 0.1),
+            VecBuilder.fill(1.5, 1.5, 0.9));
 
     // Start threads (no-op for each if no signals have been created)
     PhoenixOdometryThread.getInstance().start();
