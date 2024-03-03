@@ -96,7 +96,7 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
 
   @Override
   public void runSpeaker() {
-    setpoint = 5000;
+    setpoint = 4000;
     if (bottomFlywheelEncoder.getVelocity() < setpoint) {
       bottomFlywheel.setVoltage(12);
     } else {

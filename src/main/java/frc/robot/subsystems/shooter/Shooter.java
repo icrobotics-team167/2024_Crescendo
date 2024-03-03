@@ -14,10 +14,13 @@
 
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -76,7 +79,8 @@ public class Shooter {
 
   public Command autoIntake() {
     return parallel(intake.getIntakeCommand(), feeder.getFeedCommand())
-        .until(noteDetector::hasNote);
+        .until(noteDetector::hasNote)
+        .finallyDo(() -> light.setColor(Colors.ORANGE));
   }
 
   public Command getManualControlCommand(DoubleSupplier pivotSupplier) {
@@ -112,9 +116,9 @@ public class Shooter {
   public Command shoot() {
     return parallel(
             deadline(
-                waitUntil(flywheel::isUpToSpeed).andThen(feeder.getFeedCommand()).withTimeout(1),
+                waitUntil(flywheel::isUpToSpeed).andThen(feeder.getFeedCommand().withTimeout(1)),
                 flywheel.getSpeakerShotCommand()),
-            runOnce(() -> light.setColorValue(1705)))
+            light.setColorValueCommand(1705))
         .finallyDo(() -> light.setColor(Colors.GREEN));
   }
 
@@ -176,7 +180,13 @@ public class Shooter {
     Translation2d currentBotPosition = drivebase.getPose().getTranslation();
     double targetDistance = currentBotPosition.getDistance(new Translation2d(speakerX, speakerY));
     targetDistance += speakerToRobotDistanceOffset;
-    return new Rotation2d(Math.atan(height / targetDistance));
+    // Proportional fudge factor
+    // Close: ~1.75 meters, ~ 1 degree higher aim
+    // Far: ~3 meters, no fudge
+    double fudgeFactor =
+        MathUtil.interpolate(-0.75, 0, MathUtil.clamp((targetDistance - 1.75) / (3 - 1.75), 0, 1));
+    return new Rotation2d(
+        Math.atan(height / targetDistance) + Radians.convertFrom(fudgeFactor, Degrees));
   }
 
   // ROBOT ROTATE MATH
