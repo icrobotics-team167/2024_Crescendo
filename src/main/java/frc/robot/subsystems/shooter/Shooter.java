@@ -57,7 +57,6 @@ public class Shooter {
       NoteDetectorIO noteDetectorIO,
       IntakeIO intakeIO,
       LightsIO lightIO) {
-    // TODO: Implement flywheel and pivot interfaces
     flywheel = new FlywheelSubsystem(flywheelIO);
     pivot = new PivotSubsystem(pivotIO);
     noteDetector = new NoteDetectorSubsystem(noteDetectorIO);
@@ -80,7 +79,7 @@ public class Shooter {
   public Command autoIntake() {
     return parallel(intake.getIntakeCommand(), feeder.getFeedCommand())
         .until(noteDetector::hasNote)
-        .finallyDo(() -> light.setColor(Colors.ORANGE));
+        .finallyDo(() -> light.setColor(Colors.GOLD));
   }
 
   public Command getManualControlCommand(DoubleSupplier pivotSupplier) {
@@ -168,22 +167,29 @@ public class Shooter {
   public Command getTeleopAutoAimCommand(
       SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
     return parallel(
-        pivot.getPivotCommand(
-            () -> {
-              return aimAtHeight(drivebase, speakerZ);
-            }),
-        drivebase.getDriveCommand(
-            xVel,
-            yVel,
-            () -> {
-              return aimToYaw(
-                  drivebase,
-                  aimAtPosition(
+            pivot.getPivotCommand(
+                () -> {
+                  Rotation2d targetAngle = aimAtHeight(drivebase, speakerZ);
+                  if (Math.abs(pivot.getAngle().getDegrees() - targetAngle.getDegrees()) < 0.1) {
+                    light.setColorValue(1465);
+                  } else {
+                    light.setColor(Colors.GREEN);
+                  }
+                  return targetAngle;
+                }),
+            drivebase.getDriveCommand(
+                xVel,
+                yVel,
+                () -> {
+                  return aimToYaw(
                       drivebase,
-                      new Translation2d(
-                          Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0, speakerY)));
-              // Michael was here
-            }));
+                      aimAtPosition(
+                          drivebase,
+                          new Translation2d(
+                              Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0, speakerY)));
+                  // Michael was here
+                }))
+        .finallyDo(() -> light.setColor(Colors.GREEN));
   }
 
   private Rotation2d aimAtHeight(SwerveSubsystem drivebase, double height) {
