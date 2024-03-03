@@ -127,6 +127,21 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
   }
 
   @Override
+  public void runSourceIntake() {
+    setpoint = 2000;
+    if (Math.abs(bottomFlywheelEncoder.getVelocity()) < setpoint) {
+      bottomFlywheel.setVoltage(-12);
+    } else {
+      bottomFlywheel.setVoltage(0);
+    }
+    if (Math.abs(topFlywheelEncoder.getVelocity()) < setpoint) {
+      topFlywheel.setVoltage(-12);
+    } else {
+      topFlywheel.setVoltage(0);
+    }
+  }
+
+  @Override
   public void stop() {
     setpoint = 0;
     topFlywheel.setVoltage(0);

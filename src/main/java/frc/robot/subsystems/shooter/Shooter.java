@@ -122,6 +122,16 @@ public class Shooter {
         .finallyDo(() -> light.setColor(Colors.GREEN));
   }
 
+  public Command getSourceIntakeCommand() {
+    return parallel(
+        flywheel.getSourceIntakeCommand(),
+        feeder.getUnfeedCommand(),
+        pivot.getPivotCommand(
+            () -> {
+              return Rotation2d.fromDegrees(45);
+            })).until(noteDetector::hasNote);
+  }
+
   private double speakerY = 5.5;
   private double speakerZ = 1.5;
   private double speakerToRobotDistanceOffset = 0.254; // GOD FUCKING DAMNIT TOM

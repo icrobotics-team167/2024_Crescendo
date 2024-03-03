@@ -53,6 +53,10 @@ public class FlywheelSubsystem extends SubsystemBase {
     return run(io::runAmp).finallyDo(io::stop);
   }
 
+  public Command getSourceIntakeCommand() {
+    return run(io::runSourceIntake).finallyDo(io::stop);
+  }
+
   @AutoLogOutput
   public boolean isUpToSpeed() {
     // System.out.println("Flywheel setpoint: " + inputs.velocitySetpointRPM);

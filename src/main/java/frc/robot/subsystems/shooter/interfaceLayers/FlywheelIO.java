@@ -54,6 +54,9 @@ public interface FlywheelIO {
   /** Spins the shooter flywheels up to shoot into the amp. */
   public default void runAmp() {}
 
+  /** Spins the shooter flywheels up to intake from source. */
+  public default void runSourceIntake() {}
+
   /** Stops the shooter flywheel. */
   public default void stop() {}
 }

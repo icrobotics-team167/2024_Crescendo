@@ -93,8 +93,8 @@ public class RobotContainer {
         // light = new LightSubsystem(new LightsIO() {});
     }
     NamedCommands.registerCommand("Score in speaker", shooter.getAutoSpeakerShotCommand(drivebase));
-    NamedCommands.registerCommand("Intake", shooter.autoIntake()); // TODO: Implement
-    NamedCommands.registerCommand("Intake Out", none()); // TODO: Implement
+    NamedCommands.registerCommand("Intake", shooter.autoIntake());
+    NamedCommands.registerCommand("Intake Out", shooter.intakeOut());
 
     // Configure the trigger bindings
     configureBindings();
@@ -166,6 +166,7 @@ public class RobotContainer {
             shooter.getTeleopAutoAimCommand(drivebase, primaryLeftStickY, primaryLeftStickX));
     // shooter.setPivotDefaultCommand(none());
     secondaryLeftStick.button(3).whileTrue(shooter.getAutoAmpShotCommand());
+    secondaryLeftStick.button(4).whileTrue(shooter.getSourceIntakeCommand());
   }
 
   /**
