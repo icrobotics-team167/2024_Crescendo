@@ -142,14 +142,16 @@ public class RobotContainer {
     primaryLeftStick
         .trigger()
         .whileTrue(new StartEndCommand(drivebase::setSlowmode, drivebase::unsetSlowmode));
-    primaryRightStick.trigger().onTrue(new InstantCommand(drivebase::stopWithX));
+        //TODO: Undefault slow mode
+    primaryRightStick.button(2).onTrue(new InstantCommand(drivebase::stopWithX));
+    primaryRightStick.trigger().whileTrue(shooter.getTeleopAutoAimCommand(drivebase, primaryLeftStickY, primaryLeftStickX));
     // primaryLeftStick.button(1).whileTrue(drivebase.getDriveSysIDURCL());
     // primaryLeftStick.button(2).whileTrue(drivebase.getAzimuthSysIDURCL());
 
     secondaryRightStick.trigger().whileTrue(shooter.autoIntake());
-    secondaryRightStick.button(4).whileTrue(shooter.feed());
-    secondaryRightStick.button(2).whileTrue(shooter.intakeOut());
-    secondaryRightStick.button(3).whileTrue(shooter.shoot());
+    secondaryRightStick.button(3).whileTrue(shooter.feed());
+    secondaryRightStick.button(4).whileTrue(shooter.intakeOut());
+    secondaryRightStick.button(2).whileTrue(shooter.shoot());
     secondaryLeftStick
         .trigger()
         .whileTrue(
@@ -160,10 +162,6 @@ public class RobotContainer {
                         Driving.Deadbands.SECONDARY_LEFT_INNER,
                         Driving.Deadbands.SECONDARY_LEFT_OUTER,
                         Driving.SECONDARY_DRIVER_EXPONENT)));
-    secondaryLeftStick
-        .button(2)
-        .whileTrue(
-            shooter.getTeleopAutoAimCommand(drivebase, primaryLeftStickY, primaryLeftStickX));
     // shooter.setPivotDefaultCommand(none());
     secondaryLeftStick.button(3).whileTrue(shooter.getAutoAmpShotCommand());
     secondaryLeftStick.button(4).whileTrue(shooter.getSourceIntakeCommand());
