@@ -95,9 +95,9 @@ public class Shooter {
                     () -> {
                       return Rotation2d.fromDegrees(90);
                     }),
-                light.setColorValue(1705)),
+                runOnce(() -> light.setColorValue(1705))),
             flywheel.getAmpShotCommand())
-        .andThen(light.setColor(Colors.GREEN));
+        .finallyDo(() -> light.setColor(Colors.GREEN));
     // return flywheel.getAmpShotCommand();
   }
 
@@ -114,7 +114,7 @@ public class Shooter {
             deadline(
                 waitUntil(flywheel::isUpToSpeed).andThen(feeder.getFeedCommand()).withTimeout(1),
                 flywheel.getSpeakerShotCommand()),
-            light.setColorValue(1705))
+            runOnce(() -> light.setColorValue(1705)))
         .finallyDo(() -> light.setColor(Colors.GREEN));
   }
 
@@ -142,7 +142,7 @@ public class Shooter {
                       return aimAtHeight(drivebase, speakerZ);
                     }),
                 flywheel.getSpeakerShotCommand(),
-                light.setColorValue(1705)))
+                runOnce(() -> light.setColorValue(1705))))
         .finallyDo(
             () -> {
               light.setColor(Colors.GREEN);

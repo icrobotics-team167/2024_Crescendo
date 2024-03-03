@@ -14,7 +14,6 @@
 
 package frc.robot.subsystems.misc;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.misc.interfaceLayers.LightsIO;
 import frc.robot.subsystems.misc.interfaceLayers.LightsIOBlinkin.Colors;
@@ -28,15 +27,15 @@ public class LightSubsystem extends SubsystemBase {
     io.setColorNull();
   }
 
-  public Command setColor(Colors color) {
-    return runOnce(() -> io.setColor(color));
+  public void setColor(Colors color) {
+    io.setColor(color);
   }
 
-  public Command setColorValue(int num) {
-    return runOnce(() -> io.setColorValue(num));
+  public void setColorValue(int num) {
+    io.setColorValue(num);
   }
 
-  public Command setColorNull() {
-    return runOnce(() -> io.setColorNull());
+  public void setColorNull() {
+    io.setColorNull();
   }
 }
