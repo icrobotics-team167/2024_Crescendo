@@ -103,7 +103,7 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
       bottomFlywheel.setVoltage(0);
     }
 
-    if (Math.abs(topFlywheelEncoder.getVelocity()) < setpoint) {
+    if (Math.abs(topFlywheelEncoder.getVelocity()) < (setpoint * .7)) {
       topFlywheel.setVoltage(12);
     } else {
       topFlywheel.setVoltage(0);

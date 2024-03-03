@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIO;
 import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIOInputsAutoLogged;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class FlywheelSubsystem extends SubsystemBase {
@@ -52,14 +53,15 @@ public class FlywheelSubsystem extends SubsystemBase {
     return run(io::runAmp).finallyDo(io::stop);
   }
 
+  @AutoLogOutput
   public boolean isUpToSpeed() {
-    System.out.println("Flywheel setpoint: " + inputs.velocitySetpointRPM);
+    // System.out.println("Flywheel setpoint: " + inputs.velocitySetpointRPM);
     if (inputs.velocitySetpointRPM == 0) {
       return false;
     }
-    System.out.println(
-        "Is up to speed?: "
-            + String.valueOf(inputs.bottomVelocity.in(RPM) >= inputs.velocitySetpointRPM));
+    // System.out.println(
+    //     "Is up to speed?: "
+    //         + String.valueOf(inputs.bottomVelocity.in(RPM) >= inputs.velocitySetpointRPM));
     return inputs.bottomVelocity.in(RPM) >= inputs.velocitySetpointRPM;
   }
 }

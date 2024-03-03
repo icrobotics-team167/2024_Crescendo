@@ -126,7 +126,7 @@ public class SwerveSubsystem extends SubsystemBase {
             lastModulePositions,
             new Pose2d(),
             VecBuilder.fill(0.15, 0.15, 0.1),
-            VecBuilder.fill(1.5, 1.5, 0.9));
+            VecBuilder.fill(2, 2, 1.5));
 
     // Start threads (no-op for each if no signals have been created)
     PhoenixOdometryThread.getInstance().start();

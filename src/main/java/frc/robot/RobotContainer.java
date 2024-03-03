@@ -92,9 +92,8 @@ public class RobotContainer {
                 new LightsIO() {});
         // light = new LightSubsystem(new LightsIO() {});
     }
-    NamedCommands.registerCommand(
-        "Score in speaker", shooter.getAutoSpeakerShotCommand(drivebase)); // TODO: Implement
-    NamedCommands.registerCommand("Intake", none()); // TODO: Implement
+    NamedCommands.registerCommand("Score in speaker", shooter.getAutoSpeakerShotCommand(drivebase));
+    NamedCommands.registerCommand("Intake", shooter.autoIntake()); // TODO: Implement
     NamedCommands.registerCommand("Intake Out", none()); // TODO: Implement
 
     // Configure the trigger bindings
@@ -103,6 +102,7 @@ public class RobotContainer {
     autoSelector =
         new LoggedDashboardChooser<>(
             "Auto Chooser", AutoBuilder.buildAutoChooser("Barely move at all"));
+    autoSelector.addOption("1 note auto", shooter.getAutoSpeakerShotCommand(drivebase));
   }
 
   /**

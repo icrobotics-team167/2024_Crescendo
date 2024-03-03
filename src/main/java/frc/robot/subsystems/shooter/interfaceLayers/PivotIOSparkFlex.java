@@ -95,7 +95,7 @@ public class PivotIOSparkFlex implements PivotIO {
         Set.of(SparkUtils.Sensor.INTEGRATED),
         false);
 
-    anglePid = new PIDController(5.5, 0, 0.01);
+    anglePid = new PIDController(5, 0, 0.01);
 
     leaderPidController =
         new PIDController(
@@ -191,7 +191,7 @@ public class PivotIOSparkFlex implements PivotIO {
 
   /** Gets the angle of the pivot mechanism. */
   private Rotation2d getAngle() {
-    double rawAngle = encoder.getAbsolutePosition() - (200.0 / 360.0);
+    double rawAngle = encoder.getAbsolutePosition() - (194 / 360.0);
     return Rotation2d.fromRotations(angleFilter.calculate(rawAngle));
   }
 

@@ -76,9 +76,7 @@ public class Shooter {
 
   public Command autoIntake() {
     return parallel(intake.getIntakeCommand(), feeder.getFeedCommand())
-        .until(noteDetector::hasNote)
-        .andThen(
-            parallel(light.setColor(Colors.ORANGE), feeder.getUnfeedCommand().withTimeout(0.25)));
+        .until(noteDetector::hasNote);
   }
 
   public Command getManualControlCommand(DoubleSupplier pivotSupplier) {
@@ -91,14 +89,15 @@ public class Shooter {
 
   public Command getAutoAmpShotCommand() {
     return deadline(
-        waitUntil(flywheel::isUpToSpeed).andThen(feeder.getFeedCommand().withTimeout(2)),
-        parallel( // Gets canceled when the above finishes
-            pivot.getPivotCommand(
-                () -> {
-                  return Rotation2d.fromDegrees(90);
-                })),
-        flywheel.getAmpShotCommand(),
-        light.setColorValue(1705));
+            waitUntil(flywheel::isUpToSpeed).andThen(feeder.getFeedCommand().withTimeout(2)),
+            parallel( // Gets canceled when the above finishes
+                pivot.getPivotCommand(
+                    () -> {
+                      return Rotation2d.fromDegrees(90);
+                    }),
+                light.setColorValue(1705)),
+            flywheel.getAmpShotCommand())
+        .andThen(light.setColor(Colors.GREEN));
     // return flywheel.getAmpShotCommand();
   }
 
@@ -111,15 +110,22 @@ public class Shooter {
   }
 
   public Command shoot() {
-    return flywheel.getSpeakerShotCommand();
+    return parallel(
+            deadline(
+                waitUntil(flywheel::isUpToSpeed).andThen(feeder.getFeedCommand()).withTimeout(1),
+                flywheel.getSpeakerShotCommand()),
+            light.setColorValue(1705))
+        .finallyDo(() -> light.setColor(Colors.GREEN));
   }
 
   private double speakerY = 5.5;
-  private double speakerZ = 1.2;
+  private double speakerZ = 1.5;
+  private double speakerToRobotDistanceOffset = 0.254; // GOD FUCKING DAMNIT TOM
 
   public Command getAutoSpeakerShotCommand(SwerveSubsystem drivebase) {
     // return none();
-    return parallel(
+    return deadline(
+            waitUntil(flywheel::isUpToSpeed).andThen(feeder.getFeedCommand().withTimeout(1)),
             runOnce(
                 () ->
                     PPHolonomicDriveController.setRotationTargetOverride(
@@ -133,12 +139,10 @@ public class Shooter {
             parallel(
                 pivot.getPivotCommand(
                     () -> {
-                      return aimAtHeight(drivebase, speakerY);
+                      return aimAtHeight(drivebase, speakerZ);
                     }),
                 flywheel.getSpeakerShotCommand(),
-                light.setColorValue(1705)),
-            waitUntil(() -> flywheel.isUpToSpeed()).andThen(feeder.getFeedCommand()))
-        .until(() -> !noteDetector.hasNote())
+                light.setColorValue(1705)))
         .finallyDo(
             () -> {
               light.setColor(Colors.GREEN);
@@ -171,6 +175,7 @@ public class Shooter {
     double speakerX = Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0;
     Translation2d currentBotPosition = drivebase.getPose().getTranslation();
     double targetDistance = currentBotPosition.getDistance(new Translation2d(speakerX, speakerY));
+    targetDistance += speakerToRobotDistanceOffset;
     return new Rotation2d(Math.atan(height / targetDistance));
   }
 
