@@ -16,8 +16,14 @@ package frc.robot.subsystems.shooter.interfaceLayers;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.util.CANConstants;
 import frc.robot.util.motorUtils.SparkUtils;
@@ -25,10 +31,21 @@ import frc.robot.util.motorUtils.SparkUtils;
 public class ClimberIOSparkFlex implements ClimberIO {
   private final CANSparkFlex leftMotor;
   private final CANSparkFlex rightMotor;
+  private final DutyCycleEncoder leftEncoder;
+  private final DutyCycleEncoder rightEncoder;
+
+  private double MIN_ANGLE = -10;
+  private double MAX_ANGLE = 90;
+
+  // Left: 24.285 degrees per second per volt
+  // Right: 23.333 degrees per second per volt
+  private double fudgeFactor = .906976;
 
   public ClimberIOSparkFlex() {
     leftMotor = new CANSparkFlex(CANConstants.Shooter.CLIMBER_LEFT, MotorType.kBrushless);
     rightMotor = new CANSparkFlex(CANConstants.Shooter.CLIMBER_RIGHT, MotorType.kBrushless);
+    leftEncoder = new DutyCycleEncoder(1);
+    rightEncoder = new DutyCycleEncoder(3);
 
     SparkUtils.configureSpark(leftMotor::restoreFactoryDefaults);
     SparkUtils.configureSpark(rightMotor::restoreFactoryDefaults);
@@ -40,6 +57,8 @@ public class ClimberIOSparkFlex implements ClimberIO {
 
     leftMotor.setInverted(false);
     rightMotor.setInverted(true);
+    SparkUtils.configureSpark(() -> leftMotor.setIdleMode(IdleMode.kBrake));
+    SparkUtils.configureSpark(() -> rightMotor.setIdleMode(IdleMode.kBrake));
 
     SparkUtils.configureSpark(() -> leftMotor.setSmartCurrentLimit(80));
     SparkUtils.configureSpark(() -> leftMotor.setSecondaryCurrentLimit(100));
@@ -54,23 +73,61 @@ public class ClimberIOSparkFlex implements ClimberIO {
         Volts.of(rightMotor.getAppliedOutput() * rightMotor.getBusVoltage());
     inputs.leftAppliedCurrent = Amps.of(leftMotor.getOutputCurrent());
     inputs.rightAppliedCurrent = Amps.of(rightMotor.getOutputCurrent());
+    inputs.leftAngle = getLeftAngle();
+    inputs.rightAngle = getRightAngle();
+    inputs.leftVelocity = RPM.of(leftMotor.getEncoder().getVelocity());
+    inputs.rightVelocity = RPM.of(rightMotor.getEncoder().getVelocity());
   }
 
   @Override
   public void climb() {
-    leftMotor.setVoltage(12);
-    rightMotor.setVoltage(12);
+    if (getLeftAngle().getDegrees() < MIN_ANGLE && getLeftAngle().getDegrees() - MIN_ANGLE >= 0) {
+      leftMotor.stopMotor();
+    } else {
+      leftMotor.setVoltage(12 * fudgeFactor);
+    }
+
+    if (getRightAngle().getDegrees() < MIN_ANGLE && getRightAngle().getDegrees() - MIN_ANGLE >= 0) {
+      rightMotor.stopMotor();
+    } else {
+      rightMotor.setVoltage(12 * fudgeFactor);
+    }
   }
 
   @Override
   public void reset() {
-    leftMotor.setVoltage(-6);
-    rightMotor.setVoltage(-6);
+    if (getLeftAngle().getDegrees() > MAX_ANGLE) {
+      leftMotor.stopMotor();
+    } else {
+      leftMotor.setVoltage(-6 * fudgeFactor);
+    }
+
+    if (getRightAngle().getDegrees() > MAX_ANGLE) {
+      rightMotor.stopMotor();
+    } else {
+      rightMotor.setVoltage(-6);
+    }
   }
 
   @Override
   public void stop() {
     leftMotor.stopMotor();
     rightMotor.stopMotor();
+  }
+
+  private LinearFilter leftAngleFilter = LinearFilter.movingAverage(4);
+
+  private Rotation2d getLeftAngle() {
+    double rawAngle = leftEncoder.getAbsolutePosition() - (167.5 / 360.0);
+    return Rotation2d.fromRadians(
+        MathUtil.angleModulus(Units.rotationsToRadians(leftAngleFilter.calculate(rawAngle))));
+  }
+
+  private LinearFilter rightAngleFilter = LinearFilter.movingAverage(4);
+
+  private Rotation2d getRightAngle() {
+    double rawAngle = (201.0 / 360.0) - rightEncoder.getAbsolutePosition();
+    return Rotation2d.fromRadians(
+        MathUtil.angleModulus(Units.rotationsToRadians(rightAngleFilter.calculate(rawAngle))));
   }
 }

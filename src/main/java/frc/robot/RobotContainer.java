@@ -69,7 +69,8 @@ public class RobotContainer {
                 new PivotIOSparkFlex(),
                 new NoteDetectorIOTimeOfFlight(),
                 new IntakeIOTalonFX(),
-                new LightsIOBlinkin());
+                new LightsIOBlinkin(),
+                new ClimberIOSparkFlex());
         // light = new LightSubsystem(new LightsIOBlinkin());
         break;
       default:
@@ -87,10 +88,13 @@ public class RobotContainer {
                 new PivotIO() {},
                 new NoteDetectorIO() {},
                 new IntakeIO() {},
-                new LightsIO() {});
+                new LightsIO() {},
+                new ClimberIO() {});
         // light = new LightSubsystem(new LightsIO() {});
     }
-    NamedCommands.registerCommand("Score in speaker", shooter.getAutoSpeakerShotCommand(drivebase));
+    NamedCommands.registerCommand(
+        "Score in speaker",
+        shooter.getAutoSpeakerShotCommand(() -> drivebase.getPose().getTranslation()));
     NamedCommands.registerCommand("Intake", shooter.autoIntake());
     NamedCommands.registerCommand("Intake Out", shooter.intakeOut());
     NamedCommands.registerCommand("Spin up flywheel", shooter.getAutoSpinUp());
@@ -98,10 +102,10 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
     // System.out.println("Deploy directory: " + Filesystem.getDeployDirectory());
-    autoSelector =
-        new LoggedDashboardChooser<>(
-            "Auto Chooser", AutoBuilder.buildAutoChooser("Barely move at all"));
-    autoSelector.addOption("1 note auto", shooter.getAutoSpeakerShotCommand(drivebase));
+    autoSelector = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
+    autoSelector.addOption(
+        "1 note auto",
+        shooter.getAutoSpeakerShotCommand(() -> drivebase.getPose().getTranslation()));
   }
 
   /**
@@ -154,6 +158,10 @@ public class RobotContainer {
     secondaryRightStick.button(3).whileTrue(shooter.feed());
     secondaryRightStick.button(4).whileTrue(shooter.intakeOut());
     secondaryRightStick.button(2).whileTrue(shooter.shoot());
+
+    secondaryRightStick.button(7).whileTrue(shooter.getClimbCommand());
+    secondaryRightStick.button(8).whileTrue(shooter.getUnclimbCommand());
+
     secondaryLeftStick
         .trigger()
         .whileTrue(

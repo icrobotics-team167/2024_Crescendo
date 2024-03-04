@@ -35,10 +35,10 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public Command getClimbCommand() {
-    return startEnd(io::climb, io::stop);
+    return run(io::climb).finallyDo(io::stop);
   }
 
   public Command getUnclimbCommand() {
-    return startEnd(io::reset, io::stop);
+    return run(io::reset).finallyDo(io::stop);
   }
 }

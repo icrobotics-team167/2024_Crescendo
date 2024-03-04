@@ -25,11 +25,13 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.Driving;
 import frc.robot.Constants.Field;
 import frc.robot.Robot;
 import frc.robot.subsystems.misc.LightSubsystem;
 import frc.robot.subsystems.misc.interfaceLayers.*;
 import frc.robot.subsystems.misc.interfaceLayers.LightsIOBlinkin.Colors;
+import frc.robot.subsystems.shooter.interfaceLayers.ClimberIO;
 import frc.robot.subsystems.shooter.interfaceLayers.FeederIO;
 import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIO;
 import frc.robot.subsystems.shooter.interfaceLayers.IntakeIO;
@@ -38,6 +40,8 @@ import frc.robot.subsystems.shooter.interfaceLayers.PivotIO;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 /** A class containing all the logic and commands to make the shooter mechanism work. */
 public class Shooter {
@@ -47,6 +51,7 @@ public class Shooter {
   private final IntakeSubsystem intake;
   private final FeederSubsystem feeder;
   private final LightSubsystem light;
+  private final ClimberSubsystem climb;
 
   private PIDController autoAimController;
 
@@ -56,15 +61,17 @@ public class Shooter {
       PivotIO pivotIO,
       NoteDetectorIO noteDetectorIO,
       IntakeIO intakeIO,
-      LightsIO lightIO) {
+      LightsIO lightIO,
+      ClimberIO climberIO) {
     flywheel = new FlywheelSubsystem(flywheelIO);
     pivot = new PivotSubsystem(pivotIO);
     noteDetector = new NoteDetectorSubsystem(noteDetectorIO);
     intake = new IntakeSubsystem(intakeIO);
     feeder = new FeederSubsystem(feederIO);
     light = new LightSubsystem(lightIO);
+    climb = new ClimberSubsystem(climberIO);
 
-    autoAimController = new PIDController(1.0 / 50, 0, 1.0 / 200);
+    autoAimController = new PIDController(0.06, 0, 0.001);
     autoAimController.enableContinuousInput(-180, 180);
   }
 
@@ -140,7 +147,7 @@ public class Shooter {
   private double speakerZ = 1.5;
   private double speakerToRobotDistanceOffset = 0.254; // GOD FUCKING DAMNIT TOM
 
-  public Command getAutoSpeakerShotCommand(SwerveSubsystem drivebase) {
+  public Command getAutoSpeakerShotCommand(Supplier<Translation2d> botTranslationSupplier) {
     // return none();
     return deadline(
             waitUntil(flywheel::isUpToSpeed).andThen(feeder.getFeedCommand().withTimeout(1)),
@@ -150,14 +157,14 @@ public class Shooter {
                         () ->
                             Optional.of(
                                 aimAtPosition(
-                                    drivebase,
+                                    botTranslationSupplier.get(),
                                     new Translation2d(
                                         Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0,
                                         speakerY))))),
             parallel(
                 pivot.getPivotCommand(
                     () -> {
-                      return aimAtHeight(drivebase, speakerZ);
+                      return aimAtHeight(botTranslationSupplier.get(), speakerZ);
                     }),
                 runOnce(() -> light.setColorValue(1705))))
         .finallyDo(
@@ -172,8 +179,8 @@ public class Shooter {
     return parallel(
         pivot.getPivotCommand(
             () -> {
-              Rotation2d targetAngle = aimAtHeight(drivebase, speakerZ);
-              if (Math.abs(pivot.getAngle().getDegrees() - targetAngle.getDegrees()) < 0.1) {
+              Rotation2d targetAngle = aimAtHeight(drivebase.getPose().getTranslation(), speakerZ);
+              if (Math.abs(pivot.getAngle().getDegrees() - targetAngle.getDegrees()) < 0.2) {
                 light.setColorValue(1465);
               } else {
                 light.setColor(Colors.GOLD);
@@ -187,36 +194,46 @@ public class Shooter {
               return aimToYaw(
                   drivebase,
                   aimAtPosition(
-                      drivebase,
+                      drivebase.getPose().getTranslation(),
                       new Translation2d(
                           Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0, speakerY)));
               // Michael was here
             }));
   }
 
-  private Rotation2d aimAtHeight(SwerveSubsystem drivebase, double height) {
+  private Rotation2d aimAtHeight(Translation2d currentBotPosition, double height) {
     double speakerX = Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0;
-    Translation2d currentBotPosition = drivebase.getPose().getTranslation();
     double targetDistance = currentBotPosition.getDistance(new Translation2d(speakerX, speakerY));
     targetDistance += speakerToRobotDistanceOffset;
     // Proportional fudge factor
     // Close: ~1.75 meters, ~ 1 degree higher aim
     // Far: ~3 meters, no fudge
-    double fudgeFactor =
-        MathUtil.interpolate(-0.75, 0, MathUtil.clamp((targetDistance - 1.75) / (3 - 1.75), 0, 1));
+    double fudgeFactor = MathUtil.interpolate(0, -.5, (targetDistance - 1.75) / (3 - 1.75));
     return new Rotation2d(
         Math.atan(height / targetDistance) + Radians.convertFrom(fudgeFactor, Degrees));
   }
 
   // ROBOT ROTATE MATH
-  private Rotation2d aimAtPosition(SwerveSubsystem drivebase, Translation2d position) {
-    Translation2d currentBotPosition = drivebase.getPose().getTranslation();
-    Rotation2d targetBotYaw = position.minus(currentBotPosition).getAngle();
+  private Rotation2d aimAtPosition(Translation2d currentBotPosition, Translation2d targetPosition) {
+    Rotation2d targetBotYaw = targetPosition.minus(currentBotPosition).getAngle();
     return targetBotYaw;
   }
 
   private double aimToYaw(SwerveSubsystem drivebase, Rotation2d targetBotYaw) {
     Rotation2d currentBotYaw = drivebase.getPose().getRotation();
-    return autoAimController.calculate(currentBotYaw.getDegrees(), targetBotYaw.getDegrees());
+    Logger.recordOutput("Shooter/autoAim/yawError", targetBotYaw.minus(currentBotYaw));
+    double pidOut =
+        autoAimController.calculate(currentBotYaw.getDegrees(), targetBotYaw.getDegrees())
+            * (drivebase.isSlowmode() ? 1 : Driving.SLOWMODE_MULTIPLIER);
+    Logger.recordOutput("Shooter/autoAim/pidOut", pidOut);
+    return pidOut;
+  }
+
+  public Command getClimbCommand() {
+    return climb.getClimbCommand();
+  }
+
+  public Command getUnclimbCommand() {
+    return climb.getUnclimbCommand();
   }
 }

@@ -14,9 +14,8 @@
 
 package frc.robot.subsystems.misc.interfaceLayers;
 
-import org.littletonrobotics.junction.AutoLog;
-
 import frc.robot.subsystems.misc.interfaceLayers.LightsIOBlinkin.Colors;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface LightsIO {
   @AutoLog
