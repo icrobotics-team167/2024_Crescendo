@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 1.4259262722800992,
-        "y": 6.142668542388984
+        "y": 4.957331457611016
       },
       "isLocked": false,
       "linkedName": "Start Point (Subwoofer)"
@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 1.43,
-        "y": 6.55
+        "y": 4.55
       },
       "prevControl": {
         "x": 1.43,
-        "y": 5.839937592936291
+        "y": 5.2600624070637085
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,7 +32,7 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
+    "maxVelocity": 1.0,
     "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 540.0
@@ -48,5 +48,5 @@
     "rotation": 180.0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
