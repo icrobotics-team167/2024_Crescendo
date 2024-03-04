@@ -81,7 +81,9 @@ public class ModuleIOSparkMax implements ModuleIO {
             new CANcoder(CANConstants.Drivebase.FRONT_LEFT_ENCODER, CANConstants.CANIVORE_NAME);
 
         drive_kS = 0;
-        drive_kV = 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
+        drive_kV =
+            12.984007025684262497741538719766
+                / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
         drive_kP = 2;
         drive_kD = 0.00;
 
@@ -98,7 +100,9 @@ public class ModuleIOSparkMax implements ModuleIO {
             new CANcoder(CANConstants.Drivebase.FRONT_RIGHT_ENCODER, CANConstants.CANIVORE_NAME);
 
         drive_kS = 0;
-        drive_kV = 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
+        drive_kV =
+            12.229149534069128388467724405323
+                / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
         drive_kP = 2;
         drive_kD = 0.00;
 
@@ -113,7 +117,9 @@ public class ModuleIOSparkMax implements ModuleIO {
             new CANcoder(CANConstants.Drivebase.BACK_LEFT_ENCODER, CANConstants.CANIVORE_NAME);
 
         drive_kS = 0;
-        drive_kV = 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
+        drive_kV =
+            13.238589093647430486949248563446
+                / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
         drive_kP = 2;
         drive_kD = 0.00;
 
@@ -129,7 +135,9 @@ public class ModuleIOSparkMax implements ModuleIO {
             new CANcoder(CANConstants.Drivebase.BACK_RIGHT_ENCODER, CANConstants.CANIVORE_NAME);
 
         drive_kS = 0;
-        drive_kV = 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
+        drive_kV =
+            12.229147971409063634201277485683
+                / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond);
         drive_kP = 2;
         drive_kD = 0.00;
 
