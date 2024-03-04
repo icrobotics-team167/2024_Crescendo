@@ -123,20 +123,20 @@
                           }
                         ]
                       }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Score top note"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Score in speaker"
+                      }
                     }
                   ]
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Score top note"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Score in speaker"
                 }
               }
             ]
