@@ -38,7 +38,9 @@ public interface ClimberIO {
 
   public default void climb() {}
 
-  public default void reset() {}
+  public default void raise() {}
+
+  public default void manualControl(double control) {}
 
   public default void stop() {}
 }

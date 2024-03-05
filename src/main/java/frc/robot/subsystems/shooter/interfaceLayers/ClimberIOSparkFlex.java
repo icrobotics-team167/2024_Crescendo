@@ -81,32 +81,37 @@ public class ClimberIOSparkFlex implements ClimberIO {
 
   @Override
   public void climb() {
-    if (getLeftAngle().getDegrees() < MIN_ANGLE && getLeftAngle().getDegrees() - MIN_ANGLE >= 0) {
-      leftMotor.stopMotor();
-    } else {
-      leftMotor.setVoltage(12 * fudgeFactor);
-    }
-
-    if (getRightAngle().getDegrees() < MIN_ANGLE && getRightAngle().getDegrees() - MIN_ANGLE >= 0) {
-      rightMotor.stopMotor();
-    } else {
-      rightMotor.setVoltage(12 * fudgeFactor);
-    }
+    manualControl(1);
   }
 
   @Override
-  public void reset() {
-    if (getLeftAngle().getDegrees() > MAX_ANGLE) {
+  public void raise() {
+    manualControl(-1);
+  }
+
+  @Override
+  public void manualControl(double control) {
+    if ((isTooLow(getLeftAngle().getDegrees()) && control < 0)
+        || (isTooHigh(getLeftAngle().getDegrees()) && control > 0)) {
       leftMotor.stopMotor();
     } else {
-      leftMotor.setVoltage(-6 * fudgeFactor);
+      leftMotor.setVoltage(control * 12 * fudgeFactor);
     }
 
-    if (getRightAngle().getDegrees() > MAX_ANGLE) {
+    if ((isTooLow(getRightAngle().getDegrees()) && control < 0)
+        || (isTooHigh(getRightAngle().getDegrees()) && control > 0)) {
       rightMotor.stopMotor();
     } else {
-      rightMotor.setVoltage(-6);
+      rightMotor.setVoltage(control * 12);
     }
+  }
+
+  private boolean isTooLow(double angleDegrees) {
+    return angleDegrees < MIN_ANGLE && angleDegrees - MIN_ANGLE >= 0;
+  }
+
+  private boolean isTooHigh(double angleDegrees) {
+    return angleDegrees > MAX_ANGLE;
   }
 
   @Override

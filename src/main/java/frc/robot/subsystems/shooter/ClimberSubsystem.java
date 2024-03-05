@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.shooter.interfaceLayers.ClimberIO;
 import frc.robot.subsystems.shooter.interfaceLayers.ClimberIOInputsAutoLogged;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class ClimberSubsystem extends SubsystemBase {
@@ -39,6 +40,10 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public Command getUnclimbCommand() {
-    return run(io::reset).finallyDo(io::stop);
+    return run(io::raise).finallyDo(io::stop);
+  }
+
+  public Command getClimberManualControlCommand(DoubleSupplier controlSupplier) {
+    return run(() -> io.manualControl(controlSupplier.getAsDouble())).finallyDo(io::stop);
   }
 }

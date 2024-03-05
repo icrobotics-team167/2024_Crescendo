@@ -139,6 +139,20 @@ public class RobotContainer {
                 Driving.Deadbands.PRIMARY_RIGHT_INNER,
                 Driving.Deadbands.PRIMARY_RIGHT_OUTER,
                 Driving.PRIMARY_DRIVER_EXPONENT);
+    DoubleSupplier secondaryLeftStickX =
+        () ->
+            MathUtils.inOutDeadband(
+                secondaryLeftStick.getX(),
+                Driving.Deadbands.SECONDARY_LEFT_INNER,
+                Driving.Deadbands.SECONDARY_LEFT_OUTER,
+                Driving.SECONDARY_DRIVER_EXPONENT);
+    DoubleSupplier secondaryRightStickX =
+        () ->
+            MathUtils.inOutDeadband(
+                secondaryRightStick.getX(),
+                Driving.Deadbands.SECONDARY_LEFT_INNER,
+                Driving.Deadbands.SECONDARY_LEFT_OUTER,
+                Driving.SECONDARY_DRIVER_EXPONENT);
     drivebase.setDefaultCommand(
         drivebase.getDriveCommand(primaryLeftStickY, primaryLeftStickX, primaryRightStickX));
 
@@ -151,8 +165,11 @@ public class RobotContainer {
         .trigger()
         .whileTrue(
             shooter.getTeleopAutoAimCommand(drivebase, primaryLeftStickY, primaryLeftStickX));
-    // primaryLeftStick.button(1).whileTrue(drivebase.getDriveSysIDURCL());
-    // primaryLeftStick.button(2).whileTrue(drivebase.getAzimuthSysIDURCL());
+
+    secondaryLeftStick.trigger().whileTrue(shooter.getManualControlCommand(secondaryLeftStickX));
+    // shooter.setPivotDefaultCommand(none());
+    secondaryLeftStick.button(3).whileTrue(shooter.getAutoAmpShotCommand());
+    secondaryLeftStick.button(4).whileTrue(shooter.getSourceIntakeCommand());
 
     secondaryRightStick.trigger().whileTrue(shooter.autoIntake());
     secondaryRightStick.button(3).whileTrue(shooter.feed());
@@ -161,20 +178,7 @@ public class RobotContainer {
 
     secondaryRightStick.button(7).whileTrue(shooter.getClimbCommand());
     secondaryRightStick.button(8).whileTrue(shooter.getUnclimbCommand());
-
-    secondaryLeftStick
-        .trigger()
-        .whileTrue(
-            shooter.getManualControlCommand(
-                () ->
-                    MathUtils.inOutDeadband(
-                        secondaryLeftStick.getY(),
-                        Driving.Deadbands.SECONDARY_LEFT_INNER,
-                        Driving.Deadbands.SECONDARY_LEFT_OUTER,
-                        Driving.SECONDARY_DRIVER_EXPONENT)));
-    // shooter.setPivotDefaultCommand(none());
-    secondaryLeftStick.button(3).whileTrue(shooter.getAutoAmpShotCommand());
-    secondaryLeftStick.button(4).whileTrue(shooter.getSourceIntakeCommand());
+    secondaryRightStick.button(10).whileTrue(shooter.getClimberManualControl(secondaryRightStickX));
   }
 
   /**
