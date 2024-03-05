@@ -69,10 +69,8 @@ public class VisionIOPhoton implements VisionIO {
     }
 
     EstimatedRobotPose botPoseEstimate = data.get();
-    // If multi-tag tracking fails and the pose ambiguity score of the single tag
-    // tracking is too large, stop.
-    if (botPoseEstimate.strategy != PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
-        && botPoseEstimate.targetsUsed.get(0).getPoseAmbiguity() > 0.2) {
+    // If multi-tag tracking fails, stop
+    if (botPoseEstimate.strategy != PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
       return;
     }
     // If the pose is outside the field, it's obviously a bad pose so stop.
