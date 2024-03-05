@@ -108,6 +108,7 @@ public class SwerveSubsystem extends SubsystemBase {
   /** If slowmode should be enabled or not. */
   private boolean slowmode = Driving.SLOWMODE_DEFAULT;
 
+  @SuppressWarnings("unused")
   public SwerveSubsystem(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
@@ -132,7 +133,9 @@ public class SwerveSubsystem extends SubsystemBase {
             VecBuilder.fill(2, 2, 1.5));
 
     // Start threads (no-op for each if no signals have been created)
-    PhoenixOdometryThread.getInstance().start();
+    if (Module.ODOMETRY_FREQUENCY > 50) {
+      PhoenixOdometryThread.getInstance().start();
+    }
 
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configureHolonomic(

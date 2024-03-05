@@ -222,8 +222,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     inputs.drivePosition = Meters.of(driveRelativeEncoder.getPosition());
     inputs.driveVelocity = MetersPerSecond.of(driveRelativeEncoder.getVelocity());
     inputs.driveAppliedOutput = driveOutput;
-    inputs.driveAppliedVoltage =
-        Volts.of(driveMotor.getBusVoltage() * driveMotor.getAppliedOutput());
+    inputs.driveAppliedVoltage = Volts.of(driveOutput);
     inputs.driveAppliedCurrent = Amps.of(driveMotor.getOutputCurrent());
 
     BaseStatusSignal.refreshAll(azimuthAbsolutePosition, azimuthVelocity);
@@ -231,8 +230,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         Rotation2d.fromRotations(azimuthAbsolutePosition.getValueAsDouble());
     inputs.azimuthVelocity = RotationsPerSecond.of(azimuthVelocity.getValueAsDouble());
     inputs.azimuthAppliedOutput = azimuthOutput;
-    inputs.azimuthAppliedVoltage =
-        Volts.of(azimuthMotor.getBusVoltage() * azimuthMotor.getAppliedOutput());
+    inputs.azimuthAppliedVoltage = Volts.of(azimuthOutput);
     inputs.azimuthAppliedCurrent = Amps.of(azimuthMotor.getOutputCurrent());
 
     // We don't do HF odometry on smaxes. Because REV.
