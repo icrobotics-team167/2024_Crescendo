@@ -318,6 +318,7 @@ public class SwerveSubsystem extends SubsystemBase {
   /** Resets the current odometry pose and also sets the gyro angle. */
   public void setPoseAndGyro(Pose2d pose) {
     gyroIO.setYaw(MathUtils.adjustRotation(pose.getRotation()));
+    rawGyroRotation = MathUtils.adjustRotation(pose.getRotation());
     setPose(pose);
   }
 
@@ -344,6 +345,10 @@ public class SwerveSubsystem extends SubsystemBase {
   /** Returns the maximum angular velocity of the drivebase. */
   public Measure<Velocity<Angle>> getMaxAngularVelocity() {
     return MAX_ANGULAR_SPEED;
+  }
+
+  public boolean isSlowmode() {
+    return slowmode;
   }
 
   /** Returns an array of module translations. */

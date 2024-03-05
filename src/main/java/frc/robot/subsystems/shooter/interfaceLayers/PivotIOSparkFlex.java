@@ -95,7 +95,7 @@ public class PivotIOSparkFlex implements PivotIO {
         Set.of(SparkUtils.Sensor.INTEGRATED),
         false);
 
-    anglePid = new PIDController(5, 0, 0.01);
+    anglePid = new PIDController(6, 0, 0.03);
 
     leaderPidController =
         new PIDController(
@@ -186,13 +186,17 @@ public class PivotIOSparkFlex implements PivotIO {
     setVelocityControl(RadiansPerSecond.of(0));
   }
 
-  /** Moving average filter to smooth out the noisy input. */
-  private LinearFilter angleFilter = LinearFilter.movingAverage(5);
+  /**
+   * Moving average filter to smooth out the noisy input. Measurements without any filtering are a
+   * burning pile of dogshit because REV, they built a encoder with far too much resolution to be
+   * useful and also didn't properly sync data clocks with the RIO.
+   */
+  private LinearFilter angleFilter = LinearFilter.movingAverage(4);
 
   /** Gets the angle of the pivot mechanism. */
   private Rotation2d getAngle() {
     // Actual offset + slight fudge factor
-    double rawAngle = encoder.getAbsolutePosition() - (195 / 360.0);
+    double rawAngle = encoder.getAbsolutePosition() - (193.5 / 360.0);
     return Rotation2d.fromRotations(angleFilter.calculate(rawAngle));
   }
 
