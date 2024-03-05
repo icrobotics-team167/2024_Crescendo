@@ -3,13 +3,12 @@
     {
       "x": -8,
       "y": -8,
-      "width": 1936,
-      "height": 1048,
+      "width": 1552,
+      "height": 840,
       "state": {
         "sidebar": {
           "width": 300,
           "expanded": [
-            "/FMSInfo",
             "/AdvantageKit/Shooter/pivot",
             "/AdvantageKit/Shooter/pivot/Angle",
             "/AdvantageKit/DriverStation/Joystick2/AxisTypes",
@@ -20,24 +19,42 @@
             "/AdvantageKit/RealOutputs/LoggedRobot",
             "/AdvantageKit/RealOutputs/Logger",
             "/AdvantageKit/RealOutputs/Shooter/pivot",
-            "/AdvantageKit/Drive/Front Left Module",
-            "/AdvantageKit/RealOutputs/SwerveStates/Setpoints",
-            "/AdvantageKit/RealOutputs/SwerveStates/Setpoints/0",
             "/AdvantageKit/RealOutputs/SwerveStates/Measured",
             "/AdvantageKit/RealOutputs/SwerveStates/Measured/0",
             "/AdvantageKit/RealOutputs/SwerveStates/DesiredChassisSpeeds",
-            "/AdvantageKit/Drive/Back Left Module",
             "/AdvantageKit/RealOutputs",
             "/AdvantageKit/RealOutputs/SwerveStates/Measured/0/angle",
             "/AdvantageKit/RealOutputs/SwerveStates/Setpoints/0/angle",
-            "/AdvantageKit",
             "/AdvantageKit/RealOutputs/Shooter",
             "/AdvantageKit/RealOutputs/Odometry/Robot",
-            "/AdvantageKit/Shooter/pivot/AngleSetpoint"
+            "/AdvantageKit/Shooter/pivot/AngleSetpoint",
+            "/AdvantageKit/Shooter",
+            "/AdvantageKit/RealOutputs/FlywheelSubsystem",
+            "/AdvantageKit/VisionPoseEstimator",
+            "/AdvantageKit/VisionPoseEstimator/Camera_Module_v1",
+            "/AdvantageKit/VisionPoseEstimator/Camera_Module_v1/PoseEstimate",
+            "/AdvantageKit/VisionPoseEstimator/Camera_Module_v1/PoseEstimate/translation",
+            "/AdvantageKit/Drive/Gyro/YawPosition",
+            "/AdvantageKit",
+            "/AdvantageKit/Shooter/climber/LeftAngle",
+            "/AdvantageKit/Shooter/climber/RightAngle",
+            "/PathPlanner/currentPose",
+            "/PathPlanner/targetPose",
+            "/AdvantageKit/RealOutputs/SwerveStates",
+            "/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized",
+            "/AdvantageKit/Drive",
+            "/AdvantageKit/RealOutputs/SwerveStates/Measured/1",
+            "/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized/3",
+            "/AdvantageKit/RealOutputs/SwerveStates/Setpoints/2",
+            "/AdvantageKit/RealOutputs/SwerveStates/Measured/2",
+            "/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized/2",
+            "/AdvantageKit/RealOutputs/SwerveStates/Measured/3",
+            "/AdvantageKit/RealOutputs/Shooter/autoAim",
+            "/AdvantageKit/RealOutputs/Shooter/autoAim/yawError"
           ]
         },
         "tabs": {
-          "selected": 4,
+          "selected": 6,
           "tabs": [
             {
               "type": 0,
@@ -124,7 +141,7 @@
                     },
                     {
                       "key": "NT:/AdvantageKit/Shooter/pivot/AngleSetpoint/value",
-                      "color": "#80588e",
+                      "color": "#e5b31b",
                       "show": true
                     }
                   ]
@@ -133,12 +150,12 @@
                   "fields": [
                     {
                       "key": "NT:/AdvantageKit/Shooter/pivot/IsTooFarDown",
-                      "color": "#e5b31b",
+                      "color": "#af2437",
                       "show": true
                     },
                     {
                       "key": "NT:/AdvantageKit/Shooter/pivot/IsTooFarUp",
-                      "color": "#af2437",
+                      "color": "#80588e",
                       "show": true
                     }
                   ]
@@ -156,10 +173,109 @@
             },
             {
               "type": 1,
-              "legendHeight": 0.15,
+              "legendHeight": 0.3,
+              "legends": {
+                "left": {
+                  "lockedRange": [
+                    -15,
+                    15
+                  ],
+                  "unitConversion": {
+                    "type": "angle",
+                    "factor": 1,
+                    "from": "radians",
+                    "to": "degrees"
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Shooter/autoAim/yawError/value",
+                      "color": "#2b66a2",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": [
+                    -2,
+                    2
+                  ],
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Shooter/autoAim/pidOut",
+                      "color": "#e5b31b",
+                      "show": true
+                    }
+                  ]
+                }
+              },
+              "title": "Autoaim Yaw"
+            },
+            {
+              "type": 1,
+              "legendHeight": 0.3,
               "legends": {
                 "left": {
                   "lockedRange": null,
+                  "unitConversion": {
+                    "type": "angle",
+                    "factor": 1,
+                    "from": "radians",
+                    "to": "degrees"
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/Shooter/climber/LeftAngle/value",
+                      "color": "#2b66a2",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/Shooter/climber/RightAngle/value",
+                      "color": "#e5b31b",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/Shooter/climber/RightVelocity",
+                      "color": "#af2437",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/Shooter/climber/LeftVelocity",
+                      "color": "#80588e",
+                      "show": true
+                    }
+                  ]
+                }
+              },
+              "title": "Climber Angles"
+            },
+            {
+              "type": 1,
+              "legendHeight": 0.15,
+              "legends": {
+                "left": {
+                  "lockedRange": [
+                    0,
+                    6000
+                  ],
                   "unitConversion": {
                     "type": "angular velocity",
                     "factor": 1,
@@ -180,25 +296,104 @@
                   ]
                 },
                 "discrete": {
-                  "fields": []
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/FlywheelSubsystem/IsUpToSpeed",
+                      "color": "#af2437",
+                      "show": true
+                    }
+                  ]
                 },
                 "right": {
-                  "lockedRange": null,
+                  "lockedRange": [
+                    0,
+                    6000
+                  ],
                   "unitConversion": {
                     "type": null,
                     "factor": 1
                   },
-                  "fields": []
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/Shooter/flywheel/VelocitySetpointRPM",
+                      "color": "#80588e",
+                      "show": true
+                    }
+                  ]
                 }
               },
               "title": "Flywheel Velocities"
             },
             {
-              "type": 5,
-              "uuid": "o4m4dy9d221vuvnxhlayefx75bi4lizt",
+              "type": 6,
+              "uuid": "ujhjvyts8mupcc50o8ftp3ajqvhizgbq",
               "fields": [],
               "listFields": [
                 [
+                  {
+                    "type": "Vision Target",
+                    "key": "NT:/AdvantageKit/VisionPoseEstimator/Camera_Module_v1/TrackedTags",
+                    "sourceTypeIndex": 2,
+                    "sourceType": "Pose3d[]"
+                  },
+                  {
+                    "type": "Axes",
+                    "key": "NT:/AdvantageKit/VisionPoseEstimator/Camera_Module_v1/TrackedTags",
+                    "sourceTypeIndex": 2,
+                    "sourceType": "Pose3d[]"
+                  }
+                ],
+                [
+                  {
+                    "type": "Robot",
+                    "key": "NT:/AdvantageKit/RealOutputs/Odometry/Robot",
+                    "sourceTypeIndex": 1,
+                    "sourceType": "Pose2d"
+                  }
+                ]
+              ],
+              "options": {
+                "field": "2024 Field",
+                "alliance": "blue",
+                "robot": "Crab Bot",
+                "unitDistance": "meters",
+                "unitRotation": "radians"
+              },
+              "configHidden": false,
+              "visualizer": {
+                "cameraIndex": -1,
+                "orbitFov": 50,
+                "cameraPosition": [
+                  0.7891826140577993,
+                  12.249957404284187,
+                  -7.3506639729462755
+                ],
+                "cameraTarget": [
+                  0.19468682317752614,
+                  0.46652365282793196,
+                  -1.4305910190318525
+                ]
+              },
+              "title": "3D Field"
+            },
+            {
+              "type": 5,
+              "uuid": "1xbwl5o1qpxv5djk0icokvm0agvbjuki",
+              "fields": [],
+              "listFields": [
+                [
+                  {
+                    "type": "Trajectory",
+                    "key": "NT:/PathPlanner/activePath",
+                    "sourceTypeIndex": 0,
+                    "sourceType": 5
+                  },
+                  {
+                    "type": "Ghost",
+                    "key": "NT:/PathPlanner/targetPose",
+                    "sourceTypeIndex": 0,
+                    "sourceType": 5
+                  },
                   {
                     "type": "Robot",
                     "key": "NT:/AdvantageKit/RealOutputs/Odometry/Robot",
@@ -219,7 +414,95 @@
               },
               "configHidden": false,
               "visualizer": null,
-              "title": "Odometry"
+              "title": "Pathplanner"
+            },
+            {
+              "type": 1,
+              "legendHeight": 0.3,
+              "legends": {
+                "left": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/Measured/0/speed",
+                      "color": "#2b66a2",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized/0/speed",
+                      "color": "#e5b31b",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/Measured/1/speed",
+                      "color": "#af2437",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized/1/speed",
+                      "color": "#80588e",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/Measured/2/speed",
+                      "color": "#e48b32",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized/2/speed",
+                      "color": "#aacaee",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/Measured/3/speed",
+                      "color": "#c0b487",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized/3/speed",
+                      "color": "#858584",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/Drive/Front Left Module/DriveAppliedVoltage",
+                      "color": "#3b875a",
+                      "show": false
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/Drive/Front Right Module/DriveAppliedVoltage",
+                      "color": "#d993aa",
+                      "show": false
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/Drive/Back Left Module/DriveAppliedVoltage",
+                      "color": "#eb987e",
+                      "show": false
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/Drive/Back Right Module/DriveAppliedVoltage",
+                      "color": "#5d4f92",
+                      "show": false
+                    }
+                  ]
+                }
+              },
+              "title": "Line Graph"
             },
             {
               "type": 9,
@@ -231,11 +514,15 @@
                   "sourceType": "SwerveModuleState[]"
                 },
                 {
-                  "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized",
+                  "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/Setpoints",
                   "sourceTypeIndex": 1,
                   "sourceType": "SwerveModuleState[]"
                 },
-                null
+                {
+                  "key": "NT:/AdvantageKit/Drive/Gyro/YawPosition/value",
+                  "sourceTypeIndex": 0,
+                  "sourceType": 2
+                }
               ],
               "listFields": [],
               "options": {
