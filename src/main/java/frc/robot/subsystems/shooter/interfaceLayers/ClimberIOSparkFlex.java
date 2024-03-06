@@ -42,7 +42,7 @@ public class ClimberIOSparkFlex implements ClimberIO {
   private double fudgeFactor = .906976;
 
   public ClimberIOSparkFlex() {
-    leftMotor = new CANSparkFlex(CANConstants.Shooter.CLIMBER_LEFT, MotorType.kBrushless);
+    leftMotor = new CANSparkFlex(Integer.MAX_VALUE, MotorType.kBrushless);
     rightMotor = new CANSparkFlex(CANConstants.Shooter.CLIMBER_RIGHT, MotorType.kBrushless);
     leftEncoder = new DutyCycleEncoder(1);
     rightEncoder = new DutyCycleEncoder(3);

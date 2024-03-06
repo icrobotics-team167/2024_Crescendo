@@ -70,7 +70,7 @@ public class RobotContainer {
                 new NoteDetectorIOTimeOfFlight(),
                 new IntakeIOTalonFX(),
                 new LightsIOBlinkin(),
-                new ClimberIOSparkFlex());
+                new ClimberIOTalonFX());
         // light = new LightSubsystem(new LightsIOBlinkin());
         break;
       default:
