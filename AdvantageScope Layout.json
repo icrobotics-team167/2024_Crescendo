@@ -54,7 +54,7 @@
           ]
         },
         "tabs": {
-          "selected": 6,
+          "selected": 13,
           "tabs": [
             {
               "type": 0,
@@ -364,9 +364,9 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  0.7891826140577993,
-                  12.249957404284187,
-                  -7.3506639729462755
+                  5.958848276770816,
+                  9.67473654957084,
+                  -8.929474801647013
                 ],
                 "cameraTarget": [
                   0.19468682317752614,
@@ -415,94 +415,6 @@
               "configHidden": false,
               "visualizer": null,
               "title": "Pathplanner"
-            },
-            {
-              "type": 1,
-              "legendHeight": 0.3,
-              "legends": {
-                "left": {
-                  "lockedRange": null,
-                  "unitConversion": {
-                    "type": null,
-                    "factor": 1
-                  },
-                  "fields": [
-                    {
-                      "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/Measured/0/speed",
-                      "color": "#2b66a2",
-                      "show": true
-                    },
-                    {
-                      "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized/0/speed",
-                      "color": "#e5b31b",
-                      "show": true
-                    },
-                    {
-                      "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/Measured/1/speed",
-                      "color": "#af2437",
-                      "show": true
-                    },
-                    {
-                      "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized/1/speed",
-                      "color": "#80588e",
-                      "show": true
-                    },
-                    {
-                      "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/Measured/2/speed",
-                      "color": "#e48b32",
-                      "show": true
-                    },
-                    {
-                      "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized/2/speed",
-                      "color": "#aacaee",
-                      "show": true
-                    },
-                    {
-                      "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/Measured/3/speed",
-                      "color": "#c0b487",
-                      "show": true
-                    },
-                    {
-                      "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized/3/speed",
-                      "color": "#858584",
-                      "show": true
-                    }
-                  ]
-                },
-                "discrete": {
-                  "fields": []
-                },
-                "right": {
-                  "lockedRange": null,
-                  "unitConversion": {
-                    "type": null,
-                    "factor": 1
-                  },
-                  "fields": [
-                    {
-                      "key": "NT:/AdvantageKit/Drive/Front Left Module/DriveAppliedVoltage",
-                      "color": "#3b875a",
-                      "show": false
-                    },
-                    {
-                      "key": "NT:/AdvantageKit/Drive/Front Right Module/DriveAppliedVoltage",
-                      "color": "#d993aa",
-                      "show": false
-                    },
-                    {
-                      "key": "NT:/AdvantageKit/Drive/Back Left Module/DriveAppliedVoltage",
-                      "color": "#eb987e",
-                      "show": false
-                    },
-                    {
-                      "key": "NT:/AdvantageKit/Drive/Back Right Module/DriveAppliedVoltage",
-                      "color": "#5d4f92",
-                      "show": false
-                    }
-                  ]
-                }
-              },
-              "title": "Line Graph"
             },
             {
               "type": 9,
