@@ -46,9 +46,7 @@ public class ClimberIOTalonFX implements ClimberIO {
   private double MIN_ANGLE = -10;
   private double MAX_ANGLE = 90;
 
-  // Left: 24.285 degrees per second per volt
-  // Right: 23.333 degrees per second per volt
-  private double fudgeFactor = .906976;
+  private double fudgeFactor = 1;
 
   public ClimberIOTalonFX() {
     leftMotor = new TalonFX(CANConstants.Shooter.CLIMBER_LEFT);
@@ -56,13 +54,6 @@ public class ClimberIOTalonFX implements ClimberIO {
     leftEncoder = new DutyCycleEncoder(1);
     rightEncoder = new DutyCycleEncoder(3);
 
-    // SparkUtils.configureSpark(leftMotor::restoreFactoryDefaults);
-    // SparkUtils.configureSpark(rightMotor::restoreFactoryDefaults);
-    // Timer.delay(0.2);
-    // SparkUtils.configureSpark(leftMotor::clearFaults);
-    // SparkUtils.configureSpark(rightMotor::clearFaults);
-    // SparkUtils.configureSpark(() -> leftMotor.setCANTimeout(250));
-    // SparkUtils.configureSpark(() -> rightMotor.setCANTimeout(250));
     configs.StatorCurrentLimit = 100;
     configs.StatorCurrentLimitEnable = true;
     configs.SupplyCurrentLimit = 90;
