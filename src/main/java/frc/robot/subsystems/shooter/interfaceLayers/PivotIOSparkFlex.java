@@ -95,7 +95,7 @@ public class PivotIOSparkFlex implements PivotIO {
         Set.of(SparkUtils.Sensor.INTEGRATED),
         false);
 
-    anglePid = new PIDController(6, 0, 0.03);
+    anglePid = new PIDController(5.5, 0, 0.03);
 
     leaderPidController =
         new PIDController(
