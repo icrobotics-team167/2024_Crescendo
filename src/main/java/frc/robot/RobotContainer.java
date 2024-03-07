@@ -160,6 +160,7 @@ public class RobotContainer {
     primaryLeftStick
         .trigger()
         .whileTrue(new StartEndCommand(drivebase::setSlowmode, drivebase::unsetSlowmode));
+    primaryLeftStick.button(2).whileTrue(drivebase.getAmpAlign(primaryLeftStickSide));
     // TODO: Undefault slow mode
     primaryRightStick.button(2).onTrue(new InstantCommand(drivebase::stopWithX));
     primaryRightStick
