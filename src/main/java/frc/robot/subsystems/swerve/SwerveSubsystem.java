@@ -326,6 +326,12 @@ public class SwerveSubsystem extends SubsystemBase {
     poseEstimator.resetPosition(gyroYaw, getModulePositions(), pose);
   }
 
+  public void resetGyro() {
+    gyroIO.setYaw(new Rotation2d());
+    rawGyroRotation = new Rotation2d();
+    poseEstimator.resetPosition(new Rotation2d(), getModulePositions(), getPose());
+  }
+
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
