@@ -139,10 +139,10 @@ public class RobotContainer {
                 Driving.Deadbands.PRIMARY_RIGHT_INNER,
                 Driving.Deadbands.PRIMARY_RIGHT_OUTER,
                 Driving.PRIMARY_DRIVER_EXPONENT);
-    DoubleSupplier secondaryLeftStickSide =
+    DoubleSupplier secondaryLeftStickForwards =
         () ->
             MathUtils.inOutDeadband(
-                secondaryLeftStick.getX(),
+                secondaryLeftStick.getY(),
                 Driving.Deadbands.SECONDARY_LEFT_INNER,
                 Driving.Deadbands.SECONDARY_LEFT_OUTER,
                 Driving.SECONDARY_DRIVER_EXPONENT);
@@ -169,7 +169,7 @@ public class RobotContainer {
             shooter.getTeleopAutoAimCommand(
                 drivebase, primaryLeftStickForward, primaryLeftStickSide));
 
-    secondaryLeftStick.trigger().whileTrue(shooter.getManualControlCommand(secondaryLeftStickSide));
+    secondaryLeftStick.trigger().whileTrue(shooter.getManualControlCommand(secondaryLeftStickForwards));
     // shooter.setPivotDefaultCommand(none());
     secondaryLeftStick.button(3).whileTrue(shooter.getAutoAmpShotCommand());
     secondaryLeftStick.button(4).whileTrue(shooter.getSourceIntakeCommand());
