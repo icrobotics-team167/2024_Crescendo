@@ -154,7 +154,8 @@ public class RobotContainer {
                 Driving.Deadbands.SECONDARY_LEFT_OUTER,
                 Driving.SECONDARY_DRIVER_EXPONENT);
     drivebase.setDefaultCommand(
-        drivebase.getDriveCommand(primaryLeftStickForward, primaryLeftStickSide, primaryRightStickSide));
+        drivebase.getDriveCommand(
+            primaryLeftStickForward, primaryLeftStickSide, primaryRightStickSide));
 
     primaryLeftStick
         .trigger()
@@ -164,7 +165,8 @@ public class RobotContainer {
     primaryRightStick
         .trigger()
         .whileTrue(
-            shooter.getTeleopAutoAimCommand(drivebase, primaryLeftStickForward, primaryLeftStickSide));
+            shooter.getTeleopAutoAimCommand(
+                drivebase, primaryLeftStickForward, primaryLeftStickSide));
 
     secondaryLeftStick.trigger().whileTrue(shooter.getManualControlCommand(secondaryLeftStickSide));
     // shooter.setPivotDefaultCommand(none());
@@ -178,7 +180,9 @@ public class RobotContainer {
 
     secondaryRightStick.button(7).whileTrue(shooter.getClimbCommand());
     secondaryRightStick.button(8).whileTrue(shooter.getUnclimbCommand());
-    secondaryRightStick.button(10).whileTrue(shooter.getClimberManualControl(secondaryRightStickForwards));
+    secondaryRightStick
+        .button(10)
+        .whileTrue(shooter.getClimberManualControl(secondaryRightStickForwards));
   }
 
   /**

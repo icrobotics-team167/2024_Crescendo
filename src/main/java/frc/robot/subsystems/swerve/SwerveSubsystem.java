@@ -391,11 +391,11 @@ public class SwerveSubsystem extends SubsystemBase {
         });
   }
 
-  private PIDController xController = new PIDController(5, 0, 0);
-  private PIDController yController = new PIDController(2, 0, 0);
+  private PIDController xController = new PIDController(2, 0, 0);
+  private PIDController yawController = new PIDController(1, 0, 0);
 
   public Command getAmpAlign(DoubleSupplier yInput) {
-    yController.enableContinuousInput(-180, 180);
+    yawController.enableContinuousInput(-Math.PI, Math.PI);
     return run(
         () -> {
           double targetX = 1.84;
@@ -407,7 +407,7 @@ public class SwerveSubsystem extends SubsystemBase {
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   xController.calculate(getPose().getX(), targetX),
                   yInput.getAsDouble(),
-                  yController.calculate(getPose().getRotation().getDegrees(), 90),
+                  yawController.calculate(getPose().getRotation().getRadians(), -Math.PI / 2),
                   rawGyroRotation));
         });
   }
