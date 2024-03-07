@@ -49,8 +49,8 @@ public class ClimberIOTalonFX implements ClimberIO {
   private double fudgeFactor = 1;
 
   public ClimberIOTalonFX() {
-    leftMotor = new TalonFX(CANConstants.Shooter.CLIMBER_LEFT);
-    rightMotor = new TalonFX(CANConstants.Shooter.CLIMBER_RIGHT);
+    leftMotor = new TalonFX(CANConstants.Shooter.CLIMBER_LEFT, CANConstants.CANIVORE_NAME);
+    rightMotor = new TalonFX(CANConstants.Shooter.CLIMBER_RIGHT, CANConstants.CANIVORE_NAME);
     leftEncoder = new DutyCycleEncoder(1);
     rightEncoder = new DutyCycleEncoder(3);
 
