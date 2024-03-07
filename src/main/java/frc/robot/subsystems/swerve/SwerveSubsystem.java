@@ -130,7 +130,7 @@ public class SwerveSubsystem extends SubsystemBase {
             lastModulePositions,
             new Pose2d(),
             VecBuilder.fill(0.15, 0.15, 0.1),
-            VecBuilder.fill(2, 2, 1.5));
+            VecBuilder.fill(1, 1, 0.5));
 
     // Start threads (no-op for each if no signals have been created)
     if (Module.ODOMETRY_FREQUENCY > 50) {
