@@ -118,43 +118,43 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    DoubleSupplier primaryLeftStickX =
+    DoubleSupplier primaryLeftStickSide =
         () ->
             MathUtils.inOutDeadband(
                 -primaryLeftStick.getX(),
                 Driving.Deadbands.PRIMARY_LEFT_INNER,
                 Driving.Deadbands.PRIMARY_LEFT_OUTER,
                 Driving.PRIMARY_DRIVER_EXPONENT);
-    DoubleSupplier primaryLeftStickY =
+    DoubleSupplier primaryLeftStickForward =
         () ->
             MathUtils.inOutDeadband(
                 -primaryLeftStick.getY(),
                 Driving.Deadbands.PRIMARY_LEFT_INNER,
                 Driving.Deadbands.PRIMARY_LEFT_OUTER,
                 Driving.PRIMARY_DRIVER_EXPONENT);
-    DoubleSupplier primaryRightStickX =
+    DoubleSupplier primaryRightStickSide =
         () ->
             MathUtils.inOutDeadband(
                 -primaryRightStick.getX(),
                 Driving.Deadbands.PRIMARY_RIGHT_INNER,
                 Driving.Deadbands.PRIMARY_RIGHT_OUTER,
                 Driving.PRIMARY_DRIVER_EXPONENT);
-    DoubleSupplier secondaryLeftStickX =
+    DoubleSupplier secondaryLeftStickSide =
         () ->
             MathUtils.inOutDeadband(
                 secondaryLeftStick.getX(),
                 Driving.Deadbands.SECONDARY_LEFT_INNER,
                 Driving.Deadbands.SECONDARY_LEFT_OUTER,
                 Driving.SECONDARY_DRIVER_EXPONENT);
-    DoubleSupplier secondaryRightStickX =
+    DoubleSupplier secondaryRightStickForwards =
         () ->
             MathUtils.inOutDeadband(
-                secondaryRightStick.getX(),
+                secondaryRightStick.getY(),
                 Driving.Deadbands.SECONDARY_LEFT_INNER,
                 Driving.Deadbands.SECONDARY_LEFT_OUTER,
                 Driving.SECONDARY_DRIVER_EXPONENT);
     drivebase.setDefaultCommand(
-        drivebase.getDriveCommand(primaryLeftStickY, primaryLeftStickX, primaryRightStickX));
+        drivebase.getDriveCommand(primaryLeftStickForward, primaryLeftStickSide, primaryRightStickSide));
 
     primaryLeftStick
         .trigger()
@@ -164,9 +164,9 @@ public class RobotContainer {
     primaryRightStick
         .trigger()
         .whileTrue(
-            shooter.getTeleopAutoAimCommand(drivebase, primaryLeftStickY, primaryLeftStickX));
+            shooter.getTeleopAutoAimCommand(drivebase, primaryLeftStickForward, primaryLeftStickSide));
 
-    secondaryLeftStick.trigger().whileTrue(shooter.getManualControlCommand(secondaryLeftStickX));
+    secondaryLeftStick.trigger().whileTrue(shooter.getManualControlCommand(secondaryLeftStickSide));
     // shooter.setPivotDefaultCommand(none());
     secondaryLeftStick.button(3).whileTrue(shooter.getAutoAmpShotCommand());
     secondaryLeftStick.button(4).whileTrue(shooter.getSourceIntakeCommand());
@@ -178,7 +178,7 @@ public class RobotContainer {
 
     secondaryRightStick.button(7).whileTrue(shooter.getClimbCommand());
     secondaryRightStick.button(8).whileTrue(shooter.getUnclimbCommand());
-    secondaryRightStick.button(10).whileTrue(shooter.getClimberManualControl(secondaryRightStickX));
+    secondaryRightStick.button(10).whileTrue(shooter.getClimberManualControl(secondaryRightStickForwards));
   }
 
   /**
