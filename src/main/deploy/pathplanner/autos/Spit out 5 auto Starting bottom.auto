@@ -18,6 +18,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
           "type": "race",
           "data": {
             "commands": [
@@ -35,6 +41,12 @@
                       "type": "path",
                       "data": {
                         "pathName": "Spit out bottom note"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.25
                       }
                     },
                     {
