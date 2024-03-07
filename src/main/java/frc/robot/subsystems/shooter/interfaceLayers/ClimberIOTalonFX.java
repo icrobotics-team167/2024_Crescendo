@@ -130,11 +130,13 @@ public class ClimberIOTalonFX implements ClimberIO {
   }
 
   private boolean isTooLow(double angleDegrees) {
-    return angleDegrees < MIN_ANGLE && angleDegrees - MIN_ANGLE >= 0;
+    return false;
+    // return angleDegrees < MIN_ANGLE && angleDegrees - MIN_ANGLE >= 0;
   }
 
   private boolean isTooHigh(double angleDegrees) {
-    return angleDegrees > MAX_ANGLE;
+    return false;
+    // return angleDegrees > MAX_ANGLE;
   }
 
   @Override
@@ -145,17 +147,19 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   private LinearFilter leftAngleFilter = LinearFilter.movingAverage(4);
 
-  // -146.79
   private Rotation2d getLeftAngle() {
-    double rawAngle = (-146.79 / 360.0) - leftEncoder.getAbsolutePosition();
+    double rawAngle = leftEncoder.getAbsolutePosition() - (-76.2 / 360.0);
     return Rotation2d.fromRadians(
         MathUtil.angleModulus(Units.rotationsToRadians(leftAngleFilter.calculate(rawAngle))));
   }
 
   private LinearFilter rightAngleFilter = LinearFilter.movingAverage(4);
 
+  // 0: -162.5
+  // 90: 106.1
+  // going up makes positive
   private Rotation2d getRightAngle() {
-    double rawAngle = rightEncoder.getAbsolutePosition() - (0 / 360.0);
+    double rawAngle = rightEncoder.getAbsolutePosition() - (-163.5 / 360.0);
     return Rotation2d.fromRadians(
         MathUtil.angleModulus(Units.rotationsToRadians(rightAngleFilter.calculate(rawAngle))));
   }
