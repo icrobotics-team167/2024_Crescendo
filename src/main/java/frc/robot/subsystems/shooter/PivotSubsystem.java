@@ -62,4 +62,8 @@ public class PivotSubsystem extends SubsystemBase {
   public Rotation2d getAngle() {
     return inputs.angle;
   }
+
+  public boolean isAtSetpoint() {
+    return Math.abs(inputs.angleSetpoint.getDegrees() - inputs.angle.getDegrees()) < 0.2;
+  }
 }

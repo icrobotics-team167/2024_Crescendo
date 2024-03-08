@@ -101,7 +101,7 @@ public class Shooter {
 
   public Command getAutoAmpShotCommand() {
     return deadline(
-            waitUntil(flywheel::isUpToSpeed).andThen(feeder.getFeedCommand().withTimeout(2)),
+            waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint()).andThen(feeder.getFeedCommand().withTimeout(2)),
             parallel( // Gets canceled when the above finishes
                 pivot.getPivotCommand(
                     () -> {
@@ -152,7 +152,7 @@ public class Shooter {
   public Command getAutoSpeakerShotCommand(Supplier<Translation2d> botTranslationSupplier) {
     // return none();
     return deadline(
-            waitUntil(flywheel::isUpToSpeed).andThen(feeder.getFeedCommand().withTimeout(1)),
+            waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint()).andThen(feeder.getFeedCommand().withTimeout(1)),
             runOnce(
                 () ->
                     PPHolonomicDriveController.setRotationTargetOverride(
@@ -182,7 +182,7 @@ public class Shooter {
         pivot.getPivotCommand(
             () -> {
               Rotation2d targetAngle = aimAtHeight(drivebase.getPose().getTranslation(), speakerZ);
-              if (Math.abs(pivot.getAngle().getDegrees() - targetAngle.getDegrees()) < 0.2) {
+              if (pivot.isAtSetpoint()) {
                 light.setColorValue(1465);
               } else {
                 light.setColor(Colors.GOLD);
