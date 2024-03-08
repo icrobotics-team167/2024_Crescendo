@@ -14,6 +14,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.race;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -103,7 +105,8 @@ public class RobotContainer {
     configureBindings();
     // System.out.println("Deploy directory: " + Filesystem.getDeployDirectory());
     autoSelector = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
-    autoSelector.addOption("1 note auto", shooter.getSubwooferShotCommand());
+    autoSelector.addOption(
+        "1 note auto", race(shooter.getSubwooferShotCommand(), shooter.getAutoSpinUp()));
   }
 
   /**
