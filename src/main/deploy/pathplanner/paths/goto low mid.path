@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 7.539924989759888,
-        "y": 2.403622825263669
+        "y": 2.43
       },
       "prevControl": {
         "x": 6.878045911211059,
-        "y": 2.403622825263669
+        "y": 2.43
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Scoring mainly middle auto",
+  "folder": "preload + 2 far auto",
   "previewStartingState": {
     "rotation": 138.36,
     "velocity": 0

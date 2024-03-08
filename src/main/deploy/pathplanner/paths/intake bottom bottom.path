@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 7.586148505630344,
-        "y": 0.785799769797738
+        "x": 7.753519355019709,
+        "y": 0.779980657348488
       },
       "prevControl": {
-        "x": 5.433076899407956,
-        "y": 0.8287294484327685
+        "x": 5.60044774879732,
+        "y": 0.8229103359835181
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Scoring mainly middle auto",
+  "folder": "preload + 2 far auto",
   "previewStartingState": {
     "rotation": 130.9597959815958,
     "velocity": 0
