@@ -229,14 +229,6 @@ public class Shooter {
     return pidOut;
   }
 
-  public Command getClimbCommand() {
-    return climb.getClimbCommand();
-  }
-
-  public Command getUnclimbCommand() {
-    return climb.getUnclimbCommand();
-  }
-
   public Command getClimberManualControl(DoubleSupplier climberControl) {
     return climb.getClimberManualControlCommand(climberControl);
   }

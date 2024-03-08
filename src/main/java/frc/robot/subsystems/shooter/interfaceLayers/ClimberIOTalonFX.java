@@ -23,6 +23,7 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -46,7 +47,7 @@ public class ClimberIOTalonFX implements ClimberIO {
   private double MIN_ANGLE = -10;
   private double MAX_ANGLE = 90;
 
-  private double fudgeFactor = 1;
+  private PIDController leftPIDs = new PIDController(0, 0, 0);
 
   public ClimberIOTalonFX() {
     leftMotor = new TalonFX(CANConstants.Shooter.CLIMBER_LEFT, CANConstants.CANIVORE_NAME);
@@ -103,40 +104,18 @@ public class ClimberIOTalonFX implements ClimberIO {
   }
 
   @Override
-  public void climb() {
-    manualControl(1);
-  }
-
-  @Override
-  public void raise() {
-    manualControl(-1);
-  }
-
-  @Override
   public void manualControl(double control) {
-    if ((isTooLow(getLeftAngle().getDegrees()) && control < 0)
-        || (isTooHigh(getLeftAngle().getDegrees()) && control > 0)) {
-      leftMotor.stopMotor();
-    } else {
-      leftMotor.setVoltage(control * 12 * fudgeFactor);
-    }
-
-    if ((isTooLow(getRightAngle().getDegrees()) && control < 0)
-        || (isTooHigh(getRightAngle().getDegrees()) && control > 0)) {
-      rightMotor.stopMotor();
-    } else {
-      rightMotor.setVoltage(control * 12);
-    }
+    
   }
 
   private boolean isTooLow(double angleDegrees) {
-    return false;
-    // return angleDegrees < MIN_ANGLE && angleDegrees - MIN_ANGLE >= 0;
+    // return false;
+    return angleDegrees < MIN_ANGLE && angleDegrees - MIN_ANGLE >= 0;
   }
 
   private boolean isTooHigh(double angleDegrees) {
-    return false;
-    // return angleDegrees > MAX_ANGLE;
+    // return false;
+    return angleDegrees > MAX_ANGLE;
   }
 
   @Override

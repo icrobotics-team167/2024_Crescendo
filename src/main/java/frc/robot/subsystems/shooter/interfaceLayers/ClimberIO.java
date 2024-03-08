@@ -36,10 +36,6 @@ public interface ClimberIO {
 
   public default void updateInputs(ClimberIOInputs inputs) {}
 
-  public default void climb() {}
-
-  public default void raise() {}
-
   public default void manualControl(double control) {}
 
   public default void stop() {}

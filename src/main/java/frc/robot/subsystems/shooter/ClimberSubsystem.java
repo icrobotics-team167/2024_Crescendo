@@ -35,14 +35,6 @@ public class ClimberSubsystem extends SubsystemBase {
     Logger.processInputs("Shooter/climber", inputs);
   }
 
-  public Command getClimbCommand() {
-    return run(io::climb).finallyDo(io::stop);
-  }
-
-  public Command getUnclimbCommand() {
-    return run(io::raise).finallyDo(io::stop);
-  }
-
   public Command getClimberManualControlCommand(DoubleSupplier controlSupplier) {
     return run(() -> io.manualControl(controlSupplier.getAsDouble())).finallyDo(io::stop);
   }
