@@ -194,7 +194,7 @@ public class Shooter {
   public Command getSubwooferShotCommand() {
     return pivot.getPivotCommand(
         () -> {
-          Rotation2d targetAngle = Rotation2d.fromDegrees(48.4);
+          Rotation2d targetAngle = Rotation2d.fromDegrees(49);
           if (Math.abs(pivot.getAngle().getDegrees() - targetAngle.getDegrees()) < 0.2) {
             light.setColorValue(1465);
           } else {

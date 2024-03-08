@@ -105,7 +105,7 @@ public class RobotContainer {
     autoSelector = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
     autoSelector.addOption(
         "1 note auto",
-        shooter.getAutoSpeakerShotCommand(() -> drivebase.getPose().getTranslation()));
+        shooter.getSubwooferShotCommand());
   }
 
   /**
