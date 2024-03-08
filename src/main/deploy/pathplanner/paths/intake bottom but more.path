@@ -46,7 +46,7 @@
   "folder": "Scoring mainly middle auto",
   "previewStartingState": {
     "rotation": 180.0,
-    "velocity": 0
+    "velocity": 2.0
   },
   "useDefaultConstraints": false
 }

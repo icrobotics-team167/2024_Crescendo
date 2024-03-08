@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.6077820263748634,
-        "y": 1.2665243348504724
+        "x": 5.6768208548293595,
+        "y": 0.6727333169630714
       },
       "isLocked": false,
       "linkedName": "Shoot down under"
@@ -20,8 +20,8 @@
         "y": 2.403622825263669
       },
       "prevControl": {
-        "x": 6.171708919994416,
-        "y": 1.6455571649882046
+        "x": 6.40752913751629,
+        "y": 2.403622825263669
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,7 +38,7 @@
     "maxAngularAcceleration": 540.0
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 2.0,
     "rotation": 180.0,
     "rotateFast": false
   },
