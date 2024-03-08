@@ -23,6 +23,7 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -44,10 +45,14 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final StatusSignal<Double> leftVelocity;
   private final StatusSignal<Double> rightVelocity;
 
-  private double MIN_ANGLE = -10;
-  private double MAX_ANGLE = 90;
+  private double MIN_ANGLE_DEGREES = -10;
+  private double MAX_ANGLE_DEGREES = 90;
 
   private PIDController leftPIDs = new PIDController(0, 0, 0);
+  private PIDController rightPIDs = new PIDController(0, 0, 0);
+
+  private double left_kG = 0;
+  private double right_kG = 0;
 
   public ClimberIOTalonFX() {
     leftMotor = new TalonFX(CANConstants.Shooter.CLIMBER_LEFT, CANConstants.CANIVORE_NAME);
@@ -78,14 +83,6 @@ public class ClimberIOTalonFX implements ClimberIO {
     rightCurrent = rightMotor.getStatorCurrent();
     leftVelocity = leftMotor.getVelocity();
     rightVelocity = rightMotor.getVelocity();
-
-    // SparkUtils.configureSpark(() -> leftMotor.setIdleMode(IdleMode.kBrake));
-    // SparkUtils.configureSpark(() -> rightMotor.setIdleMode(IdleMode.kBrake));
-
-    // SparkUtils.configureSpark(() -> leftMotor.setSmartCurrentLimit(80));
-    // SparkUtils.configureSpark(() -> leftMotor.setSecondaryCurrentLimit(100));
-    // SparkUtils.configureSpark(() -> rightMotor.setSmartCurrentLimit(80));
-    // SparkUtils.configureSpark(() -> rightMotor.setSecondaryCurrentLimit(100));
   }
 
   @Override
@@ -105,17 +102,44 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   @Override
   public void manualControl(double control) {
+    control = MathUtil.clamp(control, 0, 1);
+    Rotation2d angleSetpoint = Rotation2d.fromDegrees(control * (MAX_ANGLE_DEGREES - MIN_ANGLE_DEGREES) - MIN_ANGLE_DEGREES);
+    Rotation2d leftAngle = getLeftAngle();
+    Rotation2d rightAngle = getRightAngle();
     
+    double leftOutput = leftPIDs.calculate(leftAngle.getDegrees(), angleSetpoint.getDegrees());
+    double rightOutput = rightPIDs.calculate(rightAngle.getDegrees(), angleSetpoint.getDegrees());
+
+    if (leftOutput < 0 && isTooLow(leftAngle.getDegrees())) {
+      leftOutput = 0;
+    }
+    if (leftOutput > 0 && isTooHigh(leftAngle.getDegrees())) {
+      leftOutput = 0;
+    }
+    if (rightOutput < 0 && isTooLow(rightAngle.getDegrees())) {
+      rightOutput = 0;
+    }
+    if (rightOutput > 0 && isTooHigh(rightAngle.getDegrees())) {
+      rightOutput = 0;
+    }
+
+    if (angleSetpoint.getDegrees() != MIN_ANGLE_DEGREES) {
+      leftOutput += left_kG * Math.cos(angleSetpoint.getRadians() + Radians.convertFrom(MIN_ANGLE_DEGREES, Degrees));
+      rightOutput += left_kG * Math.cos(angleSetpoint.getDegrees() + Radians.convertFrom(MIN_ANGLE_DEGREES, Degrees));
+    }
+
+    leftMotor.setVoltage(leftOutput);
+    rightMotor.setVoltage(rightOutput);
   }
 
   private boolean isTooLow(double angleDegrees) {
     // return false;
-    return angleDegrees < MIN_ANGLE && angleDegrees - MIN_ANGLE >= 0;
+    return angleDegrees < MIN_ANGLE_DEGREES && angleDegrees - MIN_ANGLE_DEGREES >= 0;
   }
 
   private boolean isTooHigh(double angleDegrees) {
     // return false;
-    return angleDegrees > MAX_ANGLE;
+    return angleDegrees > MAX_ANGLE_DEGREES;
   }
 
   @Override
