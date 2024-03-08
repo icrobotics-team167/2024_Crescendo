@@ -80,12 +80,14 @@ public class Shooter {
   }
 
   public Command intakeOut() {
-    return intake.getIntakeOutCommand().alongWith(feeder.getUnfeedCommand());
+    return parallel(
+        intake.getIntakeOutCommand(), feeder.getUnfeedCommand(), flywheel.getSourceIntakeCommand());
   }
 
   public Command autoIntake() {
     return parallel(intake.getIntakeCommand(), feeder.getFeedCommand())
         .until(noteDetector::hasNote)
+        .andThen(feeder.getUnfeedCommand().withTimeout(.5))
         .finallyDo(() -> light.setColor(Colors.GOLD));
   }
 
