@@ -208,6 +208,7 @@ public class Shooter {
     // Proportional fudge factor
     // Close: ~1 meters, ~ .5 degree lower aim
     // Far: ~3 meters, ~ 0.75 degree lower aim
+    //lower number go up, bigger number go down
     double fudgeFactor = MathUtil.interpolate(-.5, -.75, (targetDistance - 1) / (3 - 1));
     return new Rotation2d(
         Math.atan(height / targetDistance) + Radians.convertFrom(fudgeFactor, Degrees));
