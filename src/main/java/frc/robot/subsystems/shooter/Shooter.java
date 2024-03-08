@@ -212,9 +212,8 @@ public class Shooter {
     targetDistance += speakerToRobotDistanceOffset;
     // Proportional fudge factor
     // Close: ~1 meters, ~ 2.5 degree higher aim
-    // Far: ~3 meters, ~ 5.5 degree higher aim
-    double fudgeFactor = MathUtil.interpolate(2.5, 5.75, (targetDistance - 1) / (3 - 1));
-    // lets hope this works. YOLO
+    // Far: ~3 meters, ~ 5.9 degree higher aim
+    double fudgeFactor = MathUtil.interpolate(2.5, 5.9, (targetDistance - 1) / (3 - 1));
     return new Rotation2d(
         Math.atan(height / targetDistance) + Radians.convertFrom(fudgeFactor, Degrees));
   }

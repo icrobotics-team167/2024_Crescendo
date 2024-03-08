@@ -103,9 +103,7 @@ public class RobotContainer {
     configureBindings();
     // System.out.println("Deploy directory: " + Filesystem.getDeployDirectory());
     autoSelector = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
-    autoSelector.addOption(
-        "1 note auto",
-        shooter.getSubwooferShotCommand());
+    autoSelector.addOption("1 note auto", shooter.getSubwooferShotCommand());
   }
 
   /**
