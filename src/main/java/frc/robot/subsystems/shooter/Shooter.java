@@ -201,15 +201,27 @@ public class Shooter {
             }));
   }
 
+  public Command getSubwooferShotCommand() {
+    return pivot.getPivotCommand(
+        () -> {
+          Rotation2d targetAngle = Rotation2d.fromDegrees(54);
+          if (Math.abs(pivot.getAngle().getDegrees() - targetAngle.getDegrees()) < 0.2) {
+            light.setColorValue(1465);
+          } else {
+            light.setColor(Colors.GOLD);
+          }
+          return targetAngle;
+        });
+  }
+
   private Rotation2d aimAtHeight(Translation2d currentBotPosition, double height) {
     double speakerX = Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0;
     double targetDistance = currentBotPosition.getDistance(new Translation2d(speakerX, speakerY));
     targetDistance += speakerToRobotDistanceOffset;
     // Proportional fudge factor
-    // Close: ~1 meters, ~ .5 degree lower aim
+    // Close: ~1 meters, ~ 2.5 degree higher aim
     // Far: ~3 meters, ~ 0.75 degree lower aim
-    // lower number go up, bigger number go down
-    double fudgeFactor = MathUtil.interpolate(-.5, -.75, (targetDistance - 1) / (3 - 1));
+    double fudgeFactor = MathUtil.interpolate(2.5, -.75, (targetDistance - 1) / (3 - 1));
     return new Rotation2d(
         Math.atan(height / targetDistance) + Radians.convertFrom(fudgeFactor, Degrees));
   }
