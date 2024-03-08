@@ -162,6 +162,7 @@ public class RobotContainer {
         .whileTrue(new StartEndCommand(drivebase::setSlowmode, drivebase::unsetSlowmode));
     primaryLeftStick.button(2).whileTrue(drivebase.getAmpAlign(primaryLeftStickSide));
     primaryLeftStick.button(3).onTrue(new InstantCommand(drivebase::resetGyro));
+    primaryRightStick.button(4).whileTrue(shooter.getSubwooferShotCommand());
     // TODO: Undefault slow mode
     primaryRightStick.button(2).onTrue(new InstantCommand(drivebase::stopWithX));
     primaryRightStick
@@ -177,7 +178,6 @@ public class RobotContainer {
     // shooter.setPivotDefaultCommand(shooter.getPivotRestingPositionCommand());
     secondaryLeftStick.button(3).whileTrue(shooter.getAutoAmpShotCommand());
     secondaryLeftStick.button(4).whileTrue(shooter.getSourceIntakeCommand());
-    secondaryLeftStick.button(10).whileTrue(shooter.getSubwooferShotCommand());
 
     secondaryRightStick.trigger().whileTrue(shooter.autoIntake());
     secondaryRightStick.button(3).whileTrue(shooter.feed());

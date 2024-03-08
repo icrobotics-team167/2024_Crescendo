@@ -206,7 +206,7 @@ public class Shooter {
   public Command getSubwooferShotCommand() {
     return pivot.getPivotCommand(
         () -> {
-          Rotation2d targetAngle = Rotation2d.fromDegrees(54);
+          Rotation2d targetAngle = Rotation2d.fromDegrees(48.4);
           if (Math.abs(pivot.getAngle().getDegrees() - targetAngle.getDegrees()) < 0.2) {
             light.setColorValue(1465);
           } else {
@@ -216,6 +216,8 @@ public class Shooter {
         });
   }
 
+  // 48.4 degrees for at subwoofer measured 47.3
+  // 32 degrees for at podium
   private Rotation2d aimAtHeight(Translation2d currentBotPosition, double height) {
     double speakerX = Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0;
     double targetDistance = currentBotPosition.getDistance(new Translation2d(speakerX, speakerY));
@@ -223,7 +225,8 @@ public class Shooter {
     // Proportional fudge factor
     // Close: ~1 meters, ~ 2.5 degree higher aim
     // Far: ~3 meters, ~ 0.75 degree lower aim
-    double fudgeFactor = MathUtil.interpolate(2.5, 5, (targetDistance - 1) / (3 - 1));
+    double fudgeFactor = MathUtil.interpolate(2.5, 6.1, (targetDistance - 1) / (3 - 1));
+    // lets hope this works. YOLO
     return new Rotation2d(
         Math.atan(height / targetDistance) + Radians.convertFrom(fudgeFactor, Degrees));
   }
