@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.9992036740830232,
-        "y": 2.292686387174577
+        "x": 3.3758779156513192,
+        "y": 2.544686894599444
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.6768208548293595,
-        "y": 0.6727333169630714
+        "x": 6.10581021637103,
+        "y": 0.9359767888181875
       },
       "isLocked": false,
       "linkedName": "Shoot down under"
@@ -20,7 +20,7 @@
         "y": 2.403622825263669
       },
       "prevControl": {
-        "x": 6.40752913751629,
+        "x": 6.878045911211059,
         "y": 2.403622825263669
       },
       "nextControl": null,
@@ -32,20 +32,20 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
+    "maxVelocity": 3.0,
     "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 540.0
   },
   "goalEndState": {
-    "velocity": 2.0,
+    "velocity": 1.0,
     "rotation": 180.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Scoring mainly middle auto",
   "previewStartingState": {
-    "rotation": 154.85521436932098,
+    "rotation": 138.36,
     "velocity": 0
   },
   "useDefaultConstraints": false
