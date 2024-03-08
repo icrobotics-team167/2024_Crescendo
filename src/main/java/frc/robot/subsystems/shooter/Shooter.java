@@ -85,7 +85,6 @@ public class Shooter {
   public Command autoIntake() {
     return parallel(intake.getIntakeCommand(), feeder.getFeedCommand())
         .until(noteDetector::hasNote)
-        .andThen(feeder.getUnfeedCommand().withTimeout(.5))
         .finallyDo(() -> light.setColor(Colors.GOLD));
   }
 
@@ -213,8 +212,8 @@ public class Shooter {
     targetDistance += speakerToRobotDistanceOffset;
     // Proportional fudge factor
     // Close: ~1 meters, ~ 2.5 degree higher aim
-    // Far: ~3 meters, ~ 6.1 degree higher aim
-    double fudgeFactor = MathUtil.interpolate(2.5, 6.1, (targetDistance - 1) / (3 - 1));
+    // Far: ~3 meters, ~ 5.5 degree higher aim
+    double fudgeFactor = MathUtil.interpolate(2.5, 5.5, (targetDistance - 1) / (3 - 1));
     // lets hope this works. YOLO
     return new Rotation2d(
         Math.atan(height / targetDistance) + Radians.convertFrom(fudgeFactor, Degrees));
