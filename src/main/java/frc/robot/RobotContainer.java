@@ -95,7 +95,7 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Score in speaker",
         shooter.getAutoSpeakerShotCommand(() -> drivebase.getPose().getTranslation()));
-    NamedCommands.registerCommand("Intake", shooter.autoIntake().withTimeout(3));
+    NamedCommands.registerCommand("Intake", shooter.autoIntake());
     NamedCommands.registerCommand("Intake Out", shooter.intakeOut());
     NamedCommands.registerCommand("Spin up flywheel", shooter.getAutoSpinUp());
 
