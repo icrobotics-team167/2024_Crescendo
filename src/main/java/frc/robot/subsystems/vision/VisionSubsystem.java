@@ -71,12 +71,4 @@ public class VisionSubsystem extends SubsystemBase {
       }
     }
   }
-
-  public double getTX() {
-    return cameraData[0].tX;
-  }
-
-  public double getTY() {
-    return cameraData[0].tY;
-  }
 }
