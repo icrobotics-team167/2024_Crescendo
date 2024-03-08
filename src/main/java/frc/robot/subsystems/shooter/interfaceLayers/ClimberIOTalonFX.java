@@ -23,7 +23,6 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -103,10 +102,12 @@ public class ClimberIOTalonFX implements ClimberIO {
   @Override
   public void manualControl(double control) {
     control = MathUtil.clamp(control, 0, 1);
-    Rotation2d angleSetpoint = Rotation2d.fromDegrees(control * (MAX_ANGLE_DEGREES - MIN_ANGLE_DEGREES) - MIN_ANGLE_DEGREES);
+    Rotation2d angleSetpoint =
+        Rotation2d.fromDegrees(
+            control * (MAX_ANGLE_DEGREES - MIN_ANGLE_DEGREES) - MIN_ANGLE_DEGREES);
     Rotation2d leftAngle = getLeftAngle();
     Rotation2d rightAngle = getRightAngle();
-    
+
     double leftOutput = leftPIDs.calculate(leftAngle.getDegrees(), angleSetpoint.getDegrees());
     double rightOutput = rightPIDs.calculate(rightAngle.getDegrees(), angleSetpoint.getDegrees());
 
@@ -124,8 +125,14 @@ public class ClimberIOTalonFX implements ClimberIO {
     }
 
     if (angleSetpoint.getDegrees() != MIN_ANGLE_DEGREES) {
-      leftOutput += left_kG * Math.cos(angleSetpoint.getRadians() + Radians.convertFrom(MIN_ANGLE_DEGREES, Degrees));
-      rightOutput += left_kG * Math.cos(angleSetpoint.getDegrees() + Radians.convertFrom(MIN_ANGLE_DEGREES, Degrees));
+      leftOutput +=
+          left_kG
+              * Math.cos(
+                  angleSetpoint.getRadians() + Radians.convertFrom(MIN_ANGLE_DEGREES, Degrees));
+      rightOutput +=
+          right_kG
+              * Math.cos(
+                  angleSetpoint.getDegrees() + Radians.convertFrom(MIN_ANGLE_DEGREES, Degrees));
     }
 
     leftMotor.setVoltage(leftOutput);
