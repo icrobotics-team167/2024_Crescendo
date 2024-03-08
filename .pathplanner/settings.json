@@ -3,7 +3,7 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "preload + 1 close from the side auto",
+    "Scoring mainly middle auto",
     "Spit out 4 auto",
     "Spit out 5 auto",
     "preload + 1 close + 1 far note auto",

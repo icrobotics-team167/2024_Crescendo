@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.9992036740830232,
+        "y": 2.292686387174577
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.6077820263748634,
+        "y": 1.2665243348504724
+      },
+      "isLocked": false,
+      "linkedName": "Shoot down under"
+    },
+    {
+      "anchor": {
+        "x": 7.539924989759888,
+        "y": 2.403622825263669
+      },
+      "prevControl": {
+        "x": 6.171708919994416,
+        "y": 1.6455571649882046
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "goto low mid"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 540.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Scoring mainly middle auto",
+  "previewStartingState": {
+    "rotation": 154.85521436932098,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}
