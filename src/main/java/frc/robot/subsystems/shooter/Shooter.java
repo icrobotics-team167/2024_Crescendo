@@ -19,7 +19,6 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -38,7 +37,6 @@ import frc.robot.subsystems.shooter.interfaceLayers.IntakeIO;
 import frc.robot.subsystems.shooter.interfaceLayers.NoteDetectorIO;
 import frc.robot.subsystems.shooter.interfaceLayers.PivotIO;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
-import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -101,7 +99,8 @@ public class Shooter {
 
   public Command getAutoAmpShotCommand() {
     return deadline(
-            waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint()).andThen(feeder.getFeedCommand().withTimeout(2)),
+            waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint())
+                .andThen(feeder.getFeedCommand().withTimeout(2)),
             parallel( // Gets canceled when the above finishes
                 pivot.getPivotCommand(
                     () -> {
@@ -152,17 +151,8 @@ public class Shooter {
   public Command getAutoSpeakerShotCommand(Supplier<Translation2d> botTranslationSupplier) {
     // return none();
     return deadline(
-            waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint()).andThen(feeder.getFeedCommand().withTimeout(1)),
-            runOnce(
-                () ->
-                    PPHolonomicDriveController.setRotationTargetOverride(
-                        () ->
-                            Optional.of(
-                                aimAtPosition(
-                                    botTranslationSupplier.get(),
-                                    new Translation2d(
-                                        Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0,
-                                        speakerY))))),
+            waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint())
+                .andThen(feeder.getFeedCommand().withTimeout(1)),
             parallel(
                 pivot.getPivotCommand(
                     () -> {
@@ -172,7 +162,6 @@ public class Shooter {
         .finallyDo(
             () -> {
               light.setColor(Colors.GREEN);
-              PPHolonomicDriveController.setRotationTargetOverride(() -> Optional.empty());
             });
   }
 
@@ -224,7 +213,7 @@ public class Shooter {
     targetDistance += speakerToRobotDistanceOffset;
     // Proportional fudge factor
     // Close: ~1 meters, ~ 2.5 degree higher aim
-    // Far: ~3 meters, ~ 0.75 degree lower aim
+    // Far: ~3 meters, ~ 6.1 degree higher aim
     double fudgeFactor = MathUtil.interpolate(2.5, 6.1, (targetDistance - 1) / (3 - 1));
     // lets hope this works. YOLO
     return new Rotation2d(

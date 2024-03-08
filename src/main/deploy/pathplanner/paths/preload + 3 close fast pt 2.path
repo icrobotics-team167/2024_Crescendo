@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.216128157434463,
-        "y": 7.012243186433546
+        "x": 4.196128157434464,
+        "y": 6.977602170282168
       },
       "isLocked": false,
       "linkedName": "preload + 3 close fast pt 1-2"
@@ -20,7 +20,7 @@
         "y": 6.990576641485824
       },
       "prevControl": {
-        "x": 3.388390004808514,
+        "x": 3.888390004808514,
         "y": 6.990576641485824
       },
       "nextControl": null,
@@ -33,7 +33,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 540.0
   },
@@ -48,5 +48,5 @@
     "rotation": 180.0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

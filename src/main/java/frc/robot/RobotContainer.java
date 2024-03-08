@@ -174,14 +174,13 @@ public class RobotContainer {
     secondaryLeftStick
         .trigger()
         .whileTrue(shooter.getManualControlCommand(secondaryLeftStickForwards));
-    secondaryLeftStick.button(2).whileTrue(shooter.getPivotRestingPositionCommand());
+    secondaryLeftStick.button(2).whileTrue(shooter.intakeOut());
     // shooter.setPivotDefaultCommand(shooter.getPivotRestingPositionCommand());
     secondaryLeftStick.button(3).whileTrue(shooter.getAutoAmpShotCommand());
     secondaryLeftStick.button(4).whileTrue(shooter.getSourceIntakeCommand());
 
     secondaryRightStick.trigger().whileTrue(shooter.autoIntake());
     secondaryRightStick.button(3).whileTrue(shooter.feed());
-    secondaryRightStick.button(4).whileTrue(shooter.intakeOut());
     secondaryRightStick.button(2).whileTrue(shooter.shoot());
 
     secondaryRightStick
