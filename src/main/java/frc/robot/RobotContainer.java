@@ -106,7 +106,8 @@ public class RobotContainer {
     // System.out.println("Deploy directory: " + Filesystem.getDeployDirectory());
     autoSelector = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
     autoSelector.addOption(
-        "The One Piece is real", race(shooter.getSubwooferShotCommand(), shooter.getFlywheelSpinUp()));
+        "The One Piece is real",
+        race(shooter.getSubwooferShotCommand(), shooter.getFlywheelSpinUp()));
   }
 
   /**
