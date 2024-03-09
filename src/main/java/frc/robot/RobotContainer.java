@@ -164,14 +164,15 @@ public class RobotContainer {
         .whileTrue(new StartEndCommand(drivebase::setSlowmode, drivebase::unsetSlowmode));
     primaryLeftStick.button(2).whileTrue(drivebase.getAmpAlign(primaryLeftStickSide));
     primaryLeftStick.button(3).onTrue(new InstantCommand(drivebase::resetGyro));
-    primaryRightStick.button(4).whileTrue(shooter.getSubwooferShotCommand());
-    // TODO: Undefault slow mode
-    primaryRightStick.button(2).onTrue(new InstantCommand(drivebase::stopWithX));
+
     primaryRightStick
         .trigger()
         .whileTrue(
             shooter.getTeleopAutoAimCommand(
                 drivebase, primaryLeftStickForward, primaryLeftStickSide));
+                primaryRightStick.button(2).onTrue(new InstantCommand(drivebase::stopWithX));
+    primaryRightStick.button(4).whileTrue(shooter.getSubwooferShotCommand());
+    primaryRightStick.button(5).whileTrue(shooter.getPodiumShotCommand());
 
     secondaryLeftStick
         .trigger()

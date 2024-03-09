@@ -204,6 +204,19 @@ public class Shooter {
         });
   }
 
+  public Command getPodiumShotCommand() {
+    return pivot.getPivotCommand(
+        () -> {
+          Rotation2d targetAngle = Rotation2d.fromDegrees(32.1);
+          if (Math.abs(pivot.getAngle().getDegrees() - targetAngle.getDegrees()) < 0.2) {
+            light.setColorValue(1465);
+          } else {
+            light.setColor(Colors.GOLD);
+          }
+          return targetAngle;
+        });
+  }
+
   // 48.4 degrees for at subwoofer measured 47.3
   // 32 degrees for at podium
   private Rotation2d aimAtHeight(Translation2d currentBotPosition, double height) {
