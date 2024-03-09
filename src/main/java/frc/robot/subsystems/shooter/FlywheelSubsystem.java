@@ -59,13 +59,18 @@ public class FlywheelSubsystem extends SubsystemBase {
 
   @AutoLogOutput
   public boolean isUpToSpeed() {
-    // System.out.println("Flywheel setpoint: " + inputs.velocitySetpointRPM);
-    if (inputs.velocitySetpointRPM == 0) {
+    if (inputs.topVelocitySetpoint.in(RPM) == 0 || inputs.bottomVelocitySetpoint.in(RPM) == 0) {
       return false;
     }
-    // System.out.println(
-    //     "Is up to speed?: "
-    //         + String.valueOf(inputs.bottomVelocity.in(RPM) >= inputs.velocitySetpointRPM));
-    return inputs.bottomVelocity.in(RPM) >= inputs.velocitySetpointRPM;
+
+    return atSetpoint(inputs.topVelocity.in(RPM), inputs.topVelocitySetpoint.in(RPM))
+        && atSetpoint(inputs.bottomVelocity.in(RPM), inputs.bottomVelocitySetpoint.in(RPM));
+  }
+
+  private boolean atSetpoint(double velocity, double setpoint) {
+    if (setpoint < 0) {
+      return atSetpoint(-velocity, -setpoint);
+    }
+    return velocity >= setpoint;
   }
 }

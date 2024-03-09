@@ -31,7 +31,8 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
   private final RelativeEncoder topFlywheelEncoder;
   private final RelativeEncoder bottomFlywheelEncoder;
 
-  private double setpoint;
+  private double topSetpointRPM;
+  private double bottomSetpointRPM;
 
   public FlywheelIOSparkFlex() {
     topFlywheel = new CANSparkFlex(Shooter.TOP_FLYWHEEL, MotorType.kBrushless);
@@ -81,7 +82,8 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
 
   @Override
   public void updateInputs(FlywheelIOInputs inputs) {
-    inputs.velocitySetpointRPM = setpoint;
+    inputs.topVelocitySetpoint = RPM.of(topSetpointRPM);
+    inputs.bottomVelocitySetpoint = RPM.of(bottomSetpointRPM);
     inputs.topPosition = Rotations.of(topFlywheelEncoder.getPosition());
     inputs.topVelocity = RPM.of(topFlywheelEncoder.getVelocity());
     inputs.topAppliedOutput = topFlywheel.getAppliedOutput();
@@ -98,54 +100,62 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
 
   @Override
   public void runSpeaker() {
-    setpoint = 4000;
-    if (bottomFlywheelEncoder.getVelocity() < setpoint) {
-      bottomFlywheel.setVoltage(12);
-    } else {
-      bottomFlywheel.setVoltage(0);
-    }
+    topSetpointRPM = 2800;
+    bottomSetpointRPM = 4000;
 
-    if (Math.abs(topFlywheelEncoder.getVelocity()) < (setpoint * .7)) {
+    if (topFlywheelEncoder.getVelocity() < topSetpointRPM) {
       topFlywheel.setVoltage(12);
     } else {
       topFlywheel.setVoltage(0);
+    }
+
+    if (bottomFlywheelEncoder.getVelocity() < bottomSetpointRPM) {
+      bottomFlywheel.setVoltage(12);
+    } else {
+      bottomFlywheel.setVoltage(0);
     }
   }
 
   @Override
   public void runAmp() {
-    setpoint = 5000;
-    if (bottomFlywheelEncoder.getVelocity() < setpoint) {
-      bottomFlywheel.setVoltage(12);
-    } else {
-      bottomFlywheel.setVoltage(0);
-    }
+    topSetpointRPM = -6000;
+    bottomSetpointRPM = 5000;
 
-    if (Math.abs(topFlywheelEncoder.getVelocity()) < setpoint * 1.2) {
+    if (topFlywheelEncoder.getVelocity() > topSetpointRPM) {
       topFlywheel.setVoltage(-12);
     } else {
       topFlywheel.setVoltage(0);
+    }
+
+    if (bottomFlywheelEncoder.getVelocity() < bottomSetpointRPM) {
+      bottomFlywheel.setVoltage(12);
+    } else {
+      bottomFlywheel.setVoltage(0);
     }
   }
 
   @Override
   public void runSourceIntake() {
-    setpoint = 2000;
-    if (Math.abs(bottomFlywheelEncoder.getVelocity()) < setpoint) {
-      bottomFlywheel.setVoltage(-12);
-    } else {
-      bottomFlywheel.setVoltage(0);
-    }
-    if (Math.abs(topFlywheelEncoder.getVelocity()) < setpoint) {
+    topSetpointRPM = -2000;
+    bottomSetpointRPM = -2000;
+
+    if (topFlywheelEncoder.getVelocity() > topSetpointRPM) {
       topFlywheel.setVoltage(-12);
     } else {
       topFlywheel.setVoltage(0);
+    }
+
+    if (bottomFlywheelEncoder.getVelocity() > bottomSetpointRPM) {
+      bottomFlywheel.setVoltage(-12);
+    } else {
+      bottomFlywheel.setVoltage(0);
     }
   }
 
   @Override
   public void stop() {
-    setpoint = 0;
+    topSetpointRPM = 0;
+    bottomSetpointRPM = 0;
     topFlywheel.setVoltage(0);
     bottomFlywheel.setVoltage(0);
   }
