@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.41,
-      "y": 5.54
+      "x": 0.6924444618120005,
+      "y": 6.700750495518085
     },
-    "rotation": 180.0
+    "rotation": -120.0
   },
   "command": {
     "type": "sequential",
@@ -32,44 +32,25 @@
                       }
                     },
                     {
-                      "type": "parallel",
+                      "type": "path",
                       "data": {
-                        "commands": [
-                          {
-                            "type": "path",
-                            "data": {
-                              "pathName": "preload + 3 close fast pt 1"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Intake"
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Score in speaker"
+                        "pathName": "preload + 3 close fast pt 1"
                       }
                     },
                     {
                       "type": "parallel",
                       "data": {
                         "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Intake"
-                            }
-                          },
                           {
                             "type": "path",
                             "data": {
                               "pathName": "preload + 3 close fast pt 2"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Intake"
                             }
                           }
                         ]
@@ -92,18 +73,24 @@
                       "data": {
                         "commands": [
                           {
-                            "type": "named",
-                            "data": {
-                              "name": "Intake"
-                            }
-                          },
-                          {
                             "type": "path",
                             "data": {
                               "pathName": "preload + 3 close fast pt 4"
                             }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Intake"
+                            }
                           }
                         ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Score in speaker"
                       }
                     },
                     {
@@ -113,12 +100,37 @@
                       }
                     },
                     {
-                      "type": "named",
+                      "type": "parallel",
                       "data": {
-                        "name": "Score in speaker"
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "preload + 3 close fast pt 6"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Intake"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "preload + 3 close fast pt 7"
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Score in speaker"
                 }
               }
             ]
