@@ -3,39 +3,39 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.298242778303738,
-        "y": 5.774493730805644
+        "x": 8.297990650035354,
+        "y": 7.4234966487950995
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.59113599711719,
-        "y": 6.481600511992192
+        "x": 6.661678188221241,
+        "y": 6.813346239305091
       },
       "isLocked": false,
-      "linkedName": "2 note auto wp3"
+      "linkedName": "eat top top"
     },
     {
       "anchor": {
-        "x": 5.451965319889784,
-        "y": 6.349925862241583
+        "x": 4.06391659630166,
+        "y": 5.491353685410074
       },
       "prevControl": {
-        "x": 6.451965319889784,
-        "y": 6.349925862241583
+        "x": 5.598537323200772,
+        "y": 6.748633317086454
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "shoot position up top"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxAngularAcceleration": 540.0
   },
   "goalEndState": {
     "velocity": 0,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "preload + 1 close + 1 far note auto",
+  "folder": "Preload + Far auto",
   "previewStartingState": {
     "rotation": 180.0,
     "velocity": 0

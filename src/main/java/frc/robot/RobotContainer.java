@@ -178,9 +178,10 @@ public class RobotContainer {
     secondaryLeftStick.button(4).whileTrue(shooter.getSourceIntakeCommand());
 
     secondaryRightStick.trigger().whileTrue(shooter.autoIntake());
-    secondaryRightStick.button(3).whileTrue(shooter.feed());
+    secondaryRightStick.button(6).whileTrue(shooter.feed());
     secondaryRightStick.button(4).whileTrue(shooter.intakeOut());
     secondaryRightStick.button(2).whileTrue(shooter.shoot());
+    secondaryRightStick.button(3).whileTrue(shooter.getAutoSpinUp());
 
     secondaryRightStick
         .button(10)
