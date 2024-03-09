@@ -99,14 +99,14 @@ public class RobotContainer {
         shooter.getAutoSpeakerShotCommand(() -> drivebase.getPose().getTranslation()));
     NamedCommands.registerCommand("Intake", shooter.autoIntake());
     NamedCommands.registerCommand("Intake Out", shooter.intakeOut());
-    NamedCommands.registerCommand("Spin up flywheel", shooter.getAutoSpinUp());
+    NamedCommands.registerCommand("Spin up flywheel", shooter.getFlywheelSpinUp());
 
     // Configure the trigger bindings
     configureBindings();
     // System.out.println("Deploy directory: " + Filesystem.getDeployDirectory());
     autoSelector = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
     autoSelector.addOption(
-        "1 note auto", race(shooter.getSubwooferShotCommand(), shooter.getAutoSpinUp()));
+        "1 note auto", race(shooter.getSubwooferShotCommand(), shooter.getFlywheelSpinUp()));
   }
 
   /**
@@ -182,8 +182,8 @@ public class RobotContainer {
 
     secondaryRightStick.trigger().whileTrue(shooter.autoIntake());
     secondaryRightStick.button(2).whileTrue(shooter.shoot());
-    secondaryRightStick.button(3).whileTrue(shooter.feed());
-    secondaryRightStick.button(4).whileTrue(shooter.intakeOut());
+    secondaryRightStick.button(3).whileTrue(shooter.getFlywheelSpinUp());
+    secondaryRightStick.button(4).whileTrue(shooter.feed());
 
     secondaryRightStick
         .button(10)

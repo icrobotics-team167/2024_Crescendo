@@ -128,7 +128,7 @@ public class Shooter {
         .finallyDo(() -> light.setColor(Colors.GREEN));
   }
 
-  public Command getAutoSpinUp() {
+  public Command getFlywheelSpinUp() {
     return flywheel.getSpeakerShotCommand();
   }
 
