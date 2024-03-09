@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.42,
-      "y": 5.567111941824834
+      "x": 0.6924444618120005,
+      "y": 6.700750495518085
     },
-    "rotation": 180.0
+    "rotation": -120.0
   },
   "command": {
     "type": "sequential",
@@ -34,7 +34,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Head to bottom note"
+                        "pathName": "preload + 3 close fast pt 1"
                       }
                     },
                     {
@@ -42,15 +42,15 @@
                       "data": {
                         "commands": [
                           {
-                            "type": "named",
+                            "type": "path",
                             "data": {
-                              "name": "Intake"
+                              "pathName": "preload + 3 close fast pt 2"
                             }
                           },
                           {
-                            "type": "path",
+                            "type": "named",
                             "data": {
-                              "pathName": "Intake bottom note"
+                              "name": "Intake"
                             }
                           }
                         ]
@@ -59,7 +59,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Score bottom note"
+                        "pathName": "preload + 3 close fast pt 3"
                       }
                     },
                     {
@@ -75,7 +75,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "Intake middle note"
+                              "pathName": "preload + 3 close fast pt 4"
                             }
                           },
                           {
@@ -88,12 +88,6 @@
                       }
                     },
                     {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Score middle note"
-                      }
-                    },
-                    {
                       "type": "named",
                       "data": {
                         "name": "Score in speaker"
@@ -102,7 +96,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Head to top note"
+                        "pathName": "preload + 3 close fast pt 5"
                       }
                     },
                     {
@@ -112,7 +106,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "Intake top note"
+                              "pathName": "preload + 3 close fast pt 6"
                             }
                           },
                           {
@@ -127,16 +121,16 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Score top note"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Score in speaker"
+                        "pathName": "preload + 3 close fast pt 7"
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Score in speaker"
                 }
               }
             ]

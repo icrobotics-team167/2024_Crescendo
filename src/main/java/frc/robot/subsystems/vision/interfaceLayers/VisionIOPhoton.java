@@ -27,7 +27,6 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class VisionIOPhoton implements VisionIO {
   private String name = "";
@@ -69,8 +68,9 @@ public class VisionIOPhoton implements VisionIO {
     }
 
     EstimatedRobotPose botPoseEstimate = data.get();
-    // If multi-tag tracking fails, stop
-    if (botPoseEstimate.strategy != PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
+    // If multi-tag tracking fails and the pose ambiguitiy score is too high, stop
+    if (botPoseEstimate.strategy != PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
+        && botPoseEstimate.targetsUsed.get(0).getPoseAmbiguity() > .2) {
       return;
     }
     // If the pose is outside the field, it's obviously a bad pose so stop.
@@ -91,13 +91,6 @@ public class VisionIOPhoton implements VisionIO {
           new Pose3d(inputs.poseEstimate)
               .plus(robotToCameraTransform)
               .plus(botPoseEstimate.targetsUsed.get(i).getBestCameraToTarget());
-    }
-    for (PhotonTrackedTarget target : botPoseEstimate.targetsUsed) {
-      if (target.getFiducialId() == 8 || target.getFiducialId() == 3) {
-        inputs.tX = target.getYaw();
-        inputs.tY = target.getPitch();
-        break;
-      }
     }
   }
 

@@ -19,7 +19,6 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -38,7 +37,6 @@ import frc.robot.subsystems.shooter.interfaceLayers.IntakeIO;
 import frc.robot.subsystems.shooter.interfaceLayers.NoteDetectorIO;
 import frc.robot.subsystems.shooter.interfaceLayers.PivotIO;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
-import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -80,7 +78,8 @@ public class Shooter {
   }
 
   public Command intakeOut() {
-    return intake.getIntakeOutCommand().alongWith(feeder.getUnfeedCommand());
+    return parallel(
+        intake.getIntakeOutCommand(), feeder.getUnfeedCommand(), flywheel.getSourceIntakeCommand());
   }
 
   public Command autoIntake() {
@@ -99,7 +98,8 @@ public class Shooter {
 
   public Command getAutoAmpShotCommand() {
     return deadline(
-            waitUntil(flywheel::isUpToSpeed).andThen(feeder.getFeedCommand().withTimeout(2)),
+            waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint())
+                .andThen(feeder.getFeedCommand().withTimeout(2)),
             parallel( // Gets canceled when the above finishes
                 pivot.getPivotCommand(
                     () -> {
@@ -150,17 +150,8 @@ public class Shooter {
   public Command getAutoSpeakerShotCommand(Supplier<Translation2d> botTranslationSupplier) {
     // return none();
     return deadline(
-            waitUntil(flywheel::isUpToSpeed).andThen(feeder.getFeedCommand().withTimeout(1)),
-            runOnce(
-                () ->
-                    PPHolonomicDriveController.setRotationTargetOverride(
-                        () ->
-                            Optional.of(
-                                aimAtPosition(
-                                    botTranslationSupplier.get(),
-                                    new Translation2d(
-                                        Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0,
-                                        speakerY))))),
+            waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint())
+                .andThen(feeder.getFeedCommand().withTimeout(2)),
             parallel(
                 pivot.getPivotCommand(
                     () -> {
@@ -170,7 +161,6 @@ public class Shooter {
         .finallyDo(
             () -> {
               light.setColor(Colors.GREEN);
-              PPHolonomicDriveController.setRotationTargetOverride(() -> Optional.empty());
             });
   }
 
@@ -180,7 +170,7 @@ public class Shooter {
         pivot.getPivotCommand(
             () -> {
               Rotation2d targetAngle = aimAtHeight(drivebase.getPose().getTranslation(), speakerZ);
-              if (Math.abs(pivot.getAngle().getDegrees() - targetAngle.getDegrees()) < 0.2) {
+              if (pivot.isAtSetpoint()) {
                 light.setColorValue(1465);
               } else {
                 light.setColor(Colors.GOLD);
@@ -201,15 +191,29 @@ public class Shooter {
             }));
   }
 
+  public Command getSubwooferShotCommand() {
+    return pivot.getPivotCommand(
+        () -> {
+          Rotation2d targetAngle = Rotation2d.fromDegrees(49);
+          if (Math.abs(pivot.getAngle().getDegrees() - targetAngle.getDegrees()) < 0.2) {
+            light.setColorValue(1465);
+          } else {
+            light.setColor(Colors.GOLD);
+          }
+          return targetAngle;
+        });
+  }
+
+  // 48.4 degrees for at subwoofer measured 47.3
+  // 32 degrees for at podium
   private Rotation2d aimAtHeight(Translation2d currentBotPosition, double height) {
     double speakerX = Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0;
     double targetDistance = currentBotPosition.getDistance(new Translation2d(speakerX, speakerY));
     targetDistance += speakerToRobotDistanceOffset;
     // Proportional fudge factor
-    // Close: ~1 meters, ~ .5 degree lower aim
-    // Far: ~3 meters, ~ 0.75 degree lower aim
-    // lower number go up, bigger number go down
-    double fudgeFactor = MathUtil.interpolate(-.5, -.75, (targetDistance - 1) / (3 - 1));
+    // Close: ~1 meters, ~ 2.5 degree higher aim
+    // Far: ~3 meters, ~ 5.9 degree higher aim
+    double fudgeFactor = MathUtil.interpolate(2.5, 5.9, (targetDistance - 1) / (3 - 1));
     return new Rotation2d(
         Math.atan(height / targetDistance) + Radians.convertFrom(fudgeFactor, Degrees));
   }

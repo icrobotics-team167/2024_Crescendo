@@ -4,11 +4,12 @@
   "holonomicMode": true,
   "pathFolders": [
     "Preload + Far auto",
-    "Scoring mainly middle auto",
+    "preload + 3 close fast",
     "Spit out 4 auto",
     "Spit out 5 auto",
     "preload + 1 close + 1 far note auto",
     "preload + 1 close note auto",
+    "preload + 2 far auto",
     "preload + 3 close auto"
   ],
   "autoFolders": [],

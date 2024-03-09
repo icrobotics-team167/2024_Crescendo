@@ -14,6 +14,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.race;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -104,8 +106,7 @@ public class RobotContainer {
     // System.out.println("Deploy directory: " + Filesystem.getDeployDirectory());
     autoSelector = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
     autoSelector.addOption(
-        "1 note auto",
-        shooter.getAutoSpeakerShotCommand(() -> drivebase.getPose().getTranslation()));
+        "1 note auto", race(shooter.getSubwooferShotCommand(), shooter.getAutoSpinUp()));
   }
 
   /**
@@ -162,6 +163,7 @@ public class RobotContainer {
         .whileTrue(new StartEndCommand(drivebase::setSlowmode, drivebase::unsetSlowmode));
     primaryLeftStick.button(2).whileTrue(drivebase.getAmpAlign(primaryLeftStickSide));
     primaryLeftStick.button(3).onTrue(new InstantCommand(drivebase::resetGyro));
+    primaryRightStick.button(4).whileTrue(shooter.getSubwooferShotCommand());
     // TODO: Undefault slow mode
     primaryRightStick.button(2).onTrue(new InstantCommand(drivebase::stopWithX));
     primaryRightStick
@@ -173,15 +175,15 @@ public class RobotContainer {
     secondaryLeftStick
         .trigger()
         .whileTrue(shooter.getManualControlCommand(secondaryLeftStickForwards));
-    // shooter.setPivotDefaultCommand(none());
+    secondaryLeftStick.button(2).whileTrue(shooter.intakeOut());
+    // shooter.setPivotDefaultCommand(shooter.getPivotRestingPositionCommand());
     secondaryLeftStick.button(3).whileTrue(shooter.getAutoAmpShotCommand());
     secondaryLeftStick.button(4).whileTrue(shooter.getSourceIntakeCommand());
 
     secondaryRightStick.trigger().whileTrue(shooter.autoIntake());
-    secondaryRightStick.button(6).whileTrue(shooter.feed());
-    secondaryRightStick.button(4).whileTrue(shooter.intakeOut());
     secondaryRightStick.button(2).whileTrue(shooter.shoot());
-    secondaryRightStick.button(3).whileTrue(shooter.getAutoSpinUp());
+    secondaryRightStick.button(3).whileTrue(shooter.feed());
+    secondaryRightStick.button(4).whileTrue(shooter.intakeOut());
 
     secondaryRightStick
         .button(10)

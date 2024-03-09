@@ -3,37 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.42,
-        "y": 5.567111941824834
+        "x": 2.9858875869770753,
+        "y": 3.080923596526529
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.429250113116797,
-        "y": 4.567154725036373
+        "x": 2.9858875869770753,
+        "y": 2.2131403430324164
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "preload + 2 far"
     },
     {
       "anchor": {
-        "x": 2.38,
-        "y": 4.1
+        "x": 7.66,
+        "y": 0.85
       },
       "prevControl": {
-        "x": 1.63,
-        "y": 4.1
+        "x": 6.66,
+        "y": 0.8500000000000002
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "preload + 3 note pt 1-2"
+      "linkedName": "Intake bottom bottom"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 540.0
   },
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "preload + 3 close auto",
+  "folder": "preload + 2 far auto",
   "previewStartingState": {
     "rotation": 180.0,
     "velocity": 0

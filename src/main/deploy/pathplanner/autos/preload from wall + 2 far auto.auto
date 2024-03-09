@@ -2,17 +2,17 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.42,
-      "y": 5.567111941824834
+      "x": 0.5094489998956259,
+      "y": 3.246669486213082
     },
-    "rotation": 180.0
+    "rotation": -90.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "race",
+          "type": "parallel",
           "data": {
             "commands": [
               {
@@ -26,6 +26,12 @@
                 "data": {
                   "commands": [
                     {
+                      "type": "path",
+                      "data": {
+                        "pathName": "shoot preload from wall"
+                      }
+                    },
+                    {
                       "type": "named",
                       "data": {
                         "name": "Score in speaker"
@@ -34,7 +40,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Head to bottom note"
+                        "pathName": "intake bottom bottom from wall"
                       }
                     },
                     {
@@ -50,7 +56,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "Intake bottom note"
+                              "pathName": "intake bottom but more"
                             }
                           }
                         ]
@@ -59,13 +65,19 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Score bottom note"
+                        "pathName": "Shoot down under"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
                         "name": "Score in speaker"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "goto low mid"
                       }
                     },
                     {
@@ -73,67 +85,18 @@
                       "data": {
                         "commands": [
                           {
-                            "type": "path",
-                            "data": {
-                              "pathName": "Intake middle note"
-                            }
-                          },
-                          {
                             "type": "named",
                             "data": {
                               "name": "Intake"
                             }
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Score middle note"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Score in speaker"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Head to top note"
-                      }
-                    },
-                    {
-                      "type": "parallel",
-                      "data": {
-                        "commands": [
+                          },
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "Intake top note"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Intake"
+                              "pathName": "intake low mid"
                             }
                           }
                         ]
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Score top note"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Score in speaker"
                       }
                     }
                   ]
