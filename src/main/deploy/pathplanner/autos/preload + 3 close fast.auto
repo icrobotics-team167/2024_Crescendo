@@ -123,14 +123,14 @@
                       "data": {
                         "pathName": "preload + 3 close fast pt 7"
                       }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Score in speaker"
+                      }
                     }
                   ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Score in speaker"
                 }
               }
             ]
