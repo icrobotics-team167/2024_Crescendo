@@ -14,8 +14,12 @@
 
 package frc.robot.subsystems.vision.interfaceLayers;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionIO {
@@ -23,12 +27,19 @@ public interface VisionIO {
   public class VisionIOInputs {
     public Pose2d poseEstimate = new Pose2d();
     public Pose3d[] trackedTags = new Pose3d[0];
+    public double translationalTrustworthinessMeters = .9;
+    public double rotationalTrustworthinessRadians = .9;
     public double timestamp = 0;
     public boolean isNewData = false;
   }
 
+  public class VisionPoseEstimate {
+    public Pose2d poseEstimate = new Pose2d();
+    public Matrix<N3, N1> trustworthiness = VecBuilder.fill(.9, .9, .9);
+    public double timestamp = 0;
+  }
+
   public default void updateInputs(VisionIOInputs inputs) {}
-  ;
 
   public default String getName() {
     return "";

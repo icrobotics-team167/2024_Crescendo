@@ -170,7 +170,7 @@ public class RobotContainer {
         .whileTrue(
             shooter.getTeleopAutoAimCommand(
                 drivebase, primaryLeftStickForward, primaryLeftStickSide));
-                primaryRightStick.button(2).onTrue(new InstantCommand(drivebase::stopWithX));
+    primaryRightStick.button(2).onTrue(new InstantCommand(drivebase::stopWithX));
     primaryRightStick.button(4).whileTrue(shooter.getSubwooferShotCommand());
     primaryRightStick.button(5).whileTrue(shooter.getPodiumShotCommand());
 

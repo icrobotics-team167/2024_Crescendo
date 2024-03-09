@@ -50,6 +50,7 @@ import frc.robot.subsystems.swerve.interfaceLayers.GyroIOInputsAutoLogged;
 import frc.robot.subsystems.swerve.interfaceLayers.ModuleIO;
 import frc.robot.subsystems.swerve.interfaceLayers.PhoenixOdometryThread;
 import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.subsystems.vision.interfaceLayers.VisionIO.VisionPoseEstimate;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.MathUtils;
 import java.util.concurrent.locks.Lock;
@@ -343,8 +344,9 @@ public class SwerveSubsystem extends SubsystemBase {
    * @param visionPose The pose of the robot as measured by the vision camera.
    * @param timestamp The timestamp of the vision measurement in seconds.
    */
-  public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
-    poseEstimator.addVisionMeasurement(visionPose, timestamp);
+  public void addVisionMeasurement(VisionPoseEstimate estimate) {
+    poseEstimator.addVisionMeasurement(
+        estimate.poseEstimate, estimate.timestamp, estimate.trustworthiness);
   }
 
   /** Returns the maximum linear speed of the drivebase. */

@@ -16,22 +16,23 @@ package frc.robot.subsystems.vision;
 
 import static edu.wpi.first.units.Units.*;
 
-import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.Robot.Mode;
 import frc.robot.subsystems.vision.interfaceLayers.*;
-import java.util.function.BiConsumer;
+import frc.robot.subsystems.vision.interfaceLayers.VisionIO.VisionPoseEstimate;
+import java.util.function.Consumer;
 import org.littletonrobotics.junction.Logger;
 
 public class VisionSubsystem extends SubsystemBase {
-  private BiConsumer<Pose2d, Double> estimationConsumer;
+  private Consumer<VisionPoseEstimate> estimationConsumer;
   private VisionIO[] cameras;
   private VisionIOInputsAutoLogged[] cameraData;
 
-  public VisionSubsystem(BiConsumer<Pose2d, Double> estimationConsumer) {
+  public VisionSubsystem(Consumer<VisionPoseEstimate> estimationConsumer) {
     this.estimationConsumer = estimationConsumer;
 
     if (Robot.currentMode == Mode.SIM) {
@@ -67,7 +68,15 @@ public class VisionSubsystem extends SubsystemBase {
   public void updateEstimation() {
     for (int i = 0; i < cameraData.length; i++) {
       if (cameraData[i].isNewData) {
-        estimationConsumer.accept(cameraData[i].poseEstimate, cameraData[i].timestamp);
+        VisionPoseEstimate estimate = new VisionPoseEstimate();
+        estimate.poseEstimate = cameraData[i].poseEstimate;
+        estimate.trustworthiness =
+            VecBuilder.fill(
+                cameraData[i].translationalTrustworthinessMeters,
+                cameraData[i].translationalTrustworthinessMeters,
+                cameraData[i].rotationalTrustworthinessRadians);
+        estimate.timestamp = cameraData[i].timestamp;
+        estimationConsumer.accept(estimate);
       }
     }
   }
