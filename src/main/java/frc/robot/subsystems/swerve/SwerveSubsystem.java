@@ -230,7 +230,22 @@ public class SwerveSubsystem extends SubsystemBase {
         poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
       }
     } else {
-      rawGyroRotation = gyroInputs.yawPosition;
+      // Update gyro angle
+      if (gyroInputs.connected) {
+        // Use the real gyro angle
+        rawGyroRotation = gyroInputs.yawPosition;
+      } else {
+        SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
+        for (int i = 0; i < modules.length; i++) {
+          moduleDeltas[i] =
+              new SwerveModulePosition(
+                  modules[i].getDrivePosition().in(Meters) - lastModulePositions[i].distanceMeters,
+                  modules[i].getAngle());
+        }
+        // Use the angle delta from the kinematics and module deltas
+        Twist2d twist = kinematics.toTwist2d(moduleDeltas);
+        rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
+      }
       lastModulePositions = getModulePositions();
       poseEstimator.update(rawGyroRotation, lastModulePositions);
     }
