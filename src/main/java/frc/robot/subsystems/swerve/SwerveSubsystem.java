@@ -56,6 +56,7 @@ import frc.robot.util.MathUtils;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -108,6 +109,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
   /** If slowmode should be enabled or not. */
   private boolean slowmode = Driving.SLOWMODE_DEFAULT;
+
+  private final PIDController xController;
+  private final PIDController yawController;
 
   @SuppressWarnings("unused")
   public SwerveSubsystem(
@@ -165,6 +169,9 @@ public class SwerveSubsystem extends SubsystemBase {
         (targetPose) -> {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
+
+    xController = new PIDController(5, 0, 0);
+    yawController = new PIDController(3, 0, 0);
   }
 
   @Override
@@ -399,24 +406,36 @@ public class SwerveSubsystem extends SubsystemBase {
         });
   }
 
-  private PIDController xController = new PIDController(2, 0, 0);
-  private PIDController yawController = new PIDController(1, 0, 0);
-
   public Command getAmpAlign(DoubleSupplier yInput) {
-    yawController.enableContinuousInput(-Math.PI, Math.PI);
-    return run(
+    return getYawAlign(
         () -> {
           double targetX = 1.84;
           if (Robot.isOnRed()) {
             targetX = Field.FIELD_LENGTH.in(Meters) - targetX;
           }
+          return xController.calculate(getPose().getX(), targetX);
+        },
+        yInput,
+        () -> Rotation2d.fromDegrees(90));
+  }
 
-          runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  xController.calculate(getPose().getX(), targetX),
-                  yInput.getAsDouble(),
-                  yawController.calculate(getPose().getRotation().getRadians(), -Math.PI / 2),
-                  rawGyroRotation));
+  public Command getYawAlign(
+      DoubleSupplier xInput, DoubleSupplier yInput, Supplier<Rotation2d> targetYawSupplier) {
+    return getDriveCommand(
+        xInput,
+        yInput,
+        () -> {
+          Rotation2d targetYaw = targetYawSupplier.get();
+          Logger.recordOutput("SwerveSubsystem/yawAlign/targetYaw", targetYaw);
+          Rotation2d currentYaw = getPose().getRotation();
+          Logger.recordOutput("SwerveSubsystem/yawAlign/currentYaw", currentYaw);
+          double pidOutput =
+              yawController.calculate(currentYaw.getRadians(), targetYaw.getRadians());
+          if (slowmode) {
+            pidOutput /= Driving.SLOWMODE_MULTIPLIER;
+          }
+          Logger.recordOutput("SwerveSubsystem/yawAlign/pidOutput", pidOutput);
+          return pidOutput;
         });
   }
 

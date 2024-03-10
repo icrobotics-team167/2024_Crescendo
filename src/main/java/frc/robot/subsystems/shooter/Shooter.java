@@ -24,7 +24,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.Driving;
 import frc.robot.Constants.Field;
 import frc.robot.Robot;
 import frc.robot.subsystems.misc.LightSubsystem;
@@ -189,25 +188,22 @@ public class Shooter {
               }
               return targetAngle;
             }),
-        drivebase.getDriveCommand(
+        drivebase.getYawAlign(
             xVel,
             yVel,
-            () -> {
-              return aimToYaw(
-                  drivebase,
-                  aimAtPosition(
-                      drivebase.getPose().getTranslation(),
-                      new Translation2d(
-                          Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0, speakerY)));
-              // Michael was here
-            }));
+            () ->
+                aimAtPosition(
+                    drivebase.getPose().getTranslation(),
+                    new Translation2d(
+                        Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0, speakerY))));
+    // Michael was here));
   }
 
   public Command getSubwooferShotCommand() {
     return pivot.getPivotCommand(
         () -> {
           Rotation2d targetAngle = Rotation2d.fromDegrees(49);
-          if (Math.abs(pivot.getAngle().getDegrees() - targetAngle.getDegrees()) < 0.2) {
+          if (pivot.isAtSetpoint()) {
             light.setColorValue(1465);
           } else {
             light.setColor(Colors.GOLD);
@@ -220,7 +216,7 @@ public class Shooter {
     return pivot.getPivotCommand(
         () -> {
           Rotation2d targetAngle = Rotation2d.fromDegrees(32.1);
-          if (Math.abs(pivot.getAngle().getDegrees() - targetAngle.getDegrees()) < 0.2) {
+          if (pivot.isAtSetpoint()) {
             light.setColorValue(1465);
           } else {
             light.setColor(Colors.GOLD);
@@ -248,16 +244,6 @@ public class Shooter {
   private Rotation2d aimAtPosition(Translation2d currentBotPosition, Translation2d targetPosition) {
     Rotation2d targetBotYaw = targetPosition.minus(currentBotPosition).getAngle();
     return targetBotYaw;
-  }
-
-  private double aimToYaw(SwerveSubsystem drivebase, Rotation2d targetBotYaw) {
-    Rotation2d currentBotYaw = drivebase.getPose().getRotation();
-    Logger.recordOutput("Shooter/autoAim/yawError", targetBotYaw.minus(currentBotYaw));
-    double pidOut =
-        autoAimController.calculate(currentBotYaw.getDegrees(), targetBotYaw.getDegrees())
-            * (drivebase.isSlowmode() ? 1 : Driving.SLOWMODE_MULTIPLIER);
-    Logger.recordOutput("Shooter/autoAim/pidOut", pidOut);
-    return pidOut;
   }
 
   public Command getClimberManualControl(DoubleSupplier climberControl) {
