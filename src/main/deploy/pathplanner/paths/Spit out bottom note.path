@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.28,
+        "y": 1.5
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 8.28,
+        "y": 1.0
+      },
+      "isLocked": false,
+      "linkedName": "spit out 5 pt 1-2"
+    },
+    {
+      "anchor": {
+        "x": 8.28,
+        "y": 0.55
+      },
+      "prevControl": {
+        "x": 8.28,
+        "y": 1.0500000000000003
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "spit out 5 pt 2-3"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 540.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Spit out 5 auto",
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

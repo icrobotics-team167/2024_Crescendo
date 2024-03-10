@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.28,
+        "y": 0.52
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 8.28,
+        "y": 1.5200000000000005
+      },
+      "isLocked": false,
+      "linkedName": "chris style auto pt 2-3"
+    },
+    {
+      "anchor": {
+        "x": 8.28,
+        "y": 6.0
+      },
+      "prevControl": {
+        "x": 8.28,
+        "y": 5.0
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 540.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Spit out 4 auto",
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

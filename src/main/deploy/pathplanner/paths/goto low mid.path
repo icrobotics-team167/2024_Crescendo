@@ -3,49 +3,49 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.4,
-        "y": 1.6
+        "x": 3.3758779156513192,
+        "y": 2.544686894599444
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.4,
-        "y": 1.6
+        "x": 6.10581021637103,
+        "y": 0.9359767888181875
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Shoot down under"
     },
     {
       "anchor": {
-        "x": 6.4,
-        "y": 1.6
+        "x": 7.539924989759888,
+        "y": 2.43
       },
       "prevControl": {
-        "x": 5.4,
-        "y": 1.6
+        "x": 6.878045911211059,
+        "y": 2.43
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "goto low mid"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.0,
-    "maxAcceleration": 14.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxAngularAcceleration": 540.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0,
+    "velocity": 1.0,
+    "rotation": 180.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "preload + 2 far auto",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 138.36,
     "velocity": 0
   },
   "useDefaultConstraints": false

@@ -24,15 +24,12 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.*;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Robot;
 import frc.robot.util.CANConstants.Shooter;
 import frc.robot.util.motorUtils.SparkUtils;
 import java.util.Set;
-import org.littletonrobotics.junction.Logger;
 
 public class PivotIOSparkFlex implements PivotIO {
   private final DutyCycleEncoder encoder;
@@ -41,7 +38,7 @@ public class PivotIOSparkFlex implements PivotIO {
   private final CANSparkFlex followerMotor;
   private final RelativeEncoder followerEncoder;
 
-  private final TrapezoidProfile angleMotionProfile;
+  private final PIDController anglePid;
 
   private final PIDController leaderPidController;
   private final ArmFeedforward leaderFFController;
@@ -56,19 +53,21 @@ public class PivotIOSparkFlex implements PivotIO {
 
     leaderMotor = new CANSparkFlex(Shooter.PIVOT_LEADER, MotorType.kBrushless);
     followerMotor = new CANSparkFlex(Shooter.PIVOT_FOLLOWER, MotorType.kBrushless);
-    leaderMotor.restoreFactoryDefaults();
-    followerMotor.restoreFactoryDefaults();
+
+    SparkUtils.configureSpark(() -> leaderMotor.restoreFactoryDefaults());
+    SparkUtils.configureSpark(() -> followerMotor.restoreFactoryDefaults());
     Timer.delay(0.1);
 
-    leaderMotor.setCANTimeout(250);
-    followerMotor.setCANTimeout(250);
+    SparkUtils.configureSpark(() -> leaderMotor.setCANTimeout(250));
+    SparkUtils.configureSpark(() -> followerMotor.setCANTimeout(250));
 
     leaderEncoder = leaderMotor.getEncoder();
-    leaderMotor.setIdleMode(IdleMode.kBrake);
+    SparkUtils.configureSpark(() -> leaderMotor.setIdleMode(IdleMode.kBrake));
     leaderMotor.setInverted(true);
-    leaderMotor.setSmartCurrentLimit(60);
-    leaderEncoder.setPositionConversionFactor(360.0 / 400.0);
-    leaderEncoder.setVelocityConversionFactor((360.0 / 400.0) / 60.0);
+    SparkUtils.configureSpark(() -> leaderMotor.setSmartCurrentLimit(40));
+    SparkUtils.configureSpark(() -> leaderEncoder.setPositionConversionFactor(360.0 / 400.0));
+    SparkUtils.configureSpark(
+        () -> leaderEncoder.setVelocityConversionFactor((360.0 / 400.0) / 60.0));
     SparkUtils.configureFrameStrategy(
         leaderMotor,
         Set.of(
@@ -81,10 +80,11 @@ public class PivotIOSparkFlex implements PivotIO {
 
     followerEncoder = followerMotor.getEncoder();
     followerMotor.setInverted(false);
-    followerMotor.setIdleMode(IdleMode.kBrake);
-    followerMotor.setSmartCurrentLimit(60);
-    followerEncoder.setPositionConversionFactor(360.0 / 400.0);
-    followerEncoder.setVelocityConversionFactor((360.0 / 400.0) / 60.0);
+    SparkUtils.configureSpark(() -> followerMotor.setIdleMode(IdleMode.kBrake));
+    SparkUtils.configureSpark(() -> followerMotor.setSmartCurrentLimit(40));
+    SparkUtils.configureSpark(() -> followerEncoder.setPositionConversionFactor(360.0 / 400.0));
+    SparkUtils.configureSpark(
+        () -> followerEncoder.setVelocityConversionFactor((360.0 / 400.0) / 60.0));
     SparkUtils.configureFrameStrategy(
         followerMotor,
         Set.of(
@@ -95,10 +95,7 @@ public class PivotIOSparkFlex implements PivotIO {
         Set.of(SparkUtils.Sensor.INTEGRATED),
         false);
 
-    angleMotionProfile =
-        new TrapezoidProfile(
-            new TrapezoidProfile.Constraints(
-                DegreesPerSecond.of(15), DegreesPerSecond.per(Second).of(30)));
+    anglePid = new PIDController(5.5, 0, 0.03);
 
     leaderPidController =
         new PIDController(
@@ -107,8 +104,8 @@ public class PivotIOSparkFlex implements PivotIO {
     leaderFFController =
         new ArmFeedforward(
             0.05, // Volts to overcome static friction
-            0, // Volts to overcome gravity
-            10.5 / (Math.PI / 2)); // Volts per radians/sec of setpoint
+            0.16, // Volts per cosine of angle to overcome gravity
+            6.76); // Volts per radians/sec of setpoint
     followerPidController =
         new PIDController(
             1.0 / 20, // Volts per degrees/sec of error
@@ -116,8 +113,8 @@ public class PivotIOSparkFlex implements PivotIO {
     followerFFController =
         new ArmFeedforward(
             0.05, // Volts to overcome static friction
-            0, // Volts per cosine of angle
-            10.5 / (Math.PI / 2)); // Volts per radians/sec of velocity setpoint
+            0.16, // Volts per cosine of angle to overcome gravity
+            6.76); // Volts per radians/sec of velocity setpoint
   }
 
   private enum ControlMode {
@@ -139,18 +136,14 @@ public class PivotIOSparkFlex implements PivotIO {
     switch (controlMode) {
       case TARGET_ANGLE:
         targetVelocity =
-            RadiansPerSecond.of(
-                angleMotionProfile.calculate(
-                        Robot.defaultPeriodSecs,
-                        new TrapezoidProfile.State(
-                            Radians.of(getAngle().getRadians()),
-                            DegreesPerSecond.of(leaderEncoder.getVelocity())),
-                        new TrapezoidProfile.State(
-                            Radians.of(targetAngle.getRadians()), RadiansPerSecond.of(0)))
-                    .velocity);
+            DegreesPerSecond.of(
+                -anglePid.calculate(targetAngle.getDegrees(), getAngle().getDegrees()));
+        inputs.angleSetpoint = targetAngle;
+        inputs.velocitySetpoint = targetVelocity;
         runMotor(targetVelocity);
         break;
       case TARGET_VEL:
+        inputs.velocitySetpoint = targetVelocity;
         runMotor(targetVelocity);
         break;
       case OPEN_LOOP:
@@ -193,12 +186,17 @@ public class PivotIOSparkFlex implements PivotIO {
     setVelocityControl(RadiansPerSecond.of(0));
   }
 
-  /** Moving average filter to smooth out the noisy input. */
-  private LinearFilter angleFilter = LinearFilter.movingAverage(5);
+  /**
+   * Moving average filter to smooth out the noisy input. Measurements without any filtering are a
+   * burning pile of dogshit because REV, they built a encoder with far too much resolution to be
+   * useful and also didn't properly sync data clocks with the RIO.
+   */
+  private LinearFilter angleFilter = LinearFilter.movingAverage(4);
 
   /** Gets the angle of the pivot mechanism. */
   private Rotation2d getAngle() {
-    double rawAngle = encoder.getAbsolutePosition() - (200.0 / 360.0);
+    // Actual offset + slight fudge factor
+    double rawAngle = encoder.getAbsolutePosition() - (193.5 / 360.0);
     return Rotation2d.fromRotations(angleFilter.calculate(rawAngle));
   }
 
@@ -209,7 +207,8 @@ public class PivotIOSparkFlex implements PivotIO {
       pivotVel = RPM.of(0);
     }
 
-    Logger.recordOutput("Shooter/pivot/targetVel", pivotVel.in(RadiansPerSecond));
+    // pivotVel = RPM.of(0);
+
     leaderSetpoint =
         -(leaderPidController.calculate(-leaderEncoder.getVelocity(), pivotVel.in(DegreesPerSecond))
             + leaderFFController.calculate(getAngle().getRadians(), pivotVel.in(RadiansPerSecond)));

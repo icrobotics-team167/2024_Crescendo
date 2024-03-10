@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 3.0,
-      "y": 6.0
+      "x": 1.43,
+      "y": 5.55
     },
-    "rotation": 0
+    "rotation": 180.0
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "forward 1 meter"
+            "pathName": "Barely move at all"
           }
         }
       ]

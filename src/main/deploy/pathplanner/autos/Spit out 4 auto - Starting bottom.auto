@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 2.4,
-      "y": 5.55
+      "x": 1.47,
+      "y": 1.53
     },
     "rotation": 180.0
   },
@@ -12,71 +12,47 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Score in speaker"
+            "pathName": "Starting low, head to bottom mid"
           }
         },
         {
-          "type": "deadline",
+          "type": "race",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Score then back up"
+                  "pathName": "Spit out bottom note"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake"
+                  "name": "Intake Out"
                 }
               }
             ]
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Score in speaker"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Head to middle ring"
-          }
-        },
-        {
-          "type": "deadline",
+          "type": "race",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Intake middle ring"
+                  "pathName": "Go up entire column, 4 note"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake"
+                  "name": "Intake Out"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Score middle ring"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Score in speaker"
           }
         }
       ]

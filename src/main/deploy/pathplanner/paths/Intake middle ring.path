@@ -33,7 +33,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 1.0,
-    "maxAcceleration": 14.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -43,10 +43,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "2 note auto",
+  "folder": "preload + 1 close + 1 far note auto",
   "previewStartingState": {
     "rotation": 180.0,
-    "velocity": 0.0
+    "velocity": 1.0
   },
   "useDefaultConstraints": false
 }

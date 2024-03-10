@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 4.4,
-      "y": 1.6
+      "x": 1.43,
+      "y": 5.55
     },
     "rotation": 0
   },
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Move point"
+            "pathName": "Forward 2 meters + rotate"
           }
         }
       ]

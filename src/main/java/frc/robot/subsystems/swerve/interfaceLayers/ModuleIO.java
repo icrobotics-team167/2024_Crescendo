@@ -97,12 +97,6 @@ public interface ModuleIO {
   /** Stops all motor control input. */
   public default void stop() {}
 
-  /** Enable or disable brake mode on the drive motor. */
-  public default void setDriveBrakeMode(boolean enable) {}
-
-  /** Enable or disable brake mode on the azimuth motor. */
-  public default void setAzimuthBrakeMode(boolean enable) {}
-
   /** Configures data capture rates for drive system identification. */
   public default void configureDriveSysID() {}
 

@@ -22,6 +22,8 @@ import org.littletonrobotics.junction.AutoLog;
 public interface FlywheelIO {
   @AutoLog
   public class FlywheelIOInputs {
+    public Measure<Velocity<Angle>> topVelocitySetpoint = RPM.of(0);
+    public Measure<Velocity<Angle>> bottomVelocitySetpoint = RPM.of(0);
     /** The position of the top shooter flywheel. */
     public Measure<Angle> topPosition = Rotations.of(0);
     /** The velocity of the top shooter flywheel. */
@@ -52,6 +54,9 @@ public interface FlywheelIO {
 
   /** Spins the shooter flywheels up to shoot into the amp. */
   public default void runAmp() {}
+
+  /** Spins the shooter flywheels up to intake from source. */
+  public default void runSourceIntake() {}
 
   /** Stops the shooter flywheel. */
   public default void stop() {}

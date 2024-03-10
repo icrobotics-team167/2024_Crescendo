@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.298242778303738,
-        "y": 5.774493730805644
+        "x": 7.59113599711719,
+        "y": 6.481600511992192
       },
       "isLocked": false,
       "linkedName": "2 note auto wp3"
     },
     {
       "anchor": {
-        "x": 5.7,
-        "y": 6.334218486618792
+        "x": 5.451965319889784,
+        "y": 6.349925862241583
       },
       "prevControl": {
-        "x": 6.7,
-        "y": 6.334218486618792
+        "x": 6.451965319889784,
+        "y": 6.349925862241583
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "shoot position"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 14.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -43,10 +43,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "2 note auto",
+  "folder": "preload + 1 close + 1 far note auto",
   "previewStartingState": {
     "rotation": 180.0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

@@ -14,7 +14,7 @@
 
 package frc.robot;
 
-import static edu.wpi.first.wpilibj2.command.Commands.*;
+import static edu.wpi.first.wpilibj2.command.Commands.race;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -25,6 +25,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Driving;
+import frc.robot.subsystems.misc.interfaceLayers.LightsIO;
+import frc.robot.subsystems.misc.interfaceLayers.LightsIOBlinkin;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.interfaceLayers.*;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -44,6 +46,7 @@ public class RobotContainer {
 
   private final SwerveSubsystem drivebase;
   private final Shooter shooter;
+  // private final LightSubsystem light;
 
   private CommandJoystick primaryLeftStick = new CommandJoystick(0);
   private CommandJoystick primaryRightStick = new CommandJoystick(1);
@@ -67,7 +70,10 @@ public class RobotContainer {
                 new FlywheelIOSparkFlex(),
                 new PivotIOSparkFlex(),
                 new NoteDetectorIOTimeOfFlight(),
-                new IntakeIOTalonFX());
+                new IntakeIOTalonFX(),
+                new LightsIOBlinkin(),
+                new ClimberIO() {});
+        // light = new LightSubsystem(new LightsIOBlinkin());
         break;
       default:
         drivebase =
@@ -83,15 +89,25 @@ public class RobotContainer {
                 new FlywheelIO() {},
                 new PivotIO() {},
                 new NoteDetectorIO() {},
-                new IntakeIO() {});
+                new IntakeIO() {},
+                new LightsIO() {},
+                new ClimberIO() {});
+        // light = new LightSubsystem(new LightsIO() {});
     }
-    NamedCommands.registerCommand("Score in speaker", none()); // TODO: Implement
-    NamedCommands.registerCommand("Intake", none()); // TODO: Implement
-    NamedCommands.registerCommand("Intake Out", none()); // TODO: Implement
+    NamedCommands.registerCommand(
+        "Score in speaker",
+        shooter.getAutoSpeakerShotCommand(() -> drivebase.getPose().getTranslation()));
+    NamedCommands.registerCommand("Intake", shooter.autoIntake());
+    NamedCommands.registerCommand("Intake Out", shooter.intakeOut());
+    NamedCommands.registerCommand("Spin up flywheel", shooter.getFlywheelSpinUp());
 
     // Configure the trigger bindings
     configureBindings();
+    // System.out.println("Deploy directory: " + Filesystem.getDeployDirectory());
     autoSelector = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
+    autoSelector.addOption(
+        "The One Piece is real",
+        race(shooter.getSubwooferShotCommand(), shooter.getFlywheelSpinUp()));
   }
 
   /**
@@ -104,57 +120,76 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    DoubleSupplier primaryLeftStickX =
+    DoubleSupplier primaryLeftStickSide =
         () ->
             MathUtils.inOutDeadband(
                 -primaryLeftStick.getX(),
                 Driving.Deadbands.PRIMARY_LEFT_INNER,
                 Driving.Deadbands.PRIMARY_LEFT_OUTER,
                 Driving.PRIMARY_DRIVER_EXPONENT);
-    DoubleSupplier primaryLeftStickY =
+    DoubleSupplier primaryLeftStickForward =
         () ->
             MathUtils.inOutDeadband(
                 -primaryLeftStick.getY(),
                 Driving.Deadbands.PRIMARY_LEFT_INNER,
                 Driving.Deadbands.PRIMARY_LEFT_OUTER,
                 Driving.PRIMARY_DRIVER_EXPONENT);
-    DoubleSupplier primaryRightStickX =
+    DoubleSupplier primaryRightStickSide =
         () ->
             MathUtils.inOutDeadband(
                 -primaryRightStick.getX(),
                 Driving.Deadbands.PRIMARY_RIGHT_INNER,
                 Driving.Deadbands.PRIMARY_RIGHT_OUTER,
                 Driving.PRIMARY_DRIVER_EXPONENT);
+    DoubleSupplier secondaryLeftStickForwards =
+        () ->
+            MathUtils.inOutDeadband(
+                secondaryLeftStick.getY(),
+                Driving.Deadbands.SECONDARY_LEFT_INNER,
+                Driving.Deadbands.SECONDARY_LEFT_OUTER,
+                Driving.SECONDARY_DRIVER_EXPONENT);
+    DoubleSupplier secondaryRightStickForwards =
+        () ->
+            MathUtils.inOutDeadband(
+                secondaryRightStick.getY(),
+                Driving.Deadbands.SECONDARY_LEFT_INNER,
+                Driving.Deadbands.SECONDARY_LEFT_OUTER,
+                Driving.SECONDARY_DRIVER_EXPONENT);
     drivebase.setDefaultCommand(
-        drivebase.getDriveCommand(primaryLeftStickY, primaryLeftStickX, primaryRightStickX));
+        drivebase.getDriveCommand(
+            primaryLeftStickForward, primaryLeftStickSide, primaryRightStickSide));
 
     primaryLeftStick
         .trigger()
         .whileTrue(new StartEndCommand(drivebase::setSlowmode, drivebase::unsetSlowmode));
-    primaryRightStick.trigger().onTrue(new InstantCommand(drivebase::stopWithX));
-    // primaryLeftStick.button(1).whileTrue(drivebase.getDriveSysIDURCL());
-    // primaryLeftStick.button(2).whileTrue(drivebase.getAzimuthSysIDURCL());
+    primaryLeftStick.button(2).whileTrue(drivebase.getAmpAlign(primaryLeftStickSide));
+    primaryLeftStick.button(3).onTrue(new InstantCommand(drivebase::resetGyro));
 
-    secondaryRightStick.trigger().whileTrue(shooter.autoIntake());
-    secondaryRightStick.button(4).whileTrue(shooter.feed());
-    secondaryRightStick.button(2).whileTrue(shooter.intakeOut());
-    secondaryRightStick.button(3).whileTrue(shooter.shoot());
-    secondaryLeftStick
+    primaryRightStick
         .trigger()
         .whileTrue(
-            shooter.getManualControlCommand(
-                () ->
-                    MathUtils.inOutDeadband(
-                        -secondaryLeftStick.getY(),
-                        Driving.Deadbands.SECONDARY_LEFT_INNER,
-                        Driving.Deadbands.SECONDARY_LEFT_OUTER,
-                        Driving.SECONDARY_DRIVER_EXPONENT)));
+            shooter.getTeleopAutoAimCommand(
+                drivebase, primaryLeftStickForward, primaryLeftStickSide));
+    primaryRightStick.button(2).onTrue(new InstantCommand(drivebase::stopWithX));
+    primaryRightStick.button(4).whileTrue(shooter.getSubwooferShotCommand());
+    primaryRightStick.button(5).whileTrue(shooter.getPodiumShotCommand());
+
     secondaryLeftStick
-        .button(2)
-        .whileTrue(
-            shooter.getTeleopAutoAimCommand(drivebase, primaryLeftStickY, primaryLeftStickX));
-    // shooter.setPivotDefaultCommand(none());
-    secondaryLeftStick.button(3).whileTrue(shooter.getAmpShotCommand());
+        .trigger()
+        .whileTrue(shooter.getManualControlCommand(secondaryLeftStickForwards));
+    secondaryLeftStick.button(2).whileTrue(shooter.intakeOut());
+    // shooter.setPivotDefaultCommand(shooter.getPivotRestingPositionCommand());
+    secondaryLeftStick.button(3).whileTrue(shooter.getAutoAmpShotCommand());
+    secondaryLeftStick.button(4).whileTrue(shooter.getSourceIntakeCommand());
+
+    secondaryRightStick.trigger().whileTrue(shooter.autoIntake());
+    secondaryRightStick.button(2).whileTrue(shooter.shoot());
+    secondaryRightStick.button(3).whileTrue(shooter.getFlywheelSpinUp());
+    secondaryRightStick.button(4).whileTrue(shooter.feed());
+
+    secondaryRightStick
+        .button(10)
+        .whileTrue(shooter.getClimberManualControl(secondaryRightStickForwards));
   }
 
   /**

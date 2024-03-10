@@ -50,8 +50,6 @@ public class VisionIOLimelight implements VisionIO {
         new Pose2d(poseArray[0], poseArray[1], Rotation2d.fromDegrees(poseArray[5]));
     inputs.isNewData = true;
     inputs.timestamp = getTimeStamp();
-    inputs.tX = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
-    inputs.tY = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
   }
 
   private double getTimeStamp() {

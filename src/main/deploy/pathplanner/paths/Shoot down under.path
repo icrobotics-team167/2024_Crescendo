@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.46,
+        "y": 0.85
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.76776716660322,
+        "y": 0.8539306457676077
+      },
+      "isLocked": false,
+      "linkedName": "intake very bottom"
+    },
+    {
+      "anchor": {
+        "x": 3.3758779156513192,
+        "y": 2.544686894599444
+      },
+      "prevControl": {
+        "x": 4.556257427337995,
+        "y": 1.5974671413510084
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Shoot down under"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 540.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 138.36,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "preload + 2 far auto",
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

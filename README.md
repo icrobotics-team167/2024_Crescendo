@@ -1,4 +1,4 @@
-# Children of the Corn Advanced Robot Template
+# Children of the Corn 2024 Robot Code
 
 Code written by [FIRST Robotics Competition Team 167, Children of the Corn](https://github.com/icrobotics-team167) for the 2024 FRC season.
 

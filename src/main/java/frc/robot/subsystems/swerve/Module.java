@@ -148,7 +148,6 @@ public class Module {
   public Module(ModuleIO io, int index) {
     this.io = io;
     this.index = index;
-    setBrakeMode(true);
   }
 
   /**
@@ -233,12 +232,6 @@ public class Module {
   /** Disables all outputs to motors. */
   public void stop() {
     io.stop();
-  }
-
-  /** Sets whether brake mode is enabled. */
-  public void setBrakeMode(boolean enabled) {
-    io.setDriveBrakeMode(enabled);
-    io.setAzimuthBrakeMode(enabled);
   }
 
   /** Returns the current azimuth of the module. */

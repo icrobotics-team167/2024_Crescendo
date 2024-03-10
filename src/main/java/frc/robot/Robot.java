@@ -62,9 +62,11 @@ public class Robot extends LoggedRobot {
   @Override
   @SuppressWarnings("all")
   public void robotInit() {
+    Logger.recordMetadata("Git Branch", BuildConstants.GIT_BRANCH);
+    Logger.recordMetadata("Git Commit Date", BuildConstants.GIT_DATE);
     Logger.recordMetadata("Git SHA", BuildConstants.GIT_SHA);
     Logger.recordMetadata("Uncommitted Changes?", BuildConstants.DIRTY == 1 ? "True" : "False");
-    // Comment this line out when not running AK log replays.
+    // Comment this line out when running AK log replays.
     currentMode = Robot.isReal() ? Mode.REAL : Mode.SIM;
     // Uncomment this line when running AK log replays.
     // currentMode = Mode.REPLAY;

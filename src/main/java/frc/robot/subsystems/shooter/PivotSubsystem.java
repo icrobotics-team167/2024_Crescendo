@@ -44,7 +44,8 @@ public class PivotSubsystem extends SubsystemBase {
    * ground.
    */
   public Command getPivotCommand(Supplier<Rotation2d> targetPivotSupplier) {
-    return run(() -> io.setTargetAngle(targetPivotSupplier.get()));
+    return run(() -> io.setTargetAngle(targetPivotSupplier.get()))
+        .finallyDo(() -> io.setVelocityControl(RPM.of(0)));
   }
 
   /** Gets a command to manually control the pivot angle. */
@@ -60,5 +61,9 @@ public class PivotSubsystem extends SubsystemBase {
 
   public Rotation2d getAngle() {
     return inputs.angle;
+  }
+
+  public boolean isAtSetpoint() {
+    return Math.abs(inputs.angleSetpoint.getDegrees() - inputs.angle.getDegrees()) < 0.2;
   }
 }

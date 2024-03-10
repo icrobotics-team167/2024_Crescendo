@@ -41,5 +41,6 @@
     "org.mockito.Mockito.*",
     "org.mockito.ArgumentMatchers.*",
     "org.mockito.Answers.*"
-  ]
+  ],
+  "wpilib.autoStartRioLog": false
 }

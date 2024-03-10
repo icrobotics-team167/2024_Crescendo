@@ -41,5 +41,13 @@ public final class CANConstants {
     public static final int TOP_FLYWHEEL = 22;
     public static final int BOTTOM_FLYWHEEL = 21;
     public static final int NOTE_DETECTOR = 32;
+    public static final int CLIMBER_LEFT = 25;
+    public static final int CLIMBER_RIGHT = 24;
+  }
+
+  public final class misc {
+    // TODO: Configure
+    public static final int LIGHT_PWM_ID_RIGHT = 8;
+    public static final int LIGHT_PWM_ID_LEFT = 9;
   }
 }

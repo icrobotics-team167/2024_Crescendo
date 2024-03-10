@@ -18,6 +18,7 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.Field;
@@ -26,15 +27,16 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class VisionIOPhoton implements VisionIO {
   private String name = "";
   private PhotonCamera camera;
   private PhotonPoseEstimator poseEstimator;
+  private Transform3d robotToCameraTransform;
 
   public VisionIOPhoton(String name, Transform3d robotToCameraTransform) {
     this.name = name;
+    this.robotToCameraTransform = robotToCameraTransform;
     camera = new PhotonCamera(name);
     try {
       poseEstimator =
@@ -53,6 +55,7 @@ public class VisionIOPhoton implements VisionIO {
   @Override
   public void updateInputs(VisionIOInputs inputs) {
     inputs.isNewData = false;
+    inputs.trackedTags = new Pose3d[0];
     // If the camera didn't load properly, stop.
     if (poseEstimator == null) {
       return;
@@ -65,11 +68,18 @@ public class VisionIOPhoton implements VisionIO {
     }
 
     EstimatedRobotPose botPoseEstimate = data.get();
-    // If multi-tag tracking fails and the pose ambiguity score of the single tag
-    // tracking is too large, stop.
-    if (botPoseEstimate.strategy != PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
-        && botPoseEstimate.targetsUsed.get(0).getPoseAmbiguity() > 0.2) {
-      return;
+    if (botPoseEstimate.strategy != PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
+      double poseAmbiguity = botPoseEstimate.targetsUsed.get(0).getPoseAmbiguity();
+      // If multi-tag tracking fails and the pose ambiguitiy score is too high, stop
+      if (poseAmbiguity > .2) {
+        return;
+      } else {
+        inputs.translationalTrustworthinessMeters = poseAmbiguity * 5 + 0.5;
+        inputs.rotationalTrustworthinessRadians = poseAmbiguity * Math.PI + Math.PI;
+      }
+    } else {
+      inputs.translationalTrustworthinessMeters = 0.1;
+      inputs.rotationalTrustworthinessRadians = 0.25;
     }
     // If the pose is outside the field, it's obviously a bad pose so stop.
     if (botPoseEstimate.estimatedPose.getX() < 0
@@ -83,16 +93,12 @@ public class VisionIOPhoton implements VisionIO {
     inputs.isNewData = true;
     inputs.poseEstimate = botPoseEstimate.estimatedPose.toPose2d();
     inputs.timestamp = botPoseEstimate.timestampSeconds;
-    inputs.trackedTags = new Transform3d[botPoseEstimate.targetsUsed.size()];
+    inputs.trackedTags = new Pose3d[botPoseEstimate.targetsUsed.size()];
     for (int i = 0; i < inputs.trackedTags.length; i++) {
-      inputs.trackedTags[i] = botPoseEstimate.targetsUsed.get(i).getBestCameraToTarget();
-    }
-    for (PhotonTrackedTarget target : botPoseEstimate.targetsUsed) {
-      if (target.getFiducialId() == 8 || target.getFiducialId() == 3) {
-        inputs.tX = target.getYaw();
-        inputs.tY = target.getPitch();
-        break;
-      }
+      inputs.trackedTags[i] =
+          new Pose3d(inputs.poseEstimate)
+              .plus(robotToCameraTransform)
+              .plus(botPoseEstimate.targetsUsed.get(i).getBestCameraToTarget());
     }
   }
 

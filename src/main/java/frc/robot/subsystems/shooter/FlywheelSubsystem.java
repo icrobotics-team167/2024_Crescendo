@@ -14,12 +14,13 @@
 
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RPM;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIO;
 import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIOInputsAutoLogged;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class FlywheelSubsystem extends SubsystemBase {
@@ -52,7 +53,24 @@ public class FlywheelSubsystem extends SubsystemBase {
     return run(io::runAmp).finallyDo(io::stop);
   }
 
+  public Command getSourceIntakeCommand() {
+    return run(io::runSourceIntake).finallyDo(io::stop);
+  }
+
+  @AutoLogOutput
   public boolean isUpToSpeed() {
-    return inputs.topVelocity.gte(RotationsPerSecond.of(5000));
+    if (inputs.topVelocitySetpoint.in(RPM) == 0 || inputs.bottomVelocitySetpoint.in(RPM) == 0) {
+      return false;
+    }
+
+    return atSetpoint(inputs.topVelocity.in(RPM), inputs.topVelocitySetpoint.in(RPM))
+        && atSetpoint(inputs.bottomVelocity.in(RPM), inputs.bottomVelocitySetpoint.in(RPM));
+  }
+
+  private boolean atSetpoint(double velocity, double setpoint) {
+    if (setpoint < 0) {
+      return atSetpoint(-velocity, -setpoint);
+    }
+    return velocity >= setpoint;
   }
 }

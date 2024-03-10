@@ -19,7 +19,6 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
@@ -38,7 +37,6 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.util.CANConstants;
 import frc.robot.util.CANConstants.Drivebase;
 import frc.robot.util.SwerveUtils;
-import frc.robot.util.motorUtils.TalonUtils;
 import java.util.Queue;
 
 /**
@@ -376,10 +374,10 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveConfig.MotionMagic.MotionMagicJerk =
         driveConfig.MotionMagic.MotionMagicAcceleration * 10; // Max allowed jerk, in m/s^3
     // Limit the current draw of the motors.
-    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 120;
-    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = 120;
+    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 80;
+    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = 80;
+    driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     driveTalon.getConfigurator().apply(driveConfig);
-    setDriveBrakeMode(true);
 
     // See drive config for comments on these, similar concepts apply for azimuth.
     var azimuthConfig = new TalonFXConfiguration();
@@ -400,10 +398,10 @@ public class ModuleIOTalonFX implements ModuleIO {
     azimuthConfig.MotionMagic.MotionMagicAcceleration = 10; // Max allowed acceleration, in rot/s^2
     azimuthConfig.MotionMagic.MotionMagicJerk = 50; // Max allowed jerk, in rot/s^3
     azimuthConfig.ClosedLoopGeneral.ContinuousWrap = true;
-    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 40;
-    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = 40;
+    azimuthConfig.TorqueCurrent.PeakForwardTorqueCurrent = 60;
+    azimuthConfig.TorqueCurrent.PeakReverseTorqueCurrent = 60;
+    azimuthConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     azimuthTalon.getConfigurator().apply(azimuthConfig);
-    setAzimuthBrakeMode(true);
 
     var cancoderConfig = new CANcoderConfiguration();
     cancoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
@@ -455,9 +453,6 @@ public class ModuleIOTalonFX implements ModuleIO {
     // Completely disable sending of any data we don't need to further reduce CAN bus usage.
     driveTalon.optimizeBusUtilization();
     azimuthTalon.optimizeBusUtilization();
-
-    TalonUtils.addMotor(driveTalon);
-    TalonUtils.addMotor(azimuthTalon);
   }
 
   @Override
@@ -542,25 +537,6 @@ public class ModuleIOTalonFX implements ModuleIO {
   public void stop() {
     driveTalon.stopMotor();
     driveTalon.stopMotor();
-  }
-
-  @Override
-  public void setDriveBrakeMode(boolean enable) {
-    var config = new MotorOutputConfigs();
-    config.Inverted = InvertedValue.CounterClockwise_Positive;
-    config.NeutralMode = enable ? NeutralModeValue.Brake : NeutralModeValue.Coast;
-    driveTalon.getConfigurator().apply(config);
-  }
-
-  @Override
-  public void setAzimuthBrakeMode(boolean enable) {
-    var config = new MotorOutputConfigs();
-    config.Inverted =
-        Module.AZIMUTH_MOTOR_INVERTED
-            ? InvertedValue.Clockwise_Positive
-            : InvertedValue.CounterClockwise_Positive;
-    config.NeutralMode = enable ? NeutralModeValue.Brake : NeutralModeValue.Coast;
-    azimuthTalon.getConfigurator().apply(config);
   }
 
   @Override
