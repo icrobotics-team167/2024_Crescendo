@@ -23,6 +23,7 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -169,8 +170,9 @@ public class SwerveSubsystem extends SubsystemBase {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
 
-    xController = new PIDController(5, 0, 0);
     yawController = new PIDController(3, 0, 0);
+    xController = new PIDController(1, 0, 0.05);
+    yawController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   @Override
@@ -419,11 +421,20 @@ public class SwerveSubsystem extends SubsystemBase {
   public Command getAmpAlign(DoubleSupplier yInput) {
     return getYawAlign(
         () -> {
-          double targetX = 1.84;
+          double targetX = 1.835;
           if (Robot.isOnRed()) {
             targetX = Field.FIELD_LENGTH.in(Meters) - targetX;
           }
-          return xController.calculate(getPose().getX(), targetX);
+          Logger.recordOutput("SwerveSubsystem/ampAlign/targetX", targetX);
+          Logger.recordOutput("SwerveSubsystem/ampAlign/currentX", getPose().getX());
+          double pidOutput = xController.calculate(getPose().getX(), targetX);
+          pidOutput =
+              MathUtil.clamp(
+                  pidOutput,
+                  -MAX_LINEAR_SPEED.in(MetersPerSecond),
+                  MAX_LINEAR_SPEED.in(MetersPerSecond));
+          Logger.recordOutput("SwerveSubsystem/ampAlign/pidOutput", pidOutput);
+          return pidOutput;
         },
         yInput,
         () -> Rotation2d.fromDegrees(90));
@@ -444,6 +455,12 @@ public class SwerveSubsystem extends SubsystemBase {
           if (slowmode) {
             pidOutput /= Driving.SLOWMODE_MULTIPLIER;
           }
+          pidOutput =
+              MathUtil.clamp(
+                      pidOutput,
+                      -MAX_ANGULAR_SPEED.in(RadiansPerSecond) / 2,
+                      MAX_ANGULAR_SPEED.in(RadiansPerSecond) / 2)
+                  / 2;
           Logger.recordOutput("SwerveSubsystem/yawAlign/pidOutput", pidOutput);
           return pidOutput;
         });
