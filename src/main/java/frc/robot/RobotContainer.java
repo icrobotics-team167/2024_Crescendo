@@ -75,6 +75,24 @@ public class RobotContainer {
                 new ClimberIO() {});
         // light = new LightSubsystem(new LightsIOBlinkin());
         break;
+      case SIM:
+        drivebase =
+            new SwerveSubsystem(
+                new GyroIO() {},
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim());
+        shooter =
+            new Shooter(
+                new FeederIO() {},
+                new FlywheelIO() {},
+                new PivotIO() {},
+                new NoteDetectorIO() {},
+                new IntakeIO() {},
+                new LightsIO() {},
+                new ClimberIO() {});
+        break;
       default:
         drivebase =
             new SwerveSubsystem(

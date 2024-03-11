@@ -336,11 +336,6 @@ public class SwerveSubsystem extends SubsystemBase {
     return poseEstimator.getEstimatedPosition();
   }
 
-  /** Returns the current odometry rotation. */
-  public Rotation2d getRotation() {
-    return getPose().getRotation();
-  }
-
   /** Resets the current odometry pose and also sets the gyro angle. */
   public void setPoseAndGyro(Pose2d pose) {
     Rotation2d gyroYaw = MathUtils.adjustRotation(pose.getRotation());
@@ -417,7 +412,7 @@ public class SwerveSubsystem extends SubsystemBase {
                   MAX_LINEAR_SPEED.in(MetersPerSecond) * xIn,
                   MAX_LINEAR_SPEED.in(MetersPerSecond) * yIn,
                   MAX_ANGULAR_SPEED.in(RadiansPerSecond) * rotIn,
-                  gyroInputs.yawPosition));
+                  gyroInputs.connected ? gyroInputs.yawPosition : getPose().getRotation()));
         });
   }
 

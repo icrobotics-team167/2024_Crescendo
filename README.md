@@ -29,7 +29,6 @@ Contributors:
 Code taken from the following places:
 
 - [AdvantageKit Advanced Swerve Example](https://github.com/Mechanical-Advantage/AdvantageKit/tree/main/example_projects)
-  - Uses [Measure](https://docs.wpilib.org/en/stable/docs/software/basic-programming/java-units.html) to improve readability and eliminating unit confusion.
 - [PathPlanner AdvantageKit-Compatible Pathfinding](https://gist.github.com/mjansen4857/a8024b55eb427184dbd10ae8923bd57d)
 - [Sciborgs Spark Configuration Utilities](https://github.com/SciBorgs/Hydrogen/blob/main/src/main/java/org/sciborgs1155/lib/SparkUtils.java)
 - See Git commit history for specifics on changes.

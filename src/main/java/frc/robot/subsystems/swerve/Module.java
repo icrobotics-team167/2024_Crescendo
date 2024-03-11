@@ -54,7 +54,7 @@ public class Module {
    */
   public static final double DRIVE_GEAR_RATIO = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
   /** The max free speed of the motor. */
-  public static final Measure<Velocity<Angle>> DRIVE_MOTOR_MAX_VEL = RPM.of(5800);
+  public static final Measure<Velocity<Angle>> DRIVE_MOTOR_MAX_VEL = RPM.of(5676);
   /**
    * The gear ratio between the azimuth motor and the module.
    *
