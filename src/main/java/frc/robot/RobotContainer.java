@@ -181,7 +181,7 @@ public class RobotContainer {
         .trigger()
         .whileTrue(new StartEndCommand(drivebase::setSlowmode, drivebase::unsetSlowmode));
     primaryLeftStick.button(2).whileTrue(drivebase.getAmpAlign(primaryLeftStickSide));
-    primaryLeftStick.button(3).onTrue(new InstantCommand(drivebase::resetGyro));
+    primaryLeftStick.button(3).onTrue(new InstantCommand(drivebase::resetGyroToForwards));
 
     primaryRightStick
         .trigger()
@@ -217,5 +217,9 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoSelector.get();
+  }
+
+  public void teleopInit() {
+    drivebase.resetGyroFromPose();
   }
 }

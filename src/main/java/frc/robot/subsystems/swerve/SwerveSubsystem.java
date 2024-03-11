@@ -52,7 +52,6 @@ import frc.robot.subsystems.swerve.interfaceLayers.PhoenixOdometryThread;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.subsystems.vision.interfaceLayers.VisionIO.VisionPoseEstimate;
 import frc.robot.util.LocalADStarAK;
-import frc.robot.util.MathUtils;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.DoubleSupplier;
@@ -145,7 +144,7 @@ public class SwerveSubsystem extends SubsystemBase {
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configureHolonomic(
         this::getPose,
-        this::setPoseAndGyro,
+        this::setPose,
         () -> kinematics.toChassisSpeeds(getModuleStates()),
         this::runVelocity,
         new HolonomicPathFollowerConfig(
@@ -336,18 +335,19 @@ public class SwerveSubsystem extends SubsystemBase {
     return poseEstimator.getEstimatedPosition();
   }
 
-  /** Resets the current odometry pose and also sets the gyro angle. */
-  public void setPoseAndGyro(Pose2d pose) {
-    Rotation2d gyroYaw = MathUtils.adjustRotation(pose.getRotation());
-    gyroIO.setYaw(gyroYaw);
-    rawGyroRotation = gyroYaw;
-    poseEstimator.resetPosition(gyroYaw, getModulePositions(), pose);
-  }
-
-  public void resetGyro() {
+  public void resetGyroToForwards() {
     gyroIO.setYaw(new Rotation2d());
     rawGyroRotation = new Rotation2d();
     poseEstimator.resetPosition(new Rotation2d(), getModulePositions(), getPose());
+  }
+
+  public void resetGyroFromPose() {
+    if (gyroInputs.connected) {
+      Rotation2d yaw = getPose().getRotation();
+      gyroIO.setYaw(yaw);
+      rawGyroRotation = yaw;
+      poseEstimator.resetPosition(yaw, lastModulePositions, getPose());
+    }
   }
 
   /** Resets the current odometry pose. */
