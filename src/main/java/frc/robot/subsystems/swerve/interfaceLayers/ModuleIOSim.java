@@ -16,6 +16,7 @@ package frc.robot.subsystems.swerve.interfaceLayers;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -38,7 +39,7 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
 public class ModuleIOSim implements ModuleIO {
   private static final double LOOP_PERIOD_SECS = Robot.defaultPeriodSecs;
 
-  private DCMotorSim driveSim = new DCMotorSim(DCMotor.getNEO(1), Module.DRIVE_GEAR_RATIO, 0.025);
+  private DCMotorSim driveSim = new DCMotorSim(DCMotor.getNEO(1), Module.DRIVE_GEAR_RATIO, 0.091);
   private DCMotorSim azimuthSim =
       new DCMotorSim(DCMotor.getNEO(1), Module.AZIMUTH_GEAR_RATIO, 0.004);
 
@@ -51,10 +52,10 @@ public class ModuleIOSim implements ModuleIO {
   private double azimuthAppliedVolts = 0.0;
 
   public ModuleIOSim() {
-    drivePID = new PIDController(0, 0, 0);
+    drivePID = new PIDController(24 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond), 0, 0);
     driveFF =
         new SimpleMotorFeedforward(0, 12 / SwerveSubsystem.MAX_LINEAR_SPEED.in(MetersPerSecond));
-    azimuthPID = new PIDController(36, 0, 0);
+    azimuthPID = new PIDController(12 * 8, 0, 0);
     azimuthPID.enableContinuousInput(-.5, .5);
 
     azimuthSim.setState(Math.random() * 2.0 * Math.PI, 0);
@@ -90,6 +91,7 @@ public class ModuleIOSim implements ModuleIO {
                     * Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters),
                 velocity.in(MetersPerSecond))
             + driveFF.calculate(velocity.in(MetersPerSecond));
+    driveAppliedVolts = MathUtil.clamp(driveAppliedVolts, -12, 12);
     driveSim.setInputVoltage(driveAppliedVolts);
   }
 
@@ -97,6 +99,7 @@ public class ModuleIOSim implements ModuleIO {
   public void setAzimuthPosition(Rotation2d position) {
     azimuthAppliedVolts =
         azimuthPID.calculate(azimuthSim.getAngularPositionRotations(), position.getRotations());
+    azimuthAppliedVolts = MathUtil.clamp(azimuthAppliedVolts, -12, 12);
     azimuthSim.setInputVoltage(azimuthAppliedVolts);
   }
 }
