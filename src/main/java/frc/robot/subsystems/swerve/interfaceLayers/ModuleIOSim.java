@@ -19,11 +19,13 @@ import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Distance;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Velocity;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Robot;
 import frc.robot.subsystems.swerve.Module;
@@ -45,6 +47,8 @@ public class ModuleIOSim implements ModuleIO {
 
   private final PIDController drivePID;
   private final SimpleMotorFeedforward driveFF;
+  private final SlewRateLimiter driveLimiter =
+      new SlewRateLimiter(SwerveSubsystem.MAX_LINEAR_ACCELERATION.in(MetersPerSecondPerSecond));
 
   private final PIDController azimuthPID;
 
@@ -84,6 +88,11 @@ public class ModuleIOSim implements ModuleIO {
 
   @Override
   public void setDriveVelocity(Measure<Velocity<Distance>> velocity) {
+    if (DriverStation.isDisabled()) {
+      driveAppliedVolts = 0;
+      driveSim.setInputVoltage(0);
+    }
+    velocity = MetersPerSecond.of(driveLimiter.calculate(velocity.in(MetersPerSecond)));
     driveAppliedVolts =
         drivePID.calculate(
                 driveSim.getAngularVelocityRadPerSec()
@@ -97,9 +106,22 @@ public class ModuleIOSim implements ModuleIO {
 
   @Override
   public void setAzimuthPosition(Rotation2d position) {
+    if (DriverStation.isDisabled()) {
+      azimuthAppliedVolts = 0;
+      azimuthSim.setInputVoltage(0);
+    }
     azimuthAppliedVolts =
         azimuthPID.calculate(azimuthSim.getAngularPositionRotations(), position.getRotations());
     azimuthAppliedVolts = MathUtil.clamp(azimuthAppliedVolts, -12, 12);
     azimuthSim.setInputVoltage(azimuthAppliedVolts);
+  }
+
+  @Override
+  public void stop() {
+    driveLimiter.reset(0);
+    driveAppliedVolts = 0;
+    azimuthAppliedVolts = 0;
+    driveSim.setInputVoltage(0);
+    azimuthSim.setInputVoltage(0);
   }
 }
