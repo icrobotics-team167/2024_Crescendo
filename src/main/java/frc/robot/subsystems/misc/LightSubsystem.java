@@ -55,26 +55,67 @@ public class LightSubsystem extends SubsystemBase {
       BooleanSupplier isShooting) {
     return run(
         () -> {
-          if (isIntaking.getAsBoolean()) {
-            currentState = LightState.INTAKING;
-          } else {
-            if (hasNote.getAsBoolean()) {
-              if (isAiming.getAsBoolean()) {
-                if (isAimOK.getAsBoolean()) {
-                  if (isShooting.getAsBoolean()) {
-                    currentState = LightState.SHOOTING;
-                  } else {
-                    currentState = LightState.AIM_OK;
-                  }
+          switch (currentState) {
+            case NO_NOTE:
+              if (isIntaking.getAsBoolean()) {
+                // If intaking, switch to the "intaking" state
+                currentState = LightState.INTAKING;
+              }
+              break;
+            case INTAKING:
+              if (!isIntaking.getAsBoolean()) {
+                // If the intake gets stopped
+                if (hasNote.getAsBoolean()) {
+                  // And there is a note detected, switch to "has note" state
+                  currentState = LightState.HAS_NOTE;
                 } else {
-                  currentState = LightState.AIMING;
+                  // Otherwise, go back to the "no note" state.
+                  currentState = LightState.NO_NOTE;
                 }
-              } else {
+              }
+              break;
+            case HAS_NOTE:
+              if (isAiming.getAsBoolean()) {
+                // If we're aiming, switch to the "aiming" state.
+                currentState = LightState.AIMING;
+              }
+              break;
+            case AIMING:
+              if (isAimOK.getAsBoolean()) {
+                // If the aiming is within tolerance, switch to the "aim ok" state
+                currentState = LightState.AIM_OK;
+              } else if (!isAiming.getAsBoolean()) {
+                // If the aiming gets canceled, go back to the "has note" state
                 currentState = LightState.HAS_NOTE;
               }
-            } else {
-              currentState = LightState.NO_NOTE;
-            }
+              break;
+            case AIM_OK:
+              if (!isAiming.getAsBoolean()) {
+                // If the aiming gets canceled, go back to the "has note" state
+                currentState = LightState.HAS_NOTE;
+              } else if (!isAimOK.getAsBoolean()) {
+                // If the aiming falls out of tolerance, switch back to the "aiming" state
+                currentState = LightState.AIMING;
+              } else if (isShooting.getAsBoolean()) {
+                // If we're shooting, go to the "shooting" state.
+                currentState = LightState.SHOOTING;
+              }
+              break;
+            case SHOOTING:
+              if (!isAimOK.getAsBoolean()) {
+                // If the aiming falls out of tolerance, switch back to the "aiming" state
+                currentState = LightState.AIMING;
+              } else if (!isShooting.getAsBoolean()) {
+                // If we stop shooting
+                if (!hasNote.getAsBoolean()) {
+                  // And the note successfully leaves the shooter, switch to the "no note" state.
+                  currentState = LightState.NO_NOTE;
+                } else {
+                  // Otherwise, go back to the "aim ok" state.
+                  currentState = LightState.AIM_OK;
+                }
+              }
+              break;
           }
         });
   }
