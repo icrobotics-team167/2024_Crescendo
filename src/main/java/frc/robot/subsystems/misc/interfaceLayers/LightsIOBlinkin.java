@@ -15,14 +15,16 @@
 package frc.robot.subsystems.misc.interfaceLayers;
 
 import edu.wpi.first.wpilibj.PWM;
+import frc.robot.subsystems.misc.LightSubsystem.LightState;
 import frc.robot.util.CANConstants;
 
 public class LightsIOBlinkin implements LightsIO {
-  PWM colorSparkRight;
+  PWM colorBlinkin;
   int colorValue = 0;
+  LightState commandedState = LightState.NO_NOTE;
 
   /** Cool colors. */
-  public static enum Colors {
+  private enum Colors {
     RAINBOW_PALETTE(1005),
     RAINBOW_GLITTER(1055),
     CONFETTI(1065),
@@ -73,33 +75,38 @@ public class LightsIOBlinkin implements LightsIO {
    */
   public LightsIOBlinkin() {
     // NOTE: 1705 is a good value
-    colorSparkRight = new PWM(CANConstants.misc.LIGHT_PWM_ID_RIGHT);
+    colorBlinkin = new PWM(CANConstants.misc.LIGHT_PWM_ID_RIGHT);
   }
 
   @Override
   public void updateInputs(LightsIOInputs inputs) {
-    inputs.colorValue = colorValue;
+    inputs.state = commandedState;
   }
 
-  /**
-   * Set the color for the spark motor bruv
-   *
-   * @param color colors object bruv
-   */
   @Override
-  public void setColor(Colors color) {
-    // set color to set colorValue bruv
-    setColorValue(color.colorValue);
-  }
-
-  public void setColorValue(int colorValue) {
-    this.colorValue = colorValue;
-    colorSparkRight.setPulseTimeMicroseconds(colorValue);
-  }
-
-  public void setColorNull() {
-    // Black is essentially just off, cuz black isn't real. I don't understand why we can't get
-    // diversity awards
-    colorSparkRight.setPulseTimeMicroseconds(1995);
+  public void setColorFromState(LightState state) {
+    commandedState = state;
+    switch (state) {
+      case NO_NOTE:
+        colorBlinkin.setPulseTimeMicroseconds(Colors.GREEN.colorValue);
+        break;
+      case INTAKING:
+        colorBlinkin.setPulseTimeMicroseconds(Colors.BLACK.colorValue); // TODO: Set color
+        break;
+      case HAS_NOTE:
+        colorBlinkin.setPulseTimeMicroseconds(Colors.GOLD.colorValue);
+        break;
+      case AIMING:
+        colorBlinkin.setPulseTimeMicroseconds(Colors.BLACK.colorValue); // TODO: Set color
+        break;
+      case AIM_OK:
+        colorBlinkin.setPulseTimeMicroseconds(Colors.BLACK.colorValue); // TODO: Set color
+        break;
+      case SHOOTING:
+        colorBlinkin.setPulseTimeMicroseconds(Colors.BLACK.colorValue); // TODO: Set color
+        break;
+      default:
+        colorBlinkin.setPulseTimeMicroseconds(Colors.BLACK.colorValue);
+    }
   }
 }

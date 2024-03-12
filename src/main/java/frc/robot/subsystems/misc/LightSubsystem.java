@@ -17,7 +17,6 @@ package frc.robot.subsystems.misc;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.misc.interfaceLayers.LightsIO;
-import frc.robot.subsystems.misc.interfaceLayers.LightsIOBlinkin.Colors;
 import frc.robot.subsystems.misc.interfaceLayers.LightsIOInputsAutoLogged;
 import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
@@ -28,29 +27,22 @@ public class LightSubsystem extends SubsystemBase {
 
   public LightSubsystem(LightsIO io) {
     this.io = io;
-    io.setColor(Colors.GREEN);
   }
 
   @Override
   public void periodic() {
-    io.setColorValue(currentState.colorValue);
+    io.setColorFromState(currentState);
     io.updateInputs(inputs);
     Logger.processInputs("Misc/lights", inputs);
   }
 
-  private enum LightState {
-    NO_NOTE(0),
-    INTAKING(0),
-    HAS_NOTE(0),
-    AIMING(0),
-    AIM_OK(0),
-    SHOOTING(0);
-
-    public int colorValue;
-
-    private LightState(int colorValue) {
-      this.colorValue = colorValue;
-    }
+  public enum LightState {
+    NO_NOTE,
+    INTAKING,
+    HAS_NOTE,
+    AIMING,
+    AIM_OK,
+    SHOOTING;
   }
 
   private LightState currentState = LightState.NO_NOTE;
