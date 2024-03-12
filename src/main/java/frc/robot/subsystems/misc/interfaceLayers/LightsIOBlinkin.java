@@ -100,10 +100,10 @@ public class LightsIOBlinkin implements LightsIO {
         colorBlinkin.setPulseTimeMicroseconds(Colors.BLACK.colorValue); // TODO: Set color
         break;
       case AIM_OK:
-        colorBlinkin.setPulseTimeMicroseconds(Colors.BLACK.colorValue); // TODO: Set color
+        colorBlinkin.setPulseTimeMicroseconds(Colors.SECONDARY_BLINK.colorValue); // TODO: Set color
         break;
       case SHOOTING:
-        colorBlinkin.setPulseTimeMicroseconds(Colors.BLACK.colorValue); // TODO: Set color
+        colorBlinkin.setPulseTimeMicroseconds(Colors.GRADIENT.colorValue);
         break;
       default:
         colorBlinkin.setPulseTimeMicroseconds(Colors.BLACK.colorValue);
