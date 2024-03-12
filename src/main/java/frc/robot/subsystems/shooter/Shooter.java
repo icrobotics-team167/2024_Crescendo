@@ -83,9 +83,9 @@ public class Shooter {
   }
 
   public Command autoIntake() {
-    return parallel(intake.getIntakeCommand(), feeder.getFeedCommand())
+    return parallel(intake.getIntakeCommand(), feeder.getFeedCommand(), pivot.getRestingPositionCommand())
         .until(noteDetector::hasNote)
-        .finallyDo(() -> light.setColor(Colors.GOLD));
+        .finallyDo(() -> either(light.setColorCommand(Colors.GOLD), Commands.none(), noteDetector::hasNote));
   }
 
   public Command getManualControlCommand(DoubleSupplier pivotSupplier) {
