@@ -19,7 +19,6 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -49,8 +48,6 @@ public class Shooter {
   private final LightSubsystem light;
   private final ClimberSubsystem climb;
 
-  private PIDController autoAimController;
-
   private InterpolatingDoubleTreeMap fudgeFactorLerpTable;
 
   public Shooter(
@@ -68,9 +65,6 @@ public class Shooter {
     feeder = new FeederSubsystem(feederIO);
     light = new LightSubsystem(lightIO);
     climb = new ClimberSubsystem(climberIO);
-
-    autoAimController = new PIDController(0.06, 0, 0.001);
-    autoAimController.enableContinuousInput(-180, 180);
 
     light.setDefaultCommand(
         light.setState(
