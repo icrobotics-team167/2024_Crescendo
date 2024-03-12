@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.misc.interfaceLayers.LightsIO;
 import frc.robot.subsystems.misc.interfaceLayers.LightsIOBlinkin.Colors;
 import frc.robot.subsystems.misc.interfaceLayers.LightsIOInputsAutoLogged;
+import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class LightSubsystem extends SubsystemBase {
@@ -32,27 +33,57 @@ public class LightSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    io.setColorValue(currentState.colorValue);
     io.updateInputs(inputs);
     Logger.processInputs("Misc/lights", inputs);
   }
 
-  public void setColor(Colors color) {
-    io.setColor(color);
+  private enum LightState {
+    NO_NOTE(0),
+    INTAKING(0),
+    HAS_NOTE(0),
+    AIMING(0),
+    AIM_OK(0),
+    SHOOTING(0);
+
+    public int colorValue;
+
+    private LightState(int colorValue) {
+      this.colorValue = colorValue;
+    }
   }
 
-  public Command setColorCommand(Colors color) {
-    return runOnce(() -> setColor(color));
-  }
+  private LightState currentState = LightState.NO_NOTE;
 
-  public void setColorValue(int num) {
-    io.setColorValue(num);
-  }
-
-  public Command setColorValueCommand(int num) {
-    return runOnce(() -> setColorValue(num));
-  }
-
-  public void setColorNull() {
-    io.setColorNull();
+  public Command setState(
+      BooleanSupplier hasNote,
+      BooleanSupplier isIntaking,
+      BooleanSupplier isAiming,
+      BooleanSupplier isAimOK,
+      BooleanSupplier isShooting) {
+    return run(
+        () -> {
+          if (isIntaking.getAsBoolean()) {
+            currentState = LightState.INTAKING;
+          } else {
+            if (hasNote.getAsBoolean()) {
+              if (isAiming.getAsBoolean()) {
+                if (isAimOK.getAsBoolean()) {
+                  if (isShooting.getAsBoolean()) {
+                    currentState = LightState.SHOOTING;
+                  } else {
+                    currentState = LightState.AIM_OK;
+                  }
+                } else {
+                  currentState = LightState.AIMING;
+                }
+              } else {
+                currentState = LightState.HAS_NOTE;
+              }
+            } else {
+              currentState = LightState.NO_NOTE;
+            }
+          }
+        });
   }
 }
