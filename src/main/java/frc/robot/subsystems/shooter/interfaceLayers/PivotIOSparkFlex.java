@@ -134,21 +134,22 @@ public class PivotIOSparkFlex implements PivotIO {
     inputs.isTooFarUp = getAngle().getDegrees() >= PivotIO.MAX_ANGLE;
 
     switch (controlMode) {
-      case TARGET_ANGLE:
+      case TARGET_ANGLE -> {
         targetVelocity =
             DegreesPerSecond.of(
                 -anglePid.calculate(targetAngle.getDegrees(), getAngle().getDegrees()));
         inputs.angleSetpoint = targetAngle;
         inputs.velocitySetpoint = targetVelocity;
         runMotor(targetVelocity);
-        break;
-      case TARGET_VEL:
+      }
+      case TARGET_VEL -> {
         inputs.velocitySetpoint = targetVelocity;
         runMotor(targetVelocity);
-        break;
-      case OPEN_LOOP:
+      }
+      case OPEN_LOOP -> {
         leaderMotor.setVoltage(leaderSetpoint);
         followerMotor.setVoltage(followerSetpoint);
+      }
     }
 
     inputs.leaderVelocity = DegreesPerSecond.of(leaderEncoder.getVelocity());

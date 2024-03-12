@@ -89,26 +89,16 @@ public class LightsIOBlinkin implements LightsIO {
   public void setColorFromState(LightState state) {
     commandedState = state;
     switch (state) {
-      case NO_NOTE:
-        colorBlinkin.setPulseTimeMicroseconds(Colors.GREEN.colorValue);
-        break;
-      case INTAKING:
-        colorBlinkin.setPulseTimeMicroseconds(Colors.BLACK.colorValue); // TODO: Set color
-        break;
-      case HAS_NOTE:
-        colorBlinkin.setPulseTimeMicroseconds(Colors.GOLD.colorValue);
-        break;
-      case AIMING:
-        colorBlinkin.setPulseTimeMicroseconds(Colors.BLACK.colorValue); // TODO: Set color
-        break;
-      case AIM_OK:
-        colorBlinkin.setPulseTimeMicroseconds(Colors.SECONDARY_BLINK.colorValue); // TODO: Set color
-        break;
-      case SHOOTING:
-        colorBlinkin.setPulseTimeMicroseconds(Colors.GRADIENT.colorValue);
-        break;
-      default:
-        colorBlinkin.setPulseTimeMicroseconds(Colors.BLACK.colorValue);
+      case NO_NOTE -> colorBlinkin.setPulseTimeMicroseconds(Colors.GREEN.colorValue);
+      case INTAKING -> colorBlinkin.setPulseTimeMicroseconds(
+          Colors.BLACK.colorValue); // TODO: Set color
+      case HAS_NOTE -> colorBlinkin.setPulseTimeMicroseconds(Colors.GOLD.colorValue);
+      case AIMING -> colorBlinkin.setPulseTimeMicroseconds(
+          Colors.BLACK.colorValue); // TODO: Set color
+      case AIM_OK -> colorBlinkin.setPulseTimeMicroseconds(
+          Colors.SECONDARY_BLINK.colorValue); // TODO: Set color
+      case SHOOTING -> colorBlinkin.setPulseTimeMicroseconds(Colors.GRADIENT.colorValue);
+      default -> colorBlinkin.setPulseTimeMicroseconds(Colors.BLACK.colorValue);
     }
   }
 }

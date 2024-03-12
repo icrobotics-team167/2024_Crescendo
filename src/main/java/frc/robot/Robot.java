@@ -76,20 +76,21 @@ public class Robot extends LoggedRobot {
     // AS LOG FILES ARE VERY, VERY INTENSIVE ON STORAGE SPACE. THE RIO'S INTERNAL STORAGE WILL BE
     // GONE PRACTICALLY INSTANTLY IF YOU DONT.
     switch (currentMode) {
-      case REAL:
+      case REAL -> {
         Logger.addDataReceiver(new WPILOGWriter());
         Logger.addDataReceiver(new NT4Publisher());
         new PowerDistribution(1, PowerDistribution.ModuleType.kRev);
-        break;
-      case SIM:
+      }
+      case SIM -> {
         Logger.addDataReceiver(new WPILOGWriter());
         Logger.addDataReceiver(new NT4Publisher());
-        break;
-      case REPLAY:
+      }
+      case REPLAY -> {
         setUseTiming(false);
         String logPath = LogFileUtil.findReplayLog();
         Logger.setReplaySource(new WPILOGReader(logPath));
         Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_replay")));
+      }
     }
 
     // Logger.registerURCL(URCL.startExternal()); // For REV users running sysid.

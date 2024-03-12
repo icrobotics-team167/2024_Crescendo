@@ -231,7 +231,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   /**
    * Constructs a new TalonFX-based swerve module IO interface.
    *
-   * @param index The index of the module.
+   * @param moduleID The index of the module.
    *     <ul>
    *       <li><b>Position of module from index</b>
    *           <ul>
@@ -243,7 +243,7 @@ public class ModuleIOTalonFX implements ModuleIO {
    *     </ul>
    */
   @SuppressWarnings("unused")
-  public ModuleIOTalonFX(int index) {
+  public ModuleIOTalonFX(int moduleID) {
     // PIDF tuning values. NONE OF THESE VALUES SHOULD BE NEGATIVE, IF THEY ARE YA DONE GOOFED
     // SOMEWHERE
     double drive_kS; // Amps of current needed to overcome friction
@@ -267,8 +267,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     double azimuth_kP; // Amps of current per rotation of error
     double azimuth_kI; // Amps of current per rotation of integrated error
     double azimuth_kD; // Amps of current per rotations/s of error derivative
-    switch (index) {
-      case 0: // Front Left module
+    switch (moduleID) {
+      case 0 -> {
         driveTalon = new TalonFX(Drivebase.FRONT_LEFT_DRIVE, CANConstants.CANIVORE_NAME);
         azimuthTalon = new TalonFX(Drivebase.FRONT_LEFT_TURN, CANConstants.CANIVORE_NAME);
         cancoder = new CANcoder(Drivebase.FRONT_LEFT_ENCODER, CANConstants.CANIVORE_NAME);
@@ -286,8 +286,8 @@ public class ModuleIOTalonFX implements ModuleIO {
         azimuth_kP = 4;
         azimuth_kI = 0;
         azimuth_kD = 0;
-        break;
-      case 1: // Front Right modules
+      }
+      case 1 -> {
         driveTalon = new TalonFX(Drivebase.FRONT_RIGHT_DRIVE, CANConstants.CANIVORE_NAME);
         azimuthTalon = new TalonFX(Drivebase.FRONT_RIGHT_TURN, CANConstants.CANIVORE_NAME);
         cancoder = new CANcoder(Drivebase.FRONT_RIGHT_ENCODER, CANConstants.CANIVORE_NAME);
@@ -306,8 +306,8 @@ public class ModuleIOTalonFX implements ModuleIO {
         azimuth_kP = 4;
         azimuth_kI = 0;
         azimuth_kD = 0;
-        break;
-      case 2: // Back Left modules
+      }
+      case 2 -> {
         driveTalon = new TalonFX(Drivebase.BACK_LEFT_DRIVE, CANConstants.CANIVORE_NAME);
         azimuthTalon = new TalonFX(Drivebase.BACK_RIGHT_TURN, CANConstants.CANIVORE_NAME);
         cancoder = new CANcoder(Drivebase.BACK_LEFT_ENCODER, CANConstants.CANIVORE_NAME);
@@ -326,8 +326,8 @@ public class ModuleIOTalonFX implements ModuleIO {
         azimuth_kP = 4;
         azimuth_kI = 0;
         azimuth_kD = 0;
-        break;
-      case 3: // Back Right modules
+      }
+      case 3 -> {
         driveTalon = new TalonFX(Drivebase.BACK_RIGHT_DRIVE, CANConstants.CANIVORE_NAME);
         azimuthTalon = new TalonFX(Drivebase.BACK_RIGHT_TURN, CANConstants.CANIVORE_NAME);
         cancoder = new CANcoder(Drivebase.BACK_RIGHT_ENCODER, CANConstants.CANIVORE_NAME);
@@ -346,9 +346,9 @@ public class ModuleIOTalonFX implements ModuleIO {
         azimuth_kP = 4;
         azimuth_kI = 0;
         azimuth_kD = 0;
-        break;
-      default: // If somehow a 5th module is constructed, error
-        throw new RuntimeException("Invalid module index");
+      }
+      default -> throw new IndexOutOfBoundsException(
+          "Invalid module ID. Expected 0-3, got " + moduleID);
     }
 
     var driveConfig = new TalonFXConfiguration();

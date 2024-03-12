@@ -56,13 +56,13 @@ public class LightSubsystem extends SubsystemBase {
     return run(
         () -> {
           switch (currentState) {
-            case NO_NOTE:
+            case NO_NOTE -> {
               if (isIntaking.getAsBoolean()) {
                 // If intaking, switch to the "intaking" state
                 currentState = LightState.INTAKING;
               }
-              break;
-            case INTAKING:
+            }
+            case INTAKING -> {
               if (!isIntaking.getAsBoolean()) {
                 // If the intake gets stopped
                 if (hasNote.getAsBoolean()) {
@@ -73,14 +73,14 @@ public class LightSubsystem extends SubsystemBase {
                   currentState = LightState.NO_NOTE;
                 }
               }
-              break;
-            case HAS_NOTE:
+            }
+            case HAS_NOTE -> {
               if (isAiming.getAsBoolean()) {
                 // If we're aiming, switch to the "aiming" state.
                 currentState = LightState.AIMING;
               }
-              break;
-            case AIMING:
+            }
+            case AIMING -> {
               if (isAimOK.getAsBoolean()) {
                 // If the aiming is within tolerance, switch to the "aim ok" state
                 currentState = LightState.AIM_OK;
@@ -88,8 +88,8 @@ public class LightSubsystem extends SubsystemBase {
                 // If the aiming gets canceled, go back to the "has note" state
                 currentState = LightState.HAS_NOTE;
               }
-              break;
-            case AIM_OK:
+            }
+            case AIM_OK -> {
               if (!isAiming.getAsBoolean()) {
                 // If the aiming gets canceled, go back to the "has note" state
                 currentState = LightState.HAS_NOTE;
@@ -100,8 +100,8 @@ public class LightSubsystem extends SubsystemBase {
                 // If we're shooting, go to the "shooting" state.
                 currentState = LightState.SHOOTING;
               }
-              break;
-            case SHOOTING:
+            }
+            case SHOOTING -> {
               if (!isAimOK.getAsBoolean()) {
                 // If the aiming falls out of tolerance, switch back to the "aiming" state
                 currentState = LightState.AIMING;
@@ -115,7 +115,7 @@ public class LightSubsystem extends SubsystemBase {
                   currentState = LightState.AIM_OK;
                 }
               }
-              break;
+            }
           }
         });
   }

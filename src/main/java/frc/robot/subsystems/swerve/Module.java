@@ -168,11 +168,10 @@ public class Module {
 
   /** Set the desired positions of the modules every robot tick. */
   public void periodic() {
-    Logger.processInputs("Drive/" + getNameFromIndex(index) + " Module", inputs);
+    Logger.processInputs("Drive/" + String.valueOf(index) + " Module", inputs);
 
     switch (driveMode) {
-      case CLOSEDLOOP:
-        // Scale velocity based on azimuth error
+      case CLOSEDLOOP -> { // Scale velocity based on azimuth error
         // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
         // towards the setpoint, its velocity should increase. This is achieved by
         // taking the component of the velocity in the direction of the setpoint.
@@ -185,14 +184,15 @@ public class Module {
 
         io.setDriveVelocity(MetersPerSecond.of(adjustedSpeedSetpoint));
         io.setAzimuthPosition(angleSetpoint);
-        break;
-      case RAWAZIMUTH:
+      }
+      case RAWAZIMUTH -> {
         io.setDriveVelocity(MetersPerSecond.of(0));
         io.setRawAzimuth(angleSetpoint.getRadians());
-        break;
-      case RAWDRIVE:
+      }
+      case RAWDRIVE -> {
         io.setRawDrive(speedSetpoint);
         io.setAzimuthPosition(new Rotation2d());
+      }
     }
 
     // Calculate positions for odometry
@@ -267,21 +267,5 @@ public class Module {
   /** Returns the timestamps of the samples received this cycle. */
   public double[] getOdometryTimestamps() {
     return inputs.odometryTimestamps;
-  }
-
-  /** Returns the name of a module from its index. */
-  protected static String getNameFromIndex(int index) {
-    switch (index) {
-      case 0:
-        return "Front Left";
-      case 1:
-        return "Front Right";
-      case 2:
-        return "Back Left";
-      case 3:
-        return "Back Right";
-      default:
-        throw new IndexOutOfBoundsException("Invalid module index");
-    }
   }
 }
