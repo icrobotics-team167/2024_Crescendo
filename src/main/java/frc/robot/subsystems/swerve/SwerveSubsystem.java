@@ -23,6 +23,7 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -52,10 +53,10 @@ import frc.robot.subsystems.swerve.interfaceLayers.PhoenixOdometryThread;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.subsystems.vision.interfaceLayers.VisionIO.VisionPoseEstimate;
 import frc.robot.util.LocalADStarAK;
-import frc.robot.util.MathUtils;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -68,7 +69,7 @@ public class SwerveSubsystem extends SubsystemBase {
               * Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters));
   /** The max linear acceleration of the robot. */
   public static final Measure<Velocity<Velocity<Distance>>> MAX_LINEAR_ACCELERATION =
-      MetersPerSecondPerSecond.of(7);
+      MetersPerSecondPerSecond.of(8);
   /** The distance between the front modules and the back modules. */
   private static final Measure<Distance> TRACK_LENGTH = Inches.of(23.5);
   /** The distance between the left modules and the right modules. */
@@ -109,6 +110,9 @@ public class SwerveSubsystem extends SubsystemBase {
   /** If slowmode should be enabled or not. */
   private boolean slowmode = Driving.SLOWMODE_DEFAULT;
 
+  private final PIDController xController;
+  private final PIDController yawController;
+
   @SuppressWarnings("unused")
   public SwerveSubsystem(
       GyroIO gyroIO,
@@ -141,7 +145,7 @@ public class SwerveSubsystem extends SubsystemBase {
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configureHolonomic(
         this::getPose,
-        this::setPoseAndGyro,
+        this::setPose,
         () -> kinematics.toChassisSpeeds(getModuleStates()),
         this::runVelocity,
         new HolonomicPathFollowerConfig(
@@ -165,6 +169,10 @@ public class SwerveSubsystem extends SubsystemBase {
         (targetPose) -> {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
+
+    yawController = new PIDController(3, 0, 0);
+    xController = new PIDController(1, 0, 0.05);
+    yawController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   @Override
@@ -223,7 +231,22 @@ public class SwerveSubsystem extends SubsystemBase {
         poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
       }
     } else {
-      rawGyroRotation = gyroInputs.yawPosition;
+      // Update gyro angle
+      if (gyroInputs.connected) {
+        // Use the real gyro angle
+        rawGyroRotation = gyroInputs.yawPosition;
+      } else {
+        SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
+        for (int i = 0; i < modules.length; i++) {
+          moduleDeltas[i] =
+              new SwerveModulePosition(
+                  modules[i].getDrivePosition().in(Meters) - lastModulePositions[i].distanceMeters,
+                  modules[i].getAngle());
+        }
+        // Use the angle delta from the kinematics and module deltas
+        Twist2d twist = kinematics.toTwist2d(moduleDeltas);
+        rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
+      }
       lastModulePositions = getModulePositions();
       poseEstimator.update(rawGyroRotation, lastModulePositions);
     }
@@ -314,23 +337,19 @@ public class SwerveSubsystem extends SubsystemBase {
     return poseEstimator.getEstimatedPosition();
   }
 
-  /** Returns the current odometry rotation. */
-  public Rotation2d getRotation() {
-    return getPose().getRotation();
-  }
-
-  /** Resets the current odometry pose and also sets the gyro angle. */
-  public void setPoseAndGyro(Pose2d pose) {
-    Rotation2d gyroYaw = MathUtils.adjustRotation(pose.getRotation());
-    gyroIO.setYaw(gyroYaw);
-    rawGyroRotation = gyroYaw;
-    poseEstimator.resetPosition(gyroYaw, getModulePositions(), pose);
-  }
-
-  public void resetGyro() {
+  public void resetGyroToForwards() {
     gyroIO.setYaw(new Rotation2d());
     rawGyroRotation = new Rotation2d();
     poseEstimator.resetPosition(new Rotation2d(), getModulePositions(), getPose());
+  }
+
+  public void resetGyroFromPose() {
+    if (gyroInputs.connected) {
+      Rotation2d yaw = getPose().getRotation();
+      gyroIO.setYaw(yaw);
+      rawGyroRotation = yaw;
+      poseEstimator.resetPosition(yaw, lastModulePositions, getPose());
+    }
   }
 
   /** Resets the current odometry pose. */
@@ -395,28 +414,55 @@ public class SwerveSubsystem extends SubsystemBase {
                   MAX_LINEAR_SPEED.in(MetersPerSecond) * xIn,
                   MAX_LINEAR_SPEED.in(MetersPerSecond) * yIn,
                   MAX_ANGULAR_SPEED.in(RadiansPerSecond) * rotIn,
-                  gyroInputs.yawPosition));
+                  gyroInputs.connected ? gyroInputs.yawPosition : getPose().getRotation()));
         });
   }
 
-  private PIDController xController = new PIDController(2, 0, 0);
-  private PIDController yawController = new PIDController(1, 0, 0);
-
   public Command getAmpAlign(DoubleSupplier yInput) {
-    yawController.enableContinuousInput(-Math.PI, Math.PI);
-    return run(
+    return getYawAlign(
         () -> {
-          double targetX = 1.84;
+          double targetX = 1.835;
           if (Robot.isOnRed()) {
             targetX = Field.FIELD_LENGTH.in(Meters) - targetX;
           }
+          Logger.recordOutput("SwerveSubsystem/ampAlign/targetX", targetX);
+          Logger.recordOutput("SwerveSubsystem/ampAlign/currentX", getPose().getX());
+          double pidOutput = xController.calculate(getPose().getX(), targetX);
+          pidOutput =
+              MathUtil.clamp(
+                  pidOutput,
+                  -MAX_LINEAR_SPEED.in(MetersPerSecond),
+                  MAX_LINEAR_SPEED.in(MetersPerSecond));
+          Logger.recordOutput("SwerveSubsystem/ampAlign/pidOutput", pidOutput);
+          return pidOutput;
+        },
+        yInput,
+        () -> Rotation2d.fromDegrees(90));
+  }
 
-          runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  xController.calculate(getPose().getX(), targetX),
-                  yInput.getAsDouble(),
-                  yawController.calculate(getPose().getRotation().getRadians(), -Math.PI / 2),
-                  rawGyroRotation));
+  public Command getYawAlign(
+      DoubleSupplier xInput, DoubleSupplier yInput, Supplier<Rotation2d> targetYawSupplier) {
+    return getDriveCommand(
+        xInput,
+        yInput,
+        () -> {
+          Rotation2d targetYaw = targetYawSupplier.get();
+          Logger.recordOutput("SwerveSubsystem/yawAlign/targetYaw", targetYaw);
+          Rotation2d currentYaw = getPose().getRotation();
+          Logger.recordOutput("SwerveSubsystem/yawAlign/currentYaw", currentYaw);
+          double pidOutput =
+              yawController.calculate(currentYaw.getRadians(), targetYaw.getRadians());
+          if (slowmode) {
+            pidOutput /= Driving.SLOWMODE_MULTIPLIER;
+          }
+          pidOutput =
+              MathUtil.clamp(
+                      pidOutput,
+                      -MAX_ANGULAR_SPEED.in(RadiansPerSecond) / 2,
+                      MAX_ANGULAR_SPEED.in(RadiansPerSecond) / 2)
+                  / 2;
+          Logger.recordOutput("SwerveSubsystem/yawAlign/pidOutput", pidOutput);
+          return pidOutput;
         });
   }
 

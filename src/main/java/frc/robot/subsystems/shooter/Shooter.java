@@ -19,12 +19,11 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.Driving;
 import frc.robot.Constants.Field;
 import frc.robot.Robot;
 import frc.robot.subsystems.misc.LightSubsystem;
@@ -53,6 +52,8 @@ public class Shooter {
 
   private PIDController autoAimController;
 
+  private InterpolatingDoubleTreeMap fudgeFactorLerpTable;
+
   public Shooter(
       FeederIO feederIO,
       FlywheelIO flywheelIO,
@@ -71,6 +72,16 @@ public class Shooter {
 
     autoAimController = new PIDController(0.06, 0, 0.001);
     autoAimController.enableContinuousInput(-180, 180);
+
+    // Lerped fudge factor for pivot aiming to account for gravity
+    // Is added to a tan^-1
+    // Known good angles:
+    // 48.4 degrees for at subwoofer measured 47.3
+    // 32 degrees for at podium
+    fudgeFactorLerpTable = new InterpolatingDoubleTreeMap();
+    fudgeFactorLerpTable.put(0.0, 0.0);
+    fudgeFactorLerpTable.put(1.0, 2.5);
+    fudgeFactorLerpTable.put(3.0, 6.65);
   }
 
   public Command intake() {
@@ -177,25 +188,22 @@ public class Shooter {
               }
               return targetAngle;
             }),
-        drivebase.getDriveCommand(
+        drivebase.getYawAlign(
             xVel,
             yVel,
-            () -> {
-              return aimToYaw(
-                  drivebase,
-                  aimAtPosition(
-                      drivebase.getPose().getTranslation(),
-                      new Translation2d(
-                          Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0, speakerY)));
-              // Michael was here
-            }));
+            () ->
+                aimAtPosition(
+                    drivebase.getPose().getTranslation(),
+                    new Translation2d(
+                        Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0, speakerY))));
+    // Michael was here));
   }
 
   public Command getSubwooferShotCommand() {
     return pivot.getPivotCommand(
         () -> {
           Rotation2d targetAngle = Rotation2d.fromDegrees(49);
-          if (Math.abs(pivot.getAngle().getDegrees() - targetAngle.getDegrees()) < 0.2) {
+          if (pivot.isAtSetpoint()) {
             light.setColorValue(1465);
           } else {
             light.setColor(Colors.GOLD);
@@ -208,7 +216,7 @@ public class Shooter {
     return pivot.getPivotCommand(
         () -> {
           Rotation2d targetAngle = Rotation2d.fromDegrees(32.1);
-          if (Math.abs(pivot.getAngle().getDegrees() - targetAngle.getDegrees()) < 0.2) {
+          if (pivot.isAtSetpoint()) {
             light.setColorValue(1465);
           } else {
             light.setColor(Colors.GOLD);
@@ -217,34 +225,25 @@ public class Shooter {
         });
   }
 
-  // 48.4 degrees for at subwoofer measured 47.3
-  // 32 degrees for at podium
   private Rotation2d aimAtHeight(Translation2d currentBotPosition, double height) {
     double speakerX = Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0;
     double targetDistance = currentBotPosition.getDistance(new Translation2d(speakerX, speakerY));
     targetDistance += speakerToRobotDistanceOffset;
-    // Proportional fudge factor to account for gravity
-    // Close: ~1 meters, ~ 2.5 degree higher aim
-    // Far: ~3 meters, ~ 6.65 degree higher aim
-    double fudgeFactor = MathUtil.interpolate(2.5, 6.65, (targetDistance - 1) / (3 - 1));
-    return new Rotation2d(
-        Math.atan(height / targetDistance) + Radians.convertFrom(fudgeFactor, Degrees));
+    Logger.recordOutput("Shooter/autoAim/pivot/targetHeight", height);
+    Logger.recordOutput("Shooter/autoAim/pivot/targetDistance", targetDistance);
+
+    double targetPivotNoFudge = Math.atan(height / targetDistance);
+    double fudgeFactor = Radians.convertFrom(fudgeFactorLerpTable.get(targetDistance), Degrees);
+    Logger.recordOutput("Shooter/autoAim/pivot/targetPivotNoFudge", targetPivotNoFudge);
+    Logger.recordOutput("Shooter/autoAim/pivot/pivotFudgeFactor", fudgeFactor);
+
+    return new Rotation2d(targetPivotNoFudge + fudgeFactor);
   }
 
   // ROBOT ROTATE MATH
   private Rotation2d aimAtPosition(Translation2d currentBotPosition, Translation2d targetPosition) {
     Rotation2d targetBotYaw = targetPosition.minus(currentBotPosition).getAngle();
     return targetBotYaw;
-  }
-
-  private double aimToYaw(SwerveSubsystem drivebase, Rotation2d targetBotYaw) {
-    Rotation2d currentBotYaw = drivebase.getPose().getRotation();
-    Logger.recordOutput("Shooter/autoAim/yawError", targetBotYaw.minus(currentBotYaw));
-    double pidOut =
-        autoAimController.calculate(currentBotYaw.getDegrees(), targetBotYaw.getDegrees())
-            * (drivebase.isSlowmode() ? 1 : Driving.SLOWMODE_MULTIPLIER);
-    Logger.recordOutput("Shooter/autoAim/pidOut", pidOut);
-    return pidOut;
   }
 
   public Command getClimberManualControl(DoubleSupplier climberControl) {

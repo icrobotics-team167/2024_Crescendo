@@ -3,12 +3,16 @@
     {
       "axisConfig": [
         {
-          "decKey": 65,
-          "incKey": 68
+          "decKey": 87,
+          "decayRate": 1.0,
+          "incKey": 83,
+          "keyRate": 1.0
         },
         {
-          "decKey": 87,
-          "incKey": 83
+          "decKey": 68,
+          "decayRate": 1.0,
+          "incKey": 65,
+          "keyRate": 1.0
         },
         {
           "decKey": 69,
@@ -17,13 +21,19 @@
           "keyRate": 0.009999999776482582
         }
       ],
-      "axisCount": 3,
-      "buttonCount": 4,
+      "axisCount": 2,
+      "buttonCount": 10,
       "buttonKeys": [
         90,
         88,
         67,
-        86
+        86,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
       ],
       "povConfig": [
         {
@@ -43,20 +53,32 @@
       "axisConfig": [
         {
           "decKey": 74,
-          "incKey": 76
+          "decayRate": 0.5,
+          "incKey": 76,
+          "keyRate": 0.5,
+          "maxAbsValue": 0.5
         },
         {
           "decKey": 73,
-          "incKey": 75
+          "decayRate": 0.5,
+          "incKey": 75,
+          "keyRate": 0.5,
+          "maxAbsValue": 0.5
         }
       ],
       "axisCount": 2,
-      "buttonCount": 4,
+      "buttonCount": 10,
       "buttonKeys": [
         77,
         44,
         46,
-        47
+        47,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
       ],
       "povCount": 0
     },
@@ -91,10 +113,12 @@
   ],
   "robotJoysticks": [
     {
-      "guid": "Keyboard0"
+      "guid": "Keyboard0",
+      "name": "Primary Left Stick"
     },
     {
-      "guid": "Keyboard1"
+      "guid": "Keyboard1",
+      "name": "Primary Right Stick"
     }
   ]
 }

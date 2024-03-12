@@ -75,6 +75,24 @@ public class RobotContainer {
                 new ClimberIO() {});
         // light = new LightSubsystem(new LightsIOBlinkin());
         break;
+      case SIM:
+        drivebase =
+            new SwerveSubsystem(
+                new GyroIO() {},
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim());
+        shooter =
+            new Shooter(
+                new FeederIO() {},
+                new FlywheelIO() {},
+                new PivotIO() {},
+                new NoteDetectorIO() {},
+                new IntakeIO() {},
+                new LightsIO() {},
+                new ClimberIO() {});
+        break;
       default:
         drivebase =
             new SwerveSubsystem(
@@ -163,7 +181,7 @@ public class RobotContainer {
         .trigger()
         .whileTrue(new StartEndCommand(drivebase::setSlowmode, drivebase::unsetSlowmode));
     primaryLeftStick.button(2).whileTrue(drivebase.getAmpAlign(primaryLeftStickSide));
-    primaryLeftStick.button(3).onTrue(new InstantCommand(drivebase::resetGyro));
+    primaryLeftStick.button(3).onTrue(new InstantCommand(drivebase::resetGyroToForwards));
 
     primaryRightStick
         .trigger()
@@ -199,5 +217,9 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoSelector.get();
+  }
+
+  public void teleopInit() {
+    drivebase.resetGyroFromPose();
   }
 }

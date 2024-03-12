@@ -1,6 +1,6 @@
 {
-  "robotWidth": 0.9,
-  "robotLength": 0.9,
+  "robotWidth": 0.914,
+  "robotLength": 0.927,
   "holonomicMode": true,
   "pathFolders": [
     "Spit out 4 auto",
