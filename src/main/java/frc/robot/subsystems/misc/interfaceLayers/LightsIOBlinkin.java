@@ -55,7 +55,9 @@ public class LightsIOBlinkin implements LightsIO {
     WHITE(1965),
     GRAY(1975),
     DARK_GREY(1985),
-    BLACK(1995);
+    BLACK(1995),
+    SECONDARY_BLINK(1675),
+    GRADIENT(1705);
 
     int colorValue;
     /**
