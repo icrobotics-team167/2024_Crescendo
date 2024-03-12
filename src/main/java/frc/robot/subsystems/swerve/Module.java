@@ -171,7 +171,8 @@ public class Module {
     Logger.processInputs("Drive/" + String.valueOf(index) + " Module", inputs);
 
     switch (driveMode) {
-      case CLOSEDLOOP -> { // Scale velocity based on azimuth error
+      case CLOSEDLOOP -> {
+        // Scale velocity based on azimuth error
         // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
         // towards the setpoint, its velocity should increase. This is achieved by
         // taking the component of the velocity in the direction of the setpoint.
