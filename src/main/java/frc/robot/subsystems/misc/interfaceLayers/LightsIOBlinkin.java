@@ -90,15 +90,12 @@ public class LightsIOBlinkin implements LightsIO {
     commandedState = state;
     switch (state) {
       case NO_NOTE -> colorBlinkin.setPulseTimeMicroseconds(Colors.GREEN.colorValue);
-      case INTAKING -> colorBlinkin.setPulseTimeMicroseconds(
-          Colors.BLACK.colorValue); // TODO: Set color
+      case INTAKING -> colorBlinkin.setPulseTimeMicroseconds(Colors.BLUE.colorValue);
       case HAS_NOTE -> colorBlinkin.setPulseTimeMicroseconds(Colors.GOLD.colorValue);
-      case AIMING -> colorBlinkin.setPulseTimeMicroseconds(
-          Colors.BLACK.colorValue); // TODO: Set color
-      case AIM_OK -> colorBlinkin.setPulseTimeMicroseconds(
-          Colors.SECONDARY_BLINK.colorValue); // TODO: Set color
+      case AIMING -> colorBlinkin.setPulseTimeMicroseconds(Colors.WHITE.colorValue);
+      case AIM_OK -> colorBlinkin.setPulseTimeMicroseconds(Colors.FIRE_LARGE.colorValue);
       case SHOOTING -> colorBlinkin.setPulseTimeMicroseconds(Colors.GRADIENT.colorValue);
-      default -> colorBlinkin.setPulseTimeMicroseconds(Colors.BLACK.colorValue);
+      default -> colorBlinkin.setPulseTimeMicroseconds(Colors.GREEN.colorValue);
     }
   }
 }
