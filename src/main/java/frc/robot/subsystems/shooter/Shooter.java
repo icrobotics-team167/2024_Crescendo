@@ -70,11 +70,9 @@ public class Shooter {
         light.setState(
             noteDetector::hasNote, // Does the bot have a note?
             intake::isRunning, // Is the bot intaking?
-            () ->
-                pivot
-                    .getCurrentCommand()
-                    .getName()
-                    .equals("Pivot to angle"), // Is the pivot aiming?
+            () -> // Is the pivot aiming?
+            pivot.getCurrentCommand() != null
+                    && pivot.getCurrentCommand().getName().equals("Pivot to angle"),
             pivot::isAtSetpoint, // Is the pivot at its setpoint?
             flywheel::isUpToSpeed)); // Is it shooting?
 
