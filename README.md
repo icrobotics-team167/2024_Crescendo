@@ -2,7 +2,7 @@
 
 Code written by [FIRST Robotics Competition Team 167, Children of the Corn](https://github.com/icrobotics-team167) for the 2024 FRC season.
 
-AdvantageKit's "log literally everything" approach is used here, to allow for extremely robust debugging and simulations. In addition, it also has capabilities for high frequency odometry and vision-based pose estimation, giving it high confidence in knowing where the robot is on the field at all times.
+AdvantageKit's "log literally everything" approach is used here, to allow for extremely robust debugging and simulations. In addition, it supports high frequency odometry and vision-based pose estimation, giving it high confidence in knowing where the robot is on the field at all times.
 
 ## License
 
