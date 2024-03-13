@@ -53,6 +53,7 @@ public class LightSubsystem extends SubsystemBase {
       BooleanSupplier isAiming,
       BooleanSupplier isAimOK,
       BooleanSupplier isShooting) {
+    // State machines FTW
     return run(
         () -> {
           switch (currentState) {
@@ -66,7 +67,7 @@ public class LightSubsystem extends SubsystemBase {
               if (!isIntaking.getAsBoolean()) {
                 // If the intake gets stopped
                 if (hasNote.getAsBoolean()) {
-                  // And there is a note detected, switch to "has note" state
+                  // And we did successfully intake, switch to "has note" state
                   currentState = LightState.HAS_NOTE;
                 } else {
                   // Otherwise, go back to the "no note" state.
@@ -76,6 +77,7 @@ public class LightSubsystem extends SubsystemBase {
             }
             case HAS_NOTE -> {
               if (!hasNote.getAsBoolean()) {
+                // If we somehow don't have a note anymore, go back to the "no note" state.
                 currentState = LightState.NO_NOTE;
               } else if (isAiming.getAsBoolean()) {
                 // If we're aiming, switch to the "aiming" state.
@@ -84,6 +86,7 @@ public class LightSubsystem extends SubsystemBase {
             }
             case AIMING -> {
               if (!hasNote.getAsBoolean()) {
+                // If we somehow don't have a note anymore, go back to the "no note" state.
                 currentState = LightState.NO_NOTE;
               } else if (isAimOK.getAsBoolean()) {
                 // If the aiming is within tolerance, switch to the "aim ok" state
@@ -95,6 +98,7 @@ public class LightSubsystem extends SubsystemBase {
             }
             case AIM_OK -> {
               if (!hasNote.getAsBoolean()) {
+                // If we somehow don't have a note anymore, go back to the "no note" state.
                 currentState = LightState.NO_NOTE;
               } else if (!isAiming.getAsBoolean()) {
                 // If the aiming gets canceled, go back to the "has note" state
