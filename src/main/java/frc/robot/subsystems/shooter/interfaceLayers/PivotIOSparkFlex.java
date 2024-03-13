@@ -95,7 +95,7 @@ public class PivotIOSparkFlex implements PivotIO {
         Set.of(SparkUtils.Sensor.INTEGRATED),
         false);
 
-    anglePid = new PIDController(5.5, 0, 0.03);
+    anglePid = new PIDController(.08, 0, 0.001);
 
     leaderPidController =
         new PIDController(
@@ -136,8 +136,8 @@ public class PivotIOSparkFlex implements PivotIO {
     switch (controlMode) {
       case TARGET_ANGLE -> {
         targetVelocity =
-            DegreesPerSecond.of(
-                -anglePid.calculate(targetAngle.getDegrees(), getAngle().getDegrees()));
+            RadiansPerSecond.of(
+                -anglePid.calculate(targetAngle.getRadians(), getAngle().getRadians()));
         inputs.angleSetpoint = targetAngle;
         inputs.velocitySetpoint = targetVelocity;
         runMotor(targetVelocity);
