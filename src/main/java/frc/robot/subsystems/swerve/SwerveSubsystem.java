@@ -85,7 +85,7 @@ public class SwerveSubsystem extends SubsystemBase {
       RadiansPerSecond.of(MAX_LINEAR_SPEED.in(MetersPerSecond) / DRIVE_BASE_RADIUS.in(Meters));
 
   private static final Measure<Velocity<Velocity<Angle>>> MAX_ANGULAR_ACCELERATION =
-      RadiansPerSecond.per(Second).of(20);
+      RadiansPerSecond.per(Second).of(30);
 
   // IO layers
   /** The IO interface layer for the gyroscope. */
@@ -179,9 +179,13 @@ public class SwerveSubsystem extends SubsystemBase {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
 
-    yawController = new PIDController(1, 0, 0);
+    Logger.recordOutput("SwerveSubsystem/maxLinearVelocity", MAX_LINEAR_SPEED);
+    Logger.recordOutput("SwerveSubsystem/maxAngularVelocity", MAX_ANGULAR_SPEED);
+
+    yawController = new PIDController(1.25, 0.8, 0.2);
     xController = new PIDController(1, 0, 0.05);
     yawController.enableContinuousInput(-Math.PI, Math.PI);
+    yawController.setIntegratorRange(-1, 1);
   }
 
   @Override
@@ -478,6 +482,9 @@ public class SwerveSubsystem extends SubsystemBase {
           Logger.recordOutput("SwerveSubsystem/yawAlign/targetYaw", targetYaw);
           Rotation2d currentYaw = getPose().getRotation();
           Logger.recordOutput("SwerveSubsystem/yawAlign/currentYaw", currentYaw);
+          Logger.recordOutput(
+              "SwerveSubsystem/yawAlign/errorRad",
+              targetYaw.getRadians() - currentYaw.getRadians());
           double pidOutput =
               yawController.calculate(currentYaw.getRadians(), targetYaw.getRadians());
           if (slowmode) {
@@ -485,10 +492,9 @@ public class SwerveSubsystem extends SubsystemBase {
           }
           pidOutput =
               MathUtil.clamp(
-                      pidOutput,
-                      -MAX_ANGULAR_SPEED.in(RadiansPerSecond) / 2,
-                      MAX_ANGULAR_SPEED.in(RadiansPerSecond) / 2)
-                  / 2;
+                  pidOutput,
+                  -MAX_ANGULAR_SPEED.in(RadiansPerSecond),
+                  MAX_ANGULAR_SPEED.in(RadiansPerSecond));
           Logger.recordOutput("SwerveSubsystem/yawAlign/pidOutput", pidOutput);
           return pidOutput;
         });
