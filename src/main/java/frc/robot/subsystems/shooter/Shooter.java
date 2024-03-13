@@ -87,17 +87,16 @@ public class Shooter {
     fudgeFactorLerpTable.put(3.0, 6.65);
   }
 
-  public Command intake() {
-    return intake.getIntakeCommand();
-  }
-
   public Command intakeOut() {
     return parallel(
         intake.getIntakeOutCommand(), feeder.getUnfeedCommand(), flywheel.getSourceIntakeCommand());
   }
 
   public Command autoIntake() {
-    return parallel(intake.getIntakeCommand(), feeder.getFeedCommand())
+    return parallel(
+            intake.getIntakeCommand(),
+            feeder.getFeedCommand(),
+            pivot.getPivotCommand(() -> Rotation2d.fromDegrees(45)))
         .until(noteDetector::hasNote);
   }
 
