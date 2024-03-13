@@ -68,7 +68,8 @@ public class Shooter {
 
     light.setDefaultCommand(
         light.setState(
-            noteDetector::hasNote, // Does the bot have a note?
+            noteDetector::hasNoteInIntake, // Is the bot currently intaking a note?
+            noteDetector::hasNoteInShooter, // Does the bot have a note in the shooter?
             intake::isRunning, // Is the bot intaking?
             () -> // Is the pivot aiming?
             pivot.getCurrentCommand() != null
@@ -97,7 +98,7 @@ public class Shooter {
             intake.getIntakeCommand(),
             feeder.getFeedCommand(),
             pivot.getPivotCommand(() -> Rotation2d.fromDegrees(45)))
-        .until(noteDetector::hasNote);
+        .until(noteDetector::hasNoteInShooter);
   }
 
   public Command getManualControlCommand(DoubleSupplier pivotSupplier) {
@@ -147,7 +148,7 @@ public class Shooter {
                 () -> {
                   return Rotation2d.fromDegrees(45);
                 }))
-        .until(noteDetector::hasNote);
+        .until(noteDetector::hasNoteInShooter);
   }
 
   private double speakerY = 5.5;

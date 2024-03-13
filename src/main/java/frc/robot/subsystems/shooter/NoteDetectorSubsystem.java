@@ -33,8 +33,12 @@ public class NoteDetectorSubsystem extends SubsystemBase {
     Logger.processInputs("Shooter/noteDetector", inputs);
   }
 
-  public boolean hasNote() {
-    return inputs.hasNote;
+  public boolean hasNoteInShooter() {
+    return inputs.hasNoteInShooter;
     // Hey a random Michael has appeared
+  }
+
+  public boolean hasNoteInIntake() {
+    return inputs.hasNoteInIntake;
   }
 }

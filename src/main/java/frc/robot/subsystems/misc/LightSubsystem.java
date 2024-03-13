@@ -39,6 +39,7 @@ public class LightSubsystem extends SubsystemBase {
   public enum LightState {
     NO_NOTE,
     INTAKING,
+    INDEXING_NOTE,
     HAS_NOTE,
     AIMING,
     AIM_OK,
@@ -48,7 +49,8 @@ public class LightSubsystem extends SubsystemBase {
   private LightState currentState = LightState.NO_NOTE;
 
   public Command setState(
-      BooleanSupplier hasNote,
+      BooleanSupplier hasNoteInIntake,
+      BooleanSupplier hasNoteInShooter,
       BooleanSupplier isIntaking,
       BooleanSupplier isAiming,
       BooleanSupplier isAimOK,
@@ -64,19 +66,25 @@ public class LightSubsystem extends SubsystemBase {
               }
             }
             case INTAKING -> {
-              if (!isIntaking.getAsBoolean()) {
-                // If the intake gets stopped
-                if (hasNote.getAsBoolean()) {
-                  // And we did successfully intake, switch to "has note" state
-                  currentState = LightState.HAS_NOTE;
-                } else {
-                  // Otherwise, go back to the "no note" state.
-                  currentState = LightState.NO_NOTE;
-                }
+              if (hasNoteInIntake.getAsBoolean()) {
+                // If we detect a note in the intake, switch to the "indexing note" state.
+                currentState = LightState.INDEXING_NOTE;
+              } else if (!isIntaking.getAsBoolean()) {
+                // If we fail to intake the note, go back to the "no note" state.
+                currentState = LightState.NO_NOTE;
+              }
+            }
+            case INDEXING_NOTE -> {
+              if (hasNoteInShooter.getAsBoolean()) {
+                // If we detect the note in the shooter, switch to the "has note" state.
+                currentState = LightState.HAS_NOTE;
+              } else if (!hasNoteInIntake.getAsBoolean()) {
+                // If we somehow don't have a note anymore, go back to the "no note" state.
+                currentState = LightState.NO_NOTE;
               }
             }
             case HAS_NOTE -> {
-              if (!hasNote.getAsBoolean()) {
+              if (!hasNoteInShooter.getAsBoolean()) {
                 // If we somehow don't have a note anymore, go back to the "no note" state.
                 currentState = LightState.NO_NOTE;
               } else if (isAiming.getAsBoolean()) {
@@ -85,7 +93,7 @@ public class LightSubsystem extends SubsystemBase {
               }
             }
             case AIMING -> {
-              if (!hasNote.getAsBoolean()) {
+              if (!hasNoteInShooter.getAsBoolean()) {
                 // If we somehow don't have a note anymore, go back to the "no note" state.
                 currentState = LightState.NO_NOTE;
               } else if (isAimOK.getAsBoolean()) {
@@ -97,7 +105,7 @@ public class LightSubsystem extends SubsystemBase {
               }
             }
             case AIM_OK -> {
-              if (!hasNote.getAsBoolean()) {
+              if (!hasNoteInShooter.getAsBoolean()) {
                 // If we somehow don't have a note anymore, go back to the "no note" state.
                 currentState = LightState.NO_NOTE;
               } else if (!isAiming.getAsBoolean()) {
@@ -117,7 +125,7 @@ public class LightSubsystem extends SubsystemBase {
                 currentState = LightState.AIMING;
               } else if (!isShooting.getAsBoolean()) {
                 // If we stop shooting
-                if (!hasNote.getAsBoolean()) {
+                if (!hasNoteInShooter.getAsBoolean()) {
                   // And the note successfully leaves the shooter, switch to the "no note" state.
                   currentState = LightState.NO_NOTE;
                 } else {
