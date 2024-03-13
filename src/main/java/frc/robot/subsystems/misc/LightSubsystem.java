@@ -75,13 +75,17 @@ public class LightSubsystem extends SubsystemBase {
               }
             }
             case HAS_NOTE -> {
-              if (isAiming.getAsBoolean()) {
+              if (!hasNote.getAsBoolean()) {
+                currentState = LightState.NO_NOTE;
+              } else if (isAiming.getAsBoolean()) {
                 // If we're aiming, switch to the "aiming" state.
                 currentState = LightState.AIMING;
               }
             }
             case AIMING -> {
-              if (isAimOK.getAsBoolean()) {
+              if (!hasNote.getAsBoolean()) {
+                currentState = LightState.NO_NOTE;
+              } else if (isAimOK.getAsBoolean()) {
                 // If the aiming is within tolerance, switch to the "aim ok" state
                 currentState = LightState.AIM_OK;
               } else if (!isAiming.getAsBoolean()) {
@@ -90,7 +94,9 @@ public class LightSubsystem extends SubsystemBase {
               }
             }
             case AIM_OK -> {
-              if (!isAiming.getAsBoolean()) {
+              if (!hasNote.getAsBoolean()) {
+                currentState = LightState.NO_NOTE;
+              } else if (!isAiming.getAsBoolean()) {
                 // If the aiming gets canceled, go back to the "has note" state
                 currentState = LightState.HAS_NOTE;
               } else if (!isAimOK.getAsBoolean()) {
