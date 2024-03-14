@@ -27,6 +27,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -68,7 +69,7 @@ public class SwerveSubsystem extends SubsystemBase {
           (Module.DRIVE_MOTOR_MAX_VEL.in(RotationsPerSecond) / Module.DRIVE_GEAR_RATIO)
               * Module.DRIVE_WHEEL_CIRCUMFERENCE.in(Meters));
   /** The max linear acceleration of the robot. */
-  public static final Measure<Velocity<Velocity<Distance>>> MAX_LINEAR_ACCELERATION =
+  private static final Measure<Velocity<Velocity<Distance>>> MAX_LINEAR_ACCELERATION =
       MetersPerSecondPerSecond.of(8);
   /** The distance between the front modules and the back modules. */
   private static final Measure<Distance> TRACK_LENGTH = Inches.of(23.5);
@@ -82,6 +83,9 @@ public class SwerveSubsystem extends SubsystemBase {
   /** The max angular velocity of the drivebase. */
   private static final Measure<Velocity<Angle>> MAX_ANGULAR_SPEED =
       RadiansPerSecond.of(MAX_LINEAR_SPEED.in(MetersPerSecond) / DRIVE_BASE_RADIUS.in(Meters));
+
+  private static final Measure<Velocity<Velocity<Angle>>> MAX_ANGULAR_ACCELERATION =
+      RadiansPerSecond.per(Second).of(30);
 
   // IO layers
   /** The IO interface layer for the gyroscope. */
@@ -109,6 +113,11 @@ public class SwerveSubsystem extends SubsystemBase {
 
   /** If slowmode should be enabled or not. */
   private boolean slowmode = Driving.SLOWMODE_DEFAULT;
+
+  private final SlewRateLimiter linearRateLimiter =
+      new SlewRateLimiter(MAX_LINEAR_ACCELERATION.in(MetersPerSecondPerSecond));
+  private final SlewRateLimiter angularRateLimiter =
+      new SlewRateLimiter(MAX_ANGULAR_ACCELERATION.in(RadiansPerSecond.per(Second)));
 
   private final PIDController xController;
   private final PIDController yawController;
@@ -170,9 +179,13 @@ public class SwerveSubsystem extends SubsystemBase {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
 
-    yawController = new PIDController(3, 0, 0);
+    Logger.recordOutput("SwerveSubsystem/maxLinearVelocity", MAX_LINEAR_SPEED);
+    Logger.recordOutput("SwerveSubsystem/maxAngularVelocity", MAX_ANGULAR_SPEED);
+
+    yawController = new PIDController(1.25, 0.8, 0.2);
     xController = new PIDController(1, 0, 0.05);
     yawController.enableContinuousInput(-Math.PI, Math.PI);
+    yawController.setIntegratorRange(-1, 1);
   }
 
   @Override
@@ -191,6 +204,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
     // Stop moving when disabled
     if (DriverStation.isDisabled()) {
+      linearRateLimiter.reset(0);
+      angularRateLimiter.reset(0);
       for (var module : modules) {
         module.stop();
       }
@@ -264,6 +279,9 @@ public class SwerveSubsystem extends SubsystemBase {
       speeds.vyMetersPerSecond *= Driving.SLOWMODE_MULTIPLIER;
       speeds.omegaRadiansPerSecond *= Driving.SLOWMODE_MULTIPLIER;
     }
+
+    speeds = limitRates(speeds);
+
     // Calculate module setpoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
@@ -282,8 +300,22 @@ public class SwerveSubsystem extends SubsystemBase {
     Logger.recordOutput("SwerveStates/SetpointsOptimized", optimizedSetpointStates);
   }
 
+  private ChassisSpeeds limitRates(ChassisSpeeds rawRate) {
+    double linearVelocity = Math.hypot(rawRate.vxMetersPerSecond, rawRate.vyMetersPerSecond);
+    double limitedLinearVelocity = linearRateLimiter.calculate(linearVelocity);
+
+    double linearMult = linearVelocity == 0 ? 0 : limitedLinearVelocity / limitedLinearVelocity;
+
+    return new ChassisSpeeds(
+        rawRate.vxMetersPerSecond * linearMult,
+        rawRate.vyMetersPerSecond * linearMult,
+        angularRateLimiter.calculate(rawRate.omegaRadiansPerSecond));
+  }
+
   /** Stops the drive. */
   public void stop() {
+    linearRateLimiter.reset(0);
+    angularRateLimiter.reset(0);
     for (int i = 0; i < 4; i++) {
       modules[i].stop();
     }
@@ -450,6 +482,9 @@ public class SwerveSubsystem extends SubsystemBase {
           Logger.recordOutput("SwerveSubsystem/yawAlign/targetYaw", targetYaw);
           Rotation2d currentYaw = getPose().getRotation();
           Logger.recordOutput("SwerveSubsystem/yawAlign/currentYaw", currentYaw);
+          Logger.recordOutput(
+              "SwerveSubsystem/yawAlign/errorRad",
+              targetYaw.getRadians() - currentYaw.getRadians());
           double pidOutput =
               yawController.calculate(currentYaw.getRadians(), targetYaw.getRadians());
           if (slowmode) {
@@ -457,10 +492,9 @@ public class SwerveSubsystem extends SubsystemBase {
           }
           pidOutput =
               MathUtil.clamp(
-                      pidOutput,
-                      -MAX_ANGULAR_SPEED.in(RadiansPerSecond) / 2,
-                      MAX_ANGULAR_SPEED.in(RadiansPerSecond) / 2)
-                  / 2;
+                  pidOutput,
+                  -MAX_ANGULAR_SPEED.in(RadiansPerSecond),
+                  MAX_ANGULAR_SPEED.in(RadiansPerSecond));
           Logger.recordOutput("SwerveSubsystem/yawAlign/pidOutput", pidOutput);
           return pidOutput;
         });

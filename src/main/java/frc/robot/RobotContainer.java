@@ -87,7 +87,7 @@ public class RobotContainer {
             new Shooter(
                 new FeederIO() {},
                 new FlywheelIO() {},
-                new PivotIO() {},
+                new PivotIOSim(),
                 new NoteDetectorIO() {},
                 new IntakeIO() {},
                 new LightsIO() {},
