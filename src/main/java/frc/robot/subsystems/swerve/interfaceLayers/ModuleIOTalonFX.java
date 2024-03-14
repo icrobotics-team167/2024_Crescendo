@@ -21,8 +21,8 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
@@ -33,7 +33,6 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.*;
 import frc.robot.subsystems.swerve.Module;
-import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.util.CANConstants;
 import frc.robot.util.CANConstants.Drivebase;
 import frc.robot.util.SwerveUtils;
@@ -364,15 +363,6 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveConfig.Slot0.kP = drive_kP;
     driveConfig.Slot0.kI = drive_kI;
     driveConfig.Slot0.kD = drive_kD;
-    // MotionMagicAcceleration should be close to the maximum acceleration you can handle given your
-    // robot's mass and moment of inertia. Choreo has a tool to approximate this.
-    driveConfig.MotionMagic.MotionMagicAcceleration =
-        SwerveSubsystem.MAX_LINEAR_ACCELERATION.in(
-            MetersPerSecondPerSecond); // Max allowed acceleration, in m/s^2
-    // MotionMagicJerk should be ~10-20x the acceleration value, meaning roughly 0.05-0.1 seconds to
-    // max acceleration. Is mainly used to smooth out motion profiles.
-    driveConfig.MotionMagic.MotionMagicJerk =
-        driveConfig.MotionMagic.MotionMagicAcceleration * 10; // Max allowed jerk, in m/s^3
     // Limit the current draw of the motors.
     driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 80;
     driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = 80;
@@ -494,8 +484,7 @@ public class ModuleIOTalonFX implements ModuleIO {
    * The control request for accelerating the drive motor up to a specified wheel velocity. Is
    * mutable.
    */
-  MotionMagicVelocityTorqueCurrentFOC driveVelocityControlRequest =
-      new MotionMagicVelocityTorqueCurrentFOC(0);
+  VelocityTorqueCurrentFOC driveVelocityControlRequest = new VelocityTorqueCurrentFOC(0);
 
   @Override
   public void setDriveVelocity(Measure<Velocity<Distance>> velocity) {
