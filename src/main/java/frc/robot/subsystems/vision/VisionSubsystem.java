@@ -16,7 +16,6 @@ package frc.robot.subsystems.vision;
 
 import static edu.wpi.first.units.Units.*;
 
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -68,14 +67,12 @@ public class VisionSubsystem extends SubsystemBase {
   public void updateEstimation() {
     for (int i = 0; i < cameraData.length; i++) {
       if (cameraData[i].isNewData) {
-        VisionPoseEstimate estimate = new VisionPoseEstimate();
-        estimate.poseEstimate = cameraData[i].poseEstimate;
-        estimate.trustworthiness =
-            VecBuilder.fill(
+        VisionPoseEstimate estimate =
+            new VisionPoseEstimate(
+                cameraData[i].poseEstimate,
                 cameraData[i].translationalTrustworthinessMeters,
-                cameraData[i].translationalTrustworthinessMeters,
-                cameraData[i].rotationalTrustworthinessRadians);
-        estimate.timestamp = cameraData[i].timestamp;
+                cameraData[i].rotationalTrustworthinessRadians,
+                cameraData[i].timestamp);
         estimationConsumer.accept(estimate);
       }
     }
