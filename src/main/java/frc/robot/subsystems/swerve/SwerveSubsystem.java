@@ -576,4 +576,8 @@ public class SwerveSubsystem extends SubsystemBase {
       modules[i].runAzimuthCharacterization(voltage.baseUnitMagnitude());
     }
   }
+
+  public static Measure<Velocity<Velocity<Distance>>> getMaxLinearAcceleration() {
+    return MAX_LINEAR_ACCELERATION;
+  }
 }

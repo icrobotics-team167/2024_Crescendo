@@ -22,7 +22,7 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
-import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
@@ -33,6 +33,7 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.*;
 import frc.robot.subsystems.swerve.Module;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.util.CANConstants;
 import frc.robot.util.CANConstants.Drivebase;
 import frc.robot.util.SwerveUtils;
@@ -363,9 +364,11 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveConfig.Slot0.kP = drive_kP;
     driveConfig.Slot0.kI = drive_kI;
     driveConfig.Slot0.kD = drive_kD;
+    driveConfig.MotionMagic.MotionMagicAcceleration = SwerveSubsystem.getMaxLinearAcceleration().in(MetersPerSecondPerSecond); // Max allowed acceleration, in m/s^2
+    driveConfig.MotionMagic.MotionMagicJerk = driveConfig.MotionMagic.MotionMagicAcceleration * 5; // Max allowed jerk, in m/s^3
     // Limit the current draw of the motors.
-    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 80;
-    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = 80;
+    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 100;
+    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = 100;
     driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     driveTalon.getConfigurator().apply(driveConfig);
 
@@ -386,10 +389,11 @@ public class ModuleIOTalonFX implements ModuleIO {
     azimuthConfig.Slot0.kI = azimuth_kI;
     azimuthConfig.Slot0.kD = azimuth_kD;
     azimuthConfig.MotionMagic.MotionMagicAcceleration = 10; // Max allowed acceleration, in rot/s^2
-    azimuthConfig.MotionMagic.MotionMagicJerk = 50; // Max allowed jerk, in rot/s^3
+    azimuthConfig.MotionMagic.MotionMagicJerk = 100; // Max allowed jerk, in rot/s^3
+    azimuthConfig.MotionMagic.MotionMagicCruiseVelocity = 4.5;
     azimuthConfig.ClosedLoopGeneral.ContinuousWrap = true;
-    azimuthConfig.TorqueCurrent.PeakForwardTorqueCurrent = 60;
-    azimuthConfig.TorqueCurrent.PeakReverseTorqueCurrent = 60;
+    azimuthConfig.TorqueCurrent.PeakForwardTorqueCurrent = 40;
+    azimuthConfig.TorqueCurrent.PeakReverseTorqueCurrent = 40;
     azimuthConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     azimuthTalon.getConfigurator().apply(azimuthConfig);
 
@@ -484,7 +488,7 @@ public class ModuleIOTalonFX implements ModuleIO {
    * The control request for accelerating the drive motor up to a specified wheel velocity. Is
    * mutable.
    */
-  VelocityTorqueCurrentFOC driveVelocityControlRequest = new VelocityTorqueCurrentFOC(0);
+  MotionMagicVelocityTorqueCurrentFOC driveVelocityControlRequest = new MotionMagicVelocityTorqueCurrentFOC(0);
 
   @Override
   public void setDriveVelocity(Measure<Velocity<Distance>> velocity) {
