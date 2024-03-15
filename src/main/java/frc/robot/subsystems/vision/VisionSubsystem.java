@@ -16,7 +16,6 @@ package frc.robot.subsystems.vision;
 
 import static edu.wpi.first.units.Units.*;
 
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -35,7 +34,7 @@ public class VisionSubsystem extends SubsystemBase {
   public VisionSubsystem(Consumer<VisionPoseEstimate> estimationConsumer) {
     this.estimationConsumer = estimationConsumer;
 
-    if (Robot.currentMode == Mode.SIM) {
+    if (Robot.currentMode != Mode.REAL) {
       cameras = new VisionIO[] {new VisionIO() {}};
     } else {
       cameras =
@@ -43,10 +42,10 @@ public class VisionSubsystem extends SubsystemBase {
             new VisionIOPhoton(
                 "Camera_Module_v1",
                 new Transform3d(
-                    Meters.convertFrom(10, Inches),
-                    Meters.convertFrom(-8.5, Inches),
-                    Meters.convertFrom(10, Inches),
-                    new Rotation3d(0, Radians.convertFrom(-30, Degrees), 0)))
+                    Meters.convertFrom(11.75, Inches),
+                    Meters.convertFrom(-22.75, Centimeters),
+                    Meters.convertFrom(28.5, Centimeters),
+                    new Rotation3d(0, Radians.convertFrom(-45, Degrees), 0)))
           };
     }
 
@@ -68,14 +67,12 @@ public class VisionSubsystem extends SubsystemBase {
   public void updateEstimation() {
     for (int i = 0; i < cameraData.length; i++) {
       if (cameraData[i].isNewData) {
-        VisionPoseEstimate estimate = new VisionPoseEstimate();
-        estimate.poseEstimate = cameraData[i].poseEstimate;
-        estimate.trustworthiness =
-            VecBuilder.fill(
+        VisionPoseEstimate estimate =
+            new VisionPoseEstimate(
+                cameraData[i].poseEstimate,
                 cameraData[i].translationalTrustworthinessMeters,
-                cameraData[i].translationalTrustworthinessMeters,
-                cameraData[i].rotationalTrustworthinessRadians);
-        estimate.timestamp = cameraData[i].timestamp;
+                cameraData[i].rotationalTrustworthinessRadians,
+                cameraData[i].timestamp);
         estimationConsumer.accept(estimate);
       }
     }

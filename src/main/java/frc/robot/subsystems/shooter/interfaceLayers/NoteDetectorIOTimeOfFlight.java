@@ -23,22 +23,34 @@ import edu.wpi.first.math.filter.LinearFilter;
 import frc.robot.util.CANConstants.Shooter;
 
 public class NoteDetectorIOTimeOfFlight implements NoteDetectorIO {
-  private final TimeOfFlight sensor;
+  private final TimeOfFlight shooterSensor;
+  private final TimeOfFlight intakeSensor;
 
   public NoteDetectorIOTimeOfFlight() {
-    sensor = new TimeOfFlight(Shooter.NOTE_DETECTOR);
-    sensor.setRangingMode(RangingMode.Short, 24);
+    shooterSensor = new TimeOfFlight(Shooter.SHOOTER_NOTE_DETECTOR);
+    shooterSensor.setRangingMode(RangingMode.Short, 24);
+    intakeSensor = new TimeOfFlight(Shooter.INTAKE_NOTE_DETECTOR);
+    intakeSensor.setRangingMode(RangingMode.Short, 24);
   }
 
-  LinearFilter rangeFilter = LinearFilter.movingAverage(5);
+  LinearFilter shooterRangeFilter = LinearFilter.movingAverage(5);
+  LinearFilter intakeRangeFilter = LinearFilter.movingAverage(5);
 
   @Override
   public void updateInputs(NoteDetectorIOInputs inputs) {
-    if (sensor.isRangeValid()) {
-      inputs.detectedDistance = Millimeters.of(rangeFilter.calculate(sensor.getRange()));
-      inputs.hasNote = inputs.detectedDistance.lte(Inches.of(15.5)); // TODO: Tune
+    if (shooterSensor.isRangeValid()) {
+      inputs.shooterDetectedDistance =
+          Millimeters.of(shooterRangeFilter.calculate(shooterSensor.getRange()));
+      inputs.hasNoteInShooter = inputs.shooterDetectedDistance.lte(Inches.of(15.5));
     } else {
-      inputs.hasNote = false;
+      inputs.hasNoteInShooter = false;
+    }
+    if (intakeSensor.isRangeValid()) {
+      inputs.intakeDetectedDistance =
+          Millimeters.of(intakeRangeFilter.calculate(intakeSensor.getRange()));
+      inputs.hasNoteInIntake = inputs.intakeDetectedDistance.lte(Inches.of(15.5));
+    } else {
+      inputs.hasNoteInIntake = false;
     }
   }
 }

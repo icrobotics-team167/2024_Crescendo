@@ -22,10 +22,14 @@ import org.littletonrobotics.junction.AutoLog;
 public interface NoteDetectorIO {
   @AutoLog
   public class NoteDetectorIOInputs {
-    /** If the detector sees a note or not. */
-    public boolean hasNote = false;
-    /** The distance from an object that the detector has measured. */
-    public Measure<Distance> detectedDistance = Inches.of(-1);
+    /** If the detector at the shooter sees a note or not. */
+    public boolean hasNoteInShooter = false;
+    /** The distance from an object that the shooter detector has measured. */
+    public Measure<Distance> shooterDetectedDistance = Inches.of(-1);
+    /** If the detector at the shooter sees a note or not. */
+    public boolean hasNoteInIntake = false;
+    /** The distance from an object that the shooter detector has measured. */
+    public Measure<Distance> intakeDetectedDistance = Inches.of(-1);
   }
 
   /** Updates the set of loggable inputs. */

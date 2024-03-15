@@ -72,9 +72,9 @@ public class SwerveSubsystem extends SubsystemBase {
   private static final Measure<Velocity<Velocity<Distance>>> MAX_LINEAR_ACCELERATION =
       MetersPerSecondPerSecond.of(8);
   /** The distance between the front modules and the back modules. */
-  private static final Measure<Distance> TRACK_LENGTH = Inches.of(23.5);
+  private static final Measure<Distance> TRACK_LENGTH = Inches.of(23.75);
   /** The distance between the left modules and the right modules. */
-  private static final Measure<Distance> TRACK_WIDTH = Inches.of(24.5);
+  private static final Measure<Distance> TRACK_WIDTH = Inches.of(24.75);
   /**
    * The radius of the drivebase, as measured from the center of the robot to one of the modules.
    */
@@ -575,5 +575,9 @@ public class SwerveSubsystem extends SubsystemBase {
     for (int i = 0; i < 4; i++) {
       modules[i].runAzimuthCharacterization(voltage.baseUnitMagnitude());
     }
+  }
+
+  public static Measure<Velocity<Velocity<Distance>>> getMaxLinearAcceleration() {
+    return MAX_LINEAR_ACCELERATION;
   }
 }

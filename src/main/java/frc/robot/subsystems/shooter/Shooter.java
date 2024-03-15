@@ -19,7 +19,6 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -28,7 +27,6 @@ import frc.robot.Constants.Field;
 import frc.robot.Robot;
 import frc.robot.subsystems.misc.LightSubsystem;
 import frc.robot.subsystems.misc.interfaceLayers.*;
-import frc.robot.subsystems.misc.interfaceLayers.LightsIOBlinkin.Colors;
 import frc.robot.subsystems.shooter.interfaceLayers.ClimberIO;
 import frc.robot.subsystems.shooter.interfaceLayers.FeederIO;
 import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIO;
@@ -50,8 +48,6 @@ public class Shooter {
   private final LightSubsystem light;
   private final ClimberSubsystem climb;
 
-  private PIDController autoAimController;
-
   private InterpolatingDoubleTreeMap fudgeFactorLerpTable;
 
   public Shooter(
@@ -70,8 +66,16 @@ public class Shooter {
     light = new LightSubsystem(lightIO);
     climb = new ClimberSubsystem(climberIO);
 
-    autoAimController = new PIDController(0.06, 0, 0.001);
-    autoAimController.enableContinuousInput(-180, 180);
+    light.setDefaultCommand(
+        light.setState(
+            noteDetector::hasNoteInIntake, // Is the bot currently intaking a note?
+            noteDetector::hasNoteInShooter, // Does the bot have a note in the shooter?
+            intake::isRunning, // Is the bot intaking?
+            () -> // Is the pivot aiming?
+            pivot.getCurrentCommand() != null
+                    && pivot.getCurrentCommand().getName().equals("Pivot to angle"),
+            pivot::isAtSetpoint, // Is the pivot at its setpoint?
+            flywheel::isUpToSpeed)); // Is it shooting?
 
     // Lerped fudge factor for pivot aiming to account for gravity
     // Is added to a tan^-1
@@ -84,19 +88,17 @@ public class Shooter {
     fudgeFactorLerpTable.put(3.0, 6.65);
   }
 
-  public Command intake() {
-    return intake.getIntakeCommand();
-  }
-
   public Command intakeOut() {
     return parallel(
         intake.getIntakeOutCommand(), feeder.getUnfeedCommand(), flywheel.getSourceIntakeCommand());
   }
 
   public Command autoIntake() {
-    return parallel(intake.getIntakeCommand(), feeder.getFeedCommand())
-        .until(noteDetector::hasNote)
-        .finallyDo(() -> light.setColor(Colors.GOLD));
+    return parallel(
+            intake.getIntakeCommand(),
+            feeder.getFeedCommand(),
+            pivot.getPivotCommand(() -> Rotation2d.fromDegrees(45)))
+        .until(noteDetector::hasNoteInShooter);
   }
 
   public Command getManualControlCommand(DoubleSupplier pivotSupplier) {
@@ -109,16 +111,14 @@ public class Shooter {
 
   public Command getAutoAmpShotCommand() {
     return deadline(
-            waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint())
-                .andThen(feeder.getFeedCommand().withTimeout(2)),
-            parallel( // Gets canceled when the above finishes
-                pivot.getPivotCommand(
-                    () -> {
-                      return Rotation2d.fromDegrees(90);
-                    }),
-                runOnce(() -> light.setColorValue(1705))),
-            flywheel.getAmpShotCommand())
-        .finallyDo(() -> light.setColor(Colors.GREEN));
+        waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint())
+            .andThen(feeder.getFeedCommand().withTimeout(2)),
+        // Gets canceled when the above finishes
+        pivot.getPivotCommand(
+            () -> {
+              return Rotation2d.fromDegrees(90);
+            }),
+        flywheel.getAmpShotCommand());
     // return flywheel.getAmpShotCommand();
   }
 
@@ -131,12 +131,9 @@ public class Shooter {
   }
 
   public Command shoot() {
-    return parallel(
-            deadline(
-                waitUntil(flywheel::isUpToSpeed).andThen(feeder.getFeedCommand().withTimeout(1)),
-                flywheel.getSpeakerShotCommand()),
-            light.setColorValueCommand(1705))
-        .finallyDo(() -> light.setColor(Colors.GREEN));
+    return deadline(
+        waitUntil(flywheel::isUpToSpeed).andThen(feeder.getFeedCommand().withTimeout(1)),
+        flywheel.getSpeakerShotCommand());
   }
 
   public Command getFlywheelSpinUp() {
@@ -151,7 +148,7 @@ public class Shooter {
                 () -> {
                   return Rotation2d.fromDegrees(45);
                 }))
-        .until(noteDetector::hasNote);
+        .until(noteDetector::hasNoteInShooter);
   }
 
   private double speakerY = 5.5;
@@ -161,33 +158,19 @@ public class Shooter {
   public Command getAutoSpeakerShotCommand(Supplier<Translation2d> botTranslationSupplier) {
     // return none();
     return deadline(
-            waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint())
-                .andThen(feeder.getFeedCommand().withTimeout(2)),
-            parallel(
-                pivot.getPivotCommand(
-                    () -> {
-                      return aimAtHeight(botTranslationSupplier.get(), speakerZ);
-                    }),
-                runOnce(() -> light.setColorValue(1705))))
-        .finallyDo(
-            () -> {
-              light.setColor(Colors.GREEN);
-            });
+        waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint())
+            .andThen(feeder.getFeedCommand().withTimeout(2)),
+        parallel(
+            pivot.getPivotCommand(
+                () -> {
+                  return aimAtHeight(botTranslationSupplier.get(), speakerZ);
+                })));
   }
 
   public Command getTeleopAutoAimCommand(
       SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
     return parallel(
-        pivot.getPivotCommand(
-            () -> {
-              Rotation2d targetAngle = aimAtHeight(drivebase.getPose().getTranslation(), speakerZ);
-              if (pivot.isAtSetpoint()) {
-                light.setColorValue(1465);
-              } else {
-                light.setColor(Colors.GOLD);
-              }
-              return targetAngle;
-            }),
+        pivot.getPivotCommand(() -> aimAtHeight(drivebase.getPose().getTranslation(), speakerZ)),
         drivebase.getYawAlign(
             xVel,
             yVel,
@@ -200,29 +183,11 @@ public class Shooter {
   }
 
   public Command getSubwooferShotCommand() {
-    return pivot.getPivotCommand(
-        () -> {
-          Rotation2d targetAngle = Rotation2d.fromDegrees(49);
-          if (pivot.isAtSetpoint()) {
-            light.setColorValue(1465);
-          } else {
-            light.setColor(Colors.GOLD);
-          }
-          return targetAngle;
-        });
+    return pivot.getPivotCommand(() -> Rotation2d.fromDegrees(49));
   }
 
   public Command getPodiumShotCommand() {
-    return pivot.getPivotCommand(
-        () -> {
-          Rotation2d targetAngle = Rotation2d.fromDegrees(32.1);
-          if (pivot.isAtSetpoint()) {
-            light.setColorValue(1465);
-          } else {
-            light.setColor(Colors.GOLD);
-          }
-          return targetAngle;
-        });
+    return pivot.getPivotCommand(() -> Rotation2d.fromDegrees(32.1));
   }
 
   private Rotation2d aimAtHeight(Translation2d currentBotPosition, double height) {

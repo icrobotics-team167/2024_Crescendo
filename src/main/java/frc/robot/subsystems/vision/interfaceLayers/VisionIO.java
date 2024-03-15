@@ -34,9 +34,23 @@ public interface VisionIO {
   }
 
   public class VisionPoseEstimate {
-    public Pose2d poseEstimate = new Pose2d();
-    public Matrix<N3, N1> trustworthiness = VecBuilder.fill(.9, .9, .9);
-    public double timestamp = 0;
+    public VisionPoseEstimate(
+        Pose2d poseEstimate,
+        double translationalTrustworthinessMeters,
+        double rotationalTrustworthinessRadians,
+        double timestamp) {
+      this.poseEstimate = poseEstimate;
+      this.trustworthiness =
+          VecBuilder.fill(
+              translationalTrustworthinessMeters,
+              translationalTrustworthinessMeters,
+              rotationalTrustworthinessRadians);
+      this.timestamp = timestamp;
+    }
+
+    public Pose2d poseEstimate;
+    public Matrix<N3, N1> trustworthiness;
+    public double timestamp;
   }
 
   public default void updateInputs(VisionIOInputs inputs) {}
