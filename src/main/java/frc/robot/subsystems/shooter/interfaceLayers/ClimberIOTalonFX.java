@@ -44,14 +44,13 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final StatusSignal<Double> leftVelocity;
   private final StatusSignal<Double> rightVelocity;
 
-  private double MIN_ANGLE_DEGREES = -10;
-  private double MAX_ANGLE_DEGREES = 90;
+  private double MIN_ANGLE_DEGREES = -20;
+  private double MAX_ANGLE_DEGREES = 75;
 
-  private PIDController leftPIDs = new PIDController(0, 0, 0);
-  private PIDController rightPIDs = new PIDController(0, 0, 0);
+  private Rotation2d angleSetpoint = Rotation2d.fromDegrees(MIN_ANGLE_DEGREES);
 
-  private double left_kG = 0;
-  private double right_kG = 0;
+  private PIDController leftPIDs = new PIDController(3, 0, 0);
+  private PIDController rightPIDs = new PIDController(3, 0, 0);
 
   public ClimberIOTalonFX() {
     leftMotor = new TalonFX(CANConstants.Shooter.CLIMBER_LEFT, CANConstants.CANIVORE_NAME);
@@ -95,6 +94,7 @@ public class ClimberIOTalonFX implements ClimberIO {
     inputs.rightAppliedCurrent = Amps.of(rightCurrent.getValueAsDouble());
     inputs.leftAngle = getLeftAngle();
     inputs.rightAngle = getRightAngle();
+    inputs.angleSetpoint = angleSetpoint;
     inputs.leftVelocity = RPM.of(leftVelocity.getValueAsDouble());
     inputs.rightVelocity = RPM.of(rightVelocity.getValueAsDouble());
   }
@@ -102,9 +102,8 @@ public class ClimberIOTalonFX implements ClimberIO {
   @Override
   public void manualControl(double control) {
     control = MathUtil.clamp(control, 0, 1);
-    Rotation2d angleSetpoint =
-        Rotation2d.fromDegrees(
-            control * (MAX_ANGLE_DEGREES - MIN_ANGLE_DEGREES) - MIN_ANGLE_DEGREES);
+    angleSetpoint =
+        Rotation2d.fromDegrees(MathUtil.interpolate(MIN_ANGLE_DEGREES, MAX_ANGLE_DEGREES, control));
     Rotation2d leftAngle = getLeftAngle();
     Rotation2d rightAngle = getRightAngle();
 
@@ -122,17 +121,6 @@ public class ClimberIOTalonFX implements ClimberIO {
     }
     if (rightOutput > 0 && isTooHigh(rightAngle.getDegrees())) {
       rightOutput = 0;
-    }
-
-    if (angleSetpoint.getDegrees() != MIN_ANGLE_DEGREES) {
-      leftOutput +=
-          left_kG
-              * Math.cos(
-                  angleSetpoint.getRadians() + Radians.convertFrom(MIN_ANGLE_DEGREES, Degrees));
-      rightOutput +=
-          right_kG
-              * Math.cos(
-                  angleSetpoint.getDegrees() + Radians.convertFrom(MIN_ANGLE_DEGREES, Degrees));
     }
 
     leftMotor.setVoltage(leftOutput);
@@ -158,7 +146,7 @@ public class ClimberIOTalonFX implements ClimberIO {
   private LinearFilter leftAngleFilter = LinearFilter.movingAverage(4);
 
   private Rotation2d getLeftAngle() {
-    double rawAngle = leftEncoder.getAbsolutePosition() - (-76.2 / 360.0);
+    double rawAngle = leftEncoder.getAbsolutePosition() - (75.5 / 360.0);
     return Rotation2d.fromRadians(
         MathUtil.angleModulus(Units.rotationsToRadians(leftAngleFilter.calculate(rawAngle))));
   }
@@ -169,7 +157,7 @@ public class ClimberIOTalonFX implements ClimberIO {
   // 90: 106.1
   // going up makes positive
   private Rotation2d getRightAngle() {
-    double rawAngle = rightEncoder.getAbsolutePosition() - (-163.5 / 360.0);
+    double rawAngle = (82 / 360.0) - rightEncoder.getAbsolutePosition();
     return Rotation2d.fromRadians(
         MathUtil.angleModulus(Units.rotationsToRadians(rightAngleFilter.calculate(rawAngle))));
   }
