@@ -35,7 +35,7 @@ public class VisionSubsystem extends SubsystemBase {
   public VisionSubsystem(Consumer<VisionPoseEstimate> estimationConsumer) {
     this.estimationConsumer = estimationConsumer;
 
-    if (Robot.currentMode == Mode.SIM) {
+    if (Robot.currentMode != Mode.REAL) {
       cameras = new VisionIO[] {new VisionIO() {}};
     } else {
       cameras =
