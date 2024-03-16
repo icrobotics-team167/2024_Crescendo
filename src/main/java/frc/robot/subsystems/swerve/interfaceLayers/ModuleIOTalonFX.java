@@ -21,8 +21,8 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
@@ -364,8 +364,11 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveConfig.Slot0.kP = drive_kP;
     driveConfig.Slot0.kI = drive_kI;
     driveConfig.Slot0.kD = drive_kD;
-    driveConfig.MotionMagic.MotionMagicAcceleration = SwerveSubsystem.getMaxLinearAcceleration().in(MetersPerSecondPerSecond); // Max allowed acceleration, in m/s^2
-    driveConfig.MotionMagic.MotionMagicJerk = driveConfig.MotionMagic.MotionMagicAcceleration * 5; // Max allowed jerk, in m/s^3
+    driveConfig.MotionMagic.MotionMagicAcceleration =
+        SwerveSubsystem.getMaxLinearAcceleration()
+            .in(MetersPerSecondPerSecond); // Max allowed acceleration, in m/s^2
+    driveConfig.MotionMagic.MotionMagicJerk =
+        driveConfig.MotionMagic.MotionMagicAcceleration * 5; // Max allowed jerk, in m/s^3
     // Limit the current draw of the motors.
     driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 100;
     driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = 100;
@@ -488,7 +491,8 @@ public class ModuleIOTalonFX implements ModuleIO {
    * The control request for accelerating the drive motor up to a specified wheel velocity. Is
    * mutable.
    */
-  MotionMagicVelocityTorqueCurrentFOC driveVelocityControlRequest = new MotionMagicVelocityTorqueCurrentFOC(0);
+  MotionMagicVelocityTorqueCurrentFOC driveVelocityControlRequest =
+      new MotionMagicVelocityTorqueCurrentFOC(0);
 
   @Override
   public void setDriveVelocity(Measure<Velocity<Distance>> velocity) {
