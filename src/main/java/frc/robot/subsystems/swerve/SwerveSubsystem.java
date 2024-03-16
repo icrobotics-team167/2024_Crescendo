@@ -54,6 +54,7 @@ import frc.robot.subsystems.swerve.interfaceLayers.PhoenixOdometryThread;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.subsystems.vision.interfaceLayers.VisionIO.VisionPoseEstimate;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.util.MathUtils;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.DoubleSupplier;
@@ -377,7 +378,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void resetGyroFromPose() {
     if (gyroInputs.connected) {
-      Rotation2d yaw = getPose().getRotation();
+      Rotation2d yaw = MathUtils.adjustRotation(getPose().getRotation());
       gyroIO.setYaw(yaw);
       rawGyroRotation = yaw;
       poseEstimator.resetPosition(yaw, lastModulePositions, getPose());
