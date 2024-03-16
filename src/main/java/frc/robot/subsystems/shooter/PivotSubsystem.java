@@ -67,6 +67,6 @@ public class PivotSubsystem extends SubsystemBase {
 
   @AutoLogOutput
   public boolean isAtSetpoint() {
-    return Math.abs(inputs.angleSetpoint.getDegrees() - inputs.angle.getDegrees()) < 0.2;
+    return Math.abs(inputs.angleSetpoint.getDegrees() - inputs.angle.getDegrees()) < 0.4;
   }
 }

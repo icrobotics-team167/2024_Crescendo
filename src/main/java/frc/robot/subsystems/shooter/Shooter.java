@@ -82,6 +82,7 @@ public class Shooter {
     // Known good angles:
     // 48.4 degrees for at subwoofer measured 47.3
     // 32 degrees for at podium
+    // 38.5 degrees at x;2.15, y:5.54
     fudgeFactorLerpTable = new InterpolatingDoubleTreeMap();
     fudgeFactorLerpTable.put(0.0, 0.0);
     fudgeFactorLerpTable.put(1.0, 2.5);
