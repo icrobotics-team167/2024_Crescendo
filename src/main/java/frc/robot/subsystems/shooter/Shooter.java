@@ -94,10 +94,13 @@ public class Shooter {
   }
 
   public Command autoIntake() {
-    return parallel(
-            intake.getIntakeCommand(),
-            feeder.getFeedCommand(),
-            pivot.getPivotCommand(() -> Rotation2d.fromDegrees(PivotIO.MIN_ANGLE)))
+    return race(
+        autoIntakeNoPivot(),
+        pivot.getPivotCommand(() -> Rotation2d.fromDegrees(PivotIO.MIN_ANGLE)));
+  }
+
+  public Command autoIntakeNoPivot() {
+    return parallel(intake.getIntakeCommand(), feeder.getFeedCommand())
         .until(noteDetector::hasNoteInShooter);
   }
 
@@ -159,7 +162,7 @@ public class Shooter {
     // return none();
     return deadline(
         waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint())
-            .andThen(feeder.getFeedCommand().withTimeout(1)),
+            .andThen(feeder.getFeedCommand().until(() -> !noteDetector.hasNoteInShooter())),
         parallel(
             pivot.getPivotCommand(
                 () -> {
