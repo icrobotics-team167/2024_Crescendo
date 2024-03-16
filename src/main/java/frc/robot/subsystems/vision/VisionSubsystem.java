@@ -42,7 +42,7 @@ public class VisionSubsystem extends SubsystemBase {
             new VisionIOPhoton(
                 "Camera_Module_v1",
                 new Transform3d(
-                    Meters.convertFrom(11.75, Inches),
+                    Meters.convertFrom(12.75, Inches),
                     Meters.convertFrom(-22.75, Centimeters),
                     Meters.convertFrom(28.5, Centimeters),
                     new Rotation3d(0, Radians.convertFrom(-45, Degrees), 0)))
