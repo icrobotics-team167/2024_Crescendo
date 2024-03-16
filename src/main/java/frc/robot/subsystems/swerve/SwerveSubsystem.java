@@ -85,9 +85,6 @@ public class SwerveSubsystem extends SubsystemBase {
   private static final Measure<Velocity<Angle>> MAX_ANGULAR_SPEED =
       RadiansPerSecond.of(MAX_LINEAR_SPEED.in(MetersPerSecond) / DRIVE_BASE_RADIUS.in(Meters));
 
-  private static final Measure<Velocity<Velocity<Angle>>> MAX_ANGULAR_ACCELERATION =
-      RadiansPerSecond.per(Second).of(30);
-
   // IO layers
   /** The IO interface layer for the gyroscope. */
   private final GyroIO gyroIO;
@@ -117,8 +114,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
   private final SlewRateLimiter linearRateLimiter =
       new SlewRateLimiter(MAX_LINEAR_ACCELERATION.in(MetersPerSecondPerSecond));
-  private final SlewRateLimiter angularRateLimiter =
-      new SlewRateLimiter(MAX_ANGULAR_ACCELERATION.in(RadiansPerSecond.per(Second)));
 
   private final PIDController xController;
   private final PIDController yawController;
@@ -206,7 +201,6 @@ public class SwerveSubsystem extends SubsystemBase {
     // Stop moving when disabled
     if (DriverStation.isDisabled()) {
       linearRateLimiter.reset(0);
-      angularRateLimiter.reset(0);
       for (var module : modules) {
         module.stop();
       }
@@ -312,13 +306,13 @@ public class SwerveSubsystem extends SubsystemBase {
     return new ChassisSpeeds(
         rawRate.vxMetersPerSecond * linearMult,
         rawRate.vyMetersPerSecond * linearMult,
-        angularRateLimiter.calculate(rawRate.omegaRadiansPerSecond));
+        // angularRateLimiter.calculate(rawRate.omegaRadiansPerSecond));
+        rawRate.omegaRadiansPerSecond);
   }
 
   /** Stops the drive. */
   public void stop() {
     linearRateLimiter.reset(0);
-    angularRateLimiter.reset(0);
     for (int i = 0; i < 4; i++) {
       modules[i].stop();
     }
