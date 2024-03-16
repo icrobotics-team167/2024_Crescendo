@@ -162,7 +162,7 @@ public class Shooter {
     // return none();
     return deadline(
         waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint())
-            .andThen(feeder.getFeedCommand().withTimeout(0.3)),
+            .andThen(feeder.getFeedCommand().withTimeout(1)),
         parallel(
             pivot.getPivotCommand(
                 () -> {
