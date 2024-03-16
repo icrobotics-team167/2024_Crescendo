@@ -183,7 +183,7 @@ public class SwerveSubsystem extends SubsystemBase {
     Logger.recordOutput("SwerveSubsystem/maxLinearVelocity", MAX_LINEAR_SPEED);
     Logger.recordOutput("SwerveSubsystem/maxAngularVelocity", MAX_ANGULAR_SPEED);
 
-    yawController = new PIDController(1.25, 0.8, 0.2);
+    yawController = new PIDController(0.75, 0, 0.01);
     xController = new PIDController(1, 0, 0.05);
     yawController.enableContinuousInput(-Math.PI, Math.PI);
     yawController.setIntegratorRange(-1, 1);
@@ -454,13 +454,13 @@ public class SwerveSubsystem extends SubsystemBase {
   public Command getAmpAlign(DoubleSupplier yInput) {
     return getYawAlign(
         () -> {
-          double targetX = 1.835;
+          double targetX = 1.8;
           if (Robot.isOnRed()) {
             targetX = Field.FIELD_LENGTH.in(Meters) - targetX;
           }
           Logger.recordOutput("SwerveSubsystem/ampAlign/targetX", targetX);
           Logger.recordOutput("SwerveSubsystem/ampAlign/currentX", getPose().getX());
-          double pidOutput = xController.calculate(getPose().getX(), targetX);
+          double pidOutput = -xController.calculate(getPose().getX(), targetX);
           pidOutput =
               MathUtil.clamp(
                   pidOutput,
@@ -470,7 +470,7 @@ public class SwerveSubsystem extends SubsystemBase {
           return pidOutput;
         },
         yInput,
-        () -> Rotation2d.fromDegrees(90));
+        () -> Rotation2d.fromDegrees(-90));
   }
 
   public Command getYawAlign(
