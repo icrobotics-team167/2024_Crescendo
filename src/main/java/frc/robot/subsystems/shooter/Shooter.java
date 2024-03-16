@@ -112,7 +112,7 @@ public class Shooter {
   public Command getAutoAmpShotCommand() {
     return deadline(
         waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint())
-            .andThen(feeder.getFeedCommand().withTimeout(2)),
+            .andThen(feeder.getFeedCommand().withTimeout(1)),
         // Gets canceled when the above finishes
         pivot.getPivotCommand(
             () -> {
@@ -159,7 +159,7 @@ public class Shooter {
     // return none();
     return deadline(
         waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint())
-            .andThen(feeder.getFeedCommand().withTimeout(2)),
+            .andThen(feeder.getFeedCommand().withTimeout(1)),
         parallel(
             pivot.getPivotCommand(
                 () -> {
