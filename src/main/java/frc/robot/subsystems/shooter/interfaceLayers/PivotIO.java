@@ -22,7 +22,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface PivotIO {
   public static final double MIN_ANGLE = 10;
-  public static final double MAX_ANGLE = 90;
+  public static final double MAX_ANGLE = 95;
 
   @AutoLog
   public class PivotIOInputs {
