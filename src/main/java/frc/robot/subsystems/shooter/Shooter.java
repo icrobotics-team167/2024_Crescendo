@@ -97,7 +97,7 @@ public class Shooter {
     return parallel(
             intake.getIntakeCommand(),
             feeder.getFeedCommand(),
-            pivot.getPivotCommand(() -> Rotation2d.fromDegrees(45)))
+            pivot.getPivotCommand(() -> Rotation2d.fromDegrees(PivotIO.MIN_ANGLE)))
         .until(noteDetector::hasNoteInShooter);
   }
 
