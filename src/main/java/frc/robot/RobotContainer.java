@@ -15,7 +15,6 @@
 package frc.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.race;
-import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;

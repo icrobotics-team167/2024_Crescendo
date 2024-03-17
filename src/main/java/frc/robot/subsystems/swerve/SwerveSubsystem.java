@@ -275,8 +275,6 @@ public class SwerveSubsystem extends SubsystemBase {
       speeds.omegaRadiansPerSecond *= Driving.SLOWMODE_MULTIPLIER;
     }
 
-    speeds = limitRates(speeds);
-
     Logger.recordOutput("SwerveStates/commandedVelocity", speeds);
 
     // Calculate module setpoints
@@ -295,19 +293,6 @@ public class SwerveSubsystem extends SubsystemBase {
     // Log setpoint states
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
     Logger.recordOutput("SwerveStates/SetpointsOptimized", optimizedSetpointStates);
-  }
-
-  private ChassisSpeeds limitRates(ChassisSpeeds rawRate) {
-    double linearVelocity = Math.hypot(rawRate.vxMetersPerSecond, rawRate.vyMetersPerSecond);
-    double limitedLinearVelocity = linearRateLimiter.calculate(linearVelocity);
-
-    double linearMult = linearVelocity == 0 ? 0 : limitedLinearVelocity / limitedLinearVelocity;
-
-    return new ChassisSpeeds(
-        rawRate.vxMetersPerSecond * linearMult,
-        rawRate.vyMetersPerSecond * linearMult,
-        // angularRateLimiter.calculate(rawRate.omegaRadiansPerSecond));
-        rawRate.omegaRadiansPerSecond);
   }
 
   /** Stops the drive. */

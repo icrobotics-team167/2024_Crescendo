@@ -10,7 +10,10 @@
     "preload + 1 close note auto",
     "preload + 2 far auto"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "Known Good Autos",
+    "Choreo Autos"
+  ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,

@@ -1,0 +1,179 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.35,
+      "y": 5.55
+    },
+    "rotation": 180.00000000000003
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Spin up flywheel"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "race",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Aim from subwoofer"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Score note (already aimed)"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "race",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Aim from podium"
+                            }
+                          },
+                          {
+                            "type": "sequential",
+                            "data": {
+                              "commands": [
+                                {
+                                  "type": "parallel",
+                                  "data": {
+                                    "commands": [
+                                      {
+                                        "type": "path",
+                                        "data": {
+                                          "pathName": "preload + 3 close.1"
+                                        }
+                                      },
+                                      {
+                                        "type": "named",
+                                        "data": {
+                                          "name": "Intake"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "Score note (already aimed)"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "race",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Aim from subwoofer"
+                            }
+                          },
+                          {
+                            "type": "sequential",
+                            "data": {
+                              "commands": [
+                                {
+                                  "type": "parallel",
+                                  "data": {
+                                    "commands": [
+                                      {
+                                        "type": "path",
+                                        "data": {
+                                          "pathName": "preload + 3 close.2"
+                                        }
+                                      },
+                                      {
+                                        "type": "named",
+                                        "data": {
+                                          "name": "Intake"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "Score note (already aimed)"
+                                  }
+                                },
+                                {
+                                  "type": "parallel",
+                                  "data": {
+                                    "commands": [
+                                      {
+                                        "type": "path",
+                                        "data": {
+                                          "pathName": "preload + 3 close.3"
+                                        }
+                                      },
+                                      {
+                                        "type": "named",
+                                        "data": {
+                                          "name": "Intake"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                {
+                                  "type": "path",
+                                  "data": {
+                                    "pathName": "preload + 3 close.4"
+                                  }
+                                },
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "Score note (already aimed)"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Choreo Autos",
+  "choreoAuto": true
+}
