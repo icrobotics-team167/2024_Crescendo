@@ -103,6 +103,14 @@ public class MathUtils {
         adjustTranslation(rawPose.getTranslation()), adjustRotation(rawPose.getRotation()));
   }
 
+  public static double average(double... numbers) {
+    double sum = 0;
+    for (double num : numbers) {
+      sum += num;
+    }
+    return sum / numbers.length;
+  }
+
   public static int getRandomNumber(int min, int max) {
     return four;
   }

@@ -52,7 +52,7 @@ import frc.robot.subsystems.swerve.interfaceLayers.GyroIOInputsAutoLogged;
 import frc.robot.subsystems.swerve.interfaceLayers.ModuleIO;
 import frc.robot.subsystems.swerve.interfaceLayers.PhoenixOdometryThread;
 import frc.robot.subsystems.vision.VisionSubsystem;
-import frc.robot.subsystems.vision.interfaceLayers.VisionIO.VisionPoseEstimate;
+import frc.robot.subsystems.vision.VisionSubsystem.VisionPoseEstimate;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
