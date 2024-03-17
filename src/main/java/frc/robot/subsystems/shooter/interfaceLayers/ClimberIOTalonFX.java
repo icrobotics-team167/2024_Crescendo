@@ -23,7 +23,6 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -48,9 +47,6 @@ public class ClimberIOTalonFX implements ClimberIO {
   private double MAX_ANGLE_DEGREES = 75;
 
   private Rotation2d angleSetpoint = Rotation2d.fromDegrees(MIN_ANGLE_DEGREES);
-
-  private PIDController leftPIDs = new PIDController(3, 0, 0);
-  private PIDController rightPIDs = new PIDController(3, 0, 0);
 
   public ClimberIOTalonFX() {
     leftMotor = new TalonFX(CANConstants.Shooter.CLIMBER_LEFT, CANConstants.CANIVORE_NAME);
@@ -101,14 +97,11 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   @Override
   public void manualControl(double control) {
-    control = MathUtil.clamp(control, 0, 1);
-    angleSetpoint =
-        Rotation2d.fromDegrees(MathUtil.interpolate(MIN_ANGLE_DEGREES, MAX_ANGLE_DEGREES, control));
+    double leftOutput = control * 12;
+    double rightOutput = control * 12;
+
     Rotation2d leftAngle = getLeftAngle();
     Rotation2d rightAngle = getRightAngle();
-
-    double leftOutput = leftPIDs.calculate(leftAngle.getDegrees(), angleSetpoint.getDegrees());
-    double rightOutput = rightPIDs.calculate(rightAngle.getDegrees(), angleSetpoint.getDegrees());
 
     if (leftOutput < 0 && isTooLow(leftAngle.getDegrees())) {
       leftOutput = 0;
