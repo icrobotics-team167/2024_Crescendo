@@ -87,6 +87,7 @@ public class LightsIOBlinkin implements LightsIO {
 
   @Override
   public void setColorFromState(LightState state) {
+    colorBlinkin.setPulseTimeMicroseconds(2125);
     commandedState = state;
     switch (state) {
       case NO_NOTE -> colorBlinkin.setPulseTimeMicroseconds(Colors.GREEN.colorValue);
