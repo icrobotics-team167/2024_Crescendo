@@ -15,6 +15,7 @@
 package frc.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.race;
+import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -115,6 +116,9 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Score in speaker",
         shooter.getAutoSpeakerShotCommand(() -> drivebase.getPose().getTranslation()));
+    NamedCommands.registerCommand("Aim from subwoofer", shooter.getSubwooferShotCommand());
+    NamedCommands.registerCommand("Aim from podium", shooter.getPodiumShotCommand());
+    NamedCommands.registerCommand("Score note (already aimed)", shooter.shootDuringAuto());
     NamedCommands.registerCommand("Intake", shooter.autoIntakeNoPivot());
     NamedCommands.registerCommand("Intake Out", shooter.intakeOut());
     NamedCommands.registerCommand("Spin up flywheel", shooter.getFlywheelSpinUp());

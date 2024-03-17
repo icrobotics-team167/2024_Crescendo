@@ -140,6 +140,11 @@ public class Shooter {
         flywheel.getSpeakerShotCommand());
   }
 
+  public Command shootDuringAuto() {
+    return waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint())
+        .andThen(feeder.getFeedCommand().withTimeout(1));
+  }
+
   public Command getFlywheelSpinUp() {
     return flywheel.getSpeakerShotCommand();
   }
