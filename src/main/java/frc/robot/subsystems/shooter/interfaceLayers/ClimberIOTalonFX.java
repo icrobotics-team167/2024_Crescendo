@@ -18,23 +18,14 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.util.CANConstants;
 
 public class ClimberIOTalonFX implements ClimberIO {
   private final TalonFX leftMotor;
   private final TalonFX rightMotor;
-  private final DutyCycleEncoder leftEncoder;
-  private final DutyCycleEncoder rightEncoder;
-  private final CurrentLimitsConfigs configs = new CurrentLimitsConfigs();
 
   private final StatusSignal<Double> leftVoltage;
   private final StatusSignal<Double> rightVoltage;
@@ -42,31 +33,34 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final StatusSignal<Double> rightCurrent;
   private final StatusSignal<Double> leftVelocity;
   private final StatusSignal<Double> rightVelocity;
+  private final StatusSignal<Double> leftPosition;
+  private final StatusSignal<Double> rightPosition;
 
   private double MIN_ANGLE_DEGREES = -20;
   private double MAX_ANGLE_DEGREES = 75;
 
-  private Rotation2d angleSetpoint = Rotation2d.fromDegrees(MIN_ANGLE_DEGREES);
-
   public ClimberIOTalonFX() {
     leftMotor = new TalonFX(CANConstants.Shooter.CLIMBER_LEFT, CANConstants.CANIVORE_NAME);
     rightMotor = new TalonFX(CANConstants.Shooter.CLIMBER_RIGHT, CANConstants.CANIVORE_NAME);
-    leftEncoder = new DutyCycleEncoder(1);
-    rightEncoder = new DutyCycleEncoder(3);
 
-    configs.StatorCurrentLimit = 100;
-    configs.StatorCurrentLimitEnable = true;
-    configs.SupplyCurrentLimit = 90;
-    configs.SupplyCurrentLimitEnable = true;
-    leftMotor.getConfigurator().apply(configs);
-    rightMotor.getConfigurator().apply(configs);
+    TalonFXConfiguration sharedConfigs = new TalonFXConfiguration();
 
-    MotorOutputConfigs leftOutputConfigs = new MotorOutputConfigs();
-    MotorOutputConfigs rightOutputConfigs = new MotorOutputConfigs();
-    leftOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
-    rightOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
-    leftMotor.getConfigurator().apply(leftOutputConfigs);
-    rightMotor.getConfigurator().apply(rightOutputConfigs);
+    sharedConfigs.CurrentLimits.StatorCurrentLimit = 100;
+    sharedConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
+    sharedConfigs.CurrentLimits.SupplyCurrentLimit = 90;
+    sharedConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+
+    // Napkin math, 20:1 gear ratio from motor to pulley and 52:1 ratio from pulley to arm
+    sharedConfigs.Feedback.SensorToMechanismRatio = 20 * 52;
+
+    sharedConfigs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    sharedConfigs.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+        Rotations.convertFrom(MAX_ANGLE_DEGREES, Degrees);
+    sharedConfigs.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    sharedConfigs.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
+        Rotations.convertFrom(MIN_ANGLE_DEGREES, Degrees);
+    leftMotor.getConfigurator().apply(sharedConfigs);
+    rightMotor.getConfigurator().apply(sharedConfigs);
 
     leftMotor.setInverted(false);
     rightMotor.setInverted(true);
@@ -77,81 +71,41 @@ public class ClimberIOTalonFX implements ClimberIO {
     rightCurrent = rightMotor.getStatorCurrent();
     leftVelocity = leftMotor.getVelocity();
     rightVelocity = rightMotor.getVelocity();
+    leftPosition = leftMotor.getPosition();
+    rightPosition = rightMotor.getPosition();
   }
 
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
     BaseStatusSignal.refreshAll(
-        leftVoltage, rightVoltage, leftCurrent, rightCurrent, leftVelocity, rightVelocity);
+        leftVoltage,
+        rightVoltage,
+        leftCurrent,
+        rightCurrent,
+        leftVelocity,
+        rightVelocity,
+        leftPosition,
+        rightPosition);
 
     inputs.leftAppliedVoltage = Volts.of(leftVoltage.getValueAsDouble());
     inputs.rightAppliedVoltage = Volts.of(rightVoltage.getValueAsDouble());
     inputs.leftAppliedCurrent = Amps.of(leftCurrent.getValueAsDouble());
     inputs.rightAppliedCurrent = Amps.of(rightCurrent.getValueAsDouble());
-    inputs.leftAngle = getLeftAngle();
-    inputs.rightAngle = getRightAngle();
-    inputs.angleSetpoint = angleSetpoint;
-    inputs.leftVelocity = RPM.of(leftVelocity.getValueAsDouble());
-    inputs.rightVelocity = RPM.of(rightVelocity.getValueAsDouble());
+    inputs.leftAngle = Rotation2d.fromRotations(leftPosition.getValueAsDouble());
+    inputs.rightAngle = Rotation2d.fromRotations(rightPosition.getValueAsDouble());
+    inputs.leftVelocity = RotationsPerSecond.of(leftVelocity.getValueAsDouble());
+    inputs.rightVelocity = RotationsPerSecond.of(rightVelocity.getValueAsDouble());
   }
 
   @Override
   public void manualControl(double control) {
-    double leftOutput = control * 12;
-    double rightOutput = control * 12;
-
-    Rotation2d leftAngle = getLeftAngle();
-    Rotation2d rightAngle = getRightAngle();
-
-    if (leftOutput < 0 && isTooLow(leftAngle.getDegrees())) {
-      leftOutput = 0;
-    }
-    if (leftOutput > 0 && isTooHigh(leftAngle.getDegrees())) {
-      leftOutput = 0;
-    }
-    if (rightOutput < 0 && isTooLow(rightAngle.getDegrees())) {
-      rightOutput = 0;
-    }
-    if (rightOutput > 0 && isTooHigh(rightAngle.getDegrees())) {
-      rightOutput = 0;
-    }
-
-    leftMotor.setVoltage(leftOutput);
-    rightMotor.setVoltage(rightOutput);
-  }
-
-  private boolean isTooLow(double angleDegrees) {
-    // return false;
-    return angleDegrees < MIN_ANGLE_DEGREES && angleDegrees - MIN_ANGLE_DEGREES >= 0;
-  }
-
-  private boolean isTooHigh(double angleDegrees) {
-    // return false;
-    return angleDegrees > MAX_ANGLE_DEGREES;
+    leftMotor.setVoltage(control * 12);
+    rightMotor.setVoltage(control * 12);
   }
 
   @Override
   public void stop() {
     leftMotor.stopMotor();
     rightMotor.stopMotor();
-  }
-
-  private LinearFilter leftAngleFilter = LinearFilter.movingAverage(4);
-
-  private Rotation2d getLeftAngle() {
-    double rawAngle = leftEncoder.getAbsolutePosition() - (75.5 / 360.0);
-    return Rotation2d.fromRadians(
-        MathUtil.angleModulus(Units.rotationsToRadians(leftAngleFilter.calculate(rawAngle))));
-  }
-
-  private LinearFilter rightAngleFilter = LinearFilter.movingAverage(4);
-
-  // 0: -162.5
-  // 90: 106.1
-  // going up makes positive
-  private Rotation2d getRightAngle() {
-    double rawAngle = (82 / 360.0) - rightEncoder.getAbsolutePosition();
-    return Rotation2d.fromRadians(
-        MathUtil.angleModulus(Units.rotationsToRadians(rightAngleFilter.calculate(rawAngle))));
   }
 }
