@@ -65,6 +65,9 @@ public class ClimberIOTalonFX implements ClimberIO {
     leftMotor.setInverted(false);
     rightMotor.setInverted(true);
 
+    leftMotor.setPosition(Rotations.convertFrom(MIN_ANGLE_DEGREES, Degrees));
+    rightMotor.setPosition(Rotations.convertFrom(MIN_ANGLE_DEGREES, Degrees));
+
     leftVoltage = leftMotor.getMotorVoltage();
     rightVoltage = rightMotor.getMotorVoltage();
     leftCurrent = leftMotor.getStatorCurrent();
