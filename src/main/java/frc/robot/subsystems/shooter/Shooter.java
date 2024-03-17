@@ -105,7 +105,7 @@ public class Shooter {
         .until(noteDetector::hasNoteInShooter);
   }
 
-  public Command getManualControlCommand(DoubleSupplier pivotSupplier) {
+  public Command getPivotManualControlCommand(DoubleSupplier pivotSupplier) {
     return pivot.getManualOverrideCommand(pivotSupplier);
   }
 
