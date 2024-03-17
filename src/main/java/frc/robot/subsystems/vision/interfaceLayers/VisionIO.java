@@ -25,7 +25,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface VisionIO {
   @AutoLog
   public class VisionIOInputs {
-    public Pose2d poseEstimate = new Pose2d();
+    public Pose2d poseEstimate = null;
     public Pose3d[] trackedTags = new Pose3d[0];
     public double timestamp = 0;
     public boolean isNewData = false;
