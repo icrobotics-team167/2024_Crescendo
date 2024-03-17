@@ -14,20 +14,18 @@
 
 package frc.robot.subsystems.misc.interfaceLayers;
 
-import frc.robot.subsystems.misc.interfaceLayers.LightsIOBlinkin.Colors;
+import frc.robot.subsystems.misc.LightSubsystem.LightState;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface LightsIO {
   @AutoLog
   public class LightsIOInputs {
-    public int colorValue = 0;
+    public LightState state = LightState.NO_NOTE;
   }
 
   public default void updateInputs(LightsIOInputs inputs) {}
 
-  public default void setColor(Colors color) {}
-
-  public default void setColorValue(int num) {}
+  public default void setColorFromState(LightState state) {}
 
   public default void setColorNull() {}
 }

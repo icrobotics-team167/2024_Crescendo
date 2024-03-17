@@ -69,7 +69,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     double azimuth_kD; // Volts per rotation/second of error derivative
     double azimuthOffset;
     switch (moduleID) {
-      case 0:
+      case 0 -> {
         driveMotor = new CANSparkMax(CANConstants.Drivebase.FRONT_LEFT_DRIVE, MotorType.kBrushless);
         azimuthMotor =
             new CANSparkMax(CANConstants.Drivebase.FRONT_LEFT_TURN, MotorType.kBrushless);
@@ -86,8 +86,8 @@ public class ModuleIOSparkMax implements ModuleIO {
         azimuth_kP = 36;
         azimuth_kD = 1;
         azimuthOffset = 0.219482421875;
-        break;
-      case 1:
+      }
+      case 1 -> {
         driveMotor =
             new CANSparkMax(CANConstants.Drivebase.FRONT_RIGHT_DRIVE, MotorType.kBrushless);
         azimuthMotor =
@@ -105,8 +105,8 @@ public class ModuleIOSparkMax implements ModuleIO {
         azimuth_kP = 36;
         azimuth_kD = 1;
         azimuthOffset = 0.37841796875;
-        break;
-      case 2:
+      }
+      case 2 -> {
         driveMotor = new CANSparkMax(CANConstants.Drivebase.BACK_LEFT_DRIVE, MotorType.kBrushless);
         azimuthMotor = new CANSparkMax(CANConstants.Drivebase.BACK_LEFT_TURN, MotorType.kBrushless);
         azimuthCANcoder =
@@ -122,8 +122,8 @@ public class ModuleIOSparkMax implements ModuleIO {
         azimuth_kP = 36;
         azimuth_kD = 1;
         azimuthOffset = 0.315673828125;
-        break;
-      case 3:
+      }
+      case 3 -> {
         driveMotor = new CANSparkMax(CANConstants.Drivebase.BACK_RIGHT_DRIVE, MotorType.kBrushless);
         azimuthMotor =
             new CANSparkMax(CANConstants.Drivebase.BACK_RIGHT_TURN, MotorType.kBrushless);
@@ -140,9 +140,9 @@ public class ModuleIOSparkMax implements ModuleIO {
         azimuth_kP = 36;
         azimuth_kD = 1;
         azimuthOffset = -0.01953125;
-        break;
-      default:
-        throw new IndexOutOfBoundsException("Invalid module ID. Expected 0-3, got " + moduleID);
+      }
+      default -> throw new IndexOutOfBoundsException(
+          "Invalid module ID. Expected 0-3, got " + moduleID);
     }
 
     SparkUtils.configureSpark(() -> driveMotor.restoreFactoryDefaults());

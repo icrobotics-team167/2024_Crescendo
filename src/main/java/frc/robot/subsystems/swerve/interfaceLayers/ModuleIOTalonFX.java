@@ -22,7 +22,7 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
-import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
@@ -33,6 +33,7 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.*;
 import frc.robot.subsystems.swerve.Module;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.util.CANConstants;
 import frc.robot.util.CANConstants.Drivebase;
 import frc.robot.util.SwerveUtils;
@@ -230,7 +231,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   /**
    * Constructs a new TalonFX-based swerve module IO interface.
    *
-   * @param index The index of the module.
+   * @param moduleID The index of the module.
    *     <ul>
    *       <li><b>Position of module from index</b>
    *           <ul>
@@ -242,7 +243,7 @@ public class ModuleIOTalonFX implements ModuleIO {
    *     </ul>
    */
   @SuppressWarnings("unused")
-  public ModuleIOTalonFX(int index) {
+  public ModuleIOTalonFX(int moduleID) {
     // PIDF tuning values. NONE OF THESE VALUES SHOULD BE NEGATIVE, IF THEY ARE YA DONE GOOFED
     // SOMEWHERE
     double drive_kS; // Amps of current needed to overcome friction
@@ -266,8 +267,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     double azimuth_kP; // Amps of current per rotation of error
     double azimuth_kI; // Amps of current per rotation of integrated error
     double azimuth_kD; // Amps of current per rotations/s of error derivative
-    switch (index) {
-      case 0: // Front Left module
+    switch (moduleID) {
+      case 0 -> {
         driveTalon = new TalonFX(Drivebase.FRONT_LEFT_DRIVE, CANConstants.CANIVORE_NAME);
         azimuthTalon = new TalonFX(Drivebase.FRONT_LEFT_TURN, CANConstants.CANIVORE_NAME);
         cancoder = new CANcoder(Drivebase.FRONT_LEFT_ENCODER, CANConstants.CANIVORE_NAME);
@@ -285,8 +286,8 @@ public class ModuleIOTalonFX implements ModuleIO {
         azimuth_kP = 4;
         azimuth_kI = 0;
         azimuth_kD = 0;
-        break;
-      case 1: // Front Right modules
+      }
+      case 1 -> {
         driveTalon = new TalonFX(Drivebase.FRONT_RIGHT_DRIVE, CANConstants.CANIVORE_NAME);
         azimuthTalon = new TalonFX(Drivebase.FRONT_RIGHT_TURN, CANConstants.CANIVORE_NAME);
         cancoder = new CANcoder(Drivebase.FRONT_RIGHT_ENCODER, CANConstants.CANIVORE_NAME);
@@ -305,8 +306,8 @@ public class ModuleIOTalonFX implements ModuleIO {
         azimuth_kP = 4;
         azimuth_kI = 0;
         azimuth_kD = 0;
-        break;
-      case 2: // Back Left modules
+      }
+      case 2 -> {
         driveTalon = new TalonFX(Drivebase.BACK_LEFT_DRIVE, CANConstants.CANIVORE_NAME);
         azimuthTalon = new TalonFX(Drivebase.BACK_RIGHT_TURN, CANConstants.CANIVORE_NAME);
         cancoder = new CANcoder(Drivebase.BACK_LEFT_ENCODER, CANConstants.CANIVORE_NAME);
@@ -325,8 +326,8 @@ public class ModuleIOTalonFX implements ModuleIO {
         azimuth_kP = 4;
         azimuth_kI = 0;
         azimuth_kD = 0;
-        break;
-      case 3: // Back Right modules
+      }
+      case 3 -> {
         driveTalon = new TalonFX(Drivebase.BACK_RIGHT_DRIVE, CANConstants.CANIVORE_NAME);
         azimuthTalon = new TalonFX(Drivebase.BACK_RIGHT_TURN, CANConstants.CANIVORE_NAME);
         cancoder = new CANcoder(Drivebase.BACK_RIGHT_ENCODER, CANConstants.CANIVORE_NAME);
@@ -345,9 +346,9 @@ public class ModuleIOTalonFX implements ModuleIO {
         azimuth_kP = 4;
         azimuth_kI = 0;
         azimuth_kD = 0;
-        break;
-      default: // If somehow a 5th module is constructed, error
-        throw new RuntimeException("Invalid module index");
+      }
+      default -> throw new IndexOutOfBoundsException(
+          "Invalid module ID. Expected 0-3, got " + moduleID);
     }
 
     var driveConfig = new TalonFXConfiguration();
@@ -363,9 +364,11 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveConfig.Slot0.kP = drive_kP;
     driveConfig.Slot0.kI = drive_kI;
     driveConfig.Slot0.kD = drive_kD;
+    driveConfig.MotionMagic.MotionMagicAcceleration = SwerveSubsystem.getMaxLinearAcceleration().in(MetersPerSecondPerSecond); // Max allowed acceleration, in m/s^2
+    driveConfig.MotionMagic.MotionMagicJerk = driveConfig.MotionMagic.MotionMagicAcceleration * 5; // Max allowed jerk, in m/s^3
     // Limit the current draw of the motors.
-    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 80;
-    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = 80;
+    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 100;
+    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = 100;
     driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     driveTalon.getConfigurator().apply(driveConfig);
 
@@ -386,10 +389,11 @@ public class ModuleIOTalonFX implements ModuleIO {
     azimuthConfig.Slot0.kI = azimuth_kI;
     azimuthConfig.Slot0.kD = azimuth_kD;
     azimuthConfig.MotionMagic.MotionMagicAcceleration = 10; // Max allowed acceleration, in rot/s^2
-    azimuthConfig.MotionMagic.MotionMagicJerk = 50; // Max allowed jerk, in rot/s^3
+    azimuthConfig.MotionMagic.MotionMagicJerk = 100; // Max allowed jerk, in rot/s^3
+    azimuthConfig.MotionMagic.MotionMagicCruiseVelocity = 4.5;
     azimuthConfig.ClosedLoopGeneral.ContinuousWrap = true;
-    azimuthConfig.TorqueCurrent.PeakForwardTorqueCurrent = 60;
-    azimuthConfig.TorqueCurrent.PeakReverseTorqueCurrent = 60;
+    azimuthConfig.TorqueCurrent.PeakForwardTorqueCurrent = 40;
+    azimuthConfig.TorqueCurrent.PeakReverseTorqueCurrent = 40;
     azimuthConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     azimuthTalon.getConfigurator().apply(azimuthConfig);
 
@@ -484,7 +488,7 @@ public class ModuleIOTalonFX implements ModuleIO {
    * The control request for accelerating the drive motor up to a specified wheel velocity. Is
    * mutable.
    */
-  VelocityTorqueCurrentFOC driveVelocityControlRequest = new VelocityTorqueCurrentFOC(0);
+  MotionMagicVelocityTorqueCurrentFOC driveVelocityControlRequest = new MotionMagicVelocityTorqueCurrentFOC(0);
 
   @Override
   public void setDriveVelocity(Measure<Velocity<Distance>> velocity) {

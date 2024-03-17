@@ -72,7 +72,7 @@ public class RobotContainer {
                 new NoteDetectorIOTimeOfFlight(),
                 new IntakeIOTalonFX(),
                 new LightsIOBlinkin(),
-                new ClimberIO() {});
+                new ClimberIOTalonFX());
         // light = new LightSubsystem(new LightsIOBlinkin());
         break;
       case SIM:

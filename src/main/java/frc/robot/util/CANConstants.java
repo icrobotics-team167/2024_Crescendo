@@ -40,7 +40,8 @@ public final class CANConstants {
     public static final int PIVOT_FOLLOWER = 19;
     public static final int TOP_FLYWHEEL = 22;
     public static final int BOTTOM_FLYWHEEL = 21;
-    public static final int NOTE_DETECTOR = 32;
+    public static final int SHOOTER_NOTE_DETECTOR = 32;
+    public static final int INTAKE_NOTE_DETECTOR = 33;
     public static final int CLIMBER_LEFT = 25;
     public static final int CLIMBER_RIGHT = 24;
   }
