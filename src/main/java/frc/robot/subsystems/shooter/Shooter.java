@@ -82,6 +82,7 @@ public class Shooter {
     // Known good angles:
     // 48.4 degrees for at subwoofer measured 47.3
     // 32 degrees for at podium
+    // 38.5 degrees at x;2.15, y:5.54
     fudgeFactorLerpTable = new InterpolatingDoubleTreeMap();
     fudgeFactorLerpTable.put(0.0, 0.0);
     fudgeFactorLerpTable.put(1.0, 2.5);
@@ -94,14 +95,17 @@ public class Shooter {
   }
 
   public Command autoIntake() {
-    return parallel(
-            intake.getIntakeCommand(),
-            feeder.getFeedCommand(),
-            pivot.getPivotCommand(() -> Rotation2d.fromDegrees(45)))
+    return race(
+        autoIntakeNoPivot(),
+        pivot.getPivotCommand(() -> Rotation2d.fromDegrees(PivotIO.MIN_ANGLE)));
+  }
+
+  public Command autoIntakeNoPivot() {
+    return parallel(intake.getIntakeCommand(), feeder.getFeedCommand())
         .until(noteDetector::hasNoteInShooter);
   }
 
-  public Command getManualControlCommand(DoubleSupplier pivotSupplier) {
+  public Command getPivotManualControlCommand(DoubleSupplier pivotSupplier) {
     return pivot.getManualOverrideCommand(pivotSupplier);
   }
 
@@ -112,11 +116,11 @@ public class Shooter {
   public Command getAutoAmpShotCommand() {
     return deadline(
         waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint())
-            .andThen(feeder.getFeedCommand().withTimeout(2)),
+            .andThen(feeder.getFeedCommand().withTimeout(1)),
         // Gets canceled when the above finishes
         pivot.getPivotCommand(
             () -> {
-              return Rotation2d.fromDegrees(90);
+              return Rotation2d.fromDegrees(PivotIO.MAX_ANGLE);
             }),
         flywheel.getAmpShotCommand());
     // return flywheel.getAmpShotCommand();
@@ -134,6 +138,11 @@ public class Shooter {
     return deadline(
         waitUntil(flywheel::isUpToSpeed).andThen(feeder.getFeedCommand().withTimeout(1)),
         flywheel.getSpeakerShotCommand());
+  }
+
+  public Command shootDuringAuto() {
+    return waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint())
+        .andThen(feeder.getFeedCommand().withTimeout(1));
   }
 
   public Command getFlywheelSpinUp() {
@@ -159,18 +168,22 @@ public class Shooter {
     // return none();
     return deadline(
         waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint())
-            .andThen(feeder.getFeedCommand().withTimeout(2)),
-        parallel(
-            pivot.getPivotCommand(
-                () -> {
-                  return aimAtHeight(botTranslationSupplier.get(), speakerZ);
-                })));
+            .withTimeout(2)
+            .andThen(feeder.getFeedCommand().withTimeout(1)),
+        getAutoSpeakerAimCommand(botTranslationSupplier));
+  }
+
+  public Command getAutoSpeakerAimCommand(Supplier<Translation2d> botTranslationSupplier) {
+    return pivot.getPivotCommand(
+        () -> {
+          return aimAtHeight(botTranslationSupplier.get(), speakerZ);
+        });
   }
 
   public Command getTeleopAutoAimCommand(
       SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
     return parallel(
-        pivot.getPivotCommand(() -> aimAtHeight(drivebase.getPose().getTranslation(), speakerZ)),
+        getAutoSpeakerShotCommand(() -> drivebase.getPose().getTranslation()),
         drivebase.getYawAlign(
             xVel,
             yVel,

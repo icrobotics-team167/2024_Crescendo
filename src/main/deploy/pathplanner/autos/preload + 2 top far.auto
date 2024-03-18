@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.42,
-      "y": 5.567111941824834
+      "x": 0.6849446477990359,
+      "y": 6.727333169630711
     },
-    "rotation": 180.0
+    "rotation": -119.7448812969422
   },
   "command": {
     "type": "sequential",
@@ -26,31 +26,19 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "named",
-                      "data": {
-                        "name": "Score in speaker"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Head to bottom note"
-                      }
-                    },
-                    {
-                      "type": "parallel",
+                      "type": "race",
                       "data": {
                         "commands": [
                           {
                             "type": "named",
                             "data": {
-                              "name": "Intake"
+                              "name": "Aim from subwoofer"
                             }
                           },
                           {
-                            "type": "path",
+                            "type": "named",
                             "data": {
-                              "pathName": "Intake bottom note"
+                              "name": "Score note (already aimed)"
                             }
                           }
                         ]
@@ -59,23 +47,17 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Score bottom note"
+                        "pathName": "Preload + 2 top far pt 1"
                       }
                     },
                     {
-                      "type": "named",
-                      "data": {
-                        "name": "Score in speaker"
-                      }
-                    },
-                    {
-                      "type": "parallel",
+                      "type": "race",
                       "data": {
                         "commands": [
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "Intake middle note"
+                              "pathName": "preload + 2 top far pt 2"
                             }
                           },
                           {
@@ -88,31 +70,38 @@
                       }
                     },
                     {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Score middle note"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Score in speaker"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Head to top note"
-                      }
-                    },
-                    {
-                      "type": "parallel",
+                      "type": "race",
                       "data": {
                         "commands": [
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "Intake top note"
+                              "pathName": "preload + 2 top far pt 3"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Score in speaker"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Score note (already aimed)"
+                      }
+                    },
+                    {
+                      "type": "race",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "preload + 2 top far pt 4"
                             }
                           },
                           {
@@ -122,18 +111,6 @@
                             }
                           }
                         ]
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Score top note"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Score in speaker"
                       }
                     }
                   ]

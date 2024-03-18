@@ -54,6 +54,7 @@ import frc.robot.subsystems.swerve.interfaceLayers.PhoenixOdometryThread;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.subsystems.vision.interfaceLayers.VisionIO.VisionPoseEstimate;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.util.MathUtils;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.DoubleSupplier;
@@ -84,9 +85,6 @@ public class SwerveSubsystem extends SubsystemBase {
   private static final Measure<Velocity<Angle>> MAX_ANGULAR_SPEED =
       RadiansPerSecond.of(MAX_LINEAR_SPEED.in(MetersPerSecond) / DRIVE_BASE_RADIUS.in(Meters));
 
-  private static final Measure<Velocity<Velocity<Angle>>> MAX_ANGULAR_ACCELERATION =
-      RadiansPerSecond.per(Second).of(30);
-
   // IO layers
   /** The IO interface layer for the gyroscope. */
   private final GyroIO gyroIO;
@@ -116,8 +114,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
   private final SlewRateLimiter linearRateLimiter =
       new SlewRateLimiter(MAX_LINEAR_ACCELERATION.in(MetersPerSecondPerSecond));
-  private final SlewRateLimiter angularRateLimiter =
-      new SlewRateLimiter(MAX_ANGULAR_ACCELERATION.in(RadiansPerSecond.per(Second)));
 
   private final PIDController xController;
   private final PIDController yawController;
@@ -182,7 +178,7 @@ public class SwerveSubsystem extends SubsystemBase {
     Logger.recordOutput("SwerveSubsystem/maxLinearVelocity", MAX_LINEAR_SPEED);
     Logger.recordOutput("SwerveSubsystem/maxAngularVelocity", MAX_ANGULAR_SPEED);
 
-    yawController = new PIDController(1.25, 0.8, 0.2);
+    yawController = new PIDController(0.75, 0, 0.01);
     xController = new PIDController(1, 0, 0.05);
     yawController.enableContinuousInput(-Math.PI, Math.PI);
     yawController.setIntegratorRange(-1, 1);
@@ -205,7 +201,6 @@ public class SwerveSubsystem extends SubsystemBase {
     // Stop moving when disabled
     if (DriverStation.isDisabled()) {
       linearRateLimiter.reset(0);
-      angularRateLimiter.reset(0);
       for (var module : modules) {
         module.stop();
       }
@@ -280,7 +275,7 @@ public class SwerveSubsystem extends SubsystemBase {
       speeds.omegaRadiansPerSecond *= Driving.SLOWMODE_MULTIPLIER;
     }
 
-    speeds = limitRates(speeds);
+    Logger.recordOutput("SwerveStates/commandedVelocity", speeds);
 
     // Calculate module setpoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
@@ -300,22 +295,9 @@ public class SwerveSubsystem extends SubsystemBase {
     Logger.recordOutput("SwerveStates/SetpointsOptimized", optimizedSetpointStates);
   }
 
-  private ChassisSpeeds limitRates(ChassisSpeeds rawRate) {
-    double linearVelocity = Math.hypot(rawRate.vxMetersPerSecond, rawRate.vyMetersPerSecond);
-    double limitedLinearVelocity = linearRateLimiter.calculate(linearVelocity);
-
-    double linearMult = linearVelocity == 0 ? 0 : limitedLinearVelocity / limitedLinearVelocity;
-
-    return new ChassisSpeeds(
-        rawRate.vxMetersPerSecond * linearMult,
-        rawRate.vyMetersPerSecond * linearMult,
-        angularRateLimiter.calculate(rawRate.omegaRadiansPerSecond));
-  }
-
   /** Stops the drive. */
   public void stop() {
     linearRateLimiter.reset(0);
-    angularRateLimiter.reset(0);
     for (int i = 0; i < 4; i++) {
       modules[i].stop();
     }
@@ -377,7 +359,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void resetGyroFromPose() {
     if (gyroInputs.connected) {
-      Rotation2d yaw = getPose().getRotation();
+      Rotation2d yaw = MathUtils.adjustRotation(getPose().getRotation());
       gyroIO.setYaw(yaw);
       rawGyroRotation = yaw;
       poseEstimator.resetPosition(yaw, lastModulePositions, getPose());
@@ -453,13 +435,13 @@ public class SwerveSubsystem extends SubsystemBase {
   public Command getAmpAlign(DoubleSupplier yInput) {
     return getYawAlign(
         () -> {
-          double targetX = 1.835;
+          double targetX = 1.8;
           if (Robot.isOnRed()) {
             targetX = Field.FIELD_LENGTH.in(Meters) - targetX;
           }
           Logger.recordOutput("SwerveSubsystem/ampAlign/targetX", targetX);
           Logger.recordOutput("SwerveSubsystem/ampAlign/currentX", getPose().getX());
-          double pidOutput = xController.calculate(getPose().getX(), targetX);
+          double pidOutput = -xController.calculate(getPose().getX(), targetX);
           pidOutput =
               MathUtil.clamp(
                   pidOutput,
@@ -469,7 +451,7 @@ public class SwerveSubsystem extends SubsystemBase {
           return pidOutput;
         },
         yInput,
-        () -> Rotation2d.fromDegrees(90));
+        () -> Rotation2d.fromDegrees(-90));
   }
 
   public Command getYawAlign(

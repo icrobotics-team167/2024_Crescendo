@@ -115,7 +115,10 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Score in speaker",
         shooter.getAutoSpeakerShotCommand(() -> drivebase.getPose().getTranslation()));
-    NamedCommands.registerCommand("Intake", shooter.autoIntake());
+    NamedCommands.registerCommand("Aim from subwoofer", shooter.getSubwooferShotCommand());
+    NamedCommands.registerCommand("Aim from podium", shooter.getPodiumShotCommand());
+    NamedCommands.registerCommand("Score note (already aimed)", shooter.shootDuringAuto());
+    NamedCommands.registerCommand("Intake", shooter.autoIntakeNoPivot());
     NamedCommands.registerCommand("Intake Out", shooter.intakeOut());
     NamedCommands.registerCommand("Spin up flywheel", shooter.getFlywheelSpinUp());
 
@@ -152,6 +155,12 @@ public class RobotContainer {
                 Driving.Deadbands.PRIMARY_LEFT_INNER,
                 Driving.Deadbands.PRIMARY_LEFT_OUTER,
                 Driving.PRIMARY_DRIVER_EXPONENT);
+    DoubleSupplier primaryRightStickForward =
+        () ->
+            MathUtils.inOutDeadband(
+                primaryRightStick.getY(),
+                Driving.Deadbands.PRIMARY_RIGHT_INNER,
+                Driving.Deadbands.PRIMARY_RIGHT_INNER);
     DoubleSupplier primaryRightStickSide =
         () ->
             MathUtils.inOutDeadband(
@@ -182,6 +191,10 @@ public class RobotContainer {
         .whileTrue(new StartEndCommand(drivebase::setSlowmode, drivebase::unsetSlowmode));
     primaryLeftStick.button(2).whileTrue(drivebase.getAmpAlign(primaryLeftStickSide));
     primaryLeftStick.button(3).onTrue(new InstantCommand(drivebase::resetGyroToForwards));
+    primaryLeftStick.button(6).whileTrue(shooter.getAutoAmpShotCommand());
+    primaryLeftStick
+        .button(7)
+        .whileTrue(shooter.getPivotManualControlCommand(primaryRightStickForward));
 
     primaryRightStick
         .trigger()
@@ -194,7 +207,7 @@ public class RobotContainer {
 
     secondaryLeftStick
         .trigger()
-        .whileTrue(shooter.getManualControlCommand(secondaryLeftStickForwards));
+        .whileTrue(shooter.getPivotManualControlCommand(secondaryLeftStickForwards));
     secondaryLeftStick.button(2).whileTrue(shooter.intakeOut());
     // shooter.setPivotDefaultCommand(shooter.getPivotRestingPositionCommand());
     secondaryLeftStick.button(3).whileTrue(shooter.getAutoAmpShotCommand());

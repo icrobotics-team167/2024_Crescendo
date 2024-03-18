@@ -16,8 +16,11 @@ package frc.robot.subsystems.vision;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.Robot.Mode;
@@ -42,7 +45,7 @@ public class VisionSubsystem extends SubsystemBase {
             new VisionIOPhoton(
                 "Camera_Module_v1",
                 new Transform3d(
-                    Meters.convertFrom(11.75, Inches),
+                    Meters.convertFrom(12.75, Inches),
                     Meters.convertFrom(-22.75, Centimeters),
                     Meters.convertFrom(28.5, Centimeters),
                     new Rotation3d(0, Radians.convertFrom(-45, Degrees), 0)))
@@ -67,14 +70,50 @@ public class VisionSubsystem extends SubsystemBase {
   public void updateEstimation() {
     for (int i = 0; i < cameraData.length; i++) {
       if (cameraData[i].isNewData) {
-        VisionPoseEstimate estimate =
+        double trustWorthiness =
+            calculateStDevs(cameraData[i].trackedTags, cameraData[i].poseEstimate);
+        estimationConsumer.accept(
             new VisionPoseEstimate(
                 cameraData[i].poseEstimate,
-                cameraData[i].translationalTrustworthinessMeters,
-                cameraData[i].rotationalTrustworthinessRadians,
-                cameraData[i].timestamp);
-        estimationConsumer.accept(estimate);
+                trustWorthiness,
+                trustWorthiness,
+                cameraData[i].timestamp));
       }
     }
+  }
+
+  private double calculateStDevs(Pose3d[] tagPoses, Pose2d botPose) {
+    switch (tagPoses.length) {
+      case 0 -> {
+        return .9;
+      }
+      case 1 -> {
+        return Meters.convertFrom(
+            20 // Base standard deviation
+                + 1 * calculateBotToTagDist(tagPoses[0], botPose), // Scaled with distance
+            Millimeters);
+      }
+      default -> {
+        return Meters.convertFrom(
+            10 // Base standard deviation
+                + 10 / tagPoses.length // Inversely scaled with number of tags
+                + .5 * averageBotToTagDist(tagPoses, botPose), // Scaled with avg distance
+            Millimeters);
+      }
+    }
+  }
+
+  private double calculateBotToTagDist(Pose3d tagPose, Pose2d botPose) {
+    return tagPose
+        .getTranslation()
+        .getDistance(new Translation3d(botPose.getX(), botPose.getY(), 0));
+  }
+
+  private double averageBotToTagDist(Pose3d[] tagPoses, Pose2d botPose) {
+    double sum = 0;
+    for (Pose3d pose : tagPoses) {
+      sum += calculateBotToTagDist(pose, botPose);
+    }
+    return sum / tagPoses.length;
   }
 }

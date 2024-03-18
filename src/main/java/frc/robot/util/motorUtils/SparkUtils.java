@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 /** Utility class for configuration of Spark motor controllers */
 public class SparkUtils {
 
-  public static final int FRAME_STRATEGY_DISABLED = 65535;
+  public static final int FRAME_STRATEGY_DISABLED = 32767;
   public static final int FRAME_STRATEGY_SLOW = 500;
   public static final int FRAME_STRATEGY_FAST = 20;
 
@@ -67,7 +67,7 @@ public class SparkUtils {
    */
   public static void configureFrameStrategy(
       CANSparkBase spark, Set<Data> data, Set<Sensor> sensors, boolean withFollower) {
-    int status0 = 20; // output, faults
+    int status0 = FRAME_STRATEGY_SLOW; // output, faults
     int status1 = FRAME_STRATEGY_SLOW; // velocity, temperature, input voltage, current
     int status2 = FRAME_STRATEGY_SLOW; // position
     int status3 = FRAME_STRATEGY_DISABLED; // analog encoder | default 50

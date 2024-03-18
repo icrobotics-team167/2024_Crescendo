@@ -23,6 +23,7 @@ import frc.robot.subsystems.shooter.interfaceLayers.PivotIO;
 import frc.robot.subsystems.shooter.interfaceLayers.PivotIOInputsAutoLogged;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class PivotSubsystem extends SubsystemBase {
@@ -64,7 +65,8 @@ public class PivotSubsystem extends SubsystemBase {
     return inputs.angle;
   }
 
+  @AutoLogOutput
   public boolean isAtSetpoint() {
-    return Math.abs(inputs.angleSetpoint.getDegrees() - inputs.angle.getDegrees()) < 0.2;
+    return Math.abs(inputs.angleSetpoint.getDegrees() - inputs.angle.getDegrees()) < 1;
   }
 }

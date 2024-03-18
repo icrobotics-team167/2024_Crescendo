@@ -3,29 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.9026396514331485,
-        "y": 7.016492665463964
+        "x": 3.87311558471559,
+        "y": 5.6158607329142045
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9419379955657137,
-        "y": 6.055791009596529
+        "x": 6.573798610783251,
+        "y": 7.61456116736289
       },
       "isLocked": false,
-      "linkedName": "preload + 1 close from the side pt 2-3"
+      "linkedName": "preload + 2 top far shoot"
     },
     {
       "anchor": {
-        "x": 1.896942369383314,
-        "y": 5.5196408968316515
+        "x": 7.1392845873545925,
+        "y": 5.80110613902938
       },
       "prevControl": {
-        "x": 1.896942369383314,
-        "y": 6.116157410951509
+        "x": 6.388330415774387,
+        "y": 5.80110613902938
+      },
+      "nextControl": {
+        "x": 7.890238758934798,
+        "y": 5.80110613902938
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.397003397332211,
+        "y": 5.80110613902938
+      },
+      "prevControl": {
+        "x": 7.355968426709786,
+        "y": 5.80110613902938
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "intake top mid far"
     }
   ],
   "rotationTargets": [],
@@ -43,7 +59,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Preload + 2 top far auto",
   "previewStartingState": {
     "rotation": 180.0,
     "velocity": 0

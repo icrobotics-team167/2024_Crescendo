@@ -28,7 +28,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     motor = new TalonFX(Shooter.INTAKE, CANConstants.CANIVORE_NAME);
     configs.StatorCurrentLimit = 40;
     configs.StatorCurrentLimitEnable = true;
-    configs.SupplyCurrentLimit = 30;
+    configs.SupplyCurrentLimit = 40;
     configs.SupplyCurrentLimitEnable = true;
     motor.getConfigurator().apply(configs);
   }

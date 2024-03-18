@@ -25,7 +25,7 @@ import org.littletonrobotics.junction.Logger;
 public class VisionIOLimelight implements VisionIO {
   @Override
   public void updateInputs(VisionIOInputs inputs) {
-    inputs.isNewData = false;
+    inputs = new VisionIOInputs();
     // If the Limelight doesn't see any tags to track, stop.
     if (!hasTracking()) {
       return;

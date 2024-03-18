@@ -25,7 +25,6 @@ public interface ClimberIO {
   public class ClimberIOInputs {
     public Rotation2d leftAngle = new Rotation2d();
     public Rotation2d rightAngle = new Rotation2d();
-    public Rotation2d angleSetpoint = new Rotation2d();
     public Measure<Velocity<Angle>> angularVelocity = RadiansPerSecond.of(0);
     public Measure<Voltage> leftAppliedVoltage = Volts.of(0);
     public Measure<Current> leftAppliedCurrent = Amps.of(0);
