@@ -3,12 +3,13 @@
   "robotLength": 0.927,
   "holonomicMode": true,
   "pathFolders": [
-    "preload + 3 close auto",
+    "Preload + 2 top far auto",
     "Spit out 4 auto",
     "Spit out 5 auto",
     "preload + 1 close + 1 far note auto",
     "preload + 1 close note auto",
-    "preload + 2 far auto"
+    "preload + 2 far auto",
+    "preload + 3 close auto"
   ],
   "autoFolders": [
     "Known Good Autos",

@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.514000495935639,
+        "y": 7.4390655194630515
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.876041115502659,
+        "y": 7.195321564039803
+      },
+      "isLocked": false,
+      "linkedName": "intake top far"
+    },
+    {
+      "anchor": {
+        "x": 3.87311558471559,
+        "y": 5.6158607329142045
+      },
+      "prevControl": {
+        "x": 4.653096242064078,
+        "y": 6.395841390262693
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "preload + 2 top far shoot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 540.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Preload + 2 top far auto",
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

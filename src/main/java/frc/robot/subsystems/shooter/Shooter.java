@@ -170,17 +170,20 @@ public class Shooter {
         waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint())
             .withTimeout(2)
             .andThen(feeder.getFeedCommand().withTimeout(1)),
-        parallel(
-            pivot.getPivotCommand(
-                () -> {
-                  return aimAtHeight(botTranslationSupplier.get(), speakerZ);
-                })));
+        getAutoSpeakerAimCommand(botTranslationSupplier));
+  }
+
+  public Command getAutoSpeakerAimCommand(Supplier<Translation2d> botTranslationSupplier) {
+    return pivot.getPivotCommand(
+        () -> {
+          return aimAtHeight(botTranslationSupplier.get(), speakerZ);
+        });
   }
 
   public Command getTeleopAutoAimCommand(
       SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
     return parallel(
-        pivot.getPivotCommand(() -> aimAtHeight(drivebase.getPose().getTranslation(), speakerZ)),
+        getAutoSpeakerShotCommand(() -> drivebase.getPose().getTranslation()),
         drivebase.getYawAlign(
             xVel,
             yVel,
