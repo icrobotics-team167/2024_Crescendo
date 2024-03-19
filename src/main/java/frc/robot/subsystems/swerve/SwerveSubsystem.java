@@ -82,7 +82,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private static final Measure<Distance> DRIVE_BASE_RADIUS =
       Meters.of(Math.hypot(TRACK_LENGTH.in(Meters) / 2.0, TRACK_WIDTH.in(Meters) / 2.0));
   /** The max angular velocity of the drivebase. */
-  private static final Measure<Velocity<Angle>> MAX_ANGULAR_SPEED =
+  public static final Measure<Velocity<Angle>> MAX_ANGULAR_SPEED =
       RadiansPerSecond.of(MAX_LINEAR_SPEED.in(MetersPerSecond) / DRIVE_BASE_RADIUS.in(Meters));
 
   // IO layers
@@ -151,7 +151,7 @@ public class SwerveSubsystem extends SubsystemBase {
     AutoBuilder.configureHolonomic(
         this::getPose,
         this::setPose,
-        () -> kinematics.toChassisSpeeds(getModuleStates()),
+        this::getRobotRelativeVelocities,
         this::runVelocity,
         new HolonomicPathFollowerConfig(
             MAX_LINEAR_SPEED.in(MetersPerSecond),
@@ -334,6 +334,15 @@ public class SwerveSubsystem extends SubsystemBase {
       states[i] = modules[i].getState();
     }
     return states;
+  }
+
+  public ChassisSpeeds getRobotRelativeVelocities() {
+    return kinematics.toChassisSpeeds(getModuleStates());
+  }
+
+  @AutoLogOutput(key = "Odometry/FieldRelativeVelocities")
+  public ChassisSpeeds getFieldRelativeVelocities() {
+    return ChassisSpeeds.fromRobotRelativeSpeeds(getRobotRelativeVelocities(), rawGyroRotation);
   }
 
   /** Returns the module positions (turn angles and drive velocities) for all of the modules. */

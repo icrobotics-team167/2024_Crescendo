@@ -17,11 +17,15 @@ package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.Field;
 import frc.robot.Robot;
@@ -49,6 +53,8 @@ public class Shooter {
   private final ClimberSubsystem climb;
 
   private InterpolatingDoubleTreeMap fudgeFactorLerpTable;
+
+  private PIDController speakerYawPidController;
 
   public Shooter(
       FeederIO feederIO,
@@ -87,6 +93,9 @@ public class Shooter {
     fudgeFactorLerpTable.put(0.0, 0.0);
     fudgeFactorLerpTable.put(1.0, 2.5);
     fudgeFactorLerpTable.put(3.0, 6.65);
+
+    speakerYawPidController = new PIDController(0.5, 0, 0);
+    speakerYawPidController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   public Command intakeOut() {
@@ -184,14 +193,10 @@ public class Shooter {
       SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
     return parallel(
         getAutoSpeakerShotCommand(() -> drivebase.getPose().getTranslation()),
-        drivebase.getYawAlign(
+        drivebase.getDriveCommand(
             xVel,
             yVel,
-            () ->
-                aimAtPosition(
-                    drivebase.getPose().getTranslation(),
-                    new Translation2d(
-                        Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0, speakerY))));
+            () -> aimAtSpeaker(drivebase.getPose(), drivebase.getFieldRelativeVelocities())));
     // Michael was here));
   }
 
@@ -219,9 +224,48 @@ public class Shooter {
   }
 
   // ROBOT ROTATE MATH
-  private Rotation2d aimAtPosition(Translation2d currentBotPosition, Translation2d targetPosition) {
-    Rotation2d targetBotYaw = targetPosition.minus(currentBotPosition).getAngle();
-    return targetBotYaw;
+  private double aimAtSpeaker(Pose2d currentBotPose, ChassisSpeeds robotSpeeds) {
+    Translation2d speakerPosition =
+        new Translation2d(Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0, speakerY);
+    Translation2d currentBotPosition = currentBotPose.getTranslation();
+
+    // Calculate position and velocity of speaker relative to robot
+    Translation2d speakerRelativePosition = speakerPosition.minus(currentBotPosition);
+    double speakerRelativeVXMpS = -robotSpeeds.vxMetersPerSecond;
+    double speakerRelativeVYMpS = -robotSpeeds.vyMetersPerSecond;
+    Logger.recordOutput("Shooter/autoAim/yaw/speakerRelativeVXMps", speakerRelativeVXMpS);
+    Logger.recordOutput("Shooter/autoAim/yaw/speakerRelativeVYMps", speakerRelativeVYMpS);
+
+    double targetBotYawRad =
+        Math.atan2(speakerRelativePosition.getY(), speakerRelativePosition.getX());
+    Logger.recordOutput("Shooter/autoAim/yaw/targetBotYawRad", targetBotYawRad);
+
+    double speakerRelativeVelocityDirectionRad =
+        Math.atan2(speakerRelativeVYMpS, speakerRelativeVXMpS);
+    double speakerRelativeVelocityMagnitudeMpS =
+        Math.hypot(speakerRelativeVXMpS, speakerRelativeVYMpS);
+
+    double speakerRelativeVParallel =
+        Math.cos(speakerRelativeVelocityDirectionRad - targetBotYawRad)
+            * speakerRelativeVelocityMagnitudeMpS;
+    Logger.recordOutput(
+        "Shooter/autoAim/yaw/speakerRelativeVParallelMpS", speakerRelativeVParallel);
+    double speakerRelativeVPerpendicular =
+        Math.sin(speakerRelativeVelocityDirectionRad - targetBotYawRad)
+            * speakerRelativeVelocityMagnitudeMpS;
+    Logger.recordOutput(
+        "Shooter/autoAim/yaw/speakerRelativeVPerpendicular", speakerRelativeVPerpendicular);
+
+    double feedforward = speakerRelativeVPerpendicular / speakerRelativePosition.getNorm();
+    Logger.recordOutput("Shooter/autoAim/yaw/feedforward", feedforward);
+
+    double feedback =
+        5
+            * speakerYawPidController.calculate(
+                currentBotPose.getRotation().getRadians(), targetBotYawRad);
+    Logger.recordOutput("Shooter/autoAim/yaw/feedback", feedback);
+
+    return (feedforward + feedback) / SwerveSubsystem.MAX_ANGULAR_SPEED.in(RadiansPerSecond);
   }
 
   public Command getClimberManualControl(DoubleSupplier climberControl) {
