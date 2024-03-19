@@ -14,10 +14,11 @@
 
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIO;
 import frc.robot.subsystems.shooter.interfaceLayers.FlywheelIOInputsAutoLogged;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -27,8 +28,19 @@ public class FlywheelSubsystem extends SubsystemBase {
   private final FlywheelIO io;
   private FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
 
+  private SysIdRoutine flywheelSysIdRoutine;
+
   public FlywheelSubsystem(FlywheelIO io) {
     this.io = io;
+
+    flywheelSysIdRoutine =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                Volts.of(2).per(Second),
+                Volts.of(6),
+                Seconds.of(6),
+                (state) -> Logger.recordOutput("Shooter/flywheelTestState", state.name())),
+            new SysIdRoutine.Mechanism((voltage) -> io.runRaw(voltage), null, this));
   }
 
   @Override
@@ -57,6 +69,22 @@ public class FlywheelSubsystem extends SubsystemBase {
     return run(io::runSourceIntake).finallyDo(io::stop);
   }
 
+  public Command getQuasistaticForward() {
+    return flywheelSysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward);
+  }
+
+  public Command getQuasistaticReverse() {
+    return flywheelSysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse);
+  }
+
+  public Command getDynamicForward() {
+    return flywheelSysIdRoutine.dynamic(SysIdRoutine.Direction.kForward);
+  }
+
+  public Command getDynamicReverse() {
+    return flywheelSysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse);
+  }
+
   @AutoLogOutput
   public boolean isUpToSpeed() {
     if (inputs.topVelocitySetpoint.in(RPM) == 0 || inputs.bottomVelocitySetpoint.in(RPM) == 0) {
@@ -68,6 +96,9 @@ public class FlywheelSubsystem extends SubsystemBase {
   }
 
   private boolean atSetpoint(double velocity, double setpoint) {
+    if (setpoint == 0) {
+      return false;
+    }
     if (setpoint < 0) {
       return atSetpoint(-velocity, -setpoint);
     }

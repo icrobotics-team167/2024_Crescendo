@@ -14,9 +14,7 @@
 
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -176,7 +174,7 @@ public class Shooter {
   public Command getAutoSpeakerAimCommand(Supplier<Translation2d> botTranslationSupplier) {
     return pivot.getPivotCommand(
         () -> {
-          return aimAtHeight(botTranslationSupplier.get(), speakerZ);
+          return aimAtSpeaker(botTranslationSupplier.get(), speakerZ);
         });
   }
 
@@ -203,7 +201,7 @@ public class Shooter {
     return pivot.getPivotCommand(() -> Rotation2d.fromDegrees(32.1));
   }
 
-  private Rotation2d aimAtHeight(Translation2d currentBotPosition, double height) {
+  private Rotation2d aimAtSpeaker(Translation2d currentBotPosition, double height) {
     double speakerX = Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0;
     double targetDistance = currentBotPosition.getDistance(new Translation2d(speakerX, speakerY));
     targetDistance += speakerToRobotDistanceOffset;
@@ -226,5 +224,21 @@ public class Shooter {
 
   public Command getClimberManualControl(DoubleSupplier climberControl) {
     return climb.getClimberManualControlCommand(climberControl);
+  }
+
+  public Command getFlywheelQuasistaticForwards() {
+    return flywheel.getQuasistaticForward();
+  }
+
+  public Command getFlywheelQuasistaticReverse() {
+    return flywheel.getQuasistaticReverse();
+  }
+
+  public Command getFlywheelDynamicForwards() {
+    return flywheel.getDynamicForward();
+  }
+
+  public Command getFlywheelDynamicReverse() {
+    return flywheel.getDynamicReverse();
   }
 }
