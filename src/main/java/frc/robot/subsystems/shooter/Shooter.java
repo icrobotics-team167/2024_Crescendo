@@ -94,7 +94,7 @@ public class Shooter {
     fudgeFactorLerpTable.put(1.0, 2.5);
     fudgeFactorLerpTable.put(3.0, 6.65);
 
-    speakerYawPidController = new PIDController(0.5, 0, 0);
+    speakerYawPidController = new PIDController(3, 0, 0);
     speakerYawPidController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
@@ -173,30 +173,33 @@ public class Shooter {
   private double speakerZ = 1.5;
   private double speakerToRobotDistanceOffset = 0.254; // GOD FUCKING DAMNIT TOM
 
-  public Command getAutoSpeakerShotCommand(Supplier<Translation2d> botTranslationSupplier) {
+  public Command getAutoSpeakerShotCommand(
+      Supplier<Translation2d> botTranslationSupplier, Supplier<ChassisSpeeds> botVelocitySupplier) {
     // return none();
     return deadline(
         waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint())
             .withTimeout(2)
             .andThen(feeder.getFeedCommand().withTimeout(1)),
-        getAutoSpeakerAimCommand(botTranslationSupplier));
+        getAutoSpeakerAimCommand(botTranslationSupplier, botVelocitySupplier));
   }
 
-  public Command getAutoSpeakerAimCommand(Supplier<Translation2d> botTranslationSupplier) {
-    return pivot.getPivotCommand(
-        () -> {
-          return aimAtHeight(botTranslationSupplier.get(), speakerZ);
-        });
+  public Command getAutoSpeakerAimCommand(
+      Supplier<Translation2d> botTranslationSupplier, Supplier<ChassisSpeeds> botVelocitySupplier) {
+    return pivot.getVelocityControlCommand(
+        () ->
+            RadiansPerSecond.of(
+                pivotAtSpeaker(botTranslationSupplier.get(), botVelocitySupplier.get())));
   }
 
   public Command getTeleopAutoAimCommand(
       SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
     return parallel(
-        getAutoSpeakerShotCommand(() -> drivebase.getPose().getTranslation()),
+        getAutoSpeakerAimCommand(
+            () -> drivebase.getPose().getTranslation(), drivebase::getFieldRelativeVelocities),
         drivebase.getDriveCommand(
             xVel,
             yVel,
-            () -> aimAtSpeaker(drivebase.getPose(), drivebase.getFieldRelativeVelocities())));
+            () -> yawAtSpeaker(drivebase.getPose(), drivebase.getFieldRelativeVelocities())));
     // Michael was here));
   }
 
@@ -208,23 +211,47 @@ public class Shooter {
     return pivot.getPivotCommand(() -> Rotation2d.fromDegrees(32.1));
   }
 
-  private Rotation2d aimAtHeight(Translation2d currentBotPosition, double height) {
+  private double pivotAtSpeaker(Translation2d currentBotPosition, ChassisSpeeds robotSpeeds) {
     double speakerX = Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0;
-    double targetDistance = currentBotPosition.getDistance(new Translation2d(speakerX, speakerY));
-    targetDistance += speakerToRobotDistanceOffset;
-    Logger.recordOutput("Shooter/autoAim/pivot/targetHeight", height);
-    Logger.recordOutput("Shooter/autoAim/pivot/targetDistance", targetDistance);
+    Translation2d futureBotPosition =
+        currentBotPosition.plus(
+            new Translation2d(
+                robotSpeeds.vxMetersPerSecond * Robot.defaultPeriodSecs,
+                robotSpeeds.vyMetersPerSecond * Robot.defaultPeriodSecs));
 
-    double targetPivotNoFudge = Math.atan(height / targetDistance);
-    double fudgeFactor = Radians.convertFrom(fudgeFactorLerpTable.get(targetDistance), Degrees);
-    Logger.recordOutput("Shooter/autoAim/pivot/targetPivotNoFudge", targetPivotNoFudge);
-    Logger.recordOutput("Shooter/autoAim/pivot/pivotFudgeFactor", fudgeFactor);
+    double currentTargetDistance =
+        currentBotPosition.getDistance(new Translation2d(speakerX, speakerY));
+    Logger.recordOutput("Shooter/autoAim/pivot/targetDistance", currentTargetDistance);
 
-    return new Rotation2d(targetPivotNoFudge + fudgeFactor);
+    double futureTargetDistance =
+        futureBotPosition.getDistance(new Translation2d(speakerX, speakerY));
+    currentTargetDistance += speakerToRobotDistanceOffset;
+    futureTargetDistance += speakerToRobotDistanceOffset;
+
+    double currentTargetAngleRad = Math.atan(speakerZ / currentTargetDistance);
+    Logger.recordOutput("Shooter/autoAim/pivot/targetAngleNoFudge", currentTargetAngleRad);
+    double futureTargetAngleRad = Math.atan(speakerZ / futureTargetDistance);
+
+    double currentFudgeFactor =
+        Radians.convertFrom(fudgeFactorLerpTable.get(currentTargetDistance), Degrees);
+    Logger.recordOutput("Shooter/autoAim/pivot/targetAngleFudgeFactor", currentFudgeFactor);
+    currentTargetAngleRad += currentFudgeFactor;
+
+    futureTargetAngleRad +=
+        Radians.convertFrom(fudgeFactorLerpTable.get(futureTargetDistance), Degrees);
+
+    double feedforward = (futureTargetAngleRad - currentTargetAngleRad) / Robot.defaultPeriodSecs;
+    Logger.recordOutput("Shooter/autoAim/pivot/feedforward", feedforward);
+
+    double feedback = currentTargetAngleRad - pivot.getAngle().getRadians();
+    feedback *= 4;
+    Logger.recordOutput("Shooter/autoAim/pivot/feedback", feedback);
+
+    return feedforward + feedback;
   }
 
   // ROBOT ROTATE MATH
-  private double aimAtSpeaker(Pose2d currentBotPose, ChassisSpeeds robotSpeeds) {
+  private double yawAtSpeaker(Pose2d currentBotPose, ChassisSpeeds robotSpeeds) {
     Translation2d speakerPosition =
         new Translation2d(Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0, speakerY);
     Translation2d currentBotPosition = currentBotPose.getTranslation();
@@ -260,9 +287,8 @@ public class Shooter {
     Logger.recordOutput("Shooter/autoAim/yaw/feedforward", feedforward);
 
     double feedback =
-        5
-            * speakerYawPidController.calculate(
-                currentBotPose.getRotation().getRadians(), targetBotYawRad);
+        speakerYawPidController.calculate(
+            currentBotPose.getRotation().getRadians(), targetBotYawRad);
     Logger.recordOutput("Shooter/autoAim/yaw/feedback", feedback);
 
     return (feedforward + feedback) / SwerveSubsystem.MAX_ANGULAR_SPEED.in(RadiansPerSecond);

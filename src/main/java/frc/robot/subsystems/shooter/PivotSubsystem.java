@@ -17,6 +17,9 @@ package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Velocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.shooter.interfaceLayers.PivotIO;
@@ -52,7 +55,11 @@ public class PivotSubsystem extends SubsystemBase {
 
   /** Gets a command to manually control the pivot angle. */
   public Command getManualOverrideCommand(DoubleSupplier controlSupplier) {
-    return run(() -> io.setVelocityControl(DegreesPerSecond.of(controlSupplier.getAsDouble() * 45)))
+    return getVelocityControlCommand(() -> DegreesPerSecond.of(controlSupplier.getAsDouble() * 45));
+  }
+
+  public Command getVelocityControlCommand(Supplier<Measure<Velocity<Angle>>> velocitySupplier) {
+    return run(() -> io.setVelocityControl(velocitySupplier.get()))
         .finallyDo(() -> io.setVelocityControl(DegreesPerSecond.of(0)));
   }
 

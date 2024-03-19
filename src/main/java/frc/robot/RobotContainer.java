@@ -114,7 +114,9 @@ public class RobotContainer {
     }
     NamedCommands.registerCommand(
         "Score in speaker",
-        shooter.getAutoSpeakerShotCommand(() -> drivebase.getPose().getTranslation()));
+        shooter.getAutoSpeakerShotCommand(
+            () -> drivebase.getPose().getTranslation(),
+            () -> drivebase.getFieldRelativeVelocities()));
     NamedCommands.registerCommand("Aim from subwoofer", shooter.getSubwooferShotCommand());
     NamedCommands.registerCommand("Aim from podium", shooter.getPodiumShotCommand());
     NamedCommands.registerCommand("Score note (already aimed)", shooter.shootDuringAuto());
