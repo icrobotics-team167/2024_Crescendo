@@ -227,4 +227,8 @@ public class Shooter {
   public Command getClimberManualControl(DoubleSupplier climberControl) {
     return climb.getClimberManualControlCommand(climberControl);
   }
+
+  public Command getClimberRaiseCommand() {
+    return climb.getClimberRaiseCommand();
+  }
 }

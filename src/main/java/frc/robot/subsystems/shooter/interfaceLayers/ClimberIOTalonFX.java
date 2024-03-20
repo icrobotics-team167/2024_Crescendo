@@ -19,8 +19,12 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import frc.robot.util.CANConstants;
 
 public class ClimberIOTalonFX implements ClimberIO {
@@ -59,14 +63,30 @@ public class ClimberIOTalonFX implements ClimberIO {
     sharedConfigs.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
     sharedConfigs.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
         Rotations.convertFrom(MIN_ANGLE_DEGREES, Degrees);
+    // 3 volts/degree
+    // 3 volts/(1/360 rotation)
+    // 1440 volts/rotation
+    sharedConfigs.Slot0.kP = 1080;
+    sharedConfigs.Slot1.GravityType = GravityTypeValue.Arm_Cosine;
+    sharedConfigs.Slot1.kP = 1080;
+    // Hook the climber onto the chain and use voltage control to climb. Record the minimum voltage
+    // in which the robot moves, and the angle at which it moved.
+    //
+    // minimumVoltage = The voltage in which it moved at
+    // angle = The angle in which it moved at
+    //
+    // minimumVoltage = kG * cos(angle)
+    // OR
+    // kG = minimumVoltage / cos(angle)
+    sharedConfigs.Slot1.kG = 0; // TODO: Tune
     leftMotor.getConfigurator().apply(sharedConfigs);
     rightMotor.getConfigurator().apply(sharedConfigs);
 
     leftMotor.setInverted(false);
     rightMotor.setInverted(true);
 
-    leftMotor.setPosition(Rotations.convertFrom(MIN_ANGLE_DEGREES, Degrees));
-    rightMotor.setPosition(Rotations.convertFrom(MIN_ANGLE_DEGREES, Degrees));
+    leftMotor.setPosition(MIN_ANGLE_DEGREES / 360);
+    rightMotor.setPosition(MIN_ANGLE_DEGREES / 360);
 
     leftVoltage = leftMotor.getMotorVoltage();
     rightVoltage = rightMotor.getMotorVoltage();
@@ -100,10 +120,30 @@ public class ClimberIOTalonFX implements ClimberIO {
     inputs.rightVelocity = RotationsPerSecond.of(rightVelocity.getValueAsDouble());
   }
 
+  PositionVoltage leftRaiseControlRequest = new PositionVoltage(MAX_ANGLE_DEGREES / 360);
+  PositionVoltage rightRaiseControlRequest = new PositionVoltage(MAX_ANGLE_DEGREES / 360);
+
   @Override
-  public void manualControl(double control) {
-    leftMotor.setVoltage(control * 12);
-    rightMotor.setVoltage(control * 12);
+  public void raise() {
+    leftMotor.setControl(leftRaiseControlRequest);
+    rightMotor.setControl(rightRaiseControlRequest);
+  }
+
+  PositionVoltage leftLowerControlRequest =
+      new PositionVoltage(MIN_ANGLE_DEGREES / 360).withSlot(1);
+  PositionVoltage rightLowerControlRequest =
+      new PositionVoltage(MIN_ANGLE_DEGREES / 360).withSlot(1);
+
+  @Override
+  public void lower() {
+    leftMotor.setControl(leftLowerControlRequest);
+    rightMotor.setControl(rightLowerControlRequest);
+  }
+
+  @Override
+  public void rawControl(Measure<Voltage> volts) {
+    leftMotor.setVoltage(volts.in(Volts));
+    rightMotor.setVoltage(volts.in(Volts));
   }
 
   @Override

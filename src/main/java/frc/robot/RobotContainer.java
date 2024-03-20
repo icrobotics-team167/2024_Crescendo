@@ -221,6 +221,7 @@ public class RobotContainer {
     secondaryRightStick
         .button(10)
         .whileTrue(shooter.getClimberManualControl(secondaryRightStickForwards));
+    secondaryRightStick.button(11).whileTrue(shooter.getClimberRaiseCommand());
   }
 
   /**
