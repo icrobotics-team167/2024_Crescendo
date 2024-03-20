@@ -50,8 +50,8 @@ public class ClimberIOTalonFX implements ClimberIO {
     sharedConfigs.CurrentLimits.SupplyCurrentLimit = 90;
     sharedConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    // Napkin math, 20:1 gear ratio from motor to pulley and 52:1 ratio from pulley to arm
-    sharedConfigs.Feedback.SensorToMechanismRatio = 20 * 52;
+    // Napkin math, 20:1 gear ratio from motor to pulley and 10.5:1 ratio from pulley to arm
+    sharedConfigs.Feedback.SensorToMechanismRatio = 20 * 10.4;
 
     sharedConfigs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     sharedConfigs.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
