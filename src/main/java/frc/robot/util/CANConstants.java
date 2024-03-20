@@ -39,7 +39,8 @@ public final class CANConstants {
     public static final int PIVOT_LEADER = 20;
     public static final int PIVOT_FOLLOWER = 19;
     public static final int TOP_FLYWHEEL = 22;
-    public static final int BOTTOM_FLYWHEEL = 21;
+    public static final int GUIDE_WHEEL = 21;
+    public static final int BOTTOM_FLYWHEEL = 26;
     public static final int SHOOTER_NOTE_DETECTOR = 32;
     public static final int INTAKE_NOTE_DETECTOR = 33;
     public static final int CLIMBER_LEFT = 25;
