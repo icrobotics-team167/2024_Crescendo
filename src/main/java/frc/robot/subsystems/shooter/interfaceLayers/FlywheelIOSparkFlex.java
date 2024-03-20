@@ -146,7 +146,9 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
   }
 
   private void runFlywheels(double topSetpointRPM, double bottomSetpointRPM) {
-    // No need to run the motors
+    // There's not really any harm in the flywheels spinning faster than we want, but if they're not
+    // fast enough or spinning in the wrong direction we need to apply voltage to make them spin at
+    // the right velocity and direction.
     if (!isAtSetpoint(topSetpointRPM, topFlywheelEncoder.getVelocity())) {
       double topFF = topFlywheelFF.calculate(RadiansPerSecond.convertFrom(topSetpointRPM, RPM));
       double topP =
