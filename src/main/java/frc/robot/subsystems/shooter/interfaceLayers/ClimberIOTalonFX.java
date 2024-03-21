@@ -19,7 +19,6 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -120,24 +119,9 @@ public class ClimberIOTalonFX implements ClimberIO {
     inputs.rightVelocity = RotationsPerSecond.of(rightVelocity.getValueAsDouble());
   }
 
-  PositionVoltage leftRaiseControlRequest = new PositionVoltage(MAX_ANGLE_DEGREES / 360);
-  PositionVoltage rightRaiseControlRequest = new PositionVoltage(MAX_ANGLE_DEGREES / 360);
-
   @Override
-  public void raise() {
-    leftMotor.setControl(leftRaiseControlRequest);
-    rightMotor.setControl(rightRaiseControlRequest);
-  }
-
-  PositionVoltage leftLowerControlRequest =
-      new PositionVoltage(MIN_ANGLE_DEGREES / 360).withSlot(1);
-  PositionVoltage rightLowerControlRequest =
-      new PositionVoltage(MIN_ANGLE_DEGREES / 360).withSlot(1);
-
-  @Override
-  public void lower() {
-    leftMotor.setControl(leftLowerControlRequest);
-    rightMotor.setControl(rightLowerControlRequest);
+  public void run() {
+    rawControl(Volts.of(12));
   }
 
   @Override
