@@ -208,7 +208,7 @@ public class Shooter {
   }
 
   public Command getPodiumShotCommand() {
-    return pivot.getPivotCommand(() -> Rotation2d.fromDegrees(32.1));
+    return pivot.getPivotCommand(() -> Rotation2d.fromDegrees(30));
   }
 
   private Rotation2d aimAtHeight(Translation2d currentBotPosition, double height) {
