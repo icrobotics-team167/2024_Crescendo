@@ -53,7 +53,7 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
     SparkUtils.configureSpark(() -> bottomFlywheel.setCANTimeout(250));
     SparkUtils.configureSpark(() -> guideWheel.setCANTimeout(250));
 
-    bottomFlywheel.setInverted(false);
+    bottomFlywheel.setInverted(true);
     SparkUtils.configureSpark(() -> bottomFlywheel.setIdleMode(IdleMode.kCoast));
     SparkUtils.configureSpark(() -> bottomFlywheel.setSmartCurrentLimit(80));
     topFlywheel.setInverted(false);
@@ -129,7 +129,7 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
 
   @Override
   public void runSpeaker() {
-    topSetpointRPM = 4000;
+    topSetpointRPM = 3250;
     bottomSetpointRPM = 4000;
     guideWheelSetpointRPM = 4000;
 
@@ -145,7 +145,7 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
       bottomFlywheel.setVoltage(0);
     }
 
-    if(guideWheelEncoder.getVelocity() < guideWheelSetpointRPM) {
+    if (guideWheelEncoder.getVelocity() < guideWheelSetpointRPM) {
       guideWheel.setVoltage(12);
     } else {
       guideWheel.setVoltage(0);
@@ -154,9 +154,9 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
 
   @Override
   public void runAmp() {
-    topSetpointRPM = -5000;
-    bottomSetpointRPM = 4000;
-    guideWheelSetpointRPM = 5000;
+    topSetpointRPM = -4500;
+    bottomSetpointRPM = 1;
+    guideWheelSetpointRPM = 4000;
 
     if (topFlywheelEncoder.getVelocity() > topSetpointRPM) {
       topFlywheel.setVoltage(-12);
@@ -164,13 +164,13 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
       topFlywheel.setVoltage(0);
     }
 
-    if (bottomFlywheelEncoder.getVelocity() < bottomSetpointRPM) {
-      bottomFlywheel.setVoltage(12);
-    } else {
-      bottomFlywheel.setVoltage(0);
-    }
+    // if (bottomFlywheelEncoder.getVelocity() < bottomSetpointRPM) {
+    //   bottomFlywheel.setVoltage(12);
+    // } else {
+    //   bottomFlywheel.setVoltage(0);
+    // }
 
-    if(guideWheelEncoder.getVelocity() < guideWheelSetpointRPM) {
+    if (guideWheelEncoder.getVelocity() < guideWheelSetpointRPM) {
       guideWheel.setVoltage(12);
     } else {
       guideWheel.setVoltage(0);
@@ -181,6 +181,7 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
   public void runSourceIntake() {
     topSetpointRPM = -2000;
     bottomSetpointRPM = -2000;
+    guideWheelSetpointRPM = -2000;
 
     if (topFlywheelEncoder.getVelocity() > topSetpointRPM) {
       topFlywheel.setVoltage(-12);
@@ -192,6 +193,12 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
       bottomFlywheel.setVoltage(-12);
     } else {
       bottomFlywheel.setVoltage(0);
+    }
+
+    if (guideWheelEncoder.getVelocity() > guideWheelSetpointRPM) {
+      guideWheel.setVoltage(-12);
+    } else {
+      guideWheel.setVoltage(0);
     }
   }
 

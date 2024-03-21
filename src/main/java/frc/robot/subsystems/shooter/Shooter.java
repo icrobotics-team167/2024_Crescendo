@@ -120,7 +120,7 @@ public class Shooter {
         // Gets canceled when the above finishes
         pivot.getPivotCommand(
             () -> {
-              return Rotation2d.fromDegrees(PivotIO.MAX_ANGLE);
+              return Rotation2d.fromDegrees(95);
             }),
         flywheel.getAmpShotCommand());
     // return flywheel.getAmpShotCommand();
