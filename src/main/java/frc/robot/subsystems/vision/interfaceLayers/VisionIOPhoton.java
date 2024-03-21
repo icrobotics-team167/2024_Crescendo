@@ -56,7 +56,7 @@ public class VisionIOPhoton implements VisionIO {
 
   @Override
   public void updateInputs(VisionIOInputs inputs) {
-    // inputs = new VisionIOInputs();
+    inputs.trackedTags = new Pose3d[0];
     // If the camera isn't connected, stop.
     if (camera.isConnected() == false) {
       // System.out.println("Camera connected check failed");

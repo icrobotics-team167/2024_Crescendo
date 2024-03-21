@@ -17,6 +17,7 @@ package frc.robot.subsystems.vision.interfaceLayers;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.Constants.Field;
@@ -26,6 +27,7 @@ public class VisionIOLimelight implements VisionIO {
   @Override
   public void updateInputs(VisionIOInputs inputs) {
     // inputs = new VisionIOInputs();
+    inputs.trackedTags = new Pose3d[0];
     // If the Limelight doesn't see any tags to track, stop.
     if (!hasTracking()) {
       return;
