@@ -42,7 +42,7 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public Command getClimberManualControlCommand(DoubleSupplier controlSupplier) {
-    return run(() -> io.rawControl(Volts.of(controlSupplier.getAsDouble() * 12)))
+    return run(() -> io.rawControl(Volts.of(controlSupplier.getAsDouble() * 6)))
         .finallyDo(io::stop);
   }
 }
