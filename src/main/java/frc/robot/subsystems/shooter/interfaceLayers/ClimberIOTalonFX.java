@@ -56,28 +56,6 @@ public class ClimberIOTalonFX implements ClimberIO {
     // Napkin math, 20:1 gear ratio from motor to pulley and 10.5:1 ratio from pulley to arm
     sharedConfigs.Feedback.SensorToMechanismRatio = 20 * 10.4;
 
-    sharedConfigs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    sharedConfigs.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-        Rotations.convertFrom(MAX_ANGLE_DEGREES, Degrees);
-    sharedConfigs.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    sharedConfigs.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-        Rotations.convertFrom(MIN_ANGLE_DEGREES, Degrees);
-    // 3 volts/degree
-    // 3 volts/(1/360 rotation)
-    // 1440 volts/rotation
-    sharedConfigs.Slot0.kP = 1080;
-    sharedConfigs.Slot1.GravityType = GravityTypeValue.Arm_Cosine;
-    sharedConfigs.Slot1.kP = 1080;
-    // Hook the climber onto the chain and use voltage control to climb. Record the minimum voltage
-    // in which the robot moves, and the angle at which it moved.
-    //
-    // minimumVoltage = The voltage in which it moved at
-    // angle = The angle in which it moved at
-    //
-    // minimumVoltage = kG * cos(angle)
-    // OR
-    // kG = minimumVoltage / cos(angle)
-    sharedConfigs.Slot1.kG = 0; // TODO: Tune
     leftMotor.getConfigurator().apply(sharedConfigs);
     rightMotor.getConfigurator().apply(sharedConfigs);
 
