@@ -167,14 +167,18 @@ public class Shooter {
   public Command getAutoSpeakerShotCommand(Supplier<Translation2d> botTranslationSupplier) {
     // return none();
     return deadline(
-        getRearShotCommand(),
+        waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint())
+            .withTimeout(2)
+            .andThen(feeder.getFeedCommand().withTimeout(1)),
         getAutoSpeakerAimCommand(botTranslationSupplier));
   }
 
   public Command getRearShotCommand() {
-    return waitUntil(() -> flywheel.isUpToSpeed() && pivot.isAtSetpoint())
+    return deadline(
+        waitUntil(() -> flywheel.isUpToSpeed())
             .withTimeout(2)
-            .andThen(feeder.getFeedCommand().withTimeout(1));
+            .andThen(feeder.getFeedCommand().withTimeout(1)),
+        flywheel.getAmpShotCommand());
   }
 
   public Command getAutoSpeakerAimCommand(Supplier<Translation2d> botTranslationSupplier) {
