@@ -154,9 +154,9 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
 
   @Override
   public void runAmp() {
-    topSetpointRPM = -4500;
+    topSetpointRPM = -5500;
     bottomSetpointRPM = 1;
-    guideWheelSetpointRPM = 4000;
+    guideWheelSetpointRPM = 1000;
 
     if (topFlywheelEncoder.getVelocity() > topSetpointRPM) {
       topFlywheel.setVoltage(-12);
@@ -164,11 +164,13 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
       topFlywheel.setVoltage(0);
     }
 
-    // if (bottomFlywheelEncoder.getVelocity() < bottomSetpointRPM) {
-    //   bottomFlywheel.setVoltage(12);
-    // } else {
-    //   bottomFlywheel.setVoltage(0);
-    // }
+    if (bottomFlywheelEncoder.getVelocity() < bottomSetpointRPM) {
+      bottomFlywheel.setVoltage(.25);
+    } else if (bottomFlywheelEncoder.getVelocity() > bottomSetpointRPM) {
+      bottomFlywheel.setVoltage(-.25);
+    } else {
+      bottomFlywheel.setVoltage(0);
+    }
 
     if (guideWheelEncoder.getVelocity() < guideWheelSetpointRPM) {
       guideWheel.setVoltage(12);
