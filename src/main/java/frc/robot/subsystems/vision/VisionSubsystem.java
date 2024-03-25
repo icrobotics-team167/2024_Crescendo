@@ -26,6 +26,7 @@ import frc.robot.Robot;
 import frc.robot.Robot.Mode;
 import frc.robot.subsystems.vision.interfaceLayers.*;
 import frc.robot.subsystems.vision.interfaceLayers.VisionIO.VisionPoseEstimate;
+import frc.robot.subsystems.vision.interfaceLayers.VisionIO.VisionStatusCode;
 import java.util.function.Consumer;
 import org.littletonrobotics.junction.Logger;
 
@@ -69,7 +70,7 @@ public class VisionSubsystem extends SubsystemBase {
 
   public void updateEstimation() {
     for (int i = 0; i < cameraData.length; i++) {
-      if (cameraData[i].isNewData) {
+      if (cameraData[i].statusCode == VisionStatusCode.OK) {
         double trustWorthiness =
             calculateStDevs(cameraData[i].trackedTags, cameraData[i].poseEstimate);
         estimationConsumer.accept(

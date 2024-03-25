@@ -120,7 +120,7 @@ public class Shooter {
         // Gets canceled when the above finishes
         pivot.getPivotCommand(
             () -> {
-              return Rotation2d.fromDegrees(PivotIO.MAX_ANGLE);
+              return Rotation2d.fromDegrees(95);
             }),
         flywheel.getAmpShotCommand());
     // return flywheel.getAmpShotCommand();
@@ -173,6 +173,14 @@ public class Shooter {
         getAutoSpeakerAimCommand(botTranslationSupplier));
   }
 
+  public Command getRearShotCommand() {
+    return deadline(
+        waitUntil(() -> flywheel.isUpToSpeed())
+            .withTimeout(2)
+            .andThen(feeder.getFeedCommand().withTimeout(1)),
+        flywheel.getAmpShotCommand());
+  }
+
   public Command getAutoSpeakerAimCommand(Supplier<Translation2d> botTranslationSupplier) {
     return pivot.getPivotCommand(
         () -> {
@@ -184,14 +192,7 @@ public class Shooter {
       SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
     return parallel(
         getAutoSpeakerShotCommand(() -> drivebase.getPose().getTranslation()),
-        drivebase.getYawAlign(
-            xVel,
-            yVel,
-            () ->
-                aimAtPosition(
-                    drivebase.getPose().getTranslation(),
-                    new Translation2d(
-                        Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0, speakerY))));
+        getSpeakerYawCommand(drivebase, xVel, yVel));
     // Michael was here));
   }
 
@@ -199,8 +200,29 @@ public class Shooter {
     return pivot.getPivotCommand(() -> Rotation2d.fromDegrees(49));
   }
 
+  public Command getSubwooferShotWithYawCommand(
+      SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
+    return getSubwooferShotCommand().alongWith(getSpeakerYawCommand(drivebase, xVel, yVel));
+  }
+
   public Command getPodiumShotCommand() {
-    return pivot.getPivotCommand(() -> Rotation2d.fromDegrees(32.1));
+    return pivot.getPivotCommand(() -> Rotation2d.fromDegrees(30));
+  }
+
+  public Command getPodiumShotWithYawCommand(
+      SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
+    return getPodiumShotCommand().alongWith(getSpeakerYawCommand(drivebase, xVel, yVel));
+  }
+
+  public Command getSpeakerYawCommand(
+      SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
+    return drivebase.getYawAlign(
+        xVel,
+        yVel,
+        () ->
+            aimAtPosition(
+                drivebase.getPose().getTranslation(),
+                new Translation2d(Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0, speakerY)));
   }
 
   private Rotation2d aimAtHeight(Translation2d currentBotPosition, double height) {
@@ -226,5 +248,9 @@ public class Shooter {
 
   public Command getClimberManualControl(DoubleSupplier climberControl) {
     return climb.getClimberManualControlCommand(climberControl);
+  }
+
+  public Command getClimberRaiseCommand() {
+    return climb.getClimberRaiseCommand();
   }
 }
