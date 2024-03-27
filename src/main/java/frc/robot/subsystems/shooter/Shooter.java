@@ -129,7 +129,7 @@ public class Shooter {
         // Gets canceled when the above finishes
         pivot.getPivotCommand(
             () -> {
-              return Rotation2d.fromDegrees(PivotIO.MAX_ANGLE);
+              return Rotation2d.fromDegrees(95);
             }),
         flywheel.getAmpShotCommand());
     // return flywheel.getAmpShotCommand();
@@ -183,6 +183,14 @@ public class Shooter {
         getAutoSpeakerAimCommand(botTranslationSupplier, botVelocitySupplier));
   }
 
+  public Command getRearShotCommand() {
+    return deadline(
+        waitUntil(() -> flywheel.isUpToSpeed())
+            .withTimeout(2)
+            .andThen(feeder.getFeedCommand().withTimeout(1)),
+        flywheel.getAmpShotCommand());
+  }
+
   public Command getAutoSpeakerAimCommand(
       Supplier<Translation2d> botTranslationSupplier, Supplier<ChassisSpeeds> botVelocitySupplier) {
     return pivot.getVelocityControlCommand(
@@ -205,6 +213,11 @@ public class Shooter {
 
   public Command getSubwooferShotCommand() {
     return pivot.getPivotCommand(() -> Rotation2d.fromDegrees(49));
+  }
+
+  public Command getSubwooferShotWithYawCommand(
+      SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
+    return getSubwooferShotCommand().alongWith(getSpeakerYawCommand(drivebase, xVel, yVel));
   }
 
   public Command getPodiumShotCommand() {
@@ -294,7 +307,19 @@ public class Shooter {
     return (feedforward + feedback) / SwerveSubsystem.MAX_ANGULAR_SPEED.in(RadiansPerSecond);
   }
 
+  public Command getSpeakerYawCommand(
+      SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
+    return drivebase.getDriveCommand(
+        yVel,
+        xVel,
+        () -> yawAtSpeaker(drivebase.getPose(), drivebase.getFieldRelativeVelocities()));
+  }
+
   public Command getClimberManualControl(DoubleSupplier climberControl) {
     return climb.getClimberManualControlCommand(climberControl);
+  }
+
+  public Command getClimberRaiseCommand() {
+    return climb.getClimberRaiseCommand();
   }
 }

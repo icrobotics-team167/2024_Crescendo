@@ -204,8 +204,17 @@ public class RobotContainer {
             shooter.getTeleopAutoAimCommand(
                 drivebase, primaryLeftStickForward, primaryLeftStickSide));
     primaryRightStick.button(2).onTrue(new InstantCommand(drivebase::stopWithX));
-    primaryRightStick.button(4).whileTrue(shooter.getSubwooferShotCommand());
-    primaryRightStick.button(5).whileTrue(shooter.getPodiumShotCommand());
+    primaryRightStick
+        .button(4)
+        .whileTrue(
+            shooter.getSubwooferShotWithYawCommand(
+                drivebase, primaryLeftStickForward, primaryLeftStickSide));
+    primaryRightStick
+        .button(5)
+        .whileTrue(
+            shooter.getPodiumShotWithYawCommand(
+                drivebase, primaryLeftStickForward, primaryLeftStickSide));
+    primaryRightStick.button(7).whileTrue(shooter.getRearShotCommand());
 
     secondaryLeftStick
         .trigger()
@@ -223,6 +232,7 @@ public class RobotContainer {
     secondaryRightStick
         .button(10)
         .whileTrue(shooter.getClimberManualControl(secondaryRightStickForwards));
+    secondaryRightStick.button(11).whileTrue(shooter.getClimberRaiseCommand());
   }
 
   /**
