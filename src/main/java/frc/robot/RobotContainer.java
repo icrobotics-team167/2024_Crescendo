@@ -209,11 +209,6 @@ public class RobotContainer {
         .whileTrue(
             shooter.getSubwooferShotWithYawCommand(
                 drivebase, primaryLeftStickForward, primaryLeftStickSide));
-    primaryRightStick
-        .button(5)
-        .whileTrue(
-            shooter.getPodiumShotWithYawCommand(
-                drivebase, primaryLeftStickForward, primaryLeftStickSide));
     primaryRightStick.button(7).whileTrue(shooter.getRearShotCommand());
 
     secondaryLeftStick
