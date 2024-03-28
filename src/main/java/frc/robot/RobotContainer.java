@@ -219,6 +219,11 @@ public class RobotContainer {
     secondaryLeftStick.button(3).whileTrue(shooter.getAutoAmpShotCommand());
     secondaryLeftStick.button(4).whileTrue(shooter.getSourceIntakeCommand());
 
+    secondaryLeftStick.button(5).whileTrue(shooter.getFlywheelQuasistaticForwards());
+    secondaryLeftStick.button(6).whileTrue(shooter.getFlywheelQuasistaticReverse());
+    secondaryLeftStick.button(7).whileTrue(shooter.getFlywheelDynamicForwards());
+    secondaryLeftStick.button(8).whileTrue(shooter.getFlywheelDynamicReverse());
+
     secondaryRightStick.trigger().whileTrue(shooter.autoIntake());
     secondaryRightStick.button(2).whileTrue(shooter.shoot());
     secondaryRightStick.button(3).whileTrue(shooter.getFlywheelSpinUp());

@@ -60,6 +60,8 @@ public interface FlywheelIO {
   /** Updates the set of loggable inputs. */
   public default void updateInputs(FlywheelIOInputs inputs) {}
 
+  public default void runRaw(Measure<Voltage> volts) {}
+
   /** Spins the shooter flywheels up to shoot into the speaker. */
   public default void runSpeaker() {}
 

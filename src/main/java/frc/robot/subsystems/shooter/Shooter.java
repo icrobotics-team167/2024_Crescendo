@@ -14,10 +14,7 @@
 
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -321,5 +318,21 @@ public class Shooter {
 
   public Command getClimberRaiseCommand() {
     return climb.getClimberRaiseCommand();
+  }
+
+  public Command getFlywheelQuasistaticForwards() {
+    return flywheel.getQuasistaticForward();
+  }
+
+  public Command getFlywheelQuasistaticReverse() {
+    return flywheel.getQuasistaticReverse();
+  }
+
+  public Command getFlywheelDynamicForwards() {
+    return flywheel.getDynamicForward();
+  }
+
+  public Command getFlywheelDynamicReverse() {
+    return flywheel.getDynamicReverse();
   }
 }

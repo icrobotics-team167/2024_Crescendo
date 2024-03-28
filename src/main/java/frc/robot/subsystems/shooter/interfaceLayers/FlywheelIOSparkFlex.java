@@ -20,6 +20,9 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.util.CANConstants.Shooter;
 import frc.robot.util.motorUtils.SparkUtils;
@@ -32,6 +35,13 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
   private final RelativeEncoder topFlywheelEncoder;
   private final RelativeEncoder bottomFlywheelEncoder;
   private final RelativeEncoder guideWheelEncoder;
+
+  private final SimpleMotorFeedforward topFlywheelFF = new SimpleMotorFeedforward(0, 0);
+  private final SimpleMotorFeedforward bottomFlywheelFF = new SimpleMotorFeedforward(0, 0);
+  private final SimpleMotorFeedforward guideWheelFF = new SimpleMotorFeedforward(0, 0);
+  private final double topFlywheelP = 0;
+  private final double bottomFlywheelP = 0;
+  private final double guideWheelP = 0;
 
   private double topSetpointRPM;
   private double bottomSetpointRPM;
@@ -94,6 +104,7 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
     bottomFlywheelEncoder = bottomFlywheel.getEncoder();
     guideWheelEncoder = guideWheel.getEncoder();
 
+    // Measurement delay: 24ms
     SparkUtils.configureSpark(() -> topFlywheelEncoder.setAverageDepth(4));
     SparkUtils.configureSpark(() -> topFlywheelEncoder.setMeasurementPeriod(16));
     SparkUtils.configureSpark(() -> bottomFlywheelEncoder.setAverageDepth(4));
@@ -128,28 +139,18 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
   }
 
   @Override
+  public void runRaw(Measure<Voltage> volts) {
+    topFlywheel.setVoltage(volts.in(Volts));
+    bottomFlywheel.setVoltage(volts.in(Volts));
+  }
+
+  @Override
   public void runSpeaker() {
     topSetpointRPM = 3250;
     bottomSetpointRPM = 4000;
     guideWheelSetpointRPM = 4000;
 
-    if (topFlywheelEncoder.getVelocity() < topSetpointRPM) {
-      topFlywheel.setVoltage(12);
-    } else {
-      topFlywheel.setVoltage(0);
-    }
-
-    if (bottomFlywheelEncoder.getVelocity() < bottomSetpointRPM) {
-      bottomFlywheel.setVoltage(12);
-    } else {
-      bottomFlywheel.setVoltage(0);
-    }
-
-    if (guideWheelEncoder.getVelocity() < guideWheelSetpointRPM) {
-      guideWheel.setVoltage(12);
-    } else {
-      guideWheel.setVoltage(0);
-    }
+    runFlywheels(topSetpointRPM, bottomSetpointRPM, guideWheelSetpointRPM);
   }
 
   @Override
@@ -158,25 +159,7 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
     bottomSetpointRPM = 1;
     guideWheelSetpointRPM = 1000;
 
-    if (topFlywheelEncoder.getVelocity() > topSetpointRPM) {
-      topFlywheel.setVoltage(-12);
-    } else {
-      topFlywheel.setVoltage(0);
-    }
-
-    if (bottomFlywheelEncoder.getVelocity() < bottomSetpointRPM) {
-      bottomFlywheel.setVoltage(.25);
-    } else if (bottomFlywheelEncoder.getVelocity() > bottomSetpointRPM) {
-      bottomFlywheel.setVoltage(-.25);
-    } else {
-      bottomFlywheel.setVoltage(0);
-    }
-
-    if (guideWheelEncoder.getVelocity() < guideWheelSetpointRPM) {
-      guideWheel.setVoltage(12);
-    } else {
-      guideWheel.setVoltage(0);
-    }
+    runFlywheels(topSetpointRPM, bottomSetpointRPM, guideWheelSetpointRPM);
   }
 
   @Override
@@ -185,23 +168,7 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
     bottomSetpointRPM = -2000;
     guideWheelSetpointRPM = -2000;
 
-    if (topFlywheelEncoder.getVelocity() > topSetpointRPM) {
-      topFlywheel.setVoltage(-12);
-    } else {
-      topFlywheel.setVoltage(0);
-    }
-
-    if (bottomFlywheelEncoder.getVelocity() > bottomSetpointRPM) {
-      bottomFlywheel.setVoltage(-12);
-    } else {
-      bottomFlywheel.setVoltage(0);
-    }
-
-    if (guideWheelEncoder.getVelocity() > guideWheelSetpointRPM) {
-      guideWheel.setVoltage(-12);
-    } else {
-      guideWheel.setVoltage(0);
-    }
+    runFlywheels(topSetpointRPM, bottomSetpointRPM, guideWheelSetpointRPM);
   }
 
   @Override
@@ -211,6 +178,29 @@ public class FlywheelIOSparkFlex implements FlywheelIO {
     guideWheelSetpointRPM = 0;
     topFlywheel.setVoltage(0);
     bottomFlywheel.setVoltage(0);
-    guideWheel.setVoltage(0);
+  }
+
+  private void runFlywheels(double topSetpointRPM, double bottomSetpointRPM, double guideSetpointRPM) {
+    double topFF = topFlywheelFF.calculate(RadiansPerSecond.convertFrom(topSetpointRPM, RPM));
+    double topP =
+        topFlywheelP
+            * RadiansPerSecond.convertFrom(topSetpointRPM - topFlywheelEncoder.getVelocity(), RPM);
+    topFlywheel.setVoltage(topFF + topP);
+
+    double bottomFF =
+        bottomFlywheelFF.calculate(RadiansPerSecond.convertFrom(bottomSetpointRPM, RPM));
+    double bottomP =
+        bottomFlywheelP
+            * RadiansPerSecond.convertFrom(
+                bottomSetpointRPM - bottomFlywheelEncoder.getVelocity(), RPM);
+    bottomFlywheel.setVoltage(bottomFF + bottomP);
+
+    double guideFF =
+        guideWheelFF.calculate(RadiansPerSecond.convertFrom(guideSetpointRPM, RPM));
+    double guideP =
+        guideWheelP
+            * RadiansPerSecond.convertFrom(
+                guideSetpointRPM - guideWheelEncoder.getVelocity(), RPM);
+    guideWheel.setVoltage(guideFF + guideP);
   }
 }
