@@ -18,6 +18,7 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -81,6 +82,20 @@ public class VisionSubsystem extends SubsystemBase {
                 cameraData[i].timestamp));
       }
     }
+  }
+
+  public Rotation2d getTX(Pose2d botPose) {
+    for (VisionIOInputsAutoLogged data : cameraData) {
+      if (data.isNewData) {
+        return data.trackedTags[0]
+            .toPose2d()
+            .getTranslation()
+            .minus(botPose.getTranslation())
+            .getAngle()
+            .minus(botPose.getRotation());
+      }
+    }
+    return Rotation2d.fromDegrees(0);
   }
 
   private double calculateStDevs(Pose3d[] tagPoses, Pose2d botPose) {
