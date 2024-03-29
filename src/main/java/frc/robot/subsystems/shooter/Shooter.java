@@ -196,6 +196,14 @@ public class Shooter {
     // Michael was here));
   }
 
+  public Command getChildrensYawCommand(
+    SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
+      return drivebase.getYawAlign(xVel, yVel, () -> aimAtPosition(
+                    drivebase.getPose().getTranslation(),
+                    new Translation2d(
+                        Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0, speakerY)));
+    }
+
   public Command getSubwooferShotCommand() {
     return pivot.getPivotCommand(() -> Rotation2d.fromDegrees(49));
   }
