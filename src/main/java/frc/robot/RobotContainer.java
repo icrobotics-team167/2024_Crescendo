@@ -16,6 +16,8 @@ package frc.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.race;
 
+import com.ctre.phoenix.led.Animation.*;
+import com.ctre.phoenix.led.FireAnimation;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Driving;
+import frc.robot.subsystems.misc.CANdleSubsystem;
 import frc.robot.subsystems.misc.interfaceLayers.LightsIO;
 import frc.robot.subsystems.misc.interfaceLayers.LightsIOBlinkin;
 import frc.robot.subsystems.shooter.Shooter;
@@ -231,6 +234,17 @@ public class RobotContainer {
         .button(10)
         .whileTrue(shooter.getClimberManualControl(secondaryRightStickForwards));
     secondaryRightStick.button(11).whileTrue(shooter.getClimberRaiseCommand());
+
+    final CANdleSubsystem CANdle = new CANdleSubsystem(28);
+    final int numLED = 5;
+    final FireAnimation fire = new FireAnimation(1, .7, numLED, .8, .75);
+
+        //When pressed will tell the CANdle to run an animation, TODO: See what happens when it's assigned an animation in an already used slot
+        secondaryRightStick.button(6).onTrue(CANdle.setLight(fire));
+
+        //Clears the animation in the slot I defined
+        secondaryRightStick.button(5).onTrue(CANdle.clearLight(1));
+
   }
 
   /**
