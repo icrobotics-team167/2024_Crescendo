@@ -239,12 +239,12 @@ public class RobotContainer {
     final int numLED = 5;
     final FireAnimation fire = new FireAnimation(1, .7, numLED, .8, .75);
 
-        //When pressed will tell the CANdle to run an animation, TODO: See what happens when it's assigned an animation in an already used slot
-        secondaryRightStick.button(6).onTrue(CANdle.setLight(fire));
+    // When pressed will tell the CANdle to run an animation, TODO: See what happens when it's
+    // assigned an animation in an already used slot
+    secondaryRightStick.button(6).onTrue(CANdle.setLight(fire));
 
-        //Clears the animation in the slot I defined
-        secondaryRightStick.button(5).onTrue(CANdle.clearLight(1));
-
+    // Clears the animation in the slot I defined
+    secondaryRightStick.button(5).onTrue(CANdle.clearLight(1));
   }
 
   /**
