@@ -16,7 +16,6 @@ package frc.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.race;
 
-import com.ctre.phoenix.led.Animation.*;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -50,8 +49,8 @@ public class RobotContainer {
 
   private CommandJoystick primaryLeftStick = new CommandJoystick(0);
   private CommandJoystick primaryRightStick = new CommandJoystick(1);
-  private CommandJoystick secondaryLeftStick = new CommandJoystick(2);
-  private CommandJoystick secondaryRightStick = new CommandJoystick(3);
+  // private CommandJoystick secondaryLeftStick = new CommandJoystick(2);
+  // private CommandJoystick secondaryRightStick = new CommandJoystick(3);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {

@@ -15,6 +15,7 @@
 package frc.robot.subsystems.misc.interfaceLayers;
 
 import com.ctre.phoenix.led.*;
+import com.ctre.phoenix.led.CANdle.LEDStripType;
 import frc.robot.subsystems.misc.LightSubsystem.LightState;
 
 public class LightsIOCANdle implements LightsIO {
@@ -24,6 +25,10 @@ public class LightsIOCANdle implements LightsIO {
     candle = new CANdle(26, "Croppenheimer");
 
     CANdleConfiguration config = new CANdleConfiguration();
+    config.v5Enabled = true;
+    config.statusLedOffWhenActive = true;
+    config.disableWhenLOS = false;
+    config.stripType = LEDStripType.RGB;
     candle.configAllSettings(config);
   }
 
