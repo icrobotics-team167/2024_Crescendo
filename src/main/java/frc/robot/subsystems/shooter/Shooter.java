@@ -66,16 +66,16 @@ public class Shooter {
     light = new LightSubsystem(lightIO);
     climb = new ClimberSubsystem(climberIO);
 
-    light.setDefaultCommand(
-        light.setState(
-            noteDetector::hasNoteInIntake, // Is the bot currently intaking a note?
-            noteDetector::hasNoteInShooter, // Does the bot have a note in the shooter?
-            intake::isRunning, // Is the bot intaking?
-            () -> // Is the pivot aiming?
-            pivot.getCurrentCommand() != null
-                    && pivot.getCurrentCommand().getName().equals("Pivot to angle"),
-            pivot::isAtSetpoint, // Is the pivot at its setpoint?
-            flywheel::isUpToSpeed)); // Is it shooting?
+    // light.setDefaultCommand(
+    //     light.setState(
+    //         noteDetector::hasNoteInIntake, // Is the bot currently intaking a note?
+    //         noteDetector::hasNoteInShooter, // Does the bot have a note in the shooter?
+    //         intake::isRunning, // Is the bot intaking?
+    //         () -> // Is the pivot aiming?
+    //         pivot.getCurrentCommand() != null
+    //                 && pivot.getCurrentCommand().getName().equals("Pivot to angle"),
+    //         pivot::isAtSetpoint, // Is the pivot at its setpoint?
+    //         flywheel::isUpToSpeed)); // Is it shooting?
 
     // Lerped fudge factor for pivot aiming to account for gravity
     // Is added to a tan^-1
@@ -252,5 +252,9 @@ public class Shooter {
 
   public Command getClimberRaiseCommand() {
     return climb.getClimberRaiseCommand();
+  }
+
+  public Command cycleLights() {
+    return light.cycleState();
   }
 }

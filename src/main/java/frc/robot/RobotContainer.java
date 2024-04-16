@@ -17,12 +17,10 @@ package frc.robot;
 import static edu.wpi.first.wpilibj2.command.Commands.race;
 
 import com.ctre.phoenix.led.Animation.*;
-import com.ctre.phoenix.led.FireAnimation;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -193,6 +191,7 @@ public class RobotContainer {
     //     .whileTrue(new StartEndCommand(drivebase::setSlowmode, drivebase::unsetSlowmode));
     // primaryLeftStick.button(2).whileTrue(drivebase.getAmpAlign(primaryLeftStickSide));
     primaryLeftStick.button(3).onTrue(new InstantCommand(drivebase::resetGyroToForwards));
+    primaryLeftStick.trigger().onTrue(shooter.cycleLights());
     // primaryLeftStick.button(6).whileTrue(shooter.getAutoAmpShotCommand());
     // primaryLeftStick
     //     .button(7)
