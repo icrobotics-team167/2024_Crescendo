@@ -16,46 +16,56 @@ package frc.robot.subsystems.misc.interfaceLayers;
 
 import com.ctre.phoenix.led.*;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
+import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
+import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
+import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import frc.robot.subsystems.misc.LightSubsystem.LightState;
 
 public class LightsIOCANdle implements LightsIO {
   CANdle candle;
 
   public LightsIOCANdle() {
-    candle = new CANdle(26, "Croppenheimer");
+    candle = new CANdle(40, "Croppenheimer");
 
     CANdleConfiguration config = new CANdleConfiguration();
-    config.v5Enabled = true;
+    // config.v5Enabled = true;
     config.statusLedOffWhenActive = true;
     config.disableWhenLOS = false;
     config.stripType = LEDStripType.RGB;
     candle.configAllSettings(config);
   }
 
+  private static final int LIGHT_NUM = 42;
+
   @Override
   public void setColorFromState(LightState state) {
+    Animation animation;
     switch (state) {
       case AIMING -> {
-        candle.animate(new RainbowAnimation());
+        animation = new RainbowAnimation(1, 1, LIGHT_NUM, false, 0);
       }
       case AIM_OK -> {
-        candle.animate(new ColorFlowAnimation(0, 255, 0));
+        animation = new ColorFlowAnimation(0, 255, 0, 0, 1, LIGHT_NUM, Direction.Forward, 0);
       }
       case HAS_NOTE -> {
-        candle.animate(new TwinkleAnimation(0, 255, 0));
+        animation = new TwinkleAnimation(0, 255, 0, 0, 1, LIGHT_NUM, TwinklePercent.Percent100, 0);
       }
       case INDEXING_NOTE -> {
-        candle.animate(new StrobeAnimation(0, 255, 0));
+        animation = new StrobeAnimation(0, 255, 0, 0, 1, LIGHT_NUM, 0);
       }
       case INTAKING -> {
-        candle.animate(new FireAnimation());
+        animation = new RgbFadeAnimation(1, 1, LIGHT_NUM, 0);
       }
       case NO_NOTE -> {
-        candle.animate(new RgbFadeAnimation());
+        animation = new FireAnimation(1, .7, LIGHT_NUM, .8, .75);
       }
       case SHOOTING -> {
-        candle.animate(new LarsonAnimation(0, 255, 0));
+        animation = new LarsonAnimation(0, 255, 0, 0, 1, LIGHT_NUM, BounceMode.Front, 2, 0);
+      }
+      default -> {
+        animation = null;
       }
     }
+    candle.animate(animation);
   }
 }
