@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Driving;
 import frc.robot.subsystems.misc.interfaceLayers.LightsIO;
-import frc.robot.subsystems.misc.interfaceLayers.LightsIOBlinkin;
+import frc.robot.subsystems.misc.interfaceLayers.LightsIOCANdle;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.interfaceLayers.*;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -70,7 +70,7 @@ public class RobotContainer {
                 new PivotIOSparkFlex(),
                 new NoteDetectorIOTimeOfFlight(),
                 new IntakeIOTalonFX(),
-                new LightsIOBlinkin(),
+                new LightsIOCANdle(),
                 new ClimberIOTalonFX());
         // light = new LightSubsystem(new LightsIOBlinkin());
         break;
