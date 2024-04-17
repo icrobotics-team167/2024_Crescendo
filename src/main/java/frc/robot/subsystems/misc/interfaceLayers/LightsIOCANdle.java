@@ -70,6 +70,6 @@ public class LightsIOCANdle implements LightsIO {
   }
 
   public void setLEDTest() {
-    candle.setLEDs(255,0,0,0,9,3);
+    candle.setLEDs(255,0,0,0,8,3);
   }
 }
