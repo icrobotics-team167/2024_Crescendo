@@ -77,6 +77,10 @@ public class LightSubsystem extends SubsystemBase {
         });
   }
 
+  public Command setLEDTest() {
+    return runOnce(() -> io.setLEDTest());
+  }
+
   public Command setState(
       BooleanSupplier hasNoteInIntake,
       BooleanSupplier hasNoteInShooter,

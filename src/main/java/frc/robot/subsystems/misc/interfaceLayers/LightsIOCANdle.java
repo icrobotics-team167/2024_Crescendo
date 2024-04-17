@@ -68,4 +68,8 @@ public class LightsIOCANdle implements LightsIO {
     }
     candle.animate(animation);
   }
+
+  public void setLEDTest() {
+    candle.setLEDs(255,0,0,0,9,3);
+  }
 }

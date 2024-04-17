@@ -191,6 +191,7 @@ public class RobotContainer {
     // primaryLeftStick.button(2).whileTrue(drivebase.getAmpAlign(primaryLeftStickSide));
     primaryLeftStick.button(3).onTrue(new InstantCommand(drivebase::resetGyroToForwards));
     primaryLeftStick.trigger().onTrue(shooter.cycleLights());
+    primaryRightStick.trigger().onTrue(shooter.setLEDTest());
     // primaryLeftStick.button(6).whileTrue(shooter.getAutoAmpShotCommand());
     // primaryLeftStick
     //     .button(7)
