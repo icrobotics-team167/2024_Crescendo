@@ -257,4 +257,8 @@ public class Shooter {
   public Command cycleLights() {
     return light.cycleState();
   }
+
+  public Command setLEDTest() {
+    return light.setLEDTest();
+  }
 }
