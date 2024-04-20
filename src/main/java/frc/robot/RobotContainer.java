@@ -49,8 +49,8 @@ public class RobotContainer {
 
   private CommandJoystick primaryLeftStick = new CommandJoystick(0);
   private CommandJoystick primaryRightStick = new CommandJoystick(1);
-  // private CommandJoystick secondaryLeftStick = new CommandJoystick(2);
-  // private CommandJoystick secondaryRightStick = new CommandJoystick(3);
+  private CommandJoystick secondaryLeftStick = new CommandJoystick(2);
+  private CommandJoystick secondaryRightStick = new CommandJoystick(3);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -167,20 +167,20 @@ public class RobotContainer {
                 Driving.Deadbands.PRIMARY_RIGHT_INNER,
                 Driving.Deadbands.PRIMARY_RIGHT_OUTER,
                 Driving.PRIMARY_DRIVER_EXPONENT);
-    // DoubleSupplier secondaryLeftStickForwards =
-    //     () ->
-    //         MathUtils.inOutDeadband(
-    //             secondaryLeftStick.getY(),
-    //             Driving.Deadbands.SECONDARY_LEFT_INNER,
-    //             Driving.Deadbands.SECONDARY_LEFT_OUTER,
-    //             Driving.SECONDARY_DRIVER_EXPONENT);
-    // DoubleSupplier secondaryRightStickForwards =
-    //     () ->
-    //         MathUtils.inOutDeadband(
-    //             secondaryRightStick.getY(),
-    //             Driving.Deadbands.SECONDARY_LEFT_INNER,
-    //             Driving.Deadbands.SECONDARY_LEFT_OUTER,
-    //             Driving.SECONDARY_DRIVER_EXPONENT);
+    DoubleSupplier secondaryLeftStickForwards =
+        () ->
+            MathUtils.inOutDeadband(
+                secondaryLeftStick.getY(),
+                Driving.Deadbands.SECONDARY_LEFT_INNER,
+                Driving.Deadbands.SECONDARY_LEFT_OUTER,
+                Driving.SECONDARY_DRIVER_EXPONENT);
+    DoubleSupplier secondaryRightStickForwards =
+        () ->
+            MathUtils.inOutDeadband(
+                secondaryRightStick.getY(),
+                Driving.Deadbands.SECONDARY_LEFT_INNER,
+                Driving.Deadbands.SECONDARY_LEFT_OUTER,
+                Driving.SECONDARY_DRIVER_EXPONENT);
     drivebase.setDefaultCommand(
         drivebase.getDriveCommand(
             primaryLeftStickForward, primaryLeftStickSide, primaryRightStickSide));
@@ -215,15 +215,15 @@ public class RobotContainer {
     //             drivebase, primaryLeftStickForward, primaryLeftStickSide));
     // primaryRightStick.button(7).whileTrue(shooter.getRearShotCommand());
 
-    // secondaryLeftStick
-    //     .trigger()
-    //     .whileTrue(shooter.getPivotManualControlCommand(secondaryLeftStickForwards));
-    // secondaryLeftStick.button(2).whileTrue(shooter.intakeOut());
+    secondaryLeftStick
+        .trigger()
+        .whileTrue(shooter.getPivotManualControlCommand(secondaryLeftStickForwards));
+    secondaryLeftStick.button(2).whileTrue(shooter.intakeOut());
     // // shooter.setPivotDefaultCommand(shooter.getPivotRestingPositionCommand());
     // secondaryLeftStick.button(3).whileTrue(shooter.getAutoAmpShotCommand());
     // secondaryLeftStick.button(4).whileTrue(shooter.getSourceIntakeCommand());
 
-    // secondaryRightStick.trigger().whileTrue(shooter.autoIntake());
+    secondaryRightStick.trigger().whileTrue(shooter.autoIntake());
     // secondaryRightStick.button(2).whileTrue(shooter.shoot());
     // secondaryRightStick.button(3).whileTrue(shooter.getFlywheelSpinUp());
     // secondaryRightStick.button(4).whileTrue(shooter.feed());
