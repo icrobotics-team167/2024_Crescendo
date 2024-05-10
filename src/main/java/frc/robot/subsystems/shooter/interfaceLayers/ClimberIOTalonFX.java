@@ -21,8 +21,6 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.Voltage;
 import frc.robot.util.CANConstants;
 
 public class ClimberIOTalonFX implements ClimberIO {
@@ -52,17 +50,23 @@ public class ClimberIOTalonFX implements ClimberIO {
     sharedConfigs.CurrentLimits.SupplyCurrentLimit = 90;
     sharedConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    // Napkin math, 20:1 gear ratio from motor to pulley and 10.5:1 ratio from pulley to arm
-    sharedConfigs.Feedback.SensorToMechanismRatio = 20 * 10.4;
+    // Napkin math, 20:1 gear ratio from motor to pulley and 52:1 ratio from pulley to arm
+    sharedConfigs.Feedback.SensorToMechanismRatio = 20 * 52;
 
+    sharedConfigs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    sharedConfigs.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+        Rotations.convertFrom(MAX_ANGLE_DEGREES, Degrees);
+    sharedConfigs.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    sharedConfigs.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
+        Rotations.convertFrom(MIN_ANGLE_DEGREES, Degrees);
     leftMotor.getConfigurator().apply(sharedConfigs);
     rightMotor.getConfigurator().apply(sharedConfigs);
 
     leftMotor.setInverted(false);
     rightMotor.setInverted(true);
 
-    leftMotor.setPosition(MIN_ANGLE_DEGREES / 360);
-    rightMotor.setPosition(MIN_ANGLE_DEGREES / 360);
+    leftMotor.setPosition(Rotations.convertFrom(MIN_ANGLE_DEGREES, Degrees));
+    rightMotor.setPosition(Rotations.convertFrom(MIN_ANGLE_DEGREES, Degrees));
 
     leftVoltage = leftMotor.getMotorVoltage();
     rightVoltage = rightMotor.getMotorVoltage();
@@ -97,14 +101,9 @@ public class ClimberIOTalonFX implements ClimberIO {
   }
 
   @Override
-  public void run() {
-    rawControl(Volts.of(12));
-  }
-
-  @Override
-  public void rawControl(Measure<Voltage> volts) {
-    leftMotor.setVoltage(volts.in(Volts));
-    rightMotor.setVoltage(volts.in(Volts));
+  public void manualControl(double control) {
+    leftMotor.setVoltage(control * 12);
+    rightMotor.setVoltage(control * 12);
   }
 
   @Override

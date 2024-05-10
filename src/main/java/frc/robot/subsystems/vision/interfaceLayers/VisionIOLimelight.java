@@ -17,7 +17,6 @@ package frc.robot.subsystems.vision.interfaceLayers;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.Constants.Field;
@@ -26,8 +25,7 @@ import org.littletonrobotics.junction.Logger;
 public class VisionIOLimelight implements VisionIO {
   @Override
   public void updateInputs(VisionIOInputs inputs) {
-    // inputs = new VisionIOInputs();
-    inputs.trackedTags = new Pose3d[0];
+    inputs = new VisionIOInputs();
     // If the Limelight doesn't see any tags to track, stop.
     if (!hasTracking()) {
       return;
@@ -50,7 +48,7 @@ public class VisionIOLimelight implements VisionIO {
     // If all checks succeed, then write data.
     inputs.poseEstimate =
         new Pose2d(poseArray[0], poseArray[1], Rotation2d.fromDegrees(poseArray[5]));
-    inputs.statusCode = VisionStatusCode.OK;
+    inputs.isNewData = true;
     inputs.timestamp = getTimeStamp();
   }
 

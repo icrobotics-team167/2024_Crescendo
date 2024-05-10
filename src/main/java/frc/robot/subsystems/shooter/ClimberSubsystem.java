@@ -14,8 +14,6 @@
 
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.Volts;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.shooter.interfaceLayers.ClimberIO;
@@ -37,12 +35,7 @@ public class ClimberSubsystem extends SubsystemBase {
     Logger.processInputs("Shooter/climber", inputs);
   }
 
-  public Command getClimberRaiseCommand() {
-    return run(io::run).finallyDo(io::stop);
-  }
-
   public Command getClimberManualControlCommand(DoubleSupplier controlSupplier) {
-    return run(() -> io.rawControl(Volts.of(controlSupplier.getAsDouble() * 6)))
-        .finallyDo(io::stop);
+    return run(() -> io.manualControl(controlSupplier.getAsDouble())).finallyDo(io::stop);
   }
 }

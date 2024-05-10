@@ -28,16 +28,7 @@ public interface VisionIO {
     public Pose2d poseEstimate = null;
     public Pose3d[] trackedTags = new Pose3d[0];
     public double timestamp = 0;
-    public VisionStatusCode statusCode = VisionStatusCode.CAMERA_FAIL;
-  }
-
-  public enum VisionStatusCode {
-    CAMERA_FAIL,
-    ESTIMATOR_FAIL,
-    NO_DATA,
-    BAD_TAG,
-    BAD_POSE,
-    OK
+    public boolean isNewData = false;
   }
 
   public class VisionPoseEstimate {

@@ -47,45 +47,28 @@ public class VisionIOPhoton implements VisionIO {
               robotToCameraTransform);
       poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     } catch (Exception e) {
-      DriverStation.reportError(
-          "PhotonVision failed to load camera " + name + "! Failed with error " + e.getMessage(),
-          false);
+      DriverStation.reportError("PhotonVision failed to load camera " + name + "!", false);
       poseEstimator = null;
     }
   }
 
   @Override
   public void updateInputs(VisionIOInputs inputs) {
-    inputs.trackedTags = new Pose3d[0];
-    // If the camera isn't connected, stop.
-    if (camera.isConnected() == false) {
-      // System.out.println("Camera connected check failed");
-      inputs.statusCode = VisionStatusCode.CAMERA_FAIL;
-      return;
-    }
-
-    // System.out.println("Camera connected check succeeded");
-
-    // If the pose estimator failed to load, stop.
+    inputs = new VisionIOInputs();
+    // If the camera didn't load properly, stop.
     if (poseEstimator == null) {
-      inputs.statusCode = VisionStatusCode.ESTIMATOR_FAIL;
-      // System.out.println("Estimator wasn't initialized");
       return;
     }
-
-    // System.out.println("Estimator was initialized");
 
     Optional<EstimatedRobotPose> data = poseEstimator.update();
     // If the pose estimator doesn't have any data, stop.
     if (data.isEmpty()) {
-      inputs.statusCode = VisionStatusCode.NO_DATA;
       return;
     }
 
     EstimatedRobotPose botPoseEstimate = data.get();
     if (botPoseEstimate.strategy != PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
         && botPoseEstimate.targetsUsed.get(0).getPoseAmbiguity() > .2) {
-      inputs.statusCode = VisionStatusCode.BAD_TAG;
       return;
     }
     // If the pose is outside the field, it's obviously a bad pose so stop.
@@ -93,12 +76,11 @@ public class VisionIOPhoton implements VisionIO {
         || botPoseEstimate.estimatedPose.getY() < 0
         || botPoseEstimate.estimatedPose.getX() > Field.FIELD_LENGTH.in(Meters)
         || botPoseEstimate.estimatedPose.getY() > Field.FIELD_WIDTH.in(Meters)) {
-      inputs.statusCode = VisionStatusCode.BAD_POSE;
       return;
     }
 
     // If all checks succeed, then write data.
-    inputs.statusCode = VisionStatusCode.OK;
+    inputs.isNewData = true;
     inputs.poseEstimate = botPoseEstimate.estimatedPose.toPose2d();
     inputs.timestamp = botPoseEstimate.timestampSeconds;
     inputs.trackedTags = new Pose3d[botPoseEstimate.targetsUsed.size()];

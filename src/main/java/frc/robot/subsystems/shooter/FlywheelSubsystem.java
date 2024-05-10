@@ -64,8 +64,7 @@ public class FlywheelSubsystem extends SubsystemBase {
     }
 
     return atSetpoint(inputs.topVelocity.in(RPM), inputs.topVelocitySetpoint.in(RPM))
-        && atSetpoint(inputs.bottomVelocity.in(RPM), inputs.bottomVelocitySetpoint.in(RPM))
-        && atSetpoint(inputs.guideVelocity.in(RPM), inputs.guideWheelSetpoint.in(RPM));
+        && atSetpoint(inputs.bottomVelocity.in(RPM), inputs.bottomVelocitySetpoint.in(RPM));
   }
 
   private boolean atSetpoint(double velocity, double setpoint) {
