@@ -482,6 +482,10 @@ public class SwerveSubsystem extends SubsystemBase {
         });
   }
 
+  public Command getTrackTagCommand(DoubleSupplier xInput, DoubleSupplier yInput) {
+    return getDriveCommand(xInput, yInput, () -> 1 * visionPoseEstimator.getTX(getPose()).getRadians());
+  }
+
   // Set to true if you are using TalonFX motors.
   private final boolean IS_TALONFX = false;
 
@@ -526,7 +530,6 @@ public class SwerveSubsystem extends SubsystemBase {
                       SignalLogger.writeString("AzimuthSysIDTestState,", state.toString()))
                   : ((state) -> Logger.recordOutput("AzimuthSysIDTestState", state.toString()))),
           new Mechanism(this::runAzimuthCharacterization, null, this));
-  ;
 
   /**
    * Command factory for running azimuth system characterization using URCL logging. For REV users.

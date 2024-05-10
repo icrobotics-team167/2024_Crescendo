@@ -18,6 +18,7 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -26,6 +27,7 @@ import frc.robot.Robot;
 import frc.robot.Robot.Mode;
 import frc.robot.subsystems.vision.interfaceLayers.*;
 import frc.robot.subsystems.vision.interfaceLayers.VisionIO.VisionPoseEstimate;
+import frc.robot.subsystems.vision.interfaceLayers.VisionIO.VisionStatusCode;
 import java.util.function.Consumer;
 import org.littletonrobotics.junction.Logger;
 
@@ -69,7 +71,7 @@ public class VisionSubsystem extends SubsystemBase {
 
   public void updateEstimation() {
     for (int i = 0; i < cameraData.length; i++) {
-      if (cameraData[i].isNewData) {
+      if (cameraData[i].statusCode == VisionStatusCode.OK) {
         double trustWorthiness =
             calculateStDevs(cameraData[i].trackedTags, cameraData[i].poseEstimate);
         estimationConsumer.accept(
@@ -80,6 +82,20 @@ public class VisionSubsystem extends SubsystemBase {
                 cameraData[i].timestamp));
       }
     }
+  }
+
+  public Rotation2d getTX(Pose2d botPose) {
+    for (VisionIOInputsAutoLogged data : cameraData) {
+      if (data.isNewData) {
+        return data.trackedTags[0]
+            .toPose2d()
+            .getTranslation()
+            .minus(botPose.getTranslation())
+            .getAngle()
+            .minus(botPose.getRotation());
+      }
+    }
+    return Rotation2d.fromDegrees(0);
   }
 
   private double calculateStDevs(Pose3d[] tagPoses, Pose2d botPose) {
