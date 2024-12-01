@@ -14,13 +14,8 @@
 
 package frc.robot;
 
-import static edu.wpi.first.wpilibj2.command.Commands.race;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -112,23 +107,10 @@ public class RobotContainer {
                 new ClimberIO() {});
         // light = new LightSubsystem(new LightsIO() {});
     }
-    NamedCommands.registerCommand(
-        "Score in speaker",
-        shooter.getAutoSpeakerShotCommand(() -> drivebase.getPose().getTranslation()));
-    NamedCommands.registerCommand("Aim from subwoofer", shooter.getSubwooferShotCommand());
-    NamedCommands.registerCommand("Aim from podium", shooter.getPodiumShotCommand());
-    NamedCommands.registerCommand("Score note (already aimed)", shooter.shootDuringAuto());
-    NamedCommands.registerCommand("Intake", shooter.autoIntakeNoPivot());
-    NamedCommands.registerCommand("Intake Out", shooter.intakeOut());
-    NamedCommands.registerCommand("Spin up flywheel", shooter.getFlywheelSpinUp());
 
     // Configure the trigger bindings
     configureBindings();
     // System.out.println("Deploy directory: " + Filesystem.getDeployDirectory());
-    autoSelector = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
-    autoSelector.addOption(
-        "The One Piece is real",
-        race(shooter.getSubwooferShotCommand(), shooter.getFlywheelSpinUp()));
   }
 
   /**
@@ -186,41 +168,41 @@ public class RobotContainer {
         drivebase.getDriveCommand(
             primaryLeftStickForward, primaryLeftStickSide, primaryRightStickSide));
 
-    primaryLeftStick
-        .trigger()
-        .whileTrue(new StartEndCommand(drivebase::setSlowmode, drivebase::unsetSlowmode));
-    primaryLeftStick.button(2).whileTrue(drivebase.getAmpAlign(primaryLeftStickSide));
+    // primaryLeftStick
+    //     .trigger()
+    //     .whileTrue(new StartEndCommand(drivebase::setSlowmode, drivebase::unsetSlowmode));
+    // primaryLeftStick.button(2).whileTrue(drivebase.getAmpAlign(primaryLeftStickSide));
     primaryLeftStick.button(3).onTrue(new InstantCommand(drivebase::resetGyroToForwards));
-    primaryLeftStick.button(6).whileTrue(shooter.getAutoAmpShotCommand());
-    primaryLeftStick
-        .button(7)
-        .whileTrue(shooter.getPivotManualControlCommand(primaryRightStickForward));
+    // primaryLeftStick.button(6).whileTrue(shooter.getAutoAmpShotCommand());
+    // primaryLeftStick
+    //     .button(7)
+    //     .whileTrue(shooter.getPivotManualControlCommand(primaryRightStickForward));
 
-    primaryRightStick
-        .trigger()
-        .whileTrue(
-            shooter.getTeleopAutoAimCommand(
-                drivebase, primaryLeftStickForward, primaryLeftStickSide));
-    primaryRightStick.button(2).onTrue(new InstantCommand(drivebase::stopWithX));
-    primaryRightStick.button(4).whileTrue(shooter.getSubwooferShotCommand());
-    primaryRightStick.button(5).whileTrue(shooter.getPodiumShotCommand());
+    // primaryRightStick
+    //     .trigger()
+    //     .whileTrue(
+    //         shooter.getTeleopAutoAimCommand(
+    //             drivebase, primaryLeftStickForward, primaryLeftStickSide));
+    // primaryRightStick.button(2).onTrue(new InstantCommand(drivebase::stopWithX));
+    // primaryRightStick.button(4).whileTrue(shooter.getSubwooferShotCommand());
+    // primaryRightStick.button(5).whileTrue(shooter.getPodiumShotCommand());
 
-    secondaryLeftStick
-        .trigger()
-        .whileTrue(shooter.getPivotManualControlCommand(secondaryLeftStickForwards));
-    secondaryLeftStick.button(2).whileTrue(shooter.intakeOut());
-    // shooter.setPivotDefaultCommand(shooter.getPivotRestingPositionCommand());
-    secondaryLeftStick.button(3).whileTrue(shooter.getAutoAmpShotCommand());
-    secondaryLeftStick.button(4).whileTrue(shooter.getSourceIntakeCommand());
+    // secondaryLeftStick
+    //     .trigger()
+    //     .whileTrue(shooter.getPivotManualControlCommand(secondaryLeftStickForwards));
+    // secondaryLeftStick.button(2).whileTrue(shooter.intakeOut());
+    // // shooter.setPivotDefaultCommand(shooter.getPivotRestingPositionCommand());
+    // secondaryLeftStick.button(3).whileTrue(shooter.getAutoAmpShotCommand());
+    // secondaryLeftStick.button(4).whileTrue(shooter.getSourceIntakeCommand());
 
-    secondaryRightStick.trigger().whileTrue(shooter.autoIntake());
-    secondaryRightStick.button(2).whileTrue(shooter.shoot());
-    secondaryRightStick.button(3).whileTrue(shooter.getFlywheelSpinUp());
-    secondaryRightStick.button(4).whileTrue(shooter.feed());
+    // secondaryRightStick.trigger().whileTrue(shooter.autoIntake());
+    // secondaryRightStick.button(2).whileTrue(shooter.shoot());
+    // secondaryRightStick.button(3).whileTrue(shooter.getFlywheelSpinUp());
+    // secondaryRightStick.button(4).whileTrue(shooter.feed());
 
-    secondaryRightStick
-        .button(10)
-        .whileTrue(shooter.getClimberManualControl(secondaryRightStickForwards));
+    // secondaryRightStick
+    //     .button(10)
+    //     .whileTrue(shooter.getClimberManualControl(secondaryRightStickForwards));
   }
 
   /**
