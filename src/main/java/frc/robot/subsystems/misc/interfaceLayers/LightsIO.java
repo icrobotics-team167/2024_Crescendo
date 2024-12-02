@@ -28,4 +28,6 @@ public interface LightsIO {
   public default void setColorFromState(LightState state) {}
 
   public default void setColorNull() {}
+
+  public default void setLEDTest() {}
 }

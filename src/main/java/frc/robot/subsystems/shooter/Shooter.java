@@ -66,16 +66,16 @@ public class Shooter {
     light = new LightSubsystem(lightIO);
     climb = new ClimberSubsystem(climberIO);
 
-    light.setDefaultCommand(
-        light.setState(
-            noteDetector::hasNoteInIntake, // Is the bot currently intaking a note?
-            noteDetector::hasNoteInShooter, // Does the bot have a note in the shooter?
-            intake::isRunning, // Is the bot intaking?
-            () -> // Is the pivot aiming?
-            pivot.getCurrentCommand() != null
-                    && pivot.getCurrentCommand().getName().equals("Pivot to angle"),
-            pivot::isAtSetpoint, // Is the pivot at its setpoint?
-            flywheel::isUpToSpeed)); // Is it shooting?
+    // light.setDefaultCommand(
+    //     light.setState(
+    //         noteDetector::hasNoteInIntake, // Is the bot currently intaking a note?
+    //         noteDetector::hasNoteInShooter, // Does the bot have a note in the shooter?
+    //         intake::isRunning, // Is the bot intaking?
+    //         () -> // Is the pivot aiming?
+    //         pivot.getCurrentCommand() != null
+    //                 && pivot.getCurrentCommand().getName().equals("Pivot to angle"),
+    //         pivot::isAtSetpoint, // Is the pivot at its setpoint?
+    //         flywheel::isUpToSpeed)); // Is it shooting?
 
     // Lerped fudge factor for pivot aiming to account for gravity
     // Is added to a tan^-1
@@ -173,6 +173,14 @@ public class Shooter {
         getAutoSpeakerAimCommand(botTranslationSupplier));
   }
 
+  public Command getRearShotCommand() {
+    return deadline(
+        waitUntil(() -> flywheel.isUpToSpeed())
+            .withTimeout(2)
+            .andThen(feeder.getFeedCommand().withTimeout(1)),
+        flywheel.getAmpShotCommand());
+  }
+
   public Command getAutoSpeakerAimCommand(Supplier<Translation2d> botTranslationSupplier) {
     return pivot.getPivotCommand(
         () -> {
@@ -237,5 +245,13 @@ public class Shooter {
 
   public Command getClimberManualControl(DoubleSupplier climberControl) {
     return climb.getClimberManualControlCommand(climberControl);
+  }
+
+  public Command cycleLights() {
+    return light.cycleState();
+  }
+
+  public Command setLEDTest() {
+    return light.setLEDTest();
   }
 }
