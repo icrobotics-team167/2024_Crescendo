@@ -24,7 +24,6 @@ public interface FlywheelIO {
   public class FlywheelIOInputs {
     public Measure<Velocity<Angle>> topVelocitySetpoint = RPM.of(0);
     public Measure<Velocity<Angle>> bottomVelocitySetpoint = RPM.of(0);
-    public Measure<Velocity<Angle>> guideWheelSetpoint = RPM.of(0);
     /** The position of the top shooter flywheel. */
     public Measure<Angle> topPosition = Rotations.of(0);
     /** The velocity of the top shooter flywheel. */
@@ -45,16 +44,6 @@ public interface FlywheelIO {
     public Measure<Voltage> bottomAppliedVoltage = Volts.of(0);
     /** The current applied to the bottom motor by the motor controller. */
     public Measure<Current> bottomAppliedCurrent = Amps.of(0);
-    /** The position of the shooter guide wheels. */
-    public Measure<Angle> guidePosition = Rotations.of(0);
-    /** The velocity of the shooter guide wheels. */
-    public Measure<Velocity<Angle>> guideVelocity = RotationsPerSecond.of(0);
-    /** The total output applied to the guide wheel motor by the closed loop control. */
-    public double guideAppliedOutput = 0;
-    /** The voltage applied to the guide wheel motor by the motor controller. */
-    public Measure<Voltage> guideAppliedVoltage = Volts.of(0);
-    /** The current applied to the guide wheel motor by the motor controller. */
-    public Measure<Current> guideAppliedCurrent = Amps.of(0);
   }
 
   /** Updates the set of loggable inputs. */

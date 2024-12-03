@@ -36,9 +36,7 @@ public interface ClimberIO {
 
   public default void updateInputs(ClimberIOInputs inputs) {}
 
-  public default void run() {}
-
-  public default void rawControl(Measure<Voltage> volts) {}
+  public default void manualControl(double control) {}
 
   public default void stop() {}
 }
