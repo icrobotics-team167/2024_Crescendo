@@ -18,6 +18,11 @@ import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.pathfinding.Pathfinding;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PathPlannerLogging;
+import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -33,6 +38,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.*;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -45,6 +51,9 @@ import frc.robot.subsystems.swerve.interfaceLayers.GyroIO;
 import frc.robot.subsystems.swerve.interfaceLayers.GyroIOInputsAutoLogged;
 import frc.robot.subsystems.swerve.interfaceLayers.ModuleIO;
 import frc.robot.subsystems.swerve.interfaceLayers.PhoenixOdometryThread;
+import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.subsystems.vision.interfaceLayers.VisionIO.VisionPoseEstimate;
+import frc.robot.util.LocalADStarAK;
 import frc.robot.util.MathUtils;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -97,6 +106,8 @@ public class SwerveSubsystem extends SubsystemBase {
   public static final Lock odometryLock = new ReentrantLock();
   /** The pose estimator, used to fuse odometry data and vision data together. */
   private SwerveDrivePoseEstimator poseEstimator;
+  /** The vision-based pose estimator. */
+  public VisionSubsystem visionPoseEstimator = new VisionSubsystem(this::addVisionMeasurement);
 
   /** If slowmode should be enabled or not. */
   private boolean slowmode = Driving.SLOWMODE_DEFAULT;
@@ -135,6 +146,34 @@ public class SwerveSubsystem extends SubsystemBase {
     if (Module.ODOMETRY_FREQUENCY > 50) {
       PhoenixOdometryThread.getInstance().start();
     }
+
+    // Configure AutoBuilder for PathPlanner
+    AutoBuilder.configureHolonomic(
+        this::getPose,
+        this::setPose,
+        () -> kinematics.toChassisSpeeds(getModuleStates()),
+        this::runVelocity,
+        new HolonomicPathFollowerConfig(
+            MAX_LINEAR_SPEED.in(MetersPerSecond),
+            DRIVE_BASE_RADIUS.in(Meters),
+            new ReplanningConfig()),
+        () ->
+            DriverStation.getAlliance().isPresent()
+                && DriverStation.getAlliance().get() == Alliance.Red,
+        this);
+    // Replace the default pathfinder with an AdvantageKit-compatible version
+    Pathfinding.setPathfinder(new LocalADStarAK());
+
+    // Tell PathPlanner that it should log data to AdvantageKit
+    PathPlannerLogging.setLogActivePathCallback(
+        (activePath) -> {
+          Logger.recordOutput(
+              "Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+        });
+    PathPlannerLogging.setLogTargetPoseCallback(
+        (targetPose) -> {
+          Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+        });
 
     Logger.recordOutput("SwerveSubsystem/maxLinearVelocity", MAX_LINEAR_SPEED);
     Logger.recordOutput("SwerveSubsystem/maxAngularVelocity", MAX_ANGULAR_SPEED);
@@ -221,6 +260,7 @@ public class SwerveSubsystem extends SubsystemBase {
       lastModulePositions = getModulePositions();
       poseEstimator.update(rawGyroRotation, lastModulePositions);
     }
+    visionPoseEstimator.updateEstimation();
   }
 
   /**
@@ -329,6 +369,17 @@ public class SwerveSubsystem extends SubsystemBase {
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+  }
+
+  /**
+   * Adds a vision measurement to the pose estimator.
+   *
+   * @param visionPose The pose of the robot as measured by the vision camera.
+   * @param timestamp The timestamp of the vision measurement in seconds.
+   */
+  public void addVisionMeasurement(VisionPoseEstimate estimate) {
+    poseEstimator.addVisionMeasurement(
+        estimate.poseEstimate, estimate.timestamp, estimate.trustworthiness);
   }
 
   /** Returns the maximum linear speed of the drivebase. */

@@ -48,39 +48,6 @@ public class LightSubsystem extends SubsystemBase {
 
   private LightState currentState = LightState.NO_NOTE;
 
-  public Command cycleState() {
-    return runOnce(
-        () -> {
-          switch (currentState) {
-            case AIMING -> {
-              currentState = LightState.AIM_OK;
-            }
-            case AIM_OK -> {
-              currentState = LightState.HAS_NOTE;
-            }
-            case HAS_NOTE -> {
-              currentState = LightState.INDEXING_NOTE;
-            }
-            case INDEXING_NOTE -> {
-              currentState = LightState.INTAKING;
-            }
-            case INTAKING -> {
-              currentState = LightState.NO_NOTE;
-            }
-            case NO_NOTE -> {
-              currentState = LightState.SHOOTING;
-            }
-            case SHOOTING -> {
-              currentState = LightState.AIMING;
-            }
-          }
-        });
-  }
-
-  public Command setLEDTest() {
-    return runOnce(() -> io.setLEDTest());
-  }
-
   public Command setState(
       BooleanSupplier hasNoteInIntake,
       BooleanSupplier hasNoteInShooter,

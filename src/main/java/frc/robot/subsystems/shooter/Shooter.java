@@ -66,16 +66,16 @@ public class Shooter {
     light = new LightSubsystem(lightIO);
     climb = new ClimberSubsystem(climberIO);
 
-    // light.setDefaultCommand(
-    //     light.setState(
-    //         noteDetector::hasNoteInIntake, // Is the bot currently intaking a note?
-    //         noteDetector::hasNoteInShooter, // Does the bot have a note in the shooter?
-    //         intake::isRunning, // Is the bot intaking?
-    //         () -> // Is the pivot aiming?
-    //         pivot.getCurrentCommand() != null
-    //                 && pivot.getCurrentCommand().getName().equals("Pivot to angle"),
-    //         pivot::isAtSetpoint, // Is the pivot at its setpoint?
-    //         flywheel::isUpToSpeed)); // Is it shooting?
+    light.setDefaultCommand(
+        light.setState(
+            noteDetector::hasNoteInIntake, // Is the bot currently intaking a note?
+            noteDetector::hasNoteInShooter, // Does the bot have a note in the shooter?
+            intake::isRunning, // Is the bot intaking?
+            () -> // Is the pivot aiming?
+            pivot.getCurrentCommand() != null
+                    && pivot.getCurrentCommand().getName().equals("Pivot to angle"),
+            pivot::isAtSetpoint, // Is the pivot at its setpoint?
+            flywheel::isUpToSpeed)); // Is it shooting?
 
     // Lerped fudge factor for pivot aiming to account for gravity
     // Is added to a tan^-1
@@ -120,7 +120,7 @@ public class Shooter {
         // Gets canceled when the above finishes
         pivot.getPivotCommand(
             () -> {
-              return Rotation2d.fromDegrees(PivotIO.MAX_ANGLE);
+              return Rotation2d.fromDegrees(95);
             }),
         flywheel.getAmpShotCommand());
     // return flywheel.getAmpShotCommand();
@@ -192,18 +192,29 @@ public class Shooter {
       SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
     return parallel(
         getAutoSpeakerShotCommand(() -> drivebase.getPose().getTranslation()),
-        drivebase.getYawAlign(
-            xVel,
-            yVel,
-            () ->
-                aimAtPosition(
-                    drivebase.getPose().getTranslation(),
-                    new Translation2d(
-                        Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0, speakerY))));
+        getSpeakerYawCommand(drivebase, xVel, yVel));
     // Michael was here));
   }
 
-  public Command getChildrensYawCommand(
+  public Command getSubwooferShotCommand() {
+    return pivot.getPivotCommand(() -> Rotation2d.fromDegrees(49));
+  }
+
+  public Command getSubwooferShotWithYawCommand(
+      SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
+    return getSubwooferShotCommand().alongWith(getSpeakerYawCommand(drivebase, xVel, yVel));
+  }
+
+  public Command getPodiumShotCommand() {
+    return pivot.getPivotCommand(() -> Rotation2d.fromDegrees(30));
+  }
+
+  public Command getPodiumShotWithYawCommand(
+      SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
+    return getPodiumShotCommand().alongWith(getSpeakerYawCommand(drivebase, xVel, yVel));
+  }
+
+  public Command getSpeakerYawCommand(
       SwerveSubsystem drivebase, DoubleSupplier xVel, DoubleSupplier yVel) {
     return drivebase.getYawAlign(
         xVel,
@@ -212,14 +223,6 @@ public class Shooter {
             aimAtPosition(
                 drivebase.getPose().getTranslation(),
                 new Translation2d(Robot.isOnRed() ? Field.FIELD_LENGTH.in(Meters) : 0, speakerY)));
-  }
-
-  public Command getSubwooferShotCommand() {
-    return pivot.getPivotCommand(() -> Rotation2d.fromDegrees(49));
-  }
-
-  public Command getPodiumShotCommand() {
-    return pivot.getPivotCommand(() -> Rotation2d.fromDegrees(32.1));
   }
 
   private Rotation2d aimAtHeight(Translation2d currentBotPosition, double height) {
@@ -247,11 +250,7 @@ public class Shooter {
     return climb.getClimberManualControlCommand(climberControl);
   }
 
-  public Command cycleLights() {
-    return light.cycleState();
-  }
-
-  public Command setLEDTest() {
-    return light.setLEDTest();
+  public Command getClimberRaiseCommand() {
+    return climb.getClimberRaiseCommand();
   }
 }
