@@ -12,20 +12,5 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.misc.interfaceLayers;
-
-import frc.robot.subsystems.misc.LightSubsystem.LightState;
-import org.littletonrobotics.junction.AutoLog;
-
-public interface LightsIO {
-  @AutoLog
-  public class LightsIOInputs {
-    public LightState state = LightState.NO_NOTE;
-  }
-
-  public default void updateInputs(LightsIOInputs inputs) {}
-
-  public default void setColorFromState(LightState state) {}
-
-  public default void setColorNull() {}
-}
+/** This package handles code for vision processing, mainly vision-based pose estimation. */
+package frc.robot.subsystems.vision;

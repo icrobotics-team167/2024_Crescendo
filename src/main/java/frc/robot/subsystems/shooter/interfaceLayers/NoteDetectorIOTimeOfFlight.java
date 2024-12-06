@@ -45,12 +45,12 @@ public class NoteDetectorIOTimeOfFlight implements NoteDetectorIO {
     } else {
       inputs.hasNoteInShooter = false;
     }
-    if (intakeSensor.isRangeValid()) {
-      inputs.intakeDetectedDistance =
-          Millimeters.of(intakeRangeFilter.calculate(intakeSensor.getRange()));
-      inputs.hasNoteInIntake = inputs.intakeDetectedDistance.lte(Inches.of(15.5));
-    } else {
-      inputs.hasNoteInIntake = false;
-    }
+    // if (intakeSensor.isRangeValid()) {
+    //   inputs.intakeDetectedDistance =
+    //       Millimeters.of(intakeRangeFilter.calculate(intakeSensor.getRange()));
+    //   inputs.hasNoteInIntake = inputs.intakeDetectedDistance.lte(Inches.of(15.5));
+    // } else {
+    //   inputs.hasNoteInIntake = false;
+    // }
   }
 }
