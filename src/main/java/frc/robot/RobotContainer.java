@@ -20,13 +20,12 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Driving;
 import frc.robot.subsystems.misc.interfaceLayers.LightsIO;
-import frc.robot.subsystems.misc.interfaceLayers.LightsIOBlinkin;
+import frc.robot.subsystems.misc.interfaceLayers.LightsIOCANdle;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.interfaceLayers.*;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -71,7 +70,7 @@ public class RobotContainer {
                 new PivotIOSparkFlex(),
                 new NoteDetectorIOTimeOfFlight(),
                 new IntakeIOTalonFX(),
-                new LightsIOBlinkin(),
+                new LightsIOCANdle(),
                 new ClimberIOTalonFX());
         // light = new LightSubsystem(new LightsIOBlinkin());
         break;
@@ -155,12 +154,12 @@ public class RobotContainer {
                 Driving.Deadbands.PRIMARY_LEFT_INNER,
                 Driving.Deadbands.PRIMARY_LEFT_OUTER,
                 Driving.PRIMARY_DRIVER_EXPONENT);
-    DoubleSupplier primaryRightStickForward =
-        () ->
-            MathUtils.inOutDeadband(
-                primaryRightStick.getY(),
-                Driving.Deadbands.PRIMARY_RIGHT_INNER,
-                Driving.Deadbands.PRIMARY_RIGHT_INNER);
+    // DoubleSupplier primaryRightStickForward =
+    //     () ->
+    //         MathUtils.inOutDeadband(
+    //             primaryRightStick.getY(),
+    //             Driving.Deadbands.PRIMARY_RIGHT_INNER,
+    //             Driving.Deadbands.PRIMARY_RIGHT_INNER);
     DoubleSupplier primaryRightStickSide =
         () ->
             MathUtils.inOutDeadband(
@@ -186,51 +185,53 @@ public class RobotContainer {
         drivebase.getDriveCommand(
             primaryLeftStickForward, primaryLeftStickSide, primaryRightStickSide));
 
-    primaryLeftStick
-        .trigger()
-        .whileTrue(new StartEndCommand(drivebase::setSlowmode, drivebase::unsetSlowmode));
-    primaryLeftStick.button(2).whileTrue(drivebase.getAmpAlign(primaryLeftStickSide));
+    // primaryLeftStick
+    //     .trigger()
+    //     .whileTrue(new StartEndCommand(drivebase::setSlowmode, drivebase::unsetSlowmode));
+    // primaryLeftStick.button(2).whileTrue(drivebase.getAmpAlign(primaryLeftStickSide));
     primaryLeftStick.button(3).onTrue(new InstantCommand(drivebase::resetGyroToForwards));
-    primaryLeftStick.button(6).whileTrue(shooter.getAutoAmpShotCommand());
-    primaryLeftStick
-        .button(7)
-        .whileTrue(shooter.getPivotManualControlCommand(primaryRightStickForward));
+    primaryLeftStick.trigger().onTrue(shooter.cycleLights());
+    primaryRightStick.trigger().onTrue(shooter.setLEDTest());
+    // primaryLeftStick.button(6).whileTrue(shooter.getAutoAmpShotCommand());
+    // primaryLeftStick
+    //     .button(7)
+    //     .whileTrue(shooter.getPivotManualControlCommand(primaryRightStickForward));
 
-    primaryRightStick
-        .trigger()
-        .whileTrue(
-            shooter.getTeleopAutoAimCommand(
-                drivebase, primaryLeftStickForward, primaryLeftStickSide));
-    primaryRightStick.button(2).onTrue(new InstantCommand(drivebase::stopWithX));
-    primaryRightStick
-        .button(4)
-        .whileTrue(
-            shooter.getSubwooferShotWithYawCommand(
-                drivebase, primaryLeftStickForward, primaryLeftStickSide));
-    primaryRightStick
-        .button(5)
-        .whileTrue(
-            shooter.getPodiumShotWithYawCommand(
-                drivebase, primaryLeftStickForward, primaryLeftStickSide));
-    primaryRightStick.button(7).whileTrue(shooter.getRearShotCommand());
+    // primaryRightStick
+    //     .trigger()
+    //     .whileTrue(
+    //         shooter.getTeleopAutoAimCommand(
+    //             drivebase, primaryLeftStickForward, primaryLeftStickSide));
+    // primaryRightStick.button(2).onTrue(new InstantCommand(drivebase::stopWithX));
+    // primaryRightStick
+    //     .button(4)
+    //     .whileTrue(
+    //         shooter.getSubwooferShotWithYawCommand(
+    //             drivebase, primaryLeftStickForward, primaryLeftStickSide));
+    // primaryRightStick
+    //     .button(5)
+    //     .whileTrue(
+    //         shooter.getPodiumShotWithYawCommand(
+    //             drivebase, primaryLeftStickForward, primaryLeftStickSide));
+    // primaryRightStick.button(7).whileTrue(shooter.getRearShotCommand());
 
     secondaryLeftStick
         .trigger()
         .whileTrue(shooter.getPivotManualControlCommand(secondaryLeftStickForwards));
     secondaryLeftStick.button(2).whileTrue(shooter.intakeOut());
-    // shooter.setPivotDefaultCommand(shooter.getPivotRestingPositionCommand());
-    secondaryLeftStick.button(3).whileTrue(shooter.getAutoAmpShotCommand());
-    secondaryLeftStick.button(4).whileTrue(shooter.getSourceIntakeCommand());
+    // // shooter.setPivotDefaultCommand(shooter.getPivotRestingPositionCommand());
+    // secondaryLeftStick.button(3).whileTrue(shooter.getAutoAmpShotCommand());
+    // secondaryLeftStick.button(4).whileTrue(shooter.getSourceIntakeCommand());
 
     secondaryRightStick.trigger().whileTrue(shooter.autoIntake());
-    secondaryRightStick.button(2).whileTrue(shooter.shoot());
-    secondaryRightStick.button(3).whileTrue(shooter.getFlywheelSpinUp());
-    secondaryRightStick.button(4).whileTrue(shooter.feed());
+    // secondaryRightStick.button(2).whileTrue(shooter.shoot());
+    // secondaryRightStick.button(3).whileTrue(shooter.getFlywheelSpinUp());
+    // secondaryRightStick.button(4).whileTrue(shooter.feed());
 
-    secondaryRightStick
-        .button(10)
-        .whileTrue(shooter.getClimberManualControl(secondaryRightStickForwards));
-    secondaryRightStick.button(11).whileTrue(shooter.getClimberRaiseCommand());
+    // secondaryRightStick
+    //     .button(10)
+    //     .whileTrue(shooter.getClimberManualControl(secondaryRightStickForwards));
+    // secondaryRightStick.button(11).whileTrue(shooter.getClimberRaiseCommand());
   }
 
   /**
